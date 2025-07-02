@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTopic } from '@/context/TopicContext';
-import { BookCopy, Brain, MessageSquareQuestion } from 'lucide-react';
+import { BookCopy, Brain, MessageCircleQuestion } from 'lucide-react';
 
 export function DashboardStats() {
     const { topics } = useTopic();
@@ -35,7 +35,7 @@ export function DashboardStats() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Quizzes Taken</CardTitle>
-               <MessageSquareQuestion className="h-4 w-4 text-muted-foreground" />
+               <MessageCircleQuestion className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{totalQuizzes > 0 ? 'Work in progress' : '0'}</div>

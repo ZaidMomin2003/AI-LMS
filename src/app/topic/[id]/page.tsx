@@ -7,7 +7,7 @@ import { QuizView } from '@/components/topic/QuizView';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTopic } from '@/context/TopicContext';
-import { FileText, BrainCircuit, MessageSquareQuestion, ArrowLeft } from 'lucide-react';
+import { FileText, BrainCircuit, MessageCircleQuestion, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -60,7 +60,7 @@ export default function TopicPage() {
               Flashcards
             </TabsTrigger>
             <TabsTrigger value="quiz">
-              <MessageSquareQuestion className="mr-2 h-4 w-4" />
+              <MessageCircleQuestion className="mr-2 h-4 w-4" />
               Quiz
             </TabsTrigger>
           </TabsList>
