@@ -11,17 +11,52 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
 
+// This is a mock user for testing purposes
+const mockUser: User = {
+  uid: 'mock-user-id',
+  email: 'test@example.com',
+  displayName: 'Test User',
+  photoURL: null,
+  emailVerified: true,
+  isAnonymous: false,
+  metadata: {},
+  providerData: [],
+  providerId: 'password',
+  tenantId: null,
+  delete: async () => {},
+  getIdToken: async () => 'mock-token',
+  getIdTokenResult: async () => ({
+    token: 'mock-token',
+    expirationTime: '',
+    authTime: '',
+    issuedAtTime: '',
+    signInProvider: null,
+    signInSecondFactor: null,
+    claims: {},
+  }),
+  reload: async () => {},
+  toJSON: () => ({}),
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Bypass Firebase auth and use a mock user for testing
+    setUser(mockUser);
+    setLoading(false);
+
+    // To re-enable real authentication, comment out the two lines above
+    // and uncomment the block below.
+    /*
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
 
     return () => unsubscribe();
+    */
   }, []);
 
   return (
