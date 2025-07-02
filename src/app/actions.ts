@@ -1,38 +1,26 @@
 'use server';
 
-import { generateStudyMaterials } from '@/ai/flows/generate-study-materials';
+import { generateStudyNotes } from '@/ai/flows/generate-study-notes';
+import { generateFlashcards } from '@/ai/flows/generate-flashcards';
+import { generateQuizQuestions } from '@/ai/flows/generate-quiz-questions';
 import type { Topic, Flashcard, QuizQuestion } from '@/types';
 
 export async function createTopicAction(
   title: string
 ): Promise<Omit<Topic, 'id' | 'createdAt'>> {
   try {
-    const rawMaterials = await generateStudyMaterials({ topic: title });
-
-    let flashcards: Flashcard[] = [];
-    try {
-      // The AI is prompted to return a JSON string.
-      flashcards = JSON.parse(rawMaterials.flashcards);
-    } catch (e) {
-      console.error('Failed to parse flashcards JSON:', e);
-      // Fallback or error handling if parsing fails. Could try to parse from a different format.
-      // For now, we'll leave it as an empty array.
-    }
-
-    let quiz: QuizQuestion[] = [];
-    try {
-      // The AI is prompted to return a JSON string.
-      quiz = JSON.parse(rawMaterials.quizQuestions);
-    } catch (e) {
-      console.error('Failed to parse quiz JSON:', e);
-      // Fallback for quiz parsing.
-    }
+    // Generate all materials in parallel
+    const [notesResult, flashcardsResult, quizResult] = await Promise.all([
+      generateStudyNotes({ topic: title }),
+      generateFlashcards({ topic: title }),
+      generateQuizQuestions({ topic: title }),
+    ]);
 
     return {
       title,
-      notes: rawMaterials.studyNotes,
-      flashcards,
-      quiz,
+      notes: notesResult.studyNotes,
+      flashcards: flashcardsResult.flashcards,
+      quiz: quizResult.questions,
     };
   } catch (error) {
     console.error('Error generating study materials:', error);
