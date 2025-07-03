@@ -2,9 +2,6 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/hooks/use-toast';
-import { ClipboardCopy, Download } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
 import type { KeyTerm } from '@/types';
 import {
@@ -58,28 +55,6 @@ const renderParts = (parts: string[], keyTerms: KeyTerm[], baseKey: string) => {
 
 
 export function NotesView({ notes, keyTerms }: NotesViewProps) {
-  const { toast } = useToast();
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(notes);
-    toast({
-      title: 'Copied to clipboard!',
-      description: 'The study notes have been copied.',
-    });
-  };
-
-  const handleDownload = () => {
-    const blob = new Blob([notes], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'study-notes.md';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
   const renderNotes = (text: string) => {
     const termsRegex =
       keyTerms && keyTerms.length > 0
@@ -126,18 +101,8 @@ export function NotesView({ notes, keyTerms }: NotesViewProps) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader>
         <CardTitle className="font-headline">Study Notes</CardTitle>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={handleCopy}>
-            <ClipboardCopy className="h-4 w-4" />
-            <span className="sr-only">Copy</span>
-          </Button>
-          <Button variant="outline" size="icon" onClick={handleDownload}>
-            <Download className="h-4 w-4" />
-            <span className="sr-only">Download</span>
-          </Button>
-        </div>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[500px] w-full pr-4">
