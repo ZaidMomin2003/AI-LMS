@@ -57,12 +57,12 @@ export function CreateTaskForm({ onTaskCreate }: CreateTaskFormProps) {
     <Card className="mb-4">
       <CardContent className="p-4">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-0 md:flex md:items-end md:gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col md:flex-row md:items-end gap-4">
             <FormField
               control={form.control}
               name="content"
               render={({ field }) => (
-                <FormItem className="flex-grow w-full">
+                <FormItem className="flex-grow">
                   <FormLabel>New Task</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., Review Chapter 3 notes" {...field} />
@@ -75,25 +75,25 @@ export function CreateTaskForm({ onTaskCreate }: CreateTaskFormProps) {
               control={form.control}
               name="priority"
               render={({ field }) => (
-                <FormItem className="w-full md:w-[150px]">
-                     <FormLabel>Priority</FormLabel>
-                     <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Priority" />
-                        </Trigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Easy">Easy</SelectItem>
-                        <SelectItem value="Moderate">Moderate</SelectItem>
-                        <SelectItem value="Hard">Hard</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
+                <FormItem className="w-full md:w-[180px]">
+                  <FormLabel>Priority</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select priority" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Easy">Easy</SelectItem>
+                      <SelectItem value="Moderate">Moderate</SelectItem>
+                      <SelectItem value="Hard">Hard</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
+            <Button type="submit" disabled={isLoading} className="shrink-0">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Add Task
             </Button>
