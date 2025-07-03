@@ -24,6 +24,7 @@ import {
   Loader2,
   Zap,
   BarChart,
+  Bot,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -82,6 +83,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link href="/dashboard">
                   <LayoutDashboard />
                   <span>Dashboard</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/dashboard/sagemaker')}
+                tooltip={{ children: 'SageMaker' }}
+              >
+                <Link href="/dashboard/sagemaker">
+                  <Bot />
+                  <span>SageMaker</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
