@@ -60,7 +60,7 @@ export default function StudyPlanPage() {
 
     return (
         <AppLayout>
-            <div className="flex-1 flex flex-col">
+            <div className="flex h-full flex-col">
                 <div className="p-4 md:p-8 pt-6 space-y-4">
                     <h2 className="text-3xl font-headline font-bold tracking-tight">
                         My Study Plan
