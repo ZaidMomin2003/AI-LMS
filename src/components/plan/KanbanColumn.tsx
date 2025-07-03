@@ -23,7 +23,7 @@ export function KanbanColumn({ id, title, tasks }: KanbanColumnProps) {
   return (
     <Card
       ref={setNodeRef}
-      className="w-[350px] max-w-[350px] flex-shrink-0 bg-background/50 rounded-lg flex flex-col"
+      className="w-[320px] max-w-[320px] flex-shrink-0 bg-background/50 rounded-lg flex flex-col"
     >
       <CardHeader className="p-4 border-b">
         <CardTitle className="font-headline text-lg flex justify-between items-center">

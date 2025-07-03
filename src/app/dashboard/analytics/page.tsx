@@ -201,7 +201,7 @@ export default function AnalyticsPage() {
                   angle={isMobile ? -45 : 0}
                   textAnchor={isMobile ? 'end' : 'middle'}
                   interval={0}
-                  height={isMobile ? 50 : 30}
+                  height={isMobile ? 60 : 30}
                   fontSize={12}
                 />
                 <YAxis allowDecimals={false} fontSize={12} />
