@@ -1,6 +1,7 @@
 import { BrainCircuit, FileText, MessageCircleQuestion } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/card';
 import { cn } from '@/lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 function FeatureFlashcard() {
   return (
@@ -25,6 +26,27 @@ function FeatureFlashcard() {
   );
 }
 
+const KeyTerm = ({ term, definition }: { term: string; definition: string }) => (
+    <Popover>
+      <PopoverTrigger asChild>
+        <span className="text-primary font-semibold cursor-pointer hover:underline">
+          {term}
+        </span>
+      </PopoverTrigger>
+      <PopoverContent className="w-64 z-20">
+        <div className="grid gap-4">
+          <div className="space-y-2">
+            <h4 className="font-medium leading-none font-headline">
+              {term}
+            </h4>
+            <p className="text-sm text-muted-foreground">
+              {definition}
+            </p>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
 
 export function Features() {
   return (
@@ -48,7 +70,9 @@ export function Features() {
                    <h3 className="text-2xl font-headline font-bold">Comprehensive Study Notes</h3>
                 </div>
                 <p className="mt-4 text-lg text-muted-foreground">
-                    Tired of dense, confusing material? Our AI reads through the noise and extracts what truly matters. It generates well-structured, easy-to-digest notes in Markdown format, complete with headings, lists, and key takeaways. It's the perfect foundation for any study session.
+                    Tired of dense material? Our AI generates structured notes and automatically identifies key terms. Hover over highlighted words like{' '}
+                    <KeyTerm term="Humanism" definition="An intellectual movement that emphasized human potential and achievements, rather than divine or supernatural matters." />
+                    {' '}to get instant definitions, making complex topics easier to grasp.
                 </p>
             </div>
             <div className="flex items-center justify-center">
@@ -59,8 +83,11 @@ export function Features() {
                     <CardContent className="p-2 space-y-2 text-sm text-muted-foreground">
                         <p className="font-mono">## Key Characteristics</p>
                         <p className="font-mono">* Rebirth of art & science</p>
-                        <p className="font-mono">* Humanism focus</p>
+                        <p className="font-mono">* Focus on <KeyTerm term="Humanism" definition="An intellectual movement that emphasized human potential and achievements, rather than divine or supernatural matters." /></p>
                         <p className="font-mono">* Started in Florence, Italy</p>
+                        <p className="font-mono mt-2">## Major Figures</p>
+                        <p className="font-mono">* Leonardo da Vinci</p>
+                        <p className="font-mono">* Michelangelo</p>
                     </CardContent>
                 </Card>
             </div>
