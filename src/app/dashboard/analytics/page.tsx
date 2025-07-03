@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import {
   Card,
@@ -17,10 +17,26 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { BookCopy, Brain, MessageCircleQuestion } from 'lucide-react';
+import { BookCopy, Brain, MessageCircleQuestion, Star } from 'lucide-react';
+import type { KanbanTask } from '@/types';
+
+const KANBAN_TASKS_STORAGE_KEY = 'scholarai_kanban_tasks';
 
 export default function AnalyticsPage() {
   const { topics } = useTopic();
+  const [kanbanTasks, setKanbanTasks] = useState<KanbanTask[]>([]);
+
+  useEffect(() => {
+    try {
+      const storedTasks = localStorage.getItem(KANBAN_TASKS_STORAGE_KEY);
+      if (storedTasks) {
+        setKanbanTasks(JSON.parse(storedTasks));
+      }
+    } catch (error) {
+        console.error("Failed to load kanban tasks from localStorage", error);
+    }
+  }, []);
+
 
   const analyticsData = useMemo(() => {
     if (!topics)
@@ -29,6 +45,7 @@ export default function AnalyticsPage() {
         totalTopics: 0,
         totalFlashcards: 0,
         totalQuizQuestions: 0,
+        totalPoints: 0,
       };
 
     const totalTopics = topics.length;
@@ -40,6 +57,10 @@ export default function AnalyticsPage() {
       (acc, t) => acc + (t.quiz?.length || 0),
       0
     );
+
+    const totalPoints = kanbanTasks
+        .filter(task => task.columnId === 'done')
+        .reduce((acc, task) => acc + task.points, 0);
 
     const dailyTopicsMap = new Map<string, number>();
     const today = new Date();
@@ -77,8 +98,9 @@ export default function AnalyticsPage() {
       totalTopics,
       totalFlashcards,
       totalQuizQuestions,
+      totalPoints,
     };
-  }, [topics]);
+  }, [topics, kanbanTasks]);
 
   const chartConfig = {
     topics: {
@@ -98,7 +120,7 @@ export default function AnalyticsPage() {
                 Track your content creation and study habits over time.
             </p>
         </div>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Topics</CardTitle>
@@ -140,6 +162,22 @@ export default function AnalyticsPage() {
               </div>
               <p className="text-xs text-muted-foreground">
                 questions generated
+              </p>
+            </CardContent>
+          </Card>
+           <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Points Earned
+              </CardTitle>
+              <Star className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {analyticsData.totalPoints}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                from completed tasks
               </p>
             </CardContent>
           </Card>

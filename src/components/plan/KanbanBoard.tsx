@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import {
   DndContext,
   DragOverEvent,
@@ -14,25 +14,18 @@ import type { KanbanTask } from '@/types';
 
 type ColumnId = 'todo' | 'in-progress' | 'done';
 
-const initialTasks: KanbanTask[] = [
-    { id: 'task-1', content: 'Read Chapter 1: Introduction to AI', columnId: 'todo' },
-    { id: 'task-2', content: 'Complete programming assignment on sorting algorithms', columnId: 'todo' },
-    { id: 'task-3', content: 'Draft essay on The Great Gatsby', columnId: 'in-progress' },
-    { id: 'task-4', content: 'Review lecture notes for chemistry midterm', columnId: 'in-progress' },
-    { id: 'task-5', content: 'Submit final project for history class', columnId: 'done' },
-    { id: 'task-6', content: 'Prepare presentation for marketing course', columnId: 'todo' },
-    { id: 'task-7', content: 'Solve practice problems for calculus', columnId: 'done' },
-];
-
 const columns: { id: ColumnId, title: string }[] = [
   { id: 'todo', title: 'Syllabus' },
   { id: 'in-progress', title: 'In Progress' },
   { id: 'done', title: 'Completed' }
 ];
 
-export function KanbanBoard() {
-    const [tasks, setTasks] = useState<KanbanTask[]>(initialTasks);
+interface KanbanBoardProps {
+    tasks: KanbanTask[];
+    setTasks: React.Dispatch<React.SetStateAction<KanbanTask[]>>;
+}
 
+export function KanbanBoard({ tasks, setTasks }: KanbanBoardProps) {
     const columnIds = useMemo(() => columns.map(col => col.id), []);
 
     const sensors = useSensors(

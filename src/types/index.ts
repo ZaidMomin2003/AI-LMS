@@ -24,8 +24,12 @@ export interface Topic {
   quiz: QuizQuestion[];
 }
 
+export type TaskPriority = 'Easy' | 'Moderate' | 'Hard';
+
 export interface KanbanTask {
   id: string;
   content: string;
   columnId: 'todo' | 'in-progress' | 'done';
+  priority: TaskPriority;
+  points: number;
 }
