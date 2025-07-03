@@ -57,7 +57,7 @@ export function CreateTaskForm({ onTaskCreate }: CreateTaskFormProps) {
     <Card className="mb-4">
       <CardContent className="p-4">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col md:flex-row md:items-end gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-0 md:flex md:items-end md:gap-4">
             <FormField
               control={form.control}
               name="content"
@@ -75,7 +75,7 @@ export function CreateTaskForm({ onTaskCreate }: CreateTaskFormProps) {
               control={form.control}
               name="priority"
               render={({ field }) => (
-                <FormItem className="w-full md:w-[180px]">
+                <FormItem className="w-full md:w-auto md:min-w-[180px]">
                   <FormLabel>Priority</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
@@ -93,7 +93,7 @@ export function CreateTaskForm({ onTaskCreate }: CreateTaskFormProps) {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={isLoading} className="shrink-0">
+            <Button type="submit" disabled={isLoading} className="shrink-0 w-full md:w-auto">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Add Task
             </Button>
