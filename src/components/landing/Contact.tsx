@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '../ui/card';
-import { Loader2, Mail, Phone } from 'lucide-react';
+import { Loader2, Mail, Phone, Linkedin, Github } from 'lucide-react';
 import { useState } from 'react';
 
 const formSchema = z.object({
@@ -24,6 +24,16 @@ const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address.' }),
   message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
 });
+
+const ContactInfoItem = ({ icon, text }: { icon: React.ReactNode, text: string }) => (
+    <div className="flex items-center gap-4">
+        <div className="bg-primary text-primary-foreground rounded-full p-3">
+            {icon}
+        </div>
+        <a href={text.startsWith("hello@") ? `mailto:${text}` : '#'} className="text-muted-foreground hover:text-foreground transition-colors">{text}</a>
+    </div>
+);
+
 
 export function Contact() {
   const { toast } = useToast();
@@ -53,84 +63,94 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="relative overflow-hidden py-20 sm:py-32">
-        <div aria-hidden="true" className="absolute inset-0 top-0 -z-10">
-            <div className="absolute inset-0 bg-secondary" />
-            <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
-        </div>
-
+    <section id="contact" className="py-20 sm:py-32 bg-background">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 gap-x-16 gap-y-12 lg:grid-cols-2">
-            <div>
-                <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-                Get in Touch
-                </h2>
-                <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                Have feedback, a feature request, or just want to say hello? We'd love to hear from you. Fill out the form, and we'll get back to you as soon as we can.
-                </p>
-                <div className="mt-8 space-y-4 text-base">
-                    <div className="flex items-center gap-4">
-                        <Mail className="h-6 w-6 text-primary flex-shrink-0" />
-                        <a href="mailto:hello@scholarai.app" className="hover:text-primary transition-colors">hello@scholarai.app</a>
-                    </div>
-                     <div className="flex items-center gap-4">
-                        <Phone className="h-6 w-6 text-primary flex-shrink-0" />
-                        <span className="text-muted-foreground">(This is a demo number)</span>
-                    </div>
-                </div>
+            
+            {/* Left Column: Form */}
+            <div className="space-y-8">
+                 <h2 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl font-headline">
+                    Contact
+                 </h2>
+                 <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-10">
+                        <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel className="text-muted-foreground">Full name</FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="Your Name" 
+                                    {...field} 
+                                    className="bg-transparent border-0 border-b-2 border-muted-foreground/50 rounded-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel className="text-muted-foreground">Email address</FormLabel>
+                            <FormControl>
+                                <Input 
+                                    placeholder="your.email@example.com" 
+                                    {...field} 
+                                    className="bg-transparent border-0 border-b-2 border-muted-foreground/50 rounded-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <FormField
+                        control={form.control}
+                        name="message"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel className="text-muted-foreground">Messages</FormLabel>
+                            <FormControl>
+                                <Textarea 
+                                    placeholder="Your message..." 
+                                    {...field} 
+                                    className="bg-transparent border-0 border-b-2 border-muted-foreground/50 rounded-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors min-h-[60px]"
+                                />
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                        />
+                        <Button type="submit" size="lg" disabled={isLoading}>
+                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Submit
+                        </Button>
+                    </form>
+                </Form>
             </div>
 
-            <Card className="bg-card/60 backdrop-blur-sm shadow-2xl shadow-primary/10 border-2 border-primary/10">
-                <CardContent className="p-6 sm:p-8">
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Full Name</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="John Doe" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                            <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="name@example.com" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                            <FormField
-                            control={form.control}
-                            name="message"
-                            render={({ field }) => (
-                                <FormItem>
-                                <FormLabel>Your Message</FormLabel>
-                                <FormControl>
-                                    <Textarea placeholder="Tell us how we can help..." className="min-h-[120px]" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                                </FormItem>
-                            )}
-                            />
-                            <Button type="submit" className="w-full" disabled={isLoading}>
-                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                Send Message
-                            </Button>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
+            {/* Right Column: Contact Info Card */}
+            <div className="flex items-center">
+                <Card className="w-full bg-card p-8 rounded-2xl shadow-lg">
+                    <CardContent className="p-0 space-y-8">
+                        <div className="bg-secondary p-6 rounded-xl">
+                            <h3 className="text-xl font-headline font-bold">Get in touch with us!</h3>
+                            <p className="text-muted-foreground">Let's talk!</p>
+                        </div>
+                        <div className="space-y-6">
+                            <ContactInfoItem icon={<Mail size={20}/>} text="hello@scholarai.app" />
+                            <ContactInfoItem icon={<Phone size={20}/>} text="(Demo) +1 (555) 123-4567" />
+                            <ContactInfoItem icon={<Linkedin size={20}/>} text="Arshad Momin" />
+                            <ContactInfoItem icon={<Github size={20}/>} text="ZaidMomin2003" />
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
         </div>
       </div>
     </section>
