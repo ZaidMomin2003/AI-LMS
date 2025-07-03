@@ -1,50 +1,80 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Bot, Zap } from 'lucide-react';
+import { ArrowRight, Bot, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Card, CardContent } from '../ui/card';
 
 export function Hero() {
   return (
     <section className="container mx-auto px-4 py-20 text-center sm:py-32">
-      <div className="flex justify-center mb-4">
-        <div className="relative rounded-full px-3 py-1 text-sm leading-6 text-muted-foreground ring-1 ring-ring/50 hover:ring-ring">
-          Announcing our new AI-powered learning tools. <a href="#features" className="whitespace-nowrap font-semibold text-primary"><span className="absolute inset-0" aria-hidden="true" />Read more <span aria-hidden="true">→</span></a>
-        </div>
+      <div className="flex justify-center mb-6">
+        <Link href="/signup" className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border px-4 py-1.5 text-sm text-muted-foreground shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-primary/30">
+          <span className="absolute h-0 w-0 rounded-full bg-primary/30 transition-all duration-300 ease-in-out group-hover:h-56 group-hover:w-56"></span>
+          <span className="relative z-10 flex items-center">
+             <Sparkles className="mr-2 h-4 w-4 text-primary" /> Announcing ScholarAI 2.0 &ndash; Start Learning Smarter
+          </span>
+        </Link>
       </div>
-      <h1 className="text-4xl font-headline font-bold tracking-tight text-foreground sm:text-6xl">
-        Unlock Your Learning Potential with AI
+      <h1 className="text-5xl font-headline font-bold tracking-tight text-foreground sm:text-7xl">
+        From Topic to Mastery, Instantly
       </h1>
-      <p className="mt-6 text-lg leading-8 text-muted-foreground">
-        ScholarAI instantly transforms any topic into comprehensive study notes, interactive flashcards, and challenging quizzes.
-        <br />
-        Stop searching, start learning.
+      <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto">
+        Stop drowning in textbooks. ScholarAI transforms any subject into clear study notes, interactive flashcards, and challenging quizzes, all in one click. Your smarter, faster learning journey starts here.
       </p>
       <div className="mt-10 flex items-center justify-center gap-x-6">
         <Button asChild size="lg">
           <Link href="/signup">
-            Get Started for Free
+            Start Learning for Free
             <ArrowRight className="ml-2" />
           </Link>
         </Button>
         <Button asChild variant="ghost" size="lg">
           <a href="#features">
-            Learn More <span aria-hidden="true">→</span>
+            Explore Features <span aria-hidden="true">→</span>
           </a>
         </Button>
       </div>
-      <div className="relative mt-16 flow-root">
-        <div className="absolute -top-12 left-1/2 -z-10 h-40 w-80 -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
-        <div className="mx-auto max-w-5xl rounded-lg border bg-card/50 p-2 shadow-2xl shadow-primary/10">
-            <div className="flex items-center justify-between rounded-md bg-muted/30 p-4">
-                <div className="flex items-center gap-2">
-                    <Bot className="text-primary"/>
-                    <p className="text-sm font-medium text-foreground">What do you want to learn about today?</p>
-                </div>
-                <Zap className="text-accent"/>
+      <div className="relative mt-20 flow-root">
+        <div className="absolute -top-12 left-1/2 -z-10 h-40 w-full max-w-4xl -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
+        
+        <Card className="max-w-4xl mx-auto p-4 rounded-xl bg-card/60 backdrop-blur-sm shadow-2xl shadow-primary/10 border-2 border-primary/10">
+          <div className="rounded-lg border bg-background/80 shadow-inner">
+             <div className="flex items-center gap-2 p-3 border-b">
+                <Bot className="text-primary h-6 w-6"/>
+                <p className="text-md font-medium text-foreground">What topic do you want to master today?</p>
             </div>
             <div className="p-4">
-                <p className="text-left text-muted-foreground">The French Revolution</p>
+                <p className="text-left text-lg font-mono text-muted-foreground">The Industrial Revolution</p>
             </div>
-        </div>
+            <div className="px-4 pb-4 flex justify-end">
+                <Button>Generate Materials <Sparkles className="ml-2" /></Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 text-left">
+            <Card className="bg-background/80 p-3">
+              <CardContent className="p-1">
+                <CheckCircle2 className="text-green-500 mb-2"/>
+                <h3 className="font-semibold">Generated Notes</h3>
+                <p className="text-xs text-muted-foreground">Structured markdown ready.</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-background/80 p-3">
+              <CardContent className="p-1">
+                <CheckCircle2 className="text-green-500 mb-2"/>
+                <h3 className="font-semibold">Generated Flashcards</h3>
+                <p className="text-xs text-muted-foreground">10 terms & definitions.</p>
+              </CardContent>
+            </Card>
+             <Card className="bg-background/80 p-3">
+              <CardContent className="p-1">
+                <CheckCircle2 className="text-green-500 mb-2"/>
+                <h3 className="font-semibold">Generated Quiz</h3>
+                <p className="text-xs text-muted-foreground">5 multiple-choice questions.</p>
+              </CardContent>
+            </Card>
+          </div>
+        </Card>
+
       </div>
     </section>
   );
