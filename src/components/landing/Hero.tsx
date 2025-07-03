@@ -9,7 +9,7 @@ export function Hero() {
       <div aria-hidden="true" className="absolute inset-0 top-0 -z-10">
         <div className="absolute inset-0 bg-background" />
         <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:32px_32px]" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200%] h-[50%] bg-[radial-gradient(ellipse_at_center,rgba(0,242,161,0.3)_0%,transparent_70%)] blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200%] h-[50%] bg-[radial-gradient(ellipse_at_center,rgba(179,102,255,0.3)_0%,transparent_70%)] blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 py-20 text-center sm:py-32">
