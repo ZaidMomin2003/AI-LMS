@@ -23,3 +23,9 @@ export interface Topic {
   flashcards: Flashcard[];
   quiz: QuizQuestion[];
 }
+
+export interface KanbanTask {
+  id: string;
+  content: string;
+  columnId: 'todo' | 'in-progress' | 'done';
+}

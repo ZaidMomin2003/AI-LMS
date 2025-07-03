@@ -25,6 +25,7 @@ import {
   Zap,
   BarChart,
   Bot,
+  ClipboardCheck,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -103,6 +104,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link href="/dashboard/sagemaker">
                   <Bot />
                   <span>SageMaker</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/dashboard/plan')}
+                tooltip={{ children: 'Study Plan' }}
+              >
+                <Link href="/dashboard/plan">
+                  <ClipboardCheck />
+                  <span>Study Plan</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
