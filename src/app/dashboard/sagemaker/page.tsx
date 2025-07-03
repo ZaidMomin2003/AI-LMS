@@ -71,10 +71,24 @@ export default function SageMakerPage() {
 
         recognition.onerror = (event: any) => {
           console.error('Speech recognition error', event.error);
+          let description = 'An error occurred during voice recognition.';
+          switch (event.error) {
+            case 'no-speech':
+              description = 'No speech was detected. Please try again.';
+              break;
+            case 'not-allowed':
+              description = 'Microphone access was denied. Please enable it in your browser settings to use this feature.';
+              break;
+            case 'audio-capture':
+                description = 'No microphone was found. Please ensure a microphone is connected and working.';
+                break;
+            default:
+                description = `An unexpected error occurred: ${event.error}`;
+          }
           toast({
             variant: "destructive",
             title: "Voice Recognition Error",
-            description: event.error === 'no-speech' ? 'No speech was detected.' : 'An error occurred during voice recognition.',
+            description: description,
           });
         };
 
