@@ -1,6 +1,5 @@
-import { BrainCircuit, FileText, MessageCircleQuestion, Database, BookCopy, TestTube2 } from 'lucide-react';
+import { BrainCircuit, FileText, MessageCircleQuestion } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/card';
-import { Badge } from '../ui/badge';
 
 export function Features() {
   return (
