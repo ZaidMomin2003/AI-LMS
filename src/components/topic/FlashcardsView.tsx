@@ -10,21 +10,30 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
-import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
-import { RotateCcw } from 'lucide-react';
 
 interface FlashcardsViewProps {
   flashcards: Flashcard[];
 }
 
-function FlippableCard({ card }: { card: Flashcard }) {
+const colorPalettes = [
+  { bg: 'bg-emerald-500', text: 'text-emerald-50', shadow: 'shadow-emerald-500/50' },
+  { bg: 'bg-sky-500', text: 'text-sky-50', shadow: 'shadow-sky-500/50' },
+  { bg: 'bg-amber-500', text: 'text-amber-50', shadow: 'shadow-amber-500/50' },
+  { bg: 'bg-rose-500', text: 'text-rose-50', shadow: 'shadow-rose-500/50' },
+  { bg: 'bg-fuchsia-600', text: 'text-fuchsia-50', shadow: 'shadow-fuchsia-600/50' },
+  { bg: 'bg-indigo-500', text: 'text-indigo-50', shadow: 'shadow-indigo-500/50' },
+];
+
+function FlippableCard({ card, index }: { card: Flashcard; index: number }) {
   const [isFlipped, setIsFlipped] = React.useState(false);
   
   // Reset flip state when card changes
   React.useEffect(() => {
     setIsFlipped(false);
   }, [card]);
+
+  const palette = colorPalettes[index % colorPalettes.length];
 
   return (
     <div className="w-full h-full perspective-1000">
@@ -42,7 +51,15 @@ function FlippableCard({ card }: { card: Flashcard }) {
           </Card>
         </div>
         <div className="absolute w-full h-full backface-hidden rotate-y-180">
-          <Card className="h-full flex items-center justify-center bg-accent text-accent-foreground shadow-lg shadow-accent/50" onClick={() => setIsFlipped(false)}>
+          <Card 
+            className={cn(
+              "h-full flex items-center justify-center shadow-lg",
+              palette.bg,
+              palette.text,
+              palette.shadow
+            )}
+            onClick={() => setIsFlipped(false)}
+          >
             <CardContent className="p-6 text-center">
               <p className="text-lg">{card.definition}</p>
             </CardContent>
@@ -77,7 +94,7 @@ export function FlashcardsView({ flashcards }: FlashcardsViewProps) {
           {flashcards.map((card, index) => (
             <CarouselItem key={index} className="md:basis-1/1 lg:basis-1/1">
               <div className="p-1 h-[250px]">
-                <FlippableCard card={card} />
+                <FlippableCard card={card} index={index} />
               </div>
             </CarouselItem>
           ))}
