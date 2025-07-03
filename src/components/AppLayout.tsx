@@ -137,6 +137,29 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarContent>
+        <SidebarFooter>
+           {exam ? (
+            <ExamCountdown />
+          ) : (
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/dashboard/exam')}
+                  tooltip={{ children: 'Add Exam Countdown' }}
+                  className="border-2 border-dashed border-primary/50 bg-transparent hover:bg-primary/10 hover:border-primary/80 shadow-lg shadow-primary/20 animate-pulse"
+                >
+                  <Link href="/dashboard/exam">
+                    <CalendarPlus />
+                    <span>Add Exam</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          )}
+          <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
@@ -152,27 +175,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-           {exam ? (
-            <ExamCountdown />
-          ) : (
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith('/dashboard/exam')}
-                  tooltip={{ children: 'Add Exam Countdown' }}
-                  className="border-2 border-dashed border-sidebar-border bg-transparent hover:bg-sidebar-accent hover:border-sidebar-accent"
-                >
-                  <Link href="/dashboard/exam">
-                    <CalendarPlus />
-                    <span>Add Exam</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
@@ -200,7 +202,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-          <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 md:hidden">
+          <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 min-w-0 md:hidden">
               <div className="flex items-center gap-2">
                   <BookOpenCheck className="w-6 h-6 text-primary" />
                   <span className="font-headline text-lg font-bold">ScholarAI</span>
@@ -210,7 +212,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   <span className="sr-only">Toggle Menu</span>
               </SidebarTrigger>
           </header>
-          {children}
+          <div className="flex-1 flex flex-col min-w-0">
+            {children}
+          </div>
       </SidebarInset>
     </SidebarProvider>
   );
