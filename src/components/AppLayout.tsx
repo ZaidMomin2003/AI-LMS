@@ -22,7 +22,7 @@ import {
   LayoutDashboard,
   LogOut,
   Loader2,
-  Settings,
+  Zap,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -81,6 +81,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link href="/dashboard">
                   <LayoutDashboard />
                   <span>Dashboard</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname === '/pricing'}
+                tooltip={{ children: 'Upgrade Now' }}
+                variant="outline"
+                className="text-primary hover:text-primary border-primary/50 hover:bg-primary/10"
+              >
+                <Link href="/pricing">
+                  <Zap />
+                  <span>Upgrade Now</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
