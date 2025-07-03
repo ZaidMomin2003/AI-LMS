@@ -19,12 +19,14 @@ import {
 } from '@/components/ui/chart';
 import { BookCopy, Brain, MessageCircleQuestion, Star } from 'lucide-react';
 import type { KanbanTask } from '@/types';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const KANBAN_TASKS_STORAGE_KEY = 'scholarai_kanban_tasks';
 
 export default function AnalyticsPage() {
   const { topics } = useTopic();
   const [kanbanTasks, setKanbanTasks] = useState<KanbanTask[]>([]);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     try {
@@ -189,20 +191,25 @@ export default function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-[300px] w-full">
-              <BarChart data={analyticsData.dailyTopics} accessibilityLayer>
+              <BarChart data={analyticsData.dailyTopics} margin={{ left: -20, bottom: isMobile ? 20 : 0 }}>
                 <CartesianGrid vertical={false} />
                 <XAxis
                   dataKey="date"
                   tickLine={false}
                   axisLine={false}
-                  tickMargin={8}
+                  tickMargin={10}
+                  angle={isMobile ? -45 : 0}
+                  textAnchor={isMobile ? 'end' : 'middle'}
+                  interval={0}
+                  height={isMobile ? 50 : 30}
+                  fontSize={12}
                 />
-                <YAxis allowDecimals={false} />
+                <YAxis allowDecimals={false} fontSize={12} />
                 <Tooltip
                   cursor={false}
                   content={<ChartTooltipContent indicator="dot" />}
                 />
-                <Bar dataKey="topics" fill="var(--color-topics)" radius={8} />
+                <Bar dataKey="topics" fill="var(--color-topics)" radius={isMobile ? 4 : 8} />
               </BarChart>
             </ChartContainer>
           </CardContent>
