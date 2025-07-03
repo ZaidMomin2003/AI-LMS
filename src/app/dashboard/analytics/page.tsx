@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
@@ -122,7 +123,7 @@ export default function AnalyticsPage() {
                 Track your content creation and study habits over time.
             </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Topics</CardTitle>
@@ -192,17 +193,17 @@ export default function AnalyticsPage() {
           <CardContent>
             <div className="overflow-x-auto">
               <ChartContainer config={chartConfig} className="h-[300px] w-full min-w-[600px]">
-                <BarChart data={analyticsData.dailyTopics} margin={{ left: -20, bottom: 20 }}>
+                <BarChart data={analyticsData.dailyTopics} margin={{ left: -20, bottom: isMobile ? 20 : 5 }}>
                   <CartesianGrid vertical={false} />
                   <XAxis
                     dataKey="date"
                     tickLine={false}
                     axisLine={false}
-                    tickMargin={10}
-                    angle={-45}
-                    textAnchor='end'
+                    tickMargin={isMobile ? 10 : 5}
+                    angle={isMobile ? -45 : 0}
+                    textAnchor={isMobile ? 'end' : 'middle'}
                     interval={0}
-                    height={60}
+                    height={isMobile ? 60 : 30}
                     fontSize={12}
                   />
                   <YAxis allowDecimals={false} fontSize={12} />
