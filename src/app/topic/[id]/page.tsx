@@ -71,7 +71,7 @@ export default function TopicPage() {
             <FlashcardsView flashcards={topic.flashcards} />
           </TabsContent>
           <TabsContent value="quiz" className="space-y-4">
-            <QuizView quiz={topic.quiz} />
+            <QuizView quiz={topic.quiz} topicId={topic.id} />
           </TabsContent>
         </Tabs>
       </div>

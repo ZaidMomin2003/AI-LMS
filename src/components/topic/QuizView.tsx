@@ -1,7 +1,7 @@
 'use client';
 
 import type { QuizQuestion } from '@/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -12,14 +12,34 @@ import { CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 
 interface QuizViewProps {
   quiz: QuizQuestion[];
+  topicId: string;
 }
 
-export function QuizView({ quiz }: QuizViewProps) {
+const QUIZ_STATS_STORAGE_KEY = 'scholarai_quiz_stats';
+
+export function QuizView({ quiz, topicId }: QuizViewProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+
+  useEffect(() => {
+    if (isFinished) {
+      try {
+        const stats = JSON.parse(localStorage.getItem(QUIZ_STATS_STORAGE_KEY) || '{}');
+        // We only store the latest attempt for a given topic
+        stats[topicId] = {
+          score,
+          totalQuestions: quiz.length,
+          timestamp: new Date().toISOString(),
+        };
+        localStorage.setItem(QUIZ_STATS_STORAGE_KEY, JSON.stringify(stats));
+      } catch (error) {
+        console.error("Failed to save quiz stats to localStorage", error);
+      }
+    }
+  }, [isFinished, score, quiz.length, topicId]);
 
   if (!quiz || quiz.length === 0) {
     return (
