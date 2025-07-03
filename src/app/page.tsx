@@ -4,24 +4,46 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { Loader2 } from 'lucide-react';
+import { Header } from '@/components/landing/Header';
+import { Hero } from '@/components/landing/Hero';
+import { Features } from '@/components/landing/Features';
+import { UseCases } from '@/components/landing/UseCases';
+import { FAQ } from '@/components/landing/FAQ';
+import { Contact } from '@/components/landing/Contact';
+import { Footer } from '@/components/landing/Footer';
 
-export default function Home() {
+export default function LandingPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading) {
-      if (user) {
-        router.replace('/dashboard');
-      } else {
-        router.replace('/login');
-      }
+    // If the user is logged in, redirect them to the dashboard.
+    if (!loading && user) {
+      router.replace('/dashboard');
     }
   }, [user, loading, router]);
 
+  // While loading or if user is logged in (and redirecting), show a loader.
+  if (loading || user) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // If not loading and no user, show the landing page.
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-background">
-      <Loader2 className="h-12 w-12 animate-spin text-primary" />
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+      <main className="flex-grow">
+        <Hero />
+        <Features />
+        <UseCases />
+        <FAQ />
+        <Contact />
+      </main>
+      <Footer />
     </div>
   );
 }
