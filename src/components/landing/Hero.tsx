@@ -2,10 +2,12 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Bot, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
+import { FloatingIcons } from './FloatingIcons';
 
 export function Hero() {
   return (
     <section className="relative text-center overflow-hidden">
+      <FloatingIcons />
       <div aria-hidden="true" className="absolute inset-0 top-0 -z-10">
         <div className="absolute inset-0 bg-background" />
         <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:32px_32px] animate-grid-pan" />

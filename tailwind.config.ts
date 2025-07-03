@@ -86,11 +86,16 @@ const config = {
           '0%': { backgroundPosition: '0% 0%' },
           '100%': { backgroundPosition: '100% 100%' },
         },
+        'float': {
+          '0%, 100%': { transform: 'translateY(0px)' },
+          '50%': { transform: 'translateY(-20px)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'grid-pan': 'grid-pan 120s linear infinite',
+        'float': 'float 6s ease-in-out infinite',
       },
       perspective: {
         '1000': '1000px',
