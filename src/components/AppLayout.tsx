@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarInset,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import {
   BookOpenCheck,
@@ -27,6 +28,7 @@ import {
   Bot,
   ClipboardCheck,
   CalendarPlus,
+  PanelLeft,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -197,7 +199,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </DropdownMenu>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset>{children}</SidebarInset>
+      <SidebarInset>
+          <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 md:hidden">
+              <div className="flex items-center gap-2">
+                  <BookOpenCheck className="w-6 h-6 text-primary" />
+                  <span className="font-headline text-lg font-bold">ScholarAI</span>
+              </div>
+              <SidebarTrigger>
+                  <PanelLeft className="h-5 w-5" />
+                  <span className="sr-only">Toggle Menu</span>
+              </SidebarTrigger>
+          </header>
+          {children}
+      </SidebarInset>
     </SidebarProvider>
   );
 }
