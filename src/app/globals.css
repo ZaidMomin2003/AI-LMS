@@ -11,7 +11,7 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
     --primary: 160 100% 35%;
-    --primary-foreground: 160 100% 95%;
+    --primary-foreground: 160 100% 10%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
@@ -30,7 +30,7 @@
     --sidebar-accent: 240 3.7% 22%;
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-primary: 160 100% 35%;
-    --sidebar-primary-foreground: 160 100% 95%;
+    --sidebar-primary-foreground: 160 100% 10%;
     --sidebar-ring: 170 100% 50%;
   }
 }
