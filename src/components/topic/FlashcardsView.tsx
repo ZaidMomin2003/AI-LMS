@@ -42,7 +42,7 @@ function FlippableCard({ card }: { card: Flashcard }) {
           </Card>
         </div>
         <div className="absolute w-full h-full backface-hidden rotate-y-180">
-          <Card className="h-full flex items-center justify-center bg-secondary" onClick={() => setIsFlipped(false)}>
+          <Card className="h-full flex items-center justify-center bg-accent text-accent-foreground shadow-lg shadow-accent/50" onClick={() => setIsFlipped(false)}>
             <CardContent className="p-6 text-center">
               <p className="text-lg">{card.definition}</p>
             </CardContent>
