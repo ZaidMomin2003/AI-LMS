@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '../ui/card';
-import { Loader2, Mail, Phone, Linkedin, Github } from 'lucide-react';
+import { Loader2, Mail, Phone, Linkedin, Instagram } from 'lucide-react';
 import { useState } from 'react';
 
 const formSchema = z.object({
@@ -25,12 +25,12 @@ const formSchema = z.object({
   message: z.string().min(10, { message: 'Message must be at least 10 characters.' }),
 });
 
-const ContactInfoItem = ({ icon, text }: { icon: React.ReactNode, text: string }) => (
+const ContactInfoItem = ({ icon, text, href }: { icon: React.ReactNode, text: string, href: string }) => (
     <div className="flex items-center gap-4">
         <div className="bg-primary text-primary-foreground rounded-full p-3">
             {icon}
         </div>
-        <a href={text.startsWith("hello@") ? `mailto:${text}` : '#'} className="text-muted-foreground hover:text-foreground transition-colors">{text}</a>
+        <a href={href} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">{text}</a>
     </div>
 );
 
@@ -142,10 +142,10 @@ export function Contact() {
                             <p className="text-muted-foreground">Let's talk!</p>
                         </div>
                         <div className="space-y-6">
-                            <ContactInfoItem icon={<Mail size={20}/>} text="hello@scholarai.app" />
-                            <ContactInfoItem icon={<Phone size={20}/>} text="(Demo) +1 (555) 123-4567" />
-                            <ContactInfoItem icon={<Linkedin size={20}/>} text="Arshad Momin" />
-                            <ContactInfoItem icon={<Github size={20}/>} text="ZaidMomin2003" />
+                            <ContactInfoItem icon={<Mail size={20}/>} href="mailto:hello@scholarai.app" text="hello@scholarai.app" />
+                            <ContactInfoItem icon={<Phone size={20}/>} href="tel:+917019328650" text="+91 7019328650" />
+                            <ContactInfoItem icon={<Linkedin size={20}/>} href="https://www.linkedin.com/in/arshad-momin-a3139b21b" text="Arshad Momin" />
+                            <ContactInfoItem icon={<Instagram size={20}/>} href="https://www.instagram.com/zaidwontdo/" text="zaidwontdo" />
                         </div>
                     </CardContent>
                 </Card>
