@@ -23,8 +23,8 @@ export default function LandingPage() {
     }
   }, [user, loading, router]);
 
-  // While loading or if user is logged in (and redirecting), show a loader.
-  if (loading || user) {
+  // While loading, show a loader.
+  if (loading) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -33,6 +33,7 @@ export default function LandingPage() {
   }
 
   // If not loading and no user, show the landing page.
+  // If a user is present, the useEffect above will redirect them.
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />

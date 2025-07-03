@@ -43,20 +43,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Bypass Firebase auth and use a mock user for testing
-    setUser(mockUser);
-    setLoading(false);
+    // To test the dashboard without real credentials, uncomment these two lines
+    // and comment out the `onAuthStateChanged` block below.
+    // setUser(mockUser);
+    // setLoading(false);
 
-    // To re-enable real authentication, comment out the two lines above
-    // and uncomment the block below.
-    /*
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
 
     return () => unsubscribe();
-    */
   }, []);
 
   return (
