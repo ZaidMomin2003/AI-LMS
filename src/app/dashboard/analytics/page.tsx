@@ -190,28 +190,30 @@ export default function AnalyticsPage() {
             <CardDescription>Number of new topics created each day.</CardDescription>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px] w-full">
-              <BarChart data={analyticsData.dailyTopics} margin={{ left: -20, bottom: isMobile ? 20 : 0 }}>
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="date"
-                  tickLine={false}
-                  axisLine={false}
-                  tickMargin={10}
-                  angle={isMobile ? -45 : 0}
-                  textAnchor={isMobile ? 'end' : 'middle'}
-                  interval={0}
-                  height={isMobile ? 60 : 30}
-                  fontSize={12}
-                />
-                <YAxis allowDecimals={false} fontSize={12} />
-                <Tooltip
-                  cursor={false}
-                  content={<ChartTooltipContent indicator="dot" />}
-                />
-                <Bar dataKey="topics" fill="var(--color-topics)" radius={isMobile ? 4 : 8} />
-              </BarChart>
-            </ChartContainer>
+            <div className="overflow-x-auto">
+              <ChartContainer config={chartConfig} className="h-[300px] w-full min-w-[600px]">
+                <BarChart data={analyticsData.dailyTopics} margin={{ left: -20, bottom: 20 }}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={10}
+                    angle={-45}
+                    textAnchor='end'
+                    interval={0}
+                    height={60}
+                    fontSize={12}
+                  />
+                  <YAxis allowDecimals={false} fontSize={12} />
+                  <Tooltip
+                    cursor={false}
+                    content={<ChartTooltipContent indicator="dot" />}
+                  />
+                  <Bar dataKey="topics" fill="var(--color-topics)" radius={4} />
+                </BarChart>
+              </ChartContainer>
+            </div>
           </CardContent>
         </Card>
       </div>

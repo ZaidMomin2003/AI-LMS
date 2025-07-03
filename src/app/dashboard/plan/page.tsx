@@ -60,8 +60,8 @@ export default function StudyPlanPage() {
 
     return (
         <AppLayout>
-            <div className="flex flex-col h-full">
-                <div className="p-4 md:p-8 pt-6 space-y-4">
+            <div className="flex flex-col h-full overflow-hidden">
+                <div className="p-4 md:p-8 pt-6 space-y-4 shrink-0">
                     <h2 className="text-3xl font-headline font-bold tracking-tight">
                         My Study Plan
                     </h2>
@@ -70,7 +70,6 @@ export default function StudyPlanPage() {
                     </p>
                     <CreateTaskForm onTaskCreate={handleAddTask} />
                 </div>
-                {/* This wrapper ensures horizontal scrolling is contained on mobile */}
                 <div className="flex-grow px-4 md:px-8 pb-4 overflow-x-auto">
                    <KanbanBoard tasks={tasks} setTasks={setTasks} />
                 </div>

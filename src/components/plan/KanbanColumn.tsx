@@ -23,7 +23,7 @@ export function KanbanColumn({ id, title, tasks }: KanbanColumnProps) {
   return (
     <Card
       ref={setNodeRef}
-      className="w-[320px] max-w-[320px] flex-shrink-0 bg-background/50 rounded-lg flex flex-col"
+      className="w-[300px] max-w-[300px] flex-shrink-0 bg-background/50 rounded-lg flex flex-col"
     >
       <CardHeader className="p-4 border-b">
         <CardTitle className="font-headline text-lg flex justify-between items-center">
@@ -33,7 +33,7 @@ export function KanbanColumn({ id, title, tasks }: KanbanColumnProps) {
           </span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 p-2 space-y-2">
+      <CardContent className="flex-1 p-2 space-y-2 overflow-y-auto">
         <SortableContext items={taskIds}>
           {tasks.map((task) => (
             <KanbanCard key={task.id} task={task} />
