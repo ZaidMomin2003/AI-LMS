@@ -1,10 +1,23 @@
+'use client';
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Bot, Sparkles, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { FloatingIcons } from './FloatingIcons';
+import { Input } from '@/components/ui/input';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 
 export function Hero() {
+  const router = useRouter();
+  const [topic, setTopic] = useState('');
+
+  const handleGenerate = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push('/signup');
+  };
+
   return (
     <section className="relative text-center overflow-hidden">
       <FloatingIcons />
@@ -45,18 +58,26 @@ export function Hero() {
         <div className="relative mt-20 flow-root animate-in fade-in slide-in-from-top-24 duration-1000 delay-400">
           
           <Card className="max-w-4xl mx-auto p-4 rounded-xl bg-card/60 backdrop-blur-sm shadow-2xl shadow-primary/10 border-2 border-primary/10 transition-all duration-300 hover:shadow-primary/20 hover:scale-[1.02]">
-            <div className="rounded-lg border bg-background/80 shadow-inner">
-                <div className="flex items-center gap-2 p-3 border-b">
-                  <Bot className="text-primary h-6 w-6"/>
-                  <p className="text-md font-medium text-foreground">What topic do you want to master today?</p>
+            <form onSubmit={handleGenerate}>
+              <div className="rounded-lg border bg-background/80 shadow-inner">
+                  <div className="flex items-center gap-2 p-3 border-b">
+                    <Bot className="text-primary h-6 w-6"/>
+                    <p className="text-md font-medium text-foreground">What topic do you want to master today?</p>
+                </div>
+                <div className="p-4">
+                    <Input
+                      placeholder="e.g., The Industrial Revolution"
+                      className="text-lg font-mono bg-transparent"
+                      value={topic}
+                      onChange={(e) => setTopic(e.target.value)}
+                      required
+                    />
+                </div>
+                <div className="px-4 pb-4 flex justify-end">
+                    <Button type="submit">Generate Materials <Sparkles className="ml-2" /></Button>
+                </div>
               </div>
-              <div className="p-4">
-                  <p className="text-left text-lg font-mono text-muted-foreground">The Industrial Revolution</p>
-              </div>
-              <div className="px-4 pb-4 flex justify-end">
-                  <Button>Generate Materials <Sparkles className="ml-2" /></Button>
-              </div>
-            </div>
+            </form>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 text-left">
               <Card className="bg-background/80 p-3">
