@@ -32,7 +32,7 @@ export function FAQ() {
   return (
     <section id="faq" className="py-20 sm:py-32">
       <div className="container mx-auto px-4">
-        <div className="mx-auto max-w-2xl lg:text-center">
+        <div className="mx-auto max-w-2xl lg:text-center animate-in fade-in slide-in-from-bottom-10 duration-500">
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
             Frequently Asked Questions
           </h2>
@@ -40,7 +40,7 @@ export function FAQ() {
             Have questions? We have answers. If you can't find what you're looking for, feel free to contact us.
           </p>
         </div>
-        <div className="mx-auto mt-16 max-w-4xl">
+        <div className="mx-auto mt-16 max-w-4xl animate-in fade-in slide-in-from-bottom-10 duration-500 delay-200">
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq, index) => (
               <AccordionItem key={index} value={`item-${index}`}>
