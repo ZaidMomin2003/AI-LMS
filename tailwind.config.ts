@@ -90,12 +90,18 @@ const config = {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-20px)' },
         },
+        'text-gradient': {
+          to: {
+            backgroundPosition: '200% center',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'grid-pan': 'grid-pan 120s linear infinite',
         'float': 'float 6s ease-in-out infinite',
+        'text-gradient': 'text-gradient 3s linear infinite',
       },
       perspective: {
         '1000': '1000px',

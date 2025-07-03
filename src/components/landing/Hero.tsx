@@ -36,7 +36,7 @@ export function Hero() {
             </span>
           </Link>
         </div>
-        <h1 className="text-5xl font-headline font-bold tracking-tight text-foreground sm:text-7xl animate-in fade-in slide-in-from-top-12 duration-1000">
+        <h1 className="text-5xl font-headline font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] animate-text-gradient sm:text-7xl animate-in fade-in slide-in-from-top-12 duration-1000">
           From Topic to Mastery, Instantly
         </h1>
         <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto animate-in fade-in slide-in-from-top-16 duration-1000 delay-200">
