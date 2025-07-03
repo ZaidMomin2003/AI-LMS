@@ -5,13 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, Paperclip, Send, User, X, Sparkles, Loader2 } from 'lucide-react';
+import { Bot, Paperclip, Send, User, X, Sparkles, Loader2, Mic } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { sageMakerAction } from './actions';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
 type Inputs = {
   prompt: string;
@@ -23,15 +24,26 @@ interface Message {
   image?: string;
 }
 
+// Add SpeechRecognition types to window for browser compatibility
+declare global {
+    interface Window {
+        SpeechRecognition: any;
+        webkitSpeechRecognition: any;
+    }
+}
+
+
 export default function SageMakerPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
   
-  const { register, handleSubmit, reset } = useForm<Inputs>();
+  const { register, handleSubmit, reset, setValue } = useForm<Inputs>();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -42,6 +54,57 @@ export default function SageMakerPage() {
       });
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          setValue('prompt', transcript);
+        };
+
+        recognition.onerror = (event: any) => {
+          console.error('Speech recognition error', event.error);
+          toast({
+            variant: "destructive",
+            title: "Voice Recognition Error",
+            description: event.error === 'no-speech' ? 'No speech was detected.' : 'An error occurred during voice recognition.',
+          });
+        };
+
+        recognition.onend = () => {
+          setIsRecording(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, [setValue, toast]);
+
+
+  const handleMicClick = () => {
+    if (isRecording) {
+      recognitionRef.current?.stop();
+    } else {
+      if (recognitionRef.current) {
+        recognitionRef.current.start();
+        setIsRecording(true);
+      } else {
+         toast({
+            variant: "destructive",
+            title: "Not Supported",
+            description: "Your browser may not support voice recognition.",
+         });
+      }
+    }
+  };
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -125,7 +188,7 @@ export default function SageMakerPage() {
                   <div className="text-center text-muted-foreground">
                     <Bot size={48} className="mx-auto mb-2"/>
                     <p>Start a conversation by asking a question.</p>
-                    <p className="text-sm">You can also upload an image for context.</p>
+                    <p className="text-sm">You can also upload an image or use your voice.</p>
                   </div>
                 )}
                 {messages.map((message, index) => (
@@ -171,7 +234,7 @@ export default function SageMakerPage() {
                         </button>
                     </div>
                 )}
-                <Input {...register('prompt')} placeholder="Ask about anything..." autoComplete='off' disabled={isLoading} />
+                <Input {...register('prompt')} placeholder="Ask anything, or use the mic..." autoComplete='off' disabled={isLoading} />
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -179,11 +242,15 @@ export default function SageMakerPage() {
                     className="hidden"
                     accept="image/*"
                 />
-                <Button type="button" variant="outline" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isLoading}>
+                <Button type="button" variant="outline" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isLoading || isRecording}>
                     <Paperclip size={20} />
                     <span className="sr-only">Attach file</span>
                 </Button>
-                <Button type="submit" size="icon" disabled={isLoading}>
+                <Button type="button" variant={isRecording ? "destructive" : "outline"} size="icon" onClick={handleMicClick} disabled={isLoading}>
+                    <Mic size={20} className={cn(isRecording && "animate-pulse")} />
+                    <span className="sr-only">{isRecording ? 'Stop recording' : 'Record voice'}</span>
+                </Button>
+                <Button type="submit" size="icon" disabled={isLoading || isRecording}>
                     <Send size={20} />
                     <span className="sr-only">Send</span>
                 </Button>
