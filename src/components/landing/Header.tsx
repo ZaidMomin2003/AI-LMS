@@ -4,10 +4,6 @@ import { Button } from '@/components/ui/button';
 import { BookOpenCheck } from 'lucide-react';
 
 export function Header() {
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 max-w-screen-2xl items-center">
@@ -17,18 +13,21 @@ export function Header() {
             <span className="font-bold">ScholarAI</span>
           </Link>
           <nav className="hidden gap-6 text-sm md:flex">
-            <button onClick={() => scrollTo('features')} className="transition-colors hover:text-foreground/80 text-foreground/60">
+            <Link href="/#features" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Features
-            </button>
-            <button onClick={() => scrollTo('use-cases')} className="transition-colors hover:text-foreground/80 text-foreground/60">
+            </Link>
+            <Link href="/#use-cases" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Use Cases
-            </button>
-            <button onClick={() => scrollTo('faq')} className="transition-colors hover:text-foreground/80 text-foreground/60">
+            </Link>
+            <Link href="/pricing" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Pricing
+            </Link>
+            <Link href="/#faq" className="transition-colors hover:text-foreground/80 text-foreground/60">
               FAQ
-            </button>
-            <button onClick={() => scrollTo('contact')} className="transition-colors hover:text-foreground/80 text-foreground/60">
+            </Link>
+            <Link href="/#contact" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Contact
-            </button>
+            </Link>
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
