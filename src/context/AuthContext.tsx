@@ -45,15 +45,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     // To test the dashboard without real credentials, uncomment these two lines
     // and comment out the `onAuthStateChanged` block below.
-    setUser(mockUser);
-    setLoading(false);
+    // setUser(mockUser);
+    // setLoading(false);
 
-    // const unsubscribe = onAuthStateChanged(auth, (user) => {
-    //   setUser(user);
-    //   setLoading(false);
-    // });
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
 
-    // return () => unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   return (
