@@ -1,3 +1,6 @@
+'use client';
+
+import React, { useState } from 'react';
 import { BrainCircuit, FileText, MessageCircleQuestion } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/card';
 import { cn } from '@/lib/utils';
@@ -47,6 +50,69 @@ const KeyTerm = ({ term, definition }: { term: string; definition: string }) => 
       </PopoverContent>
     </Popover>
   );
+
+function InteractiveQuiz() {
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const correctAnswer = "Niccolò Machiavelli";
+  const options = ["Leonardo da Vinci", "Niccolò Machiavelli", "Galileo Galilei", "Dante Alighieri"];
+
+  const handleSelectOption = (option: string) => {
+    setSelectedOption(option);
+  };
+
+  const RadioOption = ({ text }: { text: string }) => {
+    const isSelected = selectedOption === text;
+    const isCorrect = text === correctAnswer;
+
+    let stateVariant = "bg-background/50 hover:bg-secondary/50";
+    if (selectedOption) {
+        if (isSelected && isCorrect) {
+            stateVariant = "border-green-500 bg-green-500/10 text-foreground";
+        } else if (isSelected && !isCorrect) {
+            stateVariant = "border-red-500 bg-red-500/10 text-foreground";
+        } else if (isCorrect) {
+            stateVariant = "border-green-500/50 bg-green-500/5 text-muted-foreground";
+        } else {
+             stateVariant = "border-border bg-background/30 text-muted-foreground opacity-60";
+        }
+    }
+    
+    return (
+        <div 
+            className={cn(
+                "flex items-center space-x-3 rounded-md border p-3 transition-all cursor-pointer",
+                stateVariant
+            )}
+            onClick={() => handleSelectOption(text)}
+        >
+            <div className={cn(
+                "h-4 w-4 rounded-full border-2 flex items-center justify-center transition-colors",
+                 isSelected ? "border-primary" : "border-muted-foreground"
+            )}>
+                {isSelected && <div className="h-2 w-2 rounded-full bg-primary"/>}
+            </div>
+            <p className="flex-1">{text}</p>
+        </div>
+    );
+  };
+
+  return (
+    <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
+        <CardContent className="p-2 space-y-3">
+            <p className="font-semibold">Who wrote "The Prince"?</p>
+            {options.map((option) => (
+                <RadioOption key={option} text={option} />
+            ))}
+             {selectedOption && selectedOption !== correctAnswer && (
+                 <p className="text-sm text-red-400/90 pt-2 font-medium">Not quite. The correct answer is highlighted in green.</p>
+            )}
+            {selectedOption === correctAnswer && (
+                 <p className="text-sm text-green-400/90 pt-2 font-medium">Correct! Well done.</p>
+            )}
+        </CardContent>
+    </Card>
+  )
+}
 
 export function Features() {
   return (
@@ -121,33 +187,10 @@ export function Features() {
                 </p>
             </div>
             <div className="flex items-center justify-center">
-                 <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
-                    <CardContent className="p-2 space-y-3">
-                        <p className="font-semibold">Who wrote "The Prince"?</p>
-                        <RadioOption text="Leonardo da Vinci" />
-                        <RadioOption text="Niccolò Machiavelli" selected={true}/>
-                        <RadioOption text="Galileo Galilei" />
-                        <RadioOption text="Dante Alighieri" />
-                    </CardContent>
-                </Card>
+                 <InteractiveQuiz />
             </div>
         </div>
       </div>
     </section>
   );
 }
-
-const RadioOption = ({text, selected = false}: {text: string, selected?: boolean}) => (
-    <div className={cn(
-        "flex items-center space-x-3 rounded-md border p-3 transition-all",
-        selected ? "border-primary bg-primary/10" : "bg-background/50"
-    )}>
-        <div className={cn(
-            "h-4 w-4 rounded-full border-2 flex items-center justify-center",
-            selected ? "border-primary" : "border-muted-foreground"
-        )}>
-            {selected && <div className="h-2 w-2 rounded-full bg-primary"/>}
-        </div>
-        <p className="flex-1">{text}</p>
-    </div>
-)
