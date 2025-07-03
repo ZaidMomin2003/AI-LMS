@@ -6,7 +6,7 @@ import { Card, CardContent } from '../ui/card';
 export function Hero() {
   return (
     <section className="container mx-auto px-4 py-20 text-center sm:py-32">
-      <div className="flex justify-center mb-6">
+      <div className="flex justify-center mb-6 animate-in fade-in slide-in-from-top-20 duration-1000 delay-300">
         <Link href="/signup" className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border px-4 py-1.5 text-sm text-muted-foreground shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-primary/30">
           <span className="absolute h-0 w-0 rounded-full bg-primary/30 transition-all duration-300 ease-in-out group-hover:h-56 group-hover:w-56"></span>
           <span className="relative z-10 flex items-center">
@@ -14,13 +14,13 @@ export function Hero() {
           </span>
         </Link>
       </div>
-      <h1 className="text-5xl font-headline font-bold tracking-tight text-foreground sm:text-7xl">
+      <h1 className="text-5xl font-headline font-bold tracking-tight text-foreground sm:text-7xl animate-in fade-in slide-in-from-top-12 duration-1000">
         From Topic to Mastery, Instantly
       </h1>
-      <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto">
+      <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto animate-in fade-in slide-in-from-top-16 duration-1000 delay-200">
         Stop drowning in textbooks. ScholarAI transforms any subject into clear study notes, interactive flashcards, and challenging quizzes, all in one click. Your smarter, faster learning journey starts here.
       </p>
-      <div className="mt-10 flex items-center justify-center gap-x-6">
+      <div className="mt-10 flex items-center justify-center gap-x-6 animate-in fade-in slide-in-from-top-20 duration-1000 delay-300">
         <Button asChild size="lg">
           <Link href="/signup">
             Start Learning for Free
@@ -33,10 +33,10 @@ export function Hero() {
           </a>
         </Button>
       </div>
-      <div className="relative mt-20 flow-root">
+      <div className="relative mt-20 flow-root animate-in fade-in slide-in-from-top-24 duration-1000 delay-400">
         <div className="absolute -top-12 left-1/2 -z-10 h-40 w-full max-w-4xl -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
         
-        <Card className="max-w-4xl mx-auto p-4 rounded-xl bg-card/60 backdrop-blur-sm shadow-2xl shadow-primary/10 border-2 border-primary/10">
+        <Card className="max-w-4xl mx-auto p-4 rounded-xl bg-card/60 backdrop-blur-sm shadow-2xl shadow-primary/10 border-2 border-primary/10 transition-all duration-300 hover:shadow-primary/20 hover:scale-[1.02]">
           <div className="rounded-lg border bg-background/80 shadow-inner">
              <div className="flex items-center gap-2 p-3 border-b">
                 <Bot className="text-primary h-6 w-6"/>

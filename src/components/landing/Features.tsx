@@ -1,5 +1,30 @@
 import { BrainCircuit, FileText, MessageCircleQuestion } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/card';
+import { cn } from '@/lib/utils';
+
+function FeatureFlashcard() {
+  return (
+    <div className="group w-full max-w-xs h-48 perspective-1000">
+      <div className="relative w-full h-full cursor-pointer transition-transform duration-700 transform-style-preserve-3d group-hover:rotate-y-180">
+        {/* Front of the card */}
+        <div className="absolute w-full h-full backface-hidden">
+          <Card className="h-full flex flex-col justify-between p-6 bg-card/80 shadow-xl border-2 border-accent/20 backdrop-blur-sm">
+            <h4 className="font-headline text-2xl">Humanism</h4>
+            <p className="text-right text-accent font-semibold">Term</p>
+          </Card>
+        </div>
+        {/* Back of the card */}
+        <div className="absolute w-full h-full backface-hidden rotate-y-180">
+          <Card className="h-full flex flex-col justify-between p-6 bg-card/80 shadow-xl border-2 border-accent/20 backdrop-blur-sm">
+            <p className="text-sm">An outlook attaching prime importance to human rather than divine or supernatural matters.</p>
+            <p className="text-right text-accent font-semibold">Definition</p>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 export function Features() {
   return (
@@ -27,7 +52,7 @@ export function Features() {
                 </p>
             </div>
             <div className="flex items-center justify-center">
-                <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10">
+                <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
                     <CardHeader className="p-2 border-b">
                         <p className="font-mono text-sm"># The Renaissance</p>
                     </CardHeader>
@@ -44,16 +69,7 @@ export function Features() {
         {/* Feature 2: Flashcards */}
         <div className="mt-24 grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
              <div className="flex items-center justify-center lg:order-last">
-                 <div className="relative w-full max-w-xs h-48">
-                    <Card className="absolute top-0 left-0 w-full h-full p-6 flex flex-col justify-between transform -rotate-6 bg-card/50 shadow-lg border-2 border-accent/10">
-                        <h4 className="font-headline text-xl">Humanism</h4>
-                        <p className="text-right text-accent">Term</p>
-                    </Card>
-                    <Card className="absolute top-0 left-0 w-full h-full p-6 flex flex-col justify-between transform rotate-6 bg-card/80 shadow-xl border-2 border-accent/20 backdrop-blur-sm">
-                        <p className="text-sm">An outlook attaching prime importance to human rather than divine or supernatural matters.</p>
-                        <p className="text-right text-accent">Definition</p>
-                    </Card>
-                </div>
+                 <FeatureFlashcard />
             </div>
             <div className="lg:pl-8">
                 <div className="flex items-center gap-2">
@@ -78,7 +94,7 @@ export function Features() {
                 </p>
             </div>
             <div className="flex items-center justify-center">
-                 <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10">
+                 <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
                     <CardContent className="p-2 space-y-3">
                         <p className="font-semibold">Who wrote "The Prince"?</p>
                         <RadioOption text="Leonardo da Vinci" />
@@ -95,8 +111,14 @@ export function Features() {
 }
 
 const RadioOption = ({text, selected = false}: {text: string, selected?: boolean}) => (
-    <div className={`flex items-center space-x-3 rounded-md border p-3 transition-all ${selected ? "border-primary bg-primary/10" : "bg-background/50"}`}>
-        <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${selected ? "border-primary" : "border-muted-foreground"}`}>
+    <div className={cn(
+        "flex items-center space-x-3 rounded-md border p-3 transition-all",
+        selected ? "border-primary bg-primary/10" : "bg-background/50"
+    )}>
+        <div className={cn(
+            "h-4 w-4 rounded-full border-2 flex items-center justify-center",
+            selected ? "border-primary" : "border-muted-foreground"
+        )}>
             {selected && <div className="h-2 w-2 rounded-full bg-primary"/>}
         </div>
         <p className="flex-1">{text}</p>
