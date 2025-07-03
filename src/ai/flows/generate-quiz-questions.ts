@@ -22,6 +22,7 @@ const GenerateQuizQuestionsOutputSchema = z.object({
       question: z.string().describe('The quiz question.'),
       options: z.array(z.string()).describe('The possible answers to the question.'),
       answer: z.string().describe('The correct answer to the question.'),
+      explanation: z.string().describe('A brief explanation for why the answer is correct.'),
     })
   ).describe('The generated quiz questions.'),
 });
@@ -43,6 +44,7 @@ const prompt = ai.definePrompt({
 
   Each question should have 4 possible answers, one of which is correct.
   The answer field should contain ONLY the correct answer to the question.
+  For each question, provide a brief explanation for why the answer is correct.
   Make sure the output is valid JSON.`,
 });
 

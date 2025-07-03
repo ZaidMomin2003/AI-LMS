@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Progress } from '../ui/progress';
-import { CheckCircle, XCircle, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 
 interface QuizViewProps {
   quiz: QuizQuestion[];
@@ -20,15 +20,20 @@ const QUIZ_STATS_STORAGE_KEY = 'scholarai_quiz_stats';
 export function QuizView({ quiz, topicId }: QuizViewProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [isAnswered, setIsAnswered] = useState(false);
-  const [score, setScore] = useState(0);
+  const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
   const [isFinished, setIsFinished] = useState(false);
+
+  const score = userAnswers.reduce((acc, answer, index) => {
+    if (answer === quiz[index].answer) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
 
   useEffect(() => {
     if (isFinished) {
       try {
         const stats = JSON.parse(localStorage.getItem(QUIZ_STATS_STORAGE_KEY) || '{}');
-        // We only store the latest attempt for a given topic
         stats[topicId] = {
           score,
           totalQuestions: quiz.length,
@@ -51,31 +56,24 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
     );
   }
   
-  const currentQuestion = quiz[currentQuestionIndex];
-  const isCorrect = selectedAnswer === currentQuestion.answer;
-
   const handleNext = () => {
-    if (isAnswered) {
-      if (currentQuestionIndex < quiz.length - 1) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1);
-        setSelectedAnswer(null);
-        setIsAnswered(false);
-      } else {
-        setIsFinished(true);
-      }
+    const newAnswers = [...userAnswers];
+    newAnswers[currentQuestionIndex] = selectedAnswer;
+    setUserAnswers(newAnswers);
+
+    setSelectedAnswer(null);
+
+    if (currentQuestionIndex < quiz.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      setIsAnswered(true);
-      if (isCorrect) {
-        setScore(score + 1);
-      }
+      setIsFinished(true);
     }
   };
 
   const restartQuiz = () => {
     setCurrentQuestionIndex(0);
     setSelectedAnswer(null);
-    setIsAnswered(false);
-    setScore(0);
+    setUserAnswers([]);
     setIsFinished(false);
   };
   
@@ -85,12 +83,28 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
         <Card className="w-full max-w-2xl mx-auto">
             <CardHeader className="text-center">
                 <CardTitle className="font-headline text-2xl">Quiz Completed!</CardTitle>
-                <CardDescription>You've finished the quiz. Here's how you did:</CardDescription>
+                <CardDescription>You scored {score} out of {quiz.length} ({percentage}%)</CardDescription>
             </CardHeader>
-            <CardContent className="text-center space-y-4">
-                <p className="text-4xl font-bold text-primary">{percentage}%</p>
-                <p className="text-muted-foreground">You answered {score} out of {quiz.length} questions correctly.</p>
-                <Button onClick={restartQuiz}>
+            <CardContent className="space-y-6">
+                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                    {quiz.map((question, index) => {
+                        const userAnswer = userAnswers[index];
+                        const isCorrect = userAnswer === question.answer;
+                        return (
+                            <div key={index} className={cn("p-4 rounded-lg border", isCorrect ? "border-green-500/50 bg-green-500/10" : "border-red-500/50 bg-red-500/10")}>
+                                <p className="font-semibold">{index + 1}. {question.question}</p>
+                                <p className="text-sm mt-2">Your answer: <span className={cn("font-medium", !isCorrect && "text-red-400")}>{userAnswer || 'Not answered'}</span></p>
+                                {!isCorrect && <p className="text-sm">Correct answer: <span className="font-medium text-green-400">{question.answer}</span></p>}
+                                {question.explanation && (
+                                    <div className="mt-2 pt-2 border-t border-border/50">
+                                        <p className="text-sm text-muted-foreground"><span className="font-semibold">Explanation:</span> {question.explanation}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    })}
+                </div>
+                <Button onClick={restartQuiz} className="w-full">
                     <RefreshCw className="mr-2 h-4 w-4" />
                     Take Again
                 </Button>
@@ -99,39 +113,29 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
     )
   }
 
+  const currentQuestion = quiz[currentQuestionIndex];
+
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <Progress value={((currentQuestionIndex + 1) / quiz.length) * 100} className="mb-4" />
-        <CardTitle className="font-headline">Question {currentQuestionIndex + 1}</CardTitle>
+        <CardTitle className="font-headline">Question {currentQuestionIndex + 1} of {quiz.length}</CardTitle>
         <CardDescription className="text-lg pt-2">{currentQuestion.question}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <RadioGroup
           value={selectedAnswer ?? ''}
           onValueChange={setSelectedAnswer}
-          disabled={isAnswered}
         >
-          {currentQuestion.options.map((option, index) => {
-            const isThisTheAnswer = option === currentQuestion.answer;
-            const isThisSelected = option === selectedAnswer;
-            
-            return (
-            <div key={index} className={cn(
-                "flex items-center space-x-3 rounded-md border p-4 transition-all",
-                 isAnswered && isThisTheAnswer && "border-green-500 bg-green-500/10",
-                 isAnswered && isThisSelected && !isThisTheAnswer && "border-red-500 bg-red-500/10"
-            )}>
+          {currentQuestion.options.map((option, index) => (
+            <div key={index} className="flex items-center space-x-3 rounded-md border p-4 transition-all hover:bg-secondary/50">
               <RadioGroupItem value={option} id={`q${currentQuestionIndex}-o${index}`} />
               <Label htmlFor={`q${currentQuestionIndex}-o${index}`} className="flex-1 cursor-pointer">{option}</Label>
-              {isAnswered && isThisTheAnswer && <CheckCircle className="h-5 w-5 text-green-500" />}
-              {isAnswered && isThisSelected && !isThisTheAnswer && <XCircle className="h-5 w-5 text-red-500" />}
             </div>
-            )
-          })}
+          ))}
         </RadioGroup>
         <Button onClick={handleNext} disabled={!selectedAnswer} className="w-full">
-          {isAnswered ? (currentQuestionIndex < quiz.length - 1 ? 'Next Question' : 'Finish Quiz') : 'Submit Answer'}
+          {currentQuestionIndex < quiz.length - 1 ? 'Next Question' : 'Finish Quiz'}
         </Button>
       </CardContent>
     </Card>
