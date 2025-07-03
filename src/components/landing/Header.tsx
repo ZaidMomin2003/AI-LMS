@@ -22,6 +22,9 @@ export function Header() {
             <Link href="/pricing" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Pricing
             </Link>
+            <Link href="https://scholar.featurebase.app/roadmap" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Roadmap
+            </Link>
             <Link href="/#faq" className="transition-colors hover:text-foreground/80 text-foreground/60">
               FAQ
             </Link>
