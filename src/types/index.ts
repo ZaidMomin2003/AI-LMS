@@ -33,3 +33,9 @@ export interface KanbanTask {
   priority: TaskPriority;
   points: number;
 }
+
+export interface ExamDetails {
+  name: string;
+  syllabus: string;
+  date: string; // Storing as ISO string
+}

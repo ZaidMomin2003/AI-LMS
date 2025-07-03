@@ -26,6 +26,7 @@ import {
   BarChart,
   Bot,
   ClipboardCheck,
+  CalendarPlus,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -38,6 +39,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useExam } from '@/context/ExamContext';
+import { ExamCountdown } from './exam/ExamCountdown';
 
 function AppLoadingScreen() {
   return (
@@ -51,6 +54,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
+  const { exam } = useExam();
 
   useEffect(() => {
     if (!loading && !user) {
@@ -148,6 +152,25 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
+           {exam ? (
+            <ExamCountdown />
+          ) : (
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/dashboard/exam')}
+                  tooltip={{ children: 'Add Exam Countdown' }}
+                  className="border-2 border-dashed border-sidebar-border bg-transparent hover:bg-sidebar-accent hover:border-sidebar-accent"
+                >
+                  <Link href="/dashboard/exam">
+                    <CalendarPlus />
+                    <span>Add Exam</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
