@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -44,13 +43,13 @@ export function Hero() {
           Stop drowning in textbooks. ScholarAI transforms any subject into clear study notes, interactive flashcards, and challenging quizzes, all in one click. Your smarter, faster learning journey starts here.
         </p>
         <div className="mt-10 flex items-center justify-center gap-x-6 animate-in fade-in slide-in-from-top-20 duration-1000 delay-300">
-          <Button asChild size="lg">
+          <Button asChild>
             <Link href="/signup">
               Start Learning for Free
               <ArrowRight className="ml-2" />
             </Link>
           </Button>
-          <Button asChild variant="ghost" size="lg">
+          <Button asChild variant="ghost">
             <a href="#features">
               Explore Features <span aria-hidden="true">→</span>
             </a>
