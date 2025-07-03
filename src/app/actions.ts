@@ -19,6 +19,7 @@ export async function createTopicAction(
     return {
       title,
       notes: notesResult.studyNotes,
+      keyTerms: notesResult.keyTerms,
       flashcards: flashcardsResult.flashcards,
       quiz: quizResult.questions,
     };

@@ -1,3 +1,8 @@
+export interface KeyTerm {
+  term: string;
+  definition: string;
+}
+
 export interface Flashcard {
   term: string;
   definition: string;
@@ -14,6 +19,7 @@ export interface Topic {
   title: string;
   createdAt: Date;
   notes: string;
+  keyTerms: KeyTerm[];
   flashcards: Flashcard[];
   quiz: QuizQuestion[];
 }
