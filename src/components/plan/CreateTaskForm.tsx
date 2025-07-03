@@ -48,7 +48,6 @@ export function CreateTaskForm({ onTaskCreate }: CreateTaskFormProps) {
 
   function onSubmit(values: FormValues) {
     setIsLoading(true);
-    // Simulate some async action if needed, otherwise this is instant
     onTaskCreate(values.content, values.priority as TaskPriority);
     form.reset();
     setIsLoading(false);
@@ -58,32 +57,31 @@ export function CreateTaskForm({ onTaskCreate }: CreateTaskFormProps) {
     <Card className="mb-4">
       <CardContent className="p-4">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col sm:flex-row items-start gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 md:space-y-0 md:flex md:items-end md:gap-4">
             <FormField
               control={form.control}
               name="content"
               render={({ field }) => (
                 <FormItem className="flex-grow w-full">
-                  <FormLabel className="sr-only">New Task</FormLabel>
+                  <FormLabel>New Task</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter a new task..." {...field} />
+                    <Input placeholder="e.g., Review Chapter 3 notes" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="flex w-full sm:w-auto gap-4">
-              <FormField
-                control={form.control}
-                name="priority"
-                render={({ field }) => (
-                  <FormItem className="flex-1 sm:w-[120px]">
-                     <FormLabel className="sr-only">Priority</FormLabel>
+            <FormField
+              control={form.control}
+              name="priority"
+              render={({ field }) => (
+                <FormItem className="w-full md:w-[150px]">
+                     <FormLabel>Priority</FormLabel>
                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Priority" />
-                        </SelectTrigger>
+                        </Trigger>
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="Easy">Easy</SelectItem>
@@ -92,14 +90,13 @@ export function CreateTaskForm({ onTaskCreate }: CreateTaskFormProps) {
                       </SelectContent>
                     </Select>
                     <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Add Task
-              </Button>
-            </div>
+                </FormItem>
+              )}
+            />
+            <Button type="submit" disabled={isLoading} className="w-full md:w-auto">
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Add Task
+            </Button>
           </form>
         </Form>
       </CardContent>
