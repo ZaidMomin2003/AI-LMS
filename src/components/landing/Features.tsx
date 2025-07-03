@@ -41,8 +41,8 @@ export function Features() {
         </div>
         
         {/* Feature 1: Notes */}
-        <div className="mt-20 grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
-            <div className="lg:pr-8">
+        <div className="mt-20 grid grid-cols-1 items-center gap-16 md:grid-cols-2">
+            <div className="md:pr-8">
                 <div className="flex items-center gap-2">
                    <FileText className="h-8 w-8 text-primary" />
                    <h3 className="text-2xl font-headline font-bold">Comprehensive Study Notes</h3>
@@ -67,11 +67,11 @@ export function Features() {
         </div>
 
         {/* Feature 2: Flashcards */}
-        <div className="mt-24 grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
-             <div className="flex items-center justify-center lg:order-last">
+        <div className="mt-24 grid grid-cols-1 items-center gap-16 md:grid-cols-2">
+             <div className="flex items-center justify-center md:order-last">
                  <FeatureFlashcard />
             </div>
-            <div className="lg:pl-8">
+            <div className="md:pl-8">
                 <div className="flex items-center gap-2">
                    <BrainCircuit className="h-8 w-8 text-accent" />
                    <h3 className="text-2xl font-headline font-bold">Interactive Flashcards</h3>
@@ -83,8 +83,8 @@ export function Features() {
         </div>
 
         {/* Feature 3: Quizzes */}
-        <div className="mt-24 grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
-            <div className="lg:pr-8">
+        <div className="mt-24 grid grid-cols-1 items-center gap-16 md:grid-cols-2">
+            <div className="md:pr-8">
                 <div className="flex items-center gap-2">
                    <MessageCircleQuestion className="h-8 w-8 text-primary" />
                    <h3 className="text-2xl font-headline font-bold">Challenging Quizzes</h3>
