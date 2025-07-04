@@ -2,18 +2,9 @@
 
 import type { KanbanTask, TaskPriority } from '@/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
-const KANBAN_TASKS_STORAGE_KEY = 'scholarai_kanban_tasks';
-
-const initialTasks: KanbanTask[] = [
-    { id: 'task-1', content: 'Read Chapter 1: Introduction to AI', columnId: 'todo', priority: 'Moderate', points: 30 },
-    { id: 'task-2', content: 'Complete programming assignment on sorting algorithms', columnId: 'todo', priority: 'Hard', points: 50 },
-    { id: 'task-3', content: 'Draft essay on The Great Gatsby', columnId: 'in-progress', priority: 'Moderate', points: 30 },
-    { id: 'task-4', content: 'Review lecture notes for chemistry midterm', columnId: 'in-progress', priority: 'Easy', points: 15 },
-    { id: 'task-5', content: 'Submit final project for history class', columnId: 'done', priority: 'Hard', points: 50 },
-    { id: 'task-6', content: 'Prepare presentation for marketing course', columnId: 'todo', priority: 'Easy', points: 15 },
-    { id: 'task-7', content: 'Solve practice problems for calculus', columnId: 'done', priority: 'Moderate', points: 30 },
-];
+const KANBAN_TASKS_STORAGE_KEY_PREFIX = 'scholarai_kanban_tasks';
 
 interface TaskContextType {
     tasks: KanbanTask[];
@@ -25,33 +16,47 @@ interface TaskContextType {
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
+    const { user } = useAuth();
     const [tasks, setTasks] = useState<KanbanTask[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
+    const [storageKey, setStorageKey] = useState('');
 
     useEffect(() => {
-        try {
-            const storedTasks = localStorage.getItem(KANBAN_TASKS_STORAGE_KEY);
-            if (storedTasks) {
-                setTasks(JSON.parse(storedTasks));
-            } else {
-                setTasks(initialTasks);
+        if (user) {
+            setStorageKey(`${KANBAN_TASKS_STORAGE_KEY_PREFIX}_${user.uid}`);
+        } else {
+            setStorageKey('');
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (storageKey) {
+            try {
+                const storedTasks = localStorage.getItem(storageKey);
+                if (storedTasks) {
+                    setTasks(JSON.parse(storedTasks));
+                } else {
+                    setTasks([]);
+                }
+            } catch (error) {
+                console.error("Failed to load tasks from localStorage", error);
+                setTasks([]);
             }
-        } catch (error) {
-            console.error("Failed to load tasks from localStorage", error);
-            setTasks(initialTasks);
+        } else {
+            setTasks([]);
         }
         setIsInitialized(true);
-    }, []);
+    }, [storageKey]);
 
     useEffect(() => {
-        if (isInitialized) {
+        if (isInitialized && storageKey) {
             try {
-                localStorage.setItem(KANBAN_TASKS_STORAGE_KEY, JSON.stringify(tasks));
+                localStorage.setItem(storageKey, JSON.stringify(tasks));
             } catch (error) {
                 console.error("Failed to save tasks to localStorage", error);
             }
         }
-    }, [tasks, isInitialized]);
+    }, [tasks, isInitialized, storageKey]);
     
     const addTask = (content: string, priority: TaskPriority, column: 'todo' | 'in-progress' | 'done' = 'todo', id?: string) => {
         const pointsMap: Record<TaskPriority, number> = { 'Hard': 50, 'Moderate': 30, 'Easy': 15 };

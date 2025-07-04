@@ -21,24 +21,42 @@ import {
 import { BookCopy, Brain, MessageCircleQuestion, Star } from 'lucide-react';
 import type { KanbanTask } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/context/AuthContext';
 
-const KANBAN_TASKS_STORAGE_KEY = 'scholarai_kanban_tasks';
+const KANBAN_TASKS_STORAGE_KEY_PREFIX = 'scholarai_kanban_tasks';
 
 export default function AnalyticsPage() {
+  const { user } = useAuth();
   const { topics } = useTopic();
   const [kanbanTasks, setKanbanTasks] = useState<KanbanTask[]>([]);
   const isMobile = useIsMobile();
+  const [storageKey, setStorageKey] = useState('');
 
   useEffect(() => {
-    try {
-      const storedTasks = localStorage.getItem(KANBAN_TASKS_STORAGE_KEY);
-      if (storedTasks) {
-        setKanbanTasks(JSON.parse(storedTasks));
-      }
-    } catch (error) {
-        console.error("Failed to load kanban tasks from localStorage", error);
+    if (user) {
+        setStorageKey(`${KANBAN_TASKS_STORAGE_KEY_PREFIX}_${user.uid}`);
+    } else {
+        setStorageKey('');
     }
-  }, []);
+  }, [user]);
+
+  useEffect(() => {
+    if (storageKey) {
+      try {
+        const storedTasks = localStorage.getItem(storageKey);
+        if (storedTasks) {
+          setKanbanTasks(JSON.parse(storedTasks));
+        } else {
+          setKanbanTasks([]);
+        }
+      } catch (error) {
+          console.error("Failed to load kanban tasks from localStorage", error);
+          setKanbanTasks([]);
+      }
+    } else {
+      setKanbanTasks([]);
+    }
+  }, [storageKey]);
 
 
   const analyticsData = useMemo(() => {

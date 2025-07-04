@@ -2,6 +2,7 @@
 
 import type { ExamDetails } from '@/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 interface ExamContextType {
   exam: ExamDetails | null;
@@ -19,36 +20,55 @@ interface TimeLeft {
 
 const ExamContext = createContext<ExamContextType | undefined>(undefined);
 
-const EXAM_STORAGE_KEY = 'scholarai_exam_details';
+const EXAM_STORAGE_KEY_PREFIX = 'scholarai_exam_details';
 
 export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
   const [exam, setExam] = useState<ExamDetails | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
+  const [storageKey, setStorageKey] = useState('');
 
   useEffect(() => {
-    try {
-      const storedExam = localStorage.getItem(EXAM_STORAGE_KEY);
-      if (storedExam) {
-        setExam(JSON.parse(storedExam));
-      }
-    } catch (error) {
-      console.error('Failed to load exam details from localStorage', error);
+    if (user) {
+        setStorageKey(`${EXAM_STORAGE_KEY_PREFIX}_${user.uid}`);
+    } else {
+        setStorageKey('');
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (storageKey) {
+        try {
+          const storedExam = localStorage.getItem(storageKey);
+          if (storedExam) {
+            setExam(JSON.parse(storedExam));
+          } else {
+            setExam(null);
+          }
+        } catch (error) {
+          console.error('Failed to load exam details from localStorage', error);
+          setExam(null);
+        }
+    } else {
+        setExam(null);
     }
     setIsInitialized(true);
-  }, []);
+  }, [storageKey]);
   
   useEffect(() => {
-    if (isInitialized && exam) {
+    if (isInitialized && storageKey) {
       try {
-        localStorage.setItem(EXAM_STORAGE_KEY, JSON.stringify(exam));
+        if (exam) {
+            localStorage.setItem(storageKey, JSON.stringify(exam));
+        } else {
+            localStorage.removeItem(storageKey);
+        }
       } catch (error) {
         console.error('Failed to save exam details to localStorage', error);
       }
-    } else if (isInitialized && !exam) {
-        localStorage.removeItem(EXAM_STORAGE_KEY);
     }
-  }, [exam, isInitialized]);
+  }, [exam, isInitialized, storageKey]);
 
   useEffect(() => {
     if (!exam?.date) {

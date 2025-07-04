@@ -9,19 +9,28 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Progress } from '../ui/progress';
 import { RefreshCw } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 interface QuizViewProps {
   quiz: QuizQuestion[];
   topicId: string;
 }
 
-const QUIZ_STATS_STORAGE_KEY = 'scholarai_quiz_stats';
+const QUIZ_STATS_STORAGE_KEY_PREFIX = 'scholarai_quiz_stats';
 
 export function QuizView({ quiz, topicId }: QuizViewProps) {
+  const { user } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
   const [isFinished, setIsFinished] = useState(false);
+  const [storageKey, setStorageKey] = useState('');
+
+  useEffect(() => {
+    if (user) {
+        setStorageKey(`${QUIZ_STATS_STORAGE_KEY_PREFIX}_${user.uid}`);
+    }
+  }, [user]);
 
   const score = userAnswers.reduce((acc, answer, index) => {
     if (answer === quiz[index].answer) {
@@ -31,20 +40,20 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
   }, 0);
 
   useEffect(() => {
-    if (isFinished) {
+    if (isFinished && storageKey) {
       try {
-        const stats = JSON.parse(localStorage.getItem(QUIZ_STATS_STORAGE_KEY) || '{}');
+        const stats = JSON.parse(localStorage.getItem(storageKey) || '{}');
         stats[topicId] = {
           score,
           totalQuestions: quiz.length,
           timestamp: new Date().toISOString(),
         };
-        localStorage.setItem(QUIZ_STATS_STORAGE_KEY, JSON.stringify(stats));
+        localStorage.setItem(storageKey, JSON.stringify(stats));
       } catch (error) {
         console.error("Failed to save quiz stats to localStorage", error);
       }
     }
-  }, [isFinished, score, quiz.length, topicId]);
+  }, [isFinished, score, quiz.length, topicId, storageKey]);
 
   if (!quiz || quiz.length === 0) {
     return (

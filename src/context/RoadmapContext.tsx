@@ -2,6 +2,7 @@
 
 import type { GenerateRoadmapOutput } from '@/ai/flows/generate-roadmap-flow';
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 interface RoadmapContextType {
     roadmap: GenerateRoadmapOutput | null;
@@ -10,37 +11,54 @@ interface RoadmapContextType {
 
 const RoadmapContext = createContext<RoadmapContextType | undefined>(undefined);
 
-const ROADMAP_STORAGE_KEY = 'scholarai_roadmap';
+const ROADMAP_STORAGE_KEY_PREFIX = 'scholarai_roadmap';
 
 export const RoadmapProvider = ({ children }: { children: React.ReactNode }) => {
+    const { user } = useAuth();
     const [roadmap, setRoadmap] = useState<GenerateRoadmapOutput | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
+    const [storageKey, setStorageKey] = useState('');
 
     useEffect(() => {
-        try {
-            const storedRoadmap = localStorage.getItem(ROADMAP_STORAGE_KEY);
-            if (storedRoadmap) {
-                setRoadmap(JSON.parse(storedRoadmap));
+        if (user) {
+            setStorageKey(`${ROADMAP_STORAGE_KEY_PREFIX}_${user.uid}`);
+        } else {
+            setStorageKey('');
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (storageKey) {
+            try {
+                const storedRoadmap = localStorage.getItem(storageKey);
+                if (storedRoadmap) {
+                    setRoadmap(JSON.parse(storedRoadmap));
+                } else {
+                    setRoadmap(null);
+                }
+            } catch (error) {
+                console.error('Failed to load roadmap from localStorage', error);
+                setRoadmap(null);
             }
-        } catch (error) {
-            console.error('Failed to load roadmap from localStorage', error);
+        } else {
+            setRoadmap(null);
         }
         setIsInitialized(true);
-    }, []);
+    }, [storageKey]);
 
     useEffect(() => {
-        if (isInitialized) {
+        if (isInitialized && storageKey) {
             try {
                 if (roadmap) {
-                    localStorage.setItem(ROADMAP_STORAGE_KEY, JSON.stringify(roadmap));
+                    localStorage.setItem(storageKey, JSON.stringify(roadmap));
                 } else {
-                    localStorage.removeItem(ROADMAP_STORAGE_KEY);
+                    localStorage.removeItem(storageKey);
                 }
             } catch (error) {
                 console.error('Failed to save roadmap to localStorage', error);
             }
         }
-    }, [roadmap, isInitialized]);
+    }, [roadmap, isInitialized, storageKey]);
 
     return (
         <RoadmapContext.Provider value={{ roadmap, setRoadmap }}>

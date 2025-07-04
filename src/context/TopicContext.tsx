@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { Topic } from '@/types';
+import { useAuth } from './AuthContext';
 
 interface TopicContextType {
   topics: Topic[];
@@ -66,64 +67,65 @@ Another key idea is **superposition**. This means a quantum system can be in mul
         'A form of energy',
       ],
       answer: 'A state of being in multiple places at once',
+      explanation: 'Superposition is a fundamental principle of quantum mechanics. It states that, much like waves in classical physics, any two (or more) quantum states can be added together ("superposed") and the result will be another valid quantum state.'
     },
   ],
 };
 
 const TopicContext = createContext<TopicContextType | undefined>(undefined);
 
-const TOPICS_STORAGE_KEY = 'scholarai_topics';
+const TOPICS_STORAGE_KEY_PREFIX = 'scholarai_topics';
 
 export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [storageKey, setStorageKey] = useState('');
 
   useEffect(() => {
-    try {
-      const storedTopics = localStorage.getItem(TOPICS_STORAGE_KEY);
-      let initialTopics: Topic[] = [];
-      if (storedTopics) {
-        initialTopics = JSON.parse(storedTopics).map((t: any) => ({
-            ...t,
-            createdAt: new Date(t.createdAt)
-        }));
-      }
-      
-      const hasSampleTopic = initialTopics.some(t => t.id === sampleTopic.id);
-      if (!hasSampleTopic) {
-        setTopics([sampleTopic, ...initialTopics]);
-      } else {
-        setTopics(initialTopics);
-      }
+    if (user) {
+      setStorageKey(`${TOPICS_STORAGE_KEY_PREFIX}_${user.uid}`);
+    } else {
+      setStorageKey('');
+    }
+  }, [user]);
 
-    } catch (error) {
-      console.error("Failed to load topics from localStorage", error);
-      setTopics([sampleTopic]);
+  useEffect(() => {
+    if (storageKey) {
+      try {
+        const storedTopics = localStorage.getItem(storageKey);
+        if (storedTopics) {
+          const parsedTopics = JSON.parse(storedTopics).map((t: any) => ({
+              ...t,
+              createdAt: new Date(t.createdAt)
+          }));
+          setTopics(parsedTopics);
+        } else {
+          setTopics([sampleTopic]);
+        }
+      } catch (error) {
+        console.error("Failed to load topics from localStorage", error);
+        setTopics([sampleTopic]);
+      }
+    } else {
+      setTopics([]);
     }
     setIsInitialized(true);
-  }, []);
+  }, [storageKey]);
 
   useEffect(() => {
-    if (isInitialized) {
+    if (isInitialized && storageKey) {
         try {
-            localStorage.setItem(TOPICS_STORAGE_KEY, JSON.stringify(topics));
+            localStorage.setItem(storageKey, JSON.stringify(topics));
         } catch (error) {
             console.error("Failed to save topics to localStorage", error);
         }
     }
-  }, [topics, isInitialized]);
+  }, [topics, isInitialized, storageKey]);
 
   const addTopic = (topic: Topic) => {
-    setTopics((prevTopics) => {
-      // Prevent duplicate sample topic
-      const filteredPrevTopics = prevTopics.filter(t => t.id !== sampleTopic.id);
-      const newTopicList = [topic, ...filteredPrevTopics];
-      if (!newTopicList.some(t => t.id === sampleTopic.id)) {
-        return [sampleTopic, ...newTopicList];
-      }
-      return newTopicList;
-    });
+    setTopics((prevTopics) => [topic, ...prevTopics]);
   };
 
   const getTopicById = (id: string) => {
