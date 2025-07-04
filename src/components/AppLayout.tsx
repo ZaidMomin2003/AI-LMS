@@ -30,6 +30,7 @@ import {
   CalendarPlus,
   PanelLeft,
   User,
+  Map,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -123,6 +124,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link href="/dashboard/plan">
                   <ClipboardCheck />
                   <span>Study Plan</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/dashboard/roadmap')}
+                tooltip={{ children: 'Roadmap' }}
+              >
+                <Link href="/dashboard/roadmap">
+                  <Map />
+                  <span>Roadmap</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
