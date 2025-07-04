@@ -2,60 +2,14 @@
 import { AppLayout } from '@/components/AppLayout';
 import { CreateTaskForm } from '@/components/plan/CreateTaskForm';
 import { KanbanBoard } from '@/components/plan/KanbanBoard';
-import type { KanbanTask, TaskPriority } from '@/types';
-import { useState, useEffect } from 'react';
-
-const KANBAN_TASKS_STORAGE_KEY = 'scholarai_kanban_tasks';
-
-const initialTasks: KanbanTask[] = [
-    { id: 'task-1', content: 'Read Chapter 1: Introduction to AI', columnId: 'todo', priority: 'Moderate', points: 30 },
-    { id: 'task-2', content: 'Complete programming assignment on sorting algorithms', columnId: 'todo', priority: 'Hard', points: 50 },
-    { id: 'task-3', content: 'Draft essay on The Great Gatsby', columnId: 'in-progress', priority: 'Moderate', points: 30 },
-    { id: 'task-4', content: 'Review lecture notes for chemistry midterm', columnId: 'in-progress', priority: 'Easy', points: 15 },
-    { id: 'task-5', content: 'Submit final project for history class', columnId: 'done', priority: 'Hard', points: 50 },
-    { id: 'task-6', content: 'Prepare presentation for marketing course', columnId: 'todo', priority: 'Easy', points: 15 },
-    { id: 'task-7', content: 'Solve practice problems for calculus', columnId: 'done', priority: 'Moderate', points: 30 },
-];
+import { useTask } from '@/context/TaskContext';
+import type { TaskPriority } from '@/types';
 
 export default function StudyPlanPage() {
-    const [tasks, setTasks] = useState<KanbanTask[]>([]);
-    const [isInitialized, setIsInitialized] = useState(false);
-
-    useEffect(() => {
-        try {
-            const storedTasks = localStorage.getItem(KANBAN_TASKS_STORAGE_KEY);
-            if (storedTasks) {
-                setTasks(JSON.parse(storedTasks));
-            } else {
-                setTasks(initialTasks);
-            }
-        } catch (error) {
-            console.error("Failed to load tasks from localStorage", error);
-            setTasks(initialTasks);
-        }
-        setIsInitialized(true);
-    }, []);
-
-    useEffect(() => {
-        if (isInitialized) {
-            try {
-                localStorage.setItem(KANBAN_TASKS_STORAGE_KEY, JSON.stringify(tasks));
-            } catch (error) {
-                console.error("Failed to save tasks to localStorage", error);
-            }
-        }
-    }, [tasks, isInitialized]);
+    const { tasks, setTasks, addTask } = useTask();
     
     const handleAddTask = (content: string, priority: TaskPriority) => {
-        const pointsMap: Record<TaskPriority, number> = { 'Hard': 50, 'Moderate': 30, 'Easy': 15 };
-        const newTask: KanbanTask = {
-            id: `task-${Date.now()}`,
-            content,
-            columnId: 'todo',
-            priority,
-            points: pointsMap[priority],
-        };
-        setTasks((prev) => [newTask, ...prev]);
+        addTask(content, priority);
     };
 
     return (

@@ -26,6 +26,7 @@ import { Calendar as CalendarIcon, Loader2, Wand2, Clock, CalendarCheck } from '
 import { useToast } from '@/hooks/use-toast';
 import { createRoadmapAction } from './actions';
 import type { GenerateRoadmapOutput } from '@/ai/flows/generate-roadmap-flow';
+import { useRoadmap } from '@/context/RoadmapContext';
 
 const formSchema = z.object({
   syllabus: z.string().min(20, { message: 'Syllabus must be at least 20 characters.' }),
@@ -35,7 +36,7 @@ const formSchema = z.object({
 
 export default function RoadmapPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [roadmap, setRoadmap] = useState<GenerateRoadmapOutput | null>(null);
+  const { roadmap, setRoadmap } = useRoadmap();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({

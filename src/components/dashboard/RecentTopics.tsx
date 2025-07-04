@@ -11,7 +11,7 @@ export function RecentTopics() {
   const { topics } = useTopic();
 
   return (
-    <Card className="col-span-4 md:col-span-3">
+    <Card>
       <CardHeader>
         <CardTitle className="font-headline">Recent Topics</CardTitle>
         <CardDescription>

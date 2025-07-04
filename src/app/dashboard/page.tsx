@@ -6,6 +6,7 @@ import { TopicForm } from '@/components/dashboard/TopicForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/context/AuthContext';
 import { Sparkles } from 'lucide-react';
+import { TodayStudyTask } from '@/components/dashboard/TodayStudyTask';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -31,8 +32,11 @@ export default function DashboardPage() {
               <TopicForm />
             </CardContent>
           </Card>
-          <RecentTopics />
+          <div className="col-span-4 md:col-span-3">
+             <TodayStudyTask />
+          </div>
         </div>
+        <RecentTopics />
       </div>
     </AppLayout>
   );
