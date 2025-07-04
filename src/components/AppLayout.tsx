@@ -29,6 +29,7 @@ import {
   ClipboardCheck,
   CalendarPlus,
   PanelLeft,
+  User,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -193,6 +194,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={() => router.push('/dashboard/profile')} className="cursor-pointer">
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
