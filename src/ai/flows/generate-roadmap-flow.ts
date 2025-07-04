@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const GenerateRoadmapInputSchema = z.object({
+const GenerateRoadmapInputSchema = z.object({
   syllabus: z.string().describe('The full syllabus or list of topics to study.'),
   hoursPerDay: z.number().positive().describe('The number of hours the user can study each day.'),
   targetDate: z.string().describe('The target completion date for the syllabus, in YYYY-MM-DD format.'),
@@ -19,7 +19,7 @@ export const GenerateRoadmapInputSchema = z.object({
 });
 export type GenerateRoadmapInput = z.infer<typeof GenerateRoadmapInputSchema>;
 
-export const GenerateRoadmapOutputSchema = z.object({
+const GenerateRoadmapOutputSchema = z.object({
   plan: z.array(
     z.object({
       date: z.string().describe("The specific date for this study session in 'Month Day, YYYY' format (e.g., 'August 27, 2024')."),
