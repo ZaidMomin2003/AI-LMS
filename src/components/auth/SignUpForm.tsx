@@ -16,11 +16,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, isFirebaseEnabled } from '@/lib/firebase';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -41,6 +42,7 @@ export function SignUpForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!auth) return;
     setIsLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, values.email, values.password);
@@ -54,6 +56,17 @@ export function SignUpForm() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if (!isFirebaseEnabled) {
+    return (
+        <Alert variant="destructive">
+            <AlertTitle>Firebase Not Configured</AlertTitle>
+            <AlertDescription>
+                Authentication is disabled because Firebase credentials are not set in your environment. Please add your credentials to the .env file to enable registration.
+            </AlertDescription>
+        </Alert>
+    )
   }
 
   return (

@@ -17,11 +17,12 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
 import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from '@/lib/firebase';
+import { auth, googleProvider, isFirebaseEnabled } from '@/lib/firebase';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -49,6 +50,7 @@ export function LoginForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!auth) return;
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, values.email, values.password);
@@ -65,6 +67,7 @@ export function LoginForm() {
   }
 
   async function handleGoogleSignIn() {
+    if (!auth || !googleProvider) return;
     setIsGoogleLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
@@ -78,6 +81,17 @@ export function LoginForm() {
     } finally {
         setIsGoogleLoading(false);
     }
+  }
+
+  if (!isFirebaseEnabled) {
+    return (
+        <Alert variant="destructive">
+            <AlertTitle>Firebase Not Configured</AlertTitle>
+            <AlertDescription>
+                Authentication is disabled because Firebase credentials are not set in your environment. Please add your credentials to the .env file to enable login.
+            </AlertDescription>
+        </Alert>
+    )
   }
 
   return (
