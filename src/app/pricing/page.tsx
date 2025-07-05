@@ -20,7 +20,6 @@ declare global {
     Paddle: {
       Initialize: (config: {
         token: string;
-        environment?: 'sandbox' | 'production';
       }) => Promise<Paddle | undefined>;
     };
   }
@@ -107,7 +106,6 @@ const PricingContent = () => {
     useEffect(() => {
         if (process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN && window.Paddle) {
             window.Paddle.Initialize({
-                environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'production' ? 'production' : 'sandbox',
                 token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
             }).then((paddleInstance: Paddle | undefined) => {
                 if (paddleInstance) {
