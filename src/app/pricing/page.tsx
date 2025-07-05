@@ -1,12 +1,21 @@
+
+'use client';
+
+import { useState } from 'react';
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Star } from 'lucide-react';
+import { Check, Star, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import { createCheckoutLink } from './actions';
+import { useToast } from '@/hooks/use-toast';
+import { AppLayout } from '@/components/AppLayout';
 
-const plans = [
+const allPlans = [
     {
         name: 'Hobby',
         price: '$0',
@@ -20,12 +29,14 @@ const plans = [
         ],
         buttonText: 'Start for Free',
         href: '/signup',
+        priceId: null,
     },
     {
         name: 'Student',
         price: '$7',
         period: '/ week',
         description: 'Ideal for short-term projects and exam cramming.',
+        priceId: 'pri_01j6y1g0a1b2c3d4e5f6g7h8j9', // Replace with your actual Price ID from Paddle
         features: [
             'Unlimited Topic Generations',
             'Everything in Hobby',
@@ -33,13 +44,13 @@ const plans = [
             'Email Support'
         ],
         buttonText: 'Choose Plan',
-        href: '/signup',
     },
     {
         name: 'Scholar',
         price: '$19',
         period: '/ month',
         description: 'The complete toolkit for dedicated learners.',
+        priceId: 'pri_01j6y1h0k1m2n3p4q5r6s7t8v9', // Replace with your actual Price ID from Paddle
         features: [
             'Everything in Student',
             'Advanced Quiz Options',
@@ -47,7 +58,6 @@ const plans = [
             'Priority Support'
         ],
         buttonText: 'Choose Plan',
-        href: '/signup',
         popular: true,
     },
     {
@@ -55,6 +65,7 @@ const plans = [
         price: '$169',
         period: '/ year',
         description: 'For the committed lifelong learner. Save over 20%!',
+        priceId: 'pri_01j6y1j0w1x2y3z4a5b6c7d8e9', // Replace with your actual Price ID from Paddle
         features: [
             'Everything in Scholar',
             'Early access to new features',
@@ -62,17 +73,51 @@ const plans = [
             'Dedicated Support Channel'
         ],
         buttonText: 'Choose Plan',
-        href: '/signup',
         bestValue: true,
     },
 ]
 
-export default function PricingPage() {
-  return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <Header />
-      <main className="flex-grow">
-         <section id="pricing" className="py-20 sm:py-32">
+const PricingContent = () => {
+    const { user } = useAuth();
+    const router = useRouter();
+    const { toast } = useToast();
+    const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
+
+    const plans = user ? allPlans.filter(p => p.priceId) : allPlans;
+
+    const handleCheckout = async (priceId: string) => {
+        if (!user) {
+            router.push('/login?redirect=/pricing');
+            return;
+        }
+
+        setLoadingPriceId(priceId);
+        try {
+            const { checkoutUrl, error } = await createCheckoutLink({ priceId }, user.email);
+            
+            if (error) {
+                throw new Error(error);
+            }
+
+            if (checkoutUrl) {
+                window.location.href = checkoutUrl;
+            } else {
+                 throw new Error("Checkout URL was not returned.");
+            }
+
+        } catch (error: any) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Checkout Error',
+                description: error.message || 'Could not initiate the payment process. Please try again later.',
+            });
+            setLoadingPriceId(null);
+        }
+    };
+    
+    return (
+        <section id="pricing" className="py-20 sm:py-32">
             <div className="container mx-auto px-4">
                 <div className="mx-auto max-w-2xl text-center">
                     <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
@@ -83,7 +128,7 @@ export default function PricingPage() {
                     </p>
                 </div>
 
-                <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-stretch gap-8 lg:max-w-none lg:grid-cols-4">
+                <div className={cn("mx-auto mt-16 grid max-w-lg grid-cols-1 items-stretch gap-8", user ? 'lg:max-w-none lg:grid-cols-3' : 'lg:max-w-none lg:grid-cols-4' )}>
                     {plans.map((plan) => (
                         <Card key={plan.name} className={cn("relative flex flex-col", plan.popular ? "border-2 border-primary shadow-lg shadow-primary/20" : "")}>
                             {plan.popular && (
@@ -105,7 +150,7 @@ export default function PricingPage() {
                                 <CardTitle className="font-headline">{plan.name}</CardTitle>
                                 <div className="flex items-baseline gap-1">
                                     <span className="text-4xl font-bold tracking-tight">{plan.price}</span>
-                                    <span className="text-sm text-muted-foreground">{plan.period}</span>
+                                    {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
                                 </div>
                                 <CardDescription>{plan.description}</CardDescription>
                             </CardHeader>
@@ -120,15 +165,58 @@ export default function PricingPage() {
                                 </ul>
                             </CardContent>
                             <CardFooter>
-                                <Button asChild className="w-full" variant={plan.popular ? 'default' : 'outline'}>
-                                    <Link href={plan.href}>{plan.buttonText}</Link>
-                                </Button>
+                                {plan.priceId ? (
+                                    <Button
+                                        onClick={() => handleCheckout(plan.priceId!)}
+                                        disabled={loadingPriceId === plan.priceId}
+                                        className="w-full"
+                                        variant={plan.popular ? 'default' : 'outline'}
+                                    >
+                                        {loadingPriceId === plan.priceId ? (
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        ) : null}
+                                        {plan.buttonText}
+                                    </Button>
+                                ) : (
+                                    <Button asChild className="w-full" variant={'outline'}>
+                                        <Link href={plan.href!}>{plan.buttonText}</Link>
+                                    </Button>
+                                )}
                             </CardFooter>
                         </Card>
                     ))}
                 </div>
             </div>
          </section>
+    )
+}
+
+export default function PricingPage() {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+      return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (user) {
+    return (
+        <AppLayout>
+            <main className="flex-grow">
+                <PricingContent />
+            </main>
+        </AppLayout>
+    )
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+      <main className="flex-grow">
+        <PricingContent />
       </main>
       <Footer />
     </div>
