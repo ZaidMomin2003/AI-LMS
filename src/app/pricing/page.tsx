@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,7 +13,25 @@ import { useRouter } from 'next/navigation';
 import { createCheckoutLink } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { AppLayout } from '@/components/AppLayout';
-import { initializePaddle, type Paddle } from "@paddle/paddle-js";
+
+// Define Paddle types globally to avoid module import issues
+declare global {
+  interface Window {
+    Paddle: {
+      Initialize: (config: {
+        token: string;
+        environment?: 'sandbox' | 'production';
+      }) => Promise<Paddle | undefined>;
+    };
+  }
+}
+
+interface Paddle {
+  Checkout: {
+    open: (options: { transactionId: string }) => void;
+  };
+}
+
 
 const allPlans = [
     {
@@ -88,9 +105,9 @@ const PricingContent = () => {
     const plans = user ? allPlans.filter(p => p.priceId) : allPlans;
 
     useEffect(() => {
-        if (process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
-            initializePaddle({
-                environment: process.env.PADDLE_ENVIRONMENT === 'production' ? 'production' : 'sandbox',
+        if (process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN && window.Paddle) {
+            window.Paddle.Initialize({
+                environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT === 'production' ? 'production' : 'sandbox',
                 token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
             }).then((paddleInstance: Paddle | undefined) => {
                 if (paddleInstance) {
