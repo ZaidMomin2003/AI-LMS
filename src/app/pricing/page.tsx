@@ -36,7 +36,7 @@ const allPlans = [
         price: '$7',
         period: '/ week',
         description: 'Ideal for short-term projects and exam cramming.',
-        priceId: 'pri_01jzc62g55anf4e8jyhbmf6gxm',
+        priceId: 'pri_01jzc7zdz6f02r7566a2rkrv9n',
         features: [
             'Unlimited Topic Generations',
             'Everything in Hobby',
@@ -50,7 +50,7 @@ const allPlans = [
         price: '$19',
         period: '/ month',
         description: 'The complete toolkit for dedicated learners.',
-        priceId: 'pri_01jzc600ngbfe1z1k2kvqe18cd',
+        priceId: 'pri_01jzc809gq2wh83r56m3wtcp69',
         features: [
             'Everything in Scholar',
             'Advanced Quiz Options',
@@ -65,7 +65,7 @@ const allPlans = [
         price: '$169',
         period: '/ year',
         description: 'For the committed lifelong learner. Save over 20%!',
-        priceId: 'pri_01jzc65a1brypsz0yfk7kd5e7g',
+        priceId: 'pri_01jzc81agc7c26b3z9039jcefj',
         features: [
             'Everything in Scholar',
             'Early access to new features',
@@ -181,7 +181,7 @@ const PricingContent = () => {
                                     </Button>
                                 ) : (
                                     <Button asChild className="w-full" variant={'outline'}>
-                                        <Link href={plan.href!}>{plan.buttonText}</Link>
+                                        <Link href={plan.href!}>{plan.href!}</Link>
                                     </Button>
                                 )}
                             </CardFooter>
