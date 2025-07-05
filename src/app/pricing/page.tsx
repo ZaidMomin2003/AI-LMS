@@ -93,26 +93,16 @@ const PricingContent = () => {
 
         setLoadingPriceId(priceId);
 
-        const { checkoutUrl, error } = await createCheckoutLink({ priceId }, user.email);
-
-        if (error) {
+        try {
+            await createCheckoutLink({ priceId }, user.email);
+            // On success, the user is redirected by the server action.
+            // This part of the code may not be reached.
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
             toast({
                 variant: 'destructive',
                 title: 'Checkout Error',
-                description: error,
-            });
-            setLoadingPriceId(null);
-            return;
-        }
-
-        if (checkoutUrl) {
-            window.location.href = checkoutUrl;
-        } else {
-            // This is an unlikely fallback case
-            toast({
-                variant: 'destructive',
-                title: 'Checkout Error',
-                description: 'Failed to create a checkout session. Please try again.',
+                description: errorMessage,
             });
             setLoadingPriceId(null);
         }
