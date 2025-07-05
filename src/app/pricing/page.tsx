@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -20,7 +21,11 @@ declare global {
     Paddle: {
       Initialize: (config: {
         token: string;
-      }) => Promise<Paddle | undefined>;
+        setupCallback?: (paddle: Paddle | undefined) => void;
+      }) => void;
+      Checkout: {
+        open: (options: { transactionId: string }) => void;
+      };
     };
   }
 }
@@ -107,10 +112,11 @@ const PricingContent = () => {
         if (process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN && window.Paddle) {
             window.Paddle.Initialize({
                 token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-            }).then((paddleInstance: Paddle | undefined) => {
-                if (paddleInstance) {
-                    setPaddle(paddleInstance);
-                }
+                setupCallback: (paddleInstance) => {
+                    if (paddleInstance) {
+                        setPaddle(paddleInstance);
+                    }
+                },
             });
         }
     }, []);
