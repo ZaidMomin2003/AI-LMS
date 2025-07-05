@@ -199,7 +199,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <span className="truncate">{user.displayName || user.email?.split('@')[0]}</span>
                 </SidebarMenuButton>
             </DropdownMenuTrigger>
-            <DropdownMenuContent side="right" align="end" className="w-56 mb-2">
+            <DropdownMenuContent side="top" align="end" className="w-56 mb-2">
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                         <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
