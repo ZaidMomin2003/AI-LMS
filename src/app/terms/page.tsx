@@ -13,7 +13,7 @@ export default function TermsPage() {
                     <h1>Terms and Conditions</h1>
                     <p className="text-muted-foreground">Last updated: {lastUpdated}</p>
 
-                    <p>Welcome to ScholarAI! These terms and conditions outline the rules and regulations for the use of ScholarAI's Website, located at [Your Website URL].</p>
+                    <p>Welcome to ScholarAI! These terms and conditions outline the rules and regulations for the use of ScholarAI's Website, located at https://wisdomis.fun.</p>
 
                     <p>By accessing this website we assume you accept these terms and conditions. Do not continue to use ScholarAI if you do not agree to take all of the terms and conditions stated on this page.</p>
 

@@ -13,7 +13,7 @@ export default function PrivacyPage() {
                     <h1>Privacy Policy</h1>
                     <p className="text-muted-foreground">Last updated: {lastUpdated}</p>
 
-                    <p>ScholarAI ("us", "we", or "our") operates the [Your Website URL] website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
+                    <p>ScholarAI ("us", "we", or "our") operates the https://wisdomis.fun website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
 
                     <h2>1. Information Collection and Use</h2>
                     <p>We collect several different types of information for various purposes to provide and improve our Service to you.</p>
