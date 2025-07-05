@@ -1,3 +1,4 @@
+
 'use server';
 
 import { paddle } from '@/lib/paddle';
@@ -16,8 +17,8 @@ export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, us
         return { error: 'User is not authenticated.' };
     }
 
-    const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/pricing?status=success`;
-    const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/pricing?status=cancelled`;
+    const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=success`;
+    const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/pricing`;
     let transaction;
 
     try {
@@ -46,7 +47,7 @@ export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, us
         
         const paddleError = error as ErrorResponse;
         if (paddleError?.error) {
-            errorMessage = `Paddle Error: ${paddleError.error.detail}`;
+            errorMessage = `Paddle Error: ${paddleError.error.detail || paddleError.error.type}`;
         } else if (error instanceof Error) {
             errorMessage = error.message;
         }

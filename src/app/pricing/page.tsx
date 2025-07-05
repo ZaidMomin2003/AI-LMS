@@ -92,18 +92,29 @@ const PricingContent = () => {
         }
 
         setLoadingPriceId(priceId);
-
         const result = await createCheckoutLink({ priceId }, user.email);
-
         setLoadingPriceId(null);
 
-        if ('url' in result) {
+        console.log("Paddle checkout result:", result);
+
+        if ('url' in result && result.url) {
+            console.log("Generated Paddle URL:", result.url);
+            toast({
+                title: 'Checkout URL Generated',
+                description: "Check the console for the URL. If you aren't redirected, there may be an issue with your Paddle Sandbox account setup.",
+            });
             window.location.href = result.url;
         } else if ('error' in result) {
             toast({
                 variant: 'destructive',
                 title: 'Checkout Error',
                 description: result.error,
+            });
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'An Unexpected Error Occurred',
+                description: 'Could not get a checkout URL. Please try again.',
             });
         }
     };
