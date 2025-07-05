@@ -1,13 +1,12 @@
 'use server';
 
 import { paddle } from '@/lib/paddle';
-import { redirect } from 'next/navigation';
 
 interface CreateCheckoutLinkArgs {
     priceId: string;
 }
 
-export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, userEmail: string | null | undefined): Promise<{ error: string } | void> {
+export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, userEmail: string | null | undefined): Promise<{ url: string } | { error: string }> {
     if (!paddle) {
         return { error: 'Paddle is not configured. Please check your API keys.' };
     }
@@ -58,7 +57,7 @@ export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, us
     }
 
     if (transaction.checkout?.url) {
-        redirect(transaction.checkout.url);
+        return { url: transaction.checkout.url };
     } else {
         return { error: 'Paddle did not return a checkout URL. Please try again.' };
     }

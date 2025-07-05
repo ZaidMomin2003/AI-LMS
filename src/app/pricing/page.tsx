@@ -95,15 +95,17 @@ const PricingContent = () => {
 
         const result = await createCheckoutLink({ priceId }, user.email);
 
-        if (result?.error) {
+        setLoadingPriceId(null);
+
+        if ('url' in result) {
+            window.location.href = result.url;
+        } else if ('error' in result) {
             toast({
                 variant: 'destructive',
                 title: 'Checkout Error',
                 description: result.error,
             });
         }
-        
-        setLoadingPriceId(null);
     };
     
     return (
