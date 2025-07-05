@@ -1,4 +1,3 @@
-
 'use server';
 
 import { paddle } from '@/lib/paddle';
@@ -8,13 +7,13 @@ interface CreateCheckoutLinkArgs {
     priceId: string;
 }
 
-export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, userEmail: string | null | undefined) {
+export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, userEmail: string | null | undefined): Promise<{ error: string } | void> {
     if (!paddle) {
-        throw new Error('Paddle is not configured. Please check your API keys.');
+        return { error: 'Paddle is not configured. Please check your API keys.' };
     }
 
     if (!userEmail) {
-        throw new Error('User is not authenticated.');
+        return { error: 'User is not authenticated.' };
     }
 
     const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`;
@@ -55,12 +54,12 @@ export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, us
             errorMessage = error.message;
         }
         
-        throw new Error(errorMessage);
+        return { error: errorMessage };
     }
 
     if (transaction.checkout?.url) {
         redirect(transaction.checkout.url);
     } else {
-        throw new Error('Paddle did not return a checkout URL. Please try again.');
+        return { error: 'Paddle did not return a checkout URL. Please try again.' };
     }
 }

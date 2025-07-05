@@ -93,19 +93,17 @@ const PricingContent = () => {
 
         setLoadingPriceId(priceId);
 
-        try {
-            await createCheckoutLink({ priceId }, user.email);
-            // On success, the user is redirected by the server action.
-            // This part of the code may not be reached.
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+        const result = await createCheckoutLink({ priceId }, user.email);
+
+        if (result?.error) {
             toast({
                 variant: 'destructive',
                 title: 'Checkout Error',
-                description: errorMessage,
+                description: result.error,
             });
-            setLoadingPriceId(null);
         }
+        
+        setLoadingPriceId(null);
     };
     
     return (
@@ -171,7 +169,7 @@ const PricingContent = () => {
                                     </Button>
                                 ) : (
                                     <Button asChild className="w-full" variant={'outline'}>
-                                        <Link href={plan.href!}>{plan.href!}</Link>
+                                        <Link href={plan.href!}>{plan.buttonText}</Link>
                                     </Button>
                                 )}
                             </CardFooter>
