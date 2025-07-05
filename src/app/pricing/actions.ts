@@ -24,14 +24,12 @@ async function getCurrentUser(): Promise<User | null> {
 }
 
 
-export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, userEmail: string | null | undefined) {
+export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, userEmail: string | null | undefined): Promise<{ checkoutUrl?: string | null; error?: string }> {
     if (!paddle) {
-        throw new Error('Paddle is not configured. Please check your API keys.');
+        return { error: 'Paddle is not configured. Please check your API keys.' };
     }
 
     if (!userEmail) {
-        // This should not happen if called correctly from the client,
-        // but it's a critical server-side check.
         return { error: 'User is not authenticated.' };
     }
 
@@ -46,25 +44,28 @@ export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, us
             customer: {
                 email: userEmail,
             },
-            // For a real app, you might want to pass more details
-            // to link the transaction to your internal user ID.
-            // customData: {
-            //   userId: user.uid,
-            // },
         });
         
         if (!transaction.checkout?.url) {
-            throw new Error('Failed to create checkout URL from Paddle.');
+            return { error: 'Paddle did not return a checkout URL. Please try again.' };
         }
 
-        return { checkoutUrl: transaction.checkout.url, error: null };
+        return { checkoutUrl: transaction.checkout.url, error: undefined };
     } catch (error) {
         console.error('Error creating Paddle checkout link:', error);
-        // This helps debug issues by logging the actual error from Paddle
-        if (error instanceof Error && 'type' in error) {
+        
+        let errorMessage = 'An unknown error occurred while creating the payment link.';
+        
+        if (error instanceof Error && 'body' in error) {
              const paddleError = error as any;
              console.error('Paddle Error Body:', paddleError.body);
+             if (paddleError.body?.error?.detail) {
+                 errorMessage = `Paddle Error: ${paddleError.body.error.detail}`;
+             }
+        } else if (error instanceof Error) {
+            errorMessage = error.message;
         }
-        throw new Error('Could not create payment link. Please try again.');
+        
+        return { error: errorMessage };
     }
 }

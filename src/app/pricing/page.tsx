@@ -52,7 +52,7 @@ const allPlans = [
         description: 'The complete toolkit for dedicated learners.',
         priceId: 'pri_01jzc600ngbfe1z1k2kvqe18cd',
         features: [
-            'Everything in Student',
+            'Everything in Scholar',
             'Advanced Quiz Options',
             'Summarization Feature',
             'Priority Support'
@@ -92,25 +92,27 @@ const PricingContent = () => {
         }
 
         setLoadingPriceId(priceId);
-        try {
-            const { checkoutUrl, error } = await createCheckoutLink({ priceId }, user.email);
-            
-            if (error) {
-                throw new Error(error);
-            }
 
-            if (checkoutUrl) {
-                window.location.href = checkoutUrl;
-            } else {
-                 throw new Error("Checkout URL was not returned.");
-            }
+        const { checkoutUrl, error } = await createCheckoutLink({ priceId }, user.email);
 
-        } catch (error: any) {
-            console.error(error);
+        if (error) {
             toast({
                 variant: 'destructive',
                 title: 'Checkout Error',
-                description: error.message || 'Could not initiate the payment process. Please try again later.',
+                description: error,
+            });
+            setLoadingPriceId(null);
+            return;
+        }
+
+        if (checkoutUrl) {
+            window.location.href = checkoutUrl;
+        } else {
+            // This is an unlikely fallback case
+            toast({
+                variant: 'destructive',
+                title: 'Checkout Error',
+                description: 'Failed to create a checkout session. Please try again.',
             });
             setLoadingPriceId(null);
         }
