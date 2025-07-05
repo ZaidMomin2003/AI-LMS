@@ -4,7 +4,7 @@ import { Footer } from '@/components/landing/Footer';
 import { ShieldCheck } from 'lucide-react';
 
 export default function PrivacyPage() {
-    const lastUpdated = "August 1, 2024";
+    const lastUpdated = "June 19, 2025";
 
     return (
         <div className="flex min-h-screen flex-col bg-background">
