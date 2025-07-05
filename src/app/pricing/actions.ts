@@ -8,7 +8,10 @@ interface CreateCheckoutLinkArgs {
     priceId: string;
 }
 
-export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, userEmail: string | null | undefined): Promise<{ url: string } | { error: string }> {
+export async function createCheckoutLink(
+    { priceId }: CreateCheckoutLinkArgs, 
+    userEmail: string | null | undefined
+): Promise<{ transactionId?: string; error?: string }> {
     if (!paddle) {
         return { error: 'Paddle is not configured. Please check your API keys.' };
     }
@@ -17,12 +20,15 @@ export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, us
         return { error: 'User is not authenticated.' };
     }
 
+    if (!process.env.NEXT_PUBLIC_APP_URL) {
+        return { error: 'Application URL is not configured. Please set NEXT_PUBLIC_APP_URL in your environment variables.' };
+    }
+
     const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=success`;
     const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/pricing`;
-    let transaction;
-
+    
     try {
-        transaction = await paddle.transactions.create({
+        const transaction = await paddle.transactions.create({
             items: [
                 {
                     priceId: priceId,
@@ -39,11 +45,17 @@ export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, us
                 }
             }
         });
+
+        if (transaction.id) {
+            return { transactionId: transaction.id };
+        } else {
+            return { error: 'Paddle did not return a transaction ID.' };
+        }
         
     } catch (error) {
-        console.error('Error creating Paddle checkout link:', error);
+        console.error('Error creating Paddle transaction:', error);
         
-        let errorMessage = 'An unknown error occurred while creating the payment link.';
+        let errorMessage = 'An unknown error occurred while creating the transaction.';
         
         const paddleError = error as ErrorResponse;
         if (paddleError?.error) {
@@ -53,11 +65,5 @@ export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, us
         }
         
         return { error: errorMessage };
-    }
-
-    if (transaction.checkout?.url) {
-        return { url: transaction.checkout.url };
-    } else {
-        return { error: 'Paddle did not return a checkout URL. Please try again.' };
     }
 }

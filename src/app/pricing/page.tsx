@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { createCheckoutLink } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { AppLayout } from '@/components/AppLayout';
+import { initializePaddle, type Paddle } from "@paddle/paddle-js";
 
 const allPlans = [
     {
@@ -82,8 +83,22 @@ const PricingContent = () => {
     const router = useRouter();
     const { toast } = useToast();
     const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
+    const [paddle, setPaddle] = useState<Paddle | undefined>();
 
     const plans = user ? allPlans.filter(p => p.priceId) : allPlans;
+
+    useEffect(() => {
+        if (process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN) {
+            initializePaddle({
+                environment: process.env.PADDLE_ENVIRONMENT === 'production' ? 'production' : 'sandbox',
+                token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
+            }).then((paddleInstance: Paddle | undefined) => {
+                if (paddleInstance) {
+                    setPaddle(paddleInstance);
+                }
+            });
+        }
+    }, []);
 
     const handleCheckout = async (priceId: string) => {
         if (!user) {
@@ -91,13 +106,24 @@ const PricingContent = () => {
             return;
         }
 
+        if (!paddle) {
+             toast({
+                variant: 'destructive',
+                title: 'Checkout Not Ready',
+                description: 'The payment system is still initializing. Please wait a moment and try again.',
+            });
+            return;
+        }
+
         setLoadingPriceId(priceId);
         const result = await createCheckoutLink({ priceId }, user.email);
         setLoadingPriceId(null);
 
-        if ('url' in result && result.url) {
-            window.location.href = result.url;
-        } else if ('error' in result) {
+        if (result.transactionId) {
+            paddle.Checkout.open({
+                transactionId: result.transactionId,
+            });
+        } else if (result.error) {
             toast({
                 variant: 'destructive',
                 title: 'Checkout Error',
@@ -107,7 +133,7 @@ const PricingContent = () => {
              toast({
                 variant: 'destructive',
                 title: 'An Unexpected Error Occurred',
-                description: 'Could not get a checkout URL. Please try again.',
+                description: 'Could not get a transaction ID. Please try again.',
             });
         }
     };
@@ -164,7 +190,7 @@ const PricingContent = () => {
                                 {plan.priceId ? (
                                     <Button
                                         onClick={() => handleCheckout(plan.priceId!)}
-                                        disabled={loadingPriceId === plan.priceId}
+                                        disabled={loadingPriceId === plan.priceId || !paddle}
                                         className="w-full"
                                         variant={plan.popular ? 'default' : 'outline'}
                                     >
