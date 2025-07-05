@@ -51,16 +51,7 @@ const KeyTerm = ({ term, definition }: { term: string; definition: string }) => 
     </Popover>
   );
 
-function InteractiveQuiz() {
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const correctAnswer = "Niccolò Machiavelli";
-  const options = ["Leonardo da Vinci", "Niccolò Machiavelli", "Galileo Galilei", "Dante Alighieri"];
-
-  const handleSelectOption = (option: string) => {
-    setSelectedOption(option);
-  };
-
-  const RadioOption = ({ text }: { text: string }) => {
+const RadioOption = ({ text, selectedOption, correctAnswer, onSelect }: { text: string; selectedOption: string | null; correctAnswer: string; onSelect: (option: string) => void; }) => {
     const isSelected = selectedOption === text;
     const isCorrect = text === correctAnswer;
 
@@ -83,7 +74,7 @@ function InteractiveQuiz() {
                 "flex items-center space-x-3 rounded-md border p-3 transition-all cursor-pointer",
                 stateVariant
             )}
-            onClick={() => handleSelectOption(text)}
+            onClick={() => onSelect(text)}
         >
             <div className={cn(
                 "h-4 w-4 rounded-full border-2 flex items-center justify-center transition-colors",
@@ -96,12 +87,27 @@ function InteractiveQuiz() {
     );
   };
 
+function InteractiveQuiz() {
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const correctAnswer = "Niccolò Machiavelli";
+  const options = ["Leonardo da Vinci", "Niccolò Machiavelli", "Galileo Galilei", "Dante Alighieri"];
+
+  const handleSelectOption = (option: string) => {
+    setSelectedOption(option);
+  };
+
   return (
     <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
         <CardContent className="p-2 space-y-3">
             <p className="font-semibold">Who wrote "The Prince"?</p>
             {options.map((option) => (
-                <RadioOption key={option} text={option} />
+                <RadioOption 
+                    key={option} 
+                    text={option}
+                    selectedOption={selectedOption}
+                    correctAnswer={correctAnswer}
+                    onSelect={handleSelectOption}
+                />
             ))}
              {selectedOption && selectedOption !== correctAnswer && (
                  <p className="text-sm text-red-400/90 pt-2 font-medium">Not quite. The correct answer is highlighted in green.</p>
