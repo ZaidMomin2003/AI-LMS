@@ -9,7 +9,7 @@ export default function PrivacyPage() {
         <div className="flex min-h-screen flex-col bg-background">
             <Header />
             <main className="flex-grow container mx-auto px-4 py-12 md:py-20">
-                <div className="prose prose-invert max-w-4xl mx-auto">
+                <div className="prose prose-invert max-w-4xl mx-auto bg-card p-8 md:p-12 rounded-xl border">
                     <h1>Privacy Policy</h1>
                     <p className="text-muted-foreground">Last updated: {lastUpdated}</p>
 
