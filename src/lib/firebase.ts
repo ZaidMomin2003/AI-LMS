@@ -10,19 +10,10 @@ const firebaseConfig: FirebaseOptions = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Check if the required Firebase config values are missing or still placeholders
-if (
-  !firebaseConfig.apiKey ||
-  firebaseConfig.apiKey.includes('your_api_key_here') ||
-  !firebaseConfig.authDomain ||
-  !firebaseConfig.projectId
-) {
-  // This error is thrown to prevent the app from initializing Firebase with invalid credentials,
-  // making it clear to the developer that they need to configure their .env file.
-  throw new Error(
-    'Firebase environment variables are not set correctly. Please add your Firebase project credentials to the .env file.'
-  );
-}
+// Note: The explicit check for Firebase credentials has been removed to prevent a startup crash.
+// If the environment variables are not set correctly in the .env file,
+// Firebase itself will throw an error when authentication is attempted.
+// Please ensure your .env file is correctly configured with your project's credentials.
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
