@@ -15,25 +15,21 @@ import { createCheckoutLink } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { AppLayout } from '@/components/AppLayout';
 
-// Define Paddle types globally to avoid module import issues
+interface Paddle {
+  Checkout: {
+    open: (options: { transactionId: string }) => void;
+  };
+}
+
 declare global {
   interface Window {
     Paddle: {
-      Initialize: (config: {
-        token: string;
-        setupCallback?: (paddle: Paddle | undefined) => void;
-      }) => void;
+      Initialize: (config: { token: string }) => void;
       Checkout: {
         open: (options: { transactionId: string }) => void;
       };
     };
   }
-}
-
-interface Paddle {
-  Checkout: {
-    open: (options: { transactionId: string }) => void;
-  };
 }
 
 
@@ -112,12 +108,9 @@ const PricingContent = () => {
         if (process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN && window.Paddle) {
             window.Paddle.Initialize({
                 token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-                setupCallback: (paddleInstance) => {
-                    if (paddleInstance) {
-                        setPaddle(paddleInstance);
-                    }
-                },
             });
+            // After initialization, the `window.Paddle` object itself is ready to be used.
+            setPaddle(window.Paddle);
         }
     }, []);
 
