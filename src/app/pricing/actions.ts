@@ -1,3 +1,4 @@
+
 'use server';
 
 import { paddle } from '@/lib/paddle';
@@ -18,9 +19,10 @@ export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, us
 
     const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`;
     const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/pricing`;
+    let transaction;
 
     try {
-        const transaction = await paddle.transactions.create({
+        transaction = await paddle.transactions.create({
             items: [
                 {
                     priceId: priceId,
@@ -38,12 +40,6 @@ export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, us
             }
         });
         
-        if (transaction.checkout?.url) {
-            redirect(transaction.checkout.url);
-        } else {
-            throw new Error('Paddle did not return a checkout URL. Please try again.');
-        }
-
     } catch (error) {
         console.error('Error creating Paddle checkout link:', error);
         
@@ -60,5 +56,11 @@ export async function createCheckoutLink({ priceId }: CreateCheckoutLinkArgs, us
         }
         
         throw new Error(errorMessage);
+    }
+
+    if (transaction.checkout?.url) {
+        redirect(transaction.checkout.url);
+    } else {
+        throw new Error('Paddle did not return a checkout URL. Please try again.');
     }
 }
