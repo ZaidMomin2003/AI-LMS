@@ -32,11 +32,11 @@ const allPlans = [
         priceId: null,
     },
     {
-        name: 'Student',
+        name: 'Rapid Student',
         price: '$7',
         period: '/ week',
         description: 'Ideal for short-term projects and exam cramming.',
-        priceId: 'pri_01j6y1g0a1b2c3d4e5f6g7h8j9', // Replace with your actual Price ID from Paddle
+        priceId: 'pri_01jzc62g55anf4e8jyhbmf6gxm',
         features: [
             'Unlimited Topic Generations',
             'Everything in Hobby',
@@ -46,11 +46,11 @@ const allPlans = [
         buttonText: 'Choose Plan',
     },
     {
-        name: 'Scholar',
+        name: 'Scholar Subscription',
         price: '$19',
         period: '/ month',
         description: 'The complete toolkit for dedicated learners.',
-        priceId: 'pri_01j6y1h0k1m2n3p4q5r6s7t8v9', // Replace with your actual Price ID from Paddle
+        priceId: 'pri_01jzc600ngbfe1z1k2kvqe18cd',
         features: [
             'Everything in Student',
             'Advanced Quiz Options',
@@ -61,11 +61,11 @@ const allPlans = [
         popular: true,
     },
     {
-        name: 'Sage',
+        name: 'Sage Mode',
         price: '$169',
         period: '/ year',
         description: 'For the committed lifelong learner. Save over 20%!',
-        priceId: 'pri_01j6y1j0w1x2y3z4a5b6c7d8e9', // Replace with your actual Price ID from Paddle
+        priceId: 'pri_01jzc65a1brypsz0yfk7kd5e7g',
         features: [
             'Everything in Scholar',
             'Early access to new features',
