@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,27 +11,9 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { createCheckoutLink } from './actions';
+import { createStripeCheckoutSession } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { AppLayout } from '@/components/AppLayout';
-
-interface Paddle {
-  Checkout: {
-    open: (options: { transactionId: string }) => void;
-  };
-}
-
-declare global {
-  interface Window {
-    Paddle: {
-      Initialize: (config: { token: string }) => void;
-      Checkout: {
-        open: (options: { transactionId: string }) => void;
-      };
-    };
-  }
-}
-
 
 const allPlans = [
     {
@@ -54,7 +36,7 @@ const allPlans = [
         price: '$7',
         period: '/ week',
         description: 'Ideal for short-term projects and exam cramming.',
-        priceId: 'pri_01jzc7zdz6f02r7566a2rkrv9n',
+        priceId: 'price_1PQUqSRpSssL9rB7iB3nF0iP', // Replace with your Stripe Price ID
         features: [
             'Unlimited Topic Generations',
             'Everything in Hobby',
@@ -68,7 +50,7 @@ const allPlans = [
         price: '$19',
         period: '/ month',
         description: 'The complete toolkit for dedicated learners.',
-        priceId: 'pri_01jzc809gq2wh83r56m3wtcp69',
+        priceId: 'price_1PQUrFRpSssL9rB7FjPZo09q', // Replace with your Stripe Price ID
         features: [
             'Everything in Scholar',
             'Advanced Quiz Options',
@@ -83,7 +65,7 @@ const allPlans = [
         price: '$169',
         period: '/ year',
         description: 'For the committed lifelong learner. Save over 20%!',
-        priceId: 'pri_01jzc81agc7c26b3z9039jcefj',
+        priceId: 'price_1PQUrpRpSssL9rB7mN38iQvH', // Replace with your Stripe Price ID
         features: [
             'Everything in Scholar',
             'Early access to new features',
@@ -100,19 +82,8 @@ const PricingContent = () => {
     const router = useRouter();
     const { toast } = useToast();
     const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
-    const [paddle, setPaddle] = useState<Paddle | undefined>();
 
     const plans = user ? allPlans.filter(p => p.priceId) : allPlans;
-
-    useEffect(() => {
-        if (process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN && window.Paddle) {
-            window.Paddle.Initialize({
-                token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
-            });
-            // After initialization, the `window.Paddle` object itself is ready to be used.
-            setPaddle(window.Paddle);
-        }
-    }, []);
 
     const handleCheckout = async (priceId: string) => {
         if (!user) {
@@ -120,23 +91,12 @@ const PricingContent = () => {
             return;
         }
 
-        if (!paddle) {
-             toast({
-                variant: 'destructive',
-                title: 'Checkout Not Ready',
-                description: 'The payment system is still initializing. Please wait a moment and try again.',
-            });
-            return;
-        }
-
         setLoadingPriceId(priceId);
-        const result = await createCheckoutLink({ priceId }, user.email);
+        const result = await createStripeCheckoutSession({ priceId }, user.email);
         setLoadingPriceId(null);
 
-        if (result.transactionId) {
-            paddle.Checkout.open({
-                transactionId: result.transactionId,
-            });
+        if (result.url) {
+            router.push(result.url);
         } else if (result.error) {
             toast({
                 variant: 'destructive',
@@ -147,7 +107,7 @@ const PricingContent = () => {
              toast({
                 variant: 'destructive',
                 title: 'An Unexpected Error Occurred',
-                description: 'Could not get a transaction ID. Please try again.',
+                description: 'Could not create a checkout session. Please try again.',
             });
         }
     };
@@ -204,7 +164,7 @@ const PricingContent = () => {
                                 {plan.priceId ? (
                                     <Button
                                         onClick={() => handleCheckout(plan.priceId!)}
-                                        disabled={loadingPriceId === plan.priceId || !paddle}
+                                        disabled={loadingPriceId === plan.priceId}
                                         className="w-full"
                                         variant={plan.popular ? 'default' : 'outline'}
                                     >

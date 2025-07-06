@@ -1,19 +1,19 @@
 
 'use server';
 
-import { paddle } from '@/lib/paddle';
-import type { ErrorResponse } from '@paddle/paddle-node-sdk/dist/types/errors/error-response.js';
+import { stripe } from '@/lib/stripe';
+import type { Stripe } from 'stripe';
 
-interface CreateCheckoutLinkArgs {
+interface CreateCheckoutSessionArgs {
     priceId: string;
 }
 
-export async function createCheckoutLink(
-    { priceId }: CreateCheckoutLinkArgs, 
+export async function createStripeCheckoutSession(
+    { priceId }: CreateCheckoutSessionArgs, 
     userEmail: string | null | undefined
-): Promise<{ transactionId?: string; error?: string }> {
-    if (!paddle) {
-        return { error: 'Paddle is not configured. Please check your API keys.' };
+): Promise<{ url?: string; error?: string }> {
+    if (!stripe) {
+        return { error: 'Stripe is not configured. Please check your API keys.' };
     }
 
     if (!userEmail) {
@@ -28,38 +28,34 @@ export async function createCheckoutLink(
     const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/pricing`;
     
     try {
-        const transaction = await paddle.transactions.create({
-            items: [
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            mode: 'subscription',
+            customer_email: userEmail,
+            line_items: [
                 {
-                    priceId: priceId,
+                    price: priceId,
                     quantity: 1,
                 },
             ],
-            customer: {
-                email: userEmail,
-            },
-            checkout: {
-                settings: {
-                    successUrl: successUrl,
-                    cancelUrl: cancelUrl,
-                }
-            }
+            success_url: successUrl,
+            cancel_url: cancelUrl,
         });
 
-        if (transaction.id) {
-            return { transactionId: transaction.id };
+        if (session.url) {
+            return { url: session.url };
         } else {
-            return { error: 'Paddle did not return a transaction ID.' };
+            return { error: 'Stripe did not return a session URL.' };
         }
         
     } catch (error) {
-        console.error('Error creating Paddle transaction:', error);
+        console.error('Error creating Stripe checkout session:', error);
         
-        let errorMessage = 'An unknown error occurred while creating the transaction.';
+        let errorMessage = 'An unknown error occurred while creating the checkout session.';
         
-        const paddleError = error as ErrorResponse;
-        if (paddleError?.error) {
-            errorMessage = `Paddle Error: ${paddleError.error.detail || paddleError.error.type}`;
+        const stripeError = error as Stripe.errors.StripeError;
+        if (stripeError?.message) {
+            errorMessage = `Stripe Error: ${stripeError.message}`;
         } else if (error instanceof Error) {
             errorMessage = error.message;
         }

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "ScholarAI",
@@ -38,7 +37,6 @@ export default function RootLayout({
           {children}
           <Toaster />
         </Providers>
-        <Script src="https://cdn.paddle.com/paddle/v2/paddle.js" />
       </body>
     </html>
   );
