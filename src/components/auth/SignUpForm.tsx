@@ -52,7 +52,7 @@ export function SignUpForm() {
     setIsLoading(true);
     try {
       await createUserWithEmailAndPassword(auth, values.email, values.password);
-      router.push('/dashboard');
+      router.push('/onboarding');
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -69,7 +69,7 @@ export function SignUpForm() {
     setIsGoogleLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
-      router.push('/dashboard');
+      router.push('/onboarding');
     } catch (error: any) {
       let description = error.message;
       if (error.code === 'auth/unauthorized-domain') {
