@@ -21,7 +21,7 @@ export async function createStripeCheckoutSession(
         return { error: 'User is not authenticated.' };
     }
 
-    const appUrl = 'https://6000-firebase-studio-1751477888550.cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
     const successUrl = `${appUrl}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${appUrl}/pricing`;
