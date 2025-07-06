@@ -10,13 +10,14 @@ interface CreateCheckoutSessionArgs {
 
 export async function createStripeCheckoutSession(
     { priceId }: CreateCheckoutSessionArgs, 
-    userEmail: string | null | undefined
+    userEmail: string | null | undefined,
+    userId: string | undefined
 ): Promise<{ url?: string; error?: string }> {
     if (!stripe) {
         return { error: 'Stripe is not configured. The server is missing the STRIPE_SECRET_KEY environment variable.' };
     }
 
-    if (!userEmail) {
+    if (!userEmail || !userId) {
         return { error: 'User is not authenticated.' };
     }
 
@@ -24,7 +25,7 @@ export async function createStripeCheckoutSession(
         return { error: 'Application URL is not configured. Please set NEXT_PUBLIC_APP_URL in your environment variables.' };
     }
 
-    const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=success`;
+    const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`;
     const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/pricing`;
     
     try {
@@ -32,6 +33,7 @@ export async function createStripeCheckoutSession(
             payment_method_types: ['card'],
             mode: 'subscription',
             customer_email: userEmail,
+            client_reference_id: userId,
             line_items: [
                 {
                     price: priceId,

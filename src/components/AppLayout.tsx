@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { Suspense, useEffect } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -31,10 +31,10 @@ import {
   PanelLeft,
   User,
   Map,
+  CheckCircle,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,6 +45,9 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useExam } from '@/context/ExamContext';
 import { ExamCountdown } from './exam/ExamCountdown';
+import { useSubscription } from '@/context/SubscriptionContext';
+import type { SubscriptionPlan } from '@/types';
+import { Skeleton } from './ui/skeleton';
 
 function AppLoadingScreen() {
   return (
@@ -54,19 +57,81 @@ function AppLoadingScreen() {
   );
 }
 
+function SidebarSubscriptionButton() {
+    const { subscription, setSubscription } = useSubscription();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const checkoutStatus = searchParams.get('checkout');
+        const sessionId = searchParams.get('session_id');
+
+        if (checkoutStatus === 'success' && sessionId) {
+            try {
+                const planName = sessionStorage.getItem('pending_subscription_plan') as SubscriptionPlan | null;
+                if (planName) {
+                    setSubscription({
+                        planName: planName,
+                        status: 'active',
+                        stripeSessionId: sessionId,
+                    });
+                    sessionStorage.removeItem('pending_subscription_plan');
+                    window.history.replaceState(null, '', '/dashboard');
+                }
+            } catch (error) {
+                console.error("Error processing subscription update from URL", error);
+            }
+        }
+    }, [searchParams, setSubscription]);
+
+
+    if (subscription?.planName === 'Hobby') {
+        return (
+            <SidebarMenuButton
+                asChild
+                isActive={pathname === '/pricing'}
+                tooltip={{ children: 'Upgrade Now' }}
+                variant="outline"
+                className="text-primary hover:text-primary border-primary/50 hover:bg-primary/10"
+            >
+                <Link href="/pricing">
+                    <Zap />
+                    <span>Upgrade Now</span>
+                </Link>
+            </SidebarMenuButton>
+        );
+    }
+
+    return (
+        <SidebarMenuButton
+            asChild
+            isActive={pathname === '/pricing'}
+            tooltip={{ children: 'Manage Plan' }}
+            variant="outline"
+            className="border-green-500 bg-green-500/5 text-green-400 hover:bg-green-500/10 hover:text-green-300"
+        >
+            <Link href="/pricing">
+                <CheckCircle />
+                <span>{subscription?.planName}</span>
+            </Link>
+        </SidebarMenuButton>
+    );
+}
+
 export function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { subscription, loading: subscriptionLoading } = useSubscription();
   const router = useRouter();
   const pathname = usePathname();
   const { exam } = useExam();
 
   useEffect(() => {
-    if (!loading && !user) {
+    if (!authLoading && !user) {
       router.replace('/login');
     }
-  }, [user, loading, router]);
+  }, [user, authLoading, router]);
 
-  if (loading || !user) {
+  if (authLoading || !user || subscriptionLoading) {
     return <AppLoadingScreen />;
   }
 
@@ -175,18 +240,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           )}
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/pricing'}
-                tooltip={{ children: 'Upgrade Now' }}
-                variant="outline"
-                className="text-primary hover:text-primary border-primary/50 hover:bg-primary/10"
-              >
-                <Link href="/pricing">
-                  <Zap />
-                  <span>Upgrade Now</span>
-                </Link>
-              </SidebarMenuButton>
+              <Suspense fallback={<Skeleton className="h-8 w-full" />}>
+                <SidebarSubscriptionButton />
+              </Suspense>
             </SidebarMenuItem>
           </SidebarMenu>
           <DropdownMenu>
@@ -231,7 +287,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarTrigger>
           </header>
           <div className="flex-1 flex flex-col min-w-0">
-            {children}
+            <Suspense>{children}</Suspense>
           </div>
       </SidebarInset>
     </SidebarProvider>

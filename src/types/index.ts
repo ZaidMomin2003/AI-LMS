@@ -40,3 +40,13 @@ export interface ExamDetails {
   syllabus: string;
   date: string; // Storing as ISO string
 }
+
+export type SubscriptionPlan = 'Hobby' | 'Rapid Student' | 'Scholar Subscription' | 'Sage Mode';
+
+export interface UserSubscription {
+  planName: SubscriptionPlan;
+  status: 'active' | 'inactive';
+  stripeSessionId?: string;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+}

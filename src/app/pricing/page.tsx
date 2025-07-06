@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { createStripeCheckoutSession } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { AppLayout } from '@/components/AppLayout';
+import type { SubscriptionPlan } from '@/types';
 
 const allPlans = [
     {
@@ -36,7 +37,7 @@ const allPlans = [
         price: '$7',
         period: '/ week',
         description: 'Ideal for short-term projects and exam cramming.',
-        priceId: 'price_1Rhu8CRvzD47Amqq1RlQpX05', // Replaced ID
+        priceId: 'price_1Rhu8CRvzD47Amqq1RlQpX05', 
         features: [
             'Unlimited Topic Generations',
             'Everything in Hobby',
@@ -50,7 +51,7 @@ const allPlans = [
         price: '$19',
         period: '/ month',
         description: 'The complete toolkit for dedicated learners.',
-        priceId: 'price_1Rhu9cRvzD47Amqq1XdZ7U2C', // Replaced ID
+        priceId: 'price_1Rhu9cRvzD47Amqq1XdZ7U2C',
         features: [
             'Everything in Scholar',
             'Advanced Quiz Options',
@@ -65,7 +66,7 @@ const allPlans = [
         price: '$169',
         period: '/ year',
         description: 'For the committed lifelong learner. Save over 20%!',
-        priceId: 'price_1RhuAaRvzD47Amqqx7aBXFlv', // Replaced ID
+        priceId: 'price_1RhuAaRvzD47Amqqx7aBXFlv',
         features: [
             'Everything in Scholar',
             'Early access to new features',
@@ -85,14 +86,21 @@ const PricingContent = () => {
 
     const plans = user ? allPlans.filter(p => p.priceId) : allPlans;
 
-    const handleCheckout = async (priceId: string) => {
+    const handleCheckout = async (priceId: string, planName: SubscriptionPlan) => {
         if (!user) {
             router.push('/login?redirect=/pricing');
             return;
         }
 
         setLoadingPriceId(priceId);
-        const result = await createStripeCheckoutSession({ priceId }, user.email);
+        
+        try {
+            sessionStorage.setItem('pending_subscription_plan', planName);
+        } catch (e) {
+             console.error('Could not set sessionStorage for subscription plan.');
+        }
+
+        const result = await createStripeCheckoutSession({ priceId }, user.email, user.uid);
         setLoadingPriceId(null);
 
         if (result.url) {
@@ -103,12 +111,14 @@ const PricingContent = () => {
                 title: 'Checkout Error',
                 description: result.error,
             });
+            sessionStorage.removeItem('pending_subscription_plan');
         } else {
              toast({
                 variant: 'destructive',
                 title: 'An Unexpected Error Occurred',
                 description: 'Could not create a checkout session. Please try again.',
             });
+            sessionStorage.removeItem('pending_subscription_plan');
         }
     };
     
@@ -163,7 +173,7 @@ const PricingContent = () => {
                             <CardFooter>
                                 {plan.priceId ? (
                                     <Button
-                                        onClick={() => handleCheckout(plan.priceId!)}
+                                        onClick={() => handleCheckout(plan.priceId!, plan.name as SubscriptionPlan)}
                                         disabled={loadingPriceId === plan.priceId}
                                         className="w-full"
                                         variant={plan.popular ? 'default' : 'outline'}
