@@ -1,26 +1,34 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { GraduationCap, Briefcase, TestTube2, BookOpen } from 'lucide-react';
+import { GraduationCap, Briefcase, TestTube2, BookOpen, type LucideProps } from 'lucide-react';
+import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 
-const useCases = [
+// Define a more specific type for the icon
+type IconComponentType = ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
+
+const useCases: {
+  icon: IconComponentType;
+  title: string;
+  description: string;
+}[] = [
   {
-    icon: <GraduationCap className="h-10 w-10 text-accent mb-4" />,
+    icon: GraduationCap,
     title: 'For the Student',
-    description: "Cramming for a history final on the 'Roman Empire'? Instead of sifting through dense textbooks, you enter the topic into ScholarAI. Instantly, you get concise notes, key-date flashcards, and a practice quiz, turning hours of work into a focused study session."
+    description: "Cramming for a final on the 'Roman Empire'? Instantly get concise notes, key-date flashcards, and a practice quiz, turning hours of work into a focused study session."
   },
   {
-    icon: <Briefcase className="h-10 w-10 text-accent mb-4" />,
+    icon: Briefcase,
     title: 'For the Professional',
-    description: "A marketing manager needs to quickly understand 'Quantum Computing' for a new client. ScholarAI provides a high-level overview, essential terminology on flashcards, and a quiz to ensure they grasp the core concepts before the big meeting."
+    description: "Need to quickly understand 'Quantum Computing' for a new client? Get a high-level overview and essential terminology to grasp core concepts before the big meeting."
   },
   {
-    icon: <TestTube2 className="h-10 w-10 text-accent mb-4" />,
+    icon: TestTube2,
     title: 'For the Researcher',
-    description: "Facing a mountain of research papers on 'CRISPR Gene Editing'? Use ScholarAI to summarize key articles, identify common themes and terminology, and generate quizzes to ensure you're retaining the critical details from each source."
+    description: "Facing a mountain of papers on 'CRISPR'? Summarize articles, identify themes, and generate quizzes to retain critical details from each source."
   },
   {
-    icon: <BookOpen className="h-10 w-10 text-accent mb-4" />,
+    icon: BookOpen,
     title: 'For the Lifelong Learner',
-    description: "Simply curious about 'The Philosophy of Stoicism'? Spark your intellectual journey with an AI-generated introduction. Get the foundational concepts, key figures, and essential questions to ponder, all without the commitment of a full book."
+    description: "Curious about 'The Philosophy of Stoicism'? Spark your intellectual journey with an AI-generated introduction. Get foundational concepts and key figures without committing to a full book."
   }
 ]
 
@@ -37,20 +45,27 @@ export function UseCases() {
             Whether you're studying for an exam, skilling up for work, or just satisfying your curiosity, ScholarAI is your personal learning assistant.
           </p>
         </div>
-        <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-2">
-          {useCases.map((useCase) => (
-            <Card key={useCase.title}>
-              <CardHeader>
-                {useCase.icon}
-                <CardTitle className="font-headline">{useCase.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground">
-                  {useCase.description}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
+        <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none md:grid-cols-2">
+          {useCases.map((useCase) => {
+            const IconComponent = useCase.icon;
+            return (
+              <div key={useCase.title} className="group rounded-xl p-px transition-all duration-300 bg-gradient-to-br from-border/50 to-background hover:from-primary hover:to-accent">
+                <Card className="h-full rounded-[11px] bg-background/95">
+                  <CardHeader>
+                    <div className="bg-primary/10 text-primary p-3 rounded-lg w-fit mb-4 transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+                       <IconComponent className="h-8 w-8" />
+                    </div>
+                    <CardTitle className="font-headline">{useCase.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">
+                      {useCase.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+            )
+          })}
         </div>
       </div>
     </section>
