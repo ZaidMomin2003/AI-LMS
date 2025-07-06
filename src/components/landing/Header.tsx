@@ -34,9 +34,6 @@ export function Header() {
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-          <Button variant="ghost" asChild>
-            <Link href="/login">Sign In</Link>
-          </Button>
           <Button asChild>
             <Link href="/signup">Get Started</Link>
           </Button>
