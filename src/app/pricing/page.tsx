@@ -36,7 +36,7 @@ const allPlans = [
         price: '$7',
         period: '/ week',
         description: 'Ideal for short-term projects and exam cramming.',
-        priceId: 'price_REPLACE_WITH_YOUR_WEEKLY_ID', // Replace with your Stripe Price ID
+        priceId: 'price_1Rhu8CRvzD47Amqq1RlQpX05', // Replaced ID
         features: [
             'Unlimited Topic Generations',
             'Everything in Hobby',
@@ -50,7 +50,7 @@ const allPlans = [
         price: '$19',
         period: '/ month',
         description: 'The complete toolkit for dedicated learners.',
-        priceId: 'price_REPLACE_WITH_YOUR_MONTHLY_ID', // Replace with your Stripe Price ID
+        priceId: 'price_1Rhu9cRvzD47Amqq1XdZ7U2C', // Replaced ID
         features: [
             'Everything in Scholar',
             'Advanced Quiz Options',
@@ -65,7 +65,7 @@ const allPlans = [
         price: '$169',
         period: '/ year',
         description: 'For the committed lifelong learner. Save over 20%!',
-        priceId: 'price_REPLACE_WITH_YOUR_YEARLY_ID', // Replace with your Stripe Price ID
+        priceId: 'price_1RhuAaRvzD47Amqqx7aBXFlv', // Replaced ID
         features: [
             'Everything in Scholar',
             'Early access to new features',
