@@ -13,7 +13,7 @@ export async function createStripeCheckoutSession(
     userEmail: string | null | undefined
 ): Promise<{ url?: string; error?: string }> {
     if (!stripe) {
-        return { error: 'Stripe is not configured. Please check your API keys.' };
+        return { error: 'Stripe is not configured. The server is missing the STRIPE_SECRET_KEY environment variable.' };
     }
 
     if (!userEmail) {

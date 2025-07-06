@@ -6,7 +6,7 @@ import Stripe from 'stripe';
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 
 if (!STRIPE_SECRET_KEY) {
-  console.warn("STRIPE_SECRET_KEY is not set. Stripe integration will not work.");
+  console.warn("Stripe is not configured. Please add STRIPE_SECRET_KEY to your .env file to enable payments.");
 }
 
 export const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY, {
