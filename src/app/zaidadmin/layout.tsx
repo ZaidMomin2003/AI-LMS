@@ -24,6 +24,7 @@ import {
   Users,
   PanelLeft,
   ShieldCheck,
+  Mail,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -88,6 +89,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link href="/zaidadmin/analytics">
                   <BarChart />
                   <span>Analytics</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/zaidadmin/submissions')}
+                tooltip={{ children: 'Submissions' }}
+              >
+                <Link href="/zaidadmin/submissions">
+                  <Mail />
+                  <span>Submissions</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
