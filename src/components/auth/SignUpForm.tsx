@@ -54,10 +54,24 @@ export function SignUpForm() {
       await createUserWithEmailAndPassword(auth, values.email, values.password);
       router.push('/onboarding');
     } catch (error: any) {
+      let description = "An unexpected error occurred. Please try again.";
+      switch (error.code) {
+        case 'auth/email-already-in-use':
+          description = 'This email is already in use. Please log in instead.';
+          break;
+        case 'auth/invalid-email':
+          description = 'Please enter a valid email address.';
+          break;
+        case 'auth/weak-password':
+          description = 'Password is too weak. It must be at least 6 characters long.';
+          break;
+        default:
+          description = "Couldn't create your account. Please try again later.";
+      }
       toast({
         variant: 'destructive',
         title: 'Sign Up Failed',
-        description: error.message,
+        description: description,
       });
     } finally {
       setIsLoading(false);

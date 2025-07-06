@@ -55,10 +55,15 @@ export function LoginForm() {
       await signInWithEmailAndPassword(auth, values.email, values.password);
       router.push('/dashboard');
     } catch (error: any) {
+      let description = "An unexpected error occurred. Please try again.";
+      // Firebase v9+ uses 'auth/invalid-credential' for both wrong password and user not found
+      if (error.code === 'auth/invalid-credential') {
+          description = "Invalid email or password. Please check your credentials and try again.";
+      }
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.message,
+        description: description,
       });
     } finally {
       setIsLoading(false);
