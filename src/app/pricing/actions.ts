@@ -21,12 +21,10 @@ export async function createStripeCheckoutSession(
         return { error: 'User is not authenticated.' };
     }
 
-    if (!process.env.NEXT_PUBLIC_APP_URL) {
-        return { error: 'Application URL is not configured. Please set NEXT_PUBLIC_APP_URL in your environment variables.' };
-    }
+    const appUrl = 'https://6000-firebase-studio-1751477888550.cluster-xpmcxs2fjnhg6xvn446ubtgpio.cloudworkstations.dev';
 
-    const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/pricing`;
+    const successUrl = `${appUrl}/dashboard?checkout=success&session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${appUrl}/pricing`;
     
     try {
         const session = await stripe.checkout.sessions.create({
