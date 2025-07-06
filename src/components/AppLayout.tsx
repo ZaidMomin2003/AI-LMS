@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { Suspense, useEffect } from 'react';
@@ -92,8 +93,7 @@ function SidebarSubscriptionButton() {
                 asChild
                 isActive={pathname === '/pricing'}
                 tooltip={{ children: 'Upgrade Now' }}
-                variant="outline"
-                className="text-primary hover:text-primary border-primary/50 hover:bg-primary/10"
+                className="border-2 border-dashed border-primary/50 bg-transparent hover:bg-primary/10 hover:border-primary/80 text-primary shadow-lg shadow-primary/20 animate-pulse"
             >
                 <Link href="/pricing">
                     <Zap />
