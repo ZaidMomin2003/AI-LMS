@@ -95,6 +95,10 @@ const config = {
             backgroundPosition: '200% center',
           },
         },
+        'marquee-y': {
+          '0%': { transform: 'translateY(0%)' },
+          '100%': { transform: 'translateY(-50%)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -102,6 +106,7 @@ const config = {
         'grid-pan': 'grid-pan 120s linear infinite',
         'float': 'float 6s ease-in-out infinite',
         'text-gradient': 'text-gradient 3s linear infinite',
+        'marquee-y': 'marquee-y 60s linear infinite',
       },
       perspective: {
         '1000': '1000px',
