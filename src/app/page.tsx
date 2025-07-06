@@ -11,6 +11,7 @@ import { UseCases } from '@/components/landing/UseCases';
 import { FAQ } from '@/components/landing/FAQ';
 import { Contact } from '@/components/landing/Contact';
 import { Footer } from '@/components/landing/Footer';
+import { CTA } from '@/components/landing/CTA';
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
@@ -42,6 +43,7 @@ export default function LandingPage() {
         <Features />
         <UseCases />
         <FAQ />
+        <CTA />
         <Contact />
       </main>
       <Footer />
