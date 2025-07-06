@@ -32,6 +32,7 @@ import {
   User,
   Map,
   CheckCircle,
+  Gem,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -107,11 +108,10 @@ function SidebarSubscriptionButton() {
             asChild
             isActive={pathname === '/pricing'}
             tooltip={{ children: 'Manage Plan' }}
-            variant="outline"
-            className="border-green-500 bg-green-500/5 text-green-400 hover:bg-green-500/10 hover:text-green-300"
+            className="!text-primary-foreground border-0 bg-gradient-to-r from-primary to-accent font-semibold shadow-md shadow-primary/30 transition-all hover:shadow-lg hover:shadow-accent/40"
         >
             <Link href="/pricing">
-                <CheckCircle />
+                <Gem />
                 <span>{subscription?.planName}</span>
             </Link>
         </SidebarMenuButton>
