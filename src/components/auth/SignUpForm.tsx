@@ -20,7 +20,7 @@ import { auth, isFirebaseEnabled } from '@/lib/firebase';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 
 const formSchema = z.object({
@@ -32,6 +32,7 @@ export function SignUpForm() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -70,8 +71,8 @@ export function SignUpForm() {
   }
 
   return (
-    <Card>
-      <CardContent className="pt-6">
+    <Card className="border-none shadow-none">
+      <CardContent className="p-0">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -80,9 +81,12 @@ export function SignUpForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
-                  </FormControl>
+                   <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <FormControl>
+                        <Input placeholder="name@example.com" {...field} className="pl-10" />
+                    </FormControl>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -93,9 +97,25 @@ export function SignUpForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
-                  </FormControl>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <FormControl>
+                        <Input
+                            type={showPassword ? 'text' : 'password'}
+                            placeholder="••••••••"
+                            {...field}
+                            className="pl-10 pr-10"
+                        />
+                    </FormControl>
+                     <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+                        aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
@@ -107,12 +127,16 @@ export function SignUpForm() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-center text-sm">
-        <p>
-          Already have an account?&nbsp;
-          <Link href="/login" className="font-semibold text-primary hover:underline">
-            Sign in
+       <CardFooter className="flex justify-center text-sm p-0 pt-6">
+        <p className="text-muted-foreground">
+          By signing up, you agree to our{' '}
+          <Link href="/terms" className="underline hover:text-primary">
+            Terms
           </Link>
+          {' '}and{' '}
+           <Link href="/privacy" className="underline hover:text-primary">
+            Privacy Policy
+          </Link>.
         </p>
       </CardFooter>
     </Card>
