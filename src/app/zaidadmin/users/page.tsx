@@ -8,17 +8,18 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-// Dummy Data
+// Dummy Data expanded with onboarding details
 const allUsers = [
-  { name: 'Olivia Martin', email: 'olivia.martin@email.com', country: 'USA', plan: 'Scholar', signUpDate: '2023-11-20' },
-  { name: 'Jackson Lee', email: 'jackson.lee@email.com', country: 'Canada', plan: 'Free', signUpDate: '2023-11-19' },
-  { name: 'Isabella Nguyen', email: 'isabella.nguyen@email.com', country: 'UK', plan: 'Sage Mode', signUpDate: '2023-11-18' },
-  { name: 'William Kim', email: 'will@email.com', country: 'Australia', plan: 'Scholar', signUpDate: '2023-11-17' },
-  { name: 'Sofia Davis', email: 'sofia.davis@email.com', country: 'USA', plan: 'Free', signUpDate: '2023-11-16' },
-  { name: 'Liam Garcia', email: 'liam.g@email.com', country: 'Spain', plan: 'Free', signUpDate: '2023-11-15' },
-  { name: 'Ava Rodriguez', email: 'ava.r@email.com', country: 'Mexico', plan: 'Scholar', signUpDate: '2023-11-14' },
-  { name: 'Noah Martinez', email: 'noah.m@email.com', country: 'USA', plan: 'Sage Mode', signUpDate: '2023-11-13' },
+  { name: 'Olivia Martin', email: 'olivia.martin@email.com', phone: '+1-202-555-0198', country: 'USA', grade: 'University', plan: 'Scholar', signUpDate: '2023-11-20', referral: 'YouTube' },
+  { name: 'Jackson Lee', email: 'jackson.lee@email.com', phone: '+1-416-555-0154', country: 'Canada', grade: 'High School', plan: 'Free', signUpDate: '2023-11-19', referral: 'Instagram' },
+  { name: 'Isabella Nguyen', email: 'isabella.nguyen@email.com', phone: '+44-20-7946-0958', country: 'UK', grade: 'Bootcamp', plan: 'Sage Mode', signUpDate: '2023-11-18', referral: 'Friend' },
+  { name: 'William Kim', email: 'will@email.com', phone: '+61-2-9282-2900', country: 'Australia', grade: 'University', plan: 'Scholar', signUpDate: '2023-11-17', referral: 'Other' },
+  { name: 'Sofia Davis', email: 'sofia.davis@email.com', phone: '+1-310-555-0184', country: 'USA', grade: 'High School', plan: 'Free', signUpDate: '2023-11-16', referral: 'Facebook' },
+  { name: 'Liam Garcia', email: 'liam.g@email.com', phone: '+34-91-521-2828', country: 'Spain', grade: 'Post-Grad', plan: 'Free', signUpDate: '2023-11-15', referral: 'YouTube' },
+  { name: 'Ava Rodriguez', email: 'ava.r@email.com', phone: '+52-55-5283-3000', country: 'Mexico', grade: 'University', plan: 'Scholar', signUpDate: '2023-11-14', referral: 'Friend' },
+  { name: 'Noah Martinez', email: 'noah.m@email.com', phone: '+1-305-555-0121', country: 'USA', grade: 'University', plan: 'Sage Mode', signUpDate: '2023-11-13', referral: 'Instagram' },
 ];
+
 
 const handleExport = (data: any[], filename: string) => {
     if (!data.length) return;
@@ -56,7 +57,7 @@ export default function AdminUsersPage() {
       <Card>
         <CardHeader>
           <CardTitle>All Users</CardTitle>
-          <CardDescription>A list of all users in the system.</CardDescription>
+          <CardDescription>A list of all users in the system, including their onboarding details.</CardDescription>
         </CardHeader>
         <CardContent>
             <div className="flex items-center gap-4 mb-4">
@@ -80,23 +81,28 @@ export default function AdminUsersPage() {
                 <Table>
                 <TableHeader>
                     <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Country</TableHead>
-                    <TableHead>Plan</TableHead>
-                    <TableHead>Sign-up Date</TableHead>
+                        <TableHead>User</TableHead>
+                        <TableHead className="hidden md:table-cell">Email</TableHead>
+                        <TableHead className="hidden lg:table-cell">Phone</TableHead>
+                        <TableHead className="hidden md:table-cell">Country</TableHead>
+                        <TableHead>Plan</TableHead>
+                        <TableHead className="hidden lg:table-cell">Sign-up Date</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {allUsers.map(user => (
                     <TableRow key={user.email}>
-                        <TableCell className="font-medium">{user.name}</TableCell>
-                        <TableCell>{user.email}</TableCell>
-                        <TableCell>{user.country}</TableCell>
+                        <TableCell>
+                            <div className="font-medium">{user.name}</div>
+                            <div className="text-xs text-muted-foreground md:hidden">{user.email}</div>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell">{user.email}</TableCell>
+                        <TableCell className="hidden lg:table-cell">{user.phone}</TableCell>
+                        <TableCell className="hidden md:table-cell">{user.country}</TableCell>
                         <TableCell>
                             <Badge variant={user.plan === 'Free' ? 'secondary' : (user.plan === 'Sage Mode' ? 'destructive' : 'default')}>{user.plan}</Badge>
                         </TableCell>
-                        <TableCell>{user.signUpDate}</TableCell>
+                        <TableCell className="hidden lg:table-cell">{user.signUpDate}</TableCell>
                     </TableRow>
                     ))}
                 </TableBody>
