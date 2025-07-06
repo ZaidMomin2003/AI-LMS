@@ -39,6 +39,17 @@ export default function SignUpPage() {
             </p>
           </div>
           <SignUpForm />
+           <div className="mt-4 text-center text-sm text-muted-foreground">
+            By signing up, you agree to our{' '}
+            <Link href="/terms" className="underline hover:text-primary">
+                Terms
+            </Link>{' '}
+            and{' '}
+            <Link href="/privacy" className="underline hover:text-primary">
+                Privacy Policy
+            </Link>
+            .
+          </div>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
             <Link href="/login" className="underline font-semibold text-primary">
