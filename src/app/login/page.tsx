@@ -9,7 +9,7 @@ export default function LoginPage() {
       <div className="hidden bg-muted lg:block relative">
         <Image
           src="https://placehold.co/1080x1920.png"
-          data-ai-hint="student studying"
+          data-ai-hint="university library"
           alt="Abstract background image for login page"
           fill
           className="object-cover"

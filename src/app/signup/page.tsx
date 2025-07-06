@@ -9,7 +9,7 @@ export default function SignUpPage() {
       <div className="hidden bg-muted lg:block relative">
         <Image
           src="https://placehold.co/1080x1920.png"
-          data-ai-hint="students collaborating"
+          data-ai-hint="students laughing"
           alt="Abstract background image for signup page"
           fill
           className="object-cover"
