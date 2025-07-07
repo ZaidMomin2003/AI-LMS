@@ -20,42 +20,53 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSubscription = async () => {
-      if (user) {
-        setLoading(true);
-        try {
-            const userData = await getUserDoc(user.uid);
+    // If there's no user, reset state and stop loading.
+    if (!user) {
+      setSubscriptionState(null);
+      setLoading(false);
+      return;
+    }
 
-            if (userData === null) {
-              // This case handles offline errors or when the user doc doesn't exist yet.
-              // We load a default plan to prevent UI blocking but AVOID writing back,
-              // which would fail if offline.
-              console.warn("Could not fetch user data, assuming default subscription for this session.");
-              const defaultSub = { planName: 'Hobby', status: 'active' } as UserSubscription;
-              setSubscriptionState(defaultSub);
-            } else if (userData.subscription) {
-                // User and subscription plan exist.
-                setSubscriptionState(userData.subscription);
-            } else {
-                // User document exists but no subscription record. This means we can safely write one.
-                const defaultSub = { planName: 'Hobby', status: 'active' } as UserSubscription;
-                setSubscriptionState(defaultSub);
-                await updateUserDoc(user.uid, { subscription: defaultSub });
-            }
-        } catch (error) {
-            console.error("Failed to process subscription:", error);
-            // Fallback to a default plan in case of any unexpected error.
-            const defaultSub = { planName: 'Hobby', status: 'active' } as UserSubscription;
-            setSubscriptionState(defaultSub);
-        } finally {
+    let isMounted = true;
+    setLoading(true);
+
+    const fetchSubscription = async () => {
+      // 1. Attempt to get user data. getUserDoc is designed to return null on failure, not crash.
+      const userData = await getUserDoc(user.uid);
+      
+      if (!isMounted) return;
+
+      // 2. Check if a subscription plan already exists in the fetched data.
+      if (userData?.subscription) {
+        setSubscriptionState(userData.subscription);
+      } else {
+        // 3. If no plan exists, set a default "Hobby" plan.
+        const defaultSub: UserSubscription = { planName: 'Hobby', status: 'active' };
+        setSubscriptionState(defaultSub);
+
+        // 4. IMPORTANT: Only try to SAVE the default plan back to Firestore if we are NOT offline.
+        // We know we are online if userData is not null (even if it's an empty object for a new user).
+        if (userData !== null) {
+          await updateUserDoc(user.uid, { subscription: defaultSub });
+        }
+      }
+
+      setLoading(false);
+    };
+
+    fetchSubscription().catch(error => {
+        // This is a fallback catch, though getUserDoc should prevent it.
+        console.error("An unexpected error occurred in fetchSubscription:", error);
+        if (isMounted) {
+            setSubscriptionState({ planName: 'Hobby', status: 'active' });
             setLoading(false);
         }
-      } else {
-        setSubscriptionState(null);
-        setLoading(false);
-      }
-    };
-    fetchSubscription();
+    });
+
+    return () => {
+        isMounted = false;
+    }
+
   }, [user]);
 
   const setSubscription = async (data: UserSubscription | null) => {
