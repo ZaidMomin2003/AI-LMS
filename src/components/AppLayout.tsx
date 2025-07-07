@@ -107,8 +107,9 @@ function SidebarSubscriptionButton() {
 
     return (
         <SidebarMenuButton
+            asChild
             tooltip={{ children: 'Your Current Plan' }}
-            className="!text-primary-foreground border-0 bg-gradient-to-r from-primary to-accent font-semibold shadow-md shadow-primary/30 transition-all hover:shadow-lg hover:shadow-accent/40 cursor-default"
+            className="cursor-default border-0 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
         >
             <Link href="/dashboard">
                 <Gem />
