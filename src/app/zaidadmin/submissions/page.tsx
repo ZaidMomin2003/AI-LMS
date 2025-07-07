@@ -1,8 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
   Dialog,
@@ -11,17 +11,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-
-// Dummy Data for contact form submissions
-const dummySubmissions = [
-  { id: 'sub1', name: 'Alex Johnson', email: 'alex.j@example.com', message: "I'm having trouble with the quiz feature. It doesn't seem to be saving my score. Can you help?", date: '2023-11-21' },
-  { id: 'sub2', name: 'Sofia Davis', email: 'sofia.d@example.com', message: 'Just wanted to say I love the app! The flashcards are a lifesaver. Any plans to add an iOS app?', date: '2023-11-20' },
-  { id: 'sub3', name: 'Chen Wei', email: 'chen.w@example.com', message: 'Inquiry about enterprise plans. We are a team of 50 and would like to know about bulk licensing.', date: '2023-11-20' },
-  { id: 'sub4', name: 'Maria Garcia', email: 'maria.g@example.com', message: "There's a typo in the Renaissance study notes. 'Michelangelo' is spelled incorrectly.", date: '2023-11-19' },
-  { id: 'sub5', name: 'David Smith', email: 'david.s@example.com', message: 'My password reset link is not working. I have tried multiple times.', date: '2023-11-18' },
-];
-
-type Submission = typeof dummySubmissions[0];
+import { fetchSubmissions, type Submission } from './actions';
+import { format } from 'date-fns';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 const handleExport = (data: any[], filename: string) => {
@@ -47,19 +39,46 @@ const handleExport = (data: any[], filename: string) => {
 
 
 export default function AdminSubmissionsPage() {
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const getSubmissions = async () => {
+        setIsLoading(true);
+        const data = await fetchSubmissions();
+        setSubmissions(data);
+        setIsLoading(false);
+    };
+    getSubmissions();
+  }, []);
 
   const handleRowClick = (submission: Submission) => {
     setSelectedSubmission(submission);
     setIsDialogOpen(true);
   };
+  
+  const TableSkeleton = () => (
+    <div className="space-y-2">
+      {[...Array(5)].map((_, i) => (
+        <div key={i} className="flex items-center space-x-4 p-4 border rounded-md">
+          <div className="space-y-2 flex-1">
+            <Skeleton className="h-4 w-1/4" />
+            <Skeleton className="h-4 w-2/4" />
+          </div>
+          <Skeleton className="h-4 w-3/4" />
+          <Skeleton className="h-4 w-1/4" />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
         <h2 className="text-3xl font-bold tracking-tight font-headline">Contact Submissions</h2>
-        <Button onClick={() => handleExport(dummySubmissions, 'contact_submissions')}>
+        <Button onClick={() => handleExport(submissions, 'contact_submissions')} disabled={submissions.length === 0}>
           <Download className="mr-2 h-4 w-4" />
           Export Submissions
         </Button>
@@ -71,35 +90,45 @@ export default function AdminSubmissionsPage() {
           <CardDescription>Messages from the landing page contact form. Click a row to view the full message.</CardDescription>
         </CardHeader>
         <CardContent>
-            <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[250px]">From</TableHead>
-                            <TableHead>Message</TableHead>
-                            <TableHead className="w-[150px] text-right">Date</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {dummySubmissions.map(submission => (
-                            <TableRow key={submission.id} onClick={() => handleRowClick(submission)} className="cursor-pointer">
-                                <TableCell>
-                                    <div className="font-medium">{submission.name}</div>
-                                    <div className="text-xs text-muted-foreground">{submission.email}</div>
-                                </TableCell>
-                                <TableCell>
-                                    <p className="max-w-lg truncate">{submission.message}</p>
-                                </TableCell>
-                                <TableCell className="text-right">{submission.date}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </div>
-             <div className="flex items-center justify-end space-x-2 py-4">
-                <Button variant="outline" size="sm">Previous</Button>
-                <Button variant="outline" size="sm">Next</Button>
-            </div>
+            {isLoading ? (
+                <TableSkeleton />
+            ) : submissions.length > 0 ? (
+                <>
+                    <div className="rounded-md border">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="w-[250px]">From</TableHead>
+                                    <TableHead>Message</TableHead>
+                                    <TableHead className="w-[150px] text-right">Date</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {submissions.map(submission => (
+                                    <TableRow key={submission.id} onClick={() => handleRowClick(submission)} className="cursor-pointer">
+                                        <TableCell>
+                                            <div className="font-medium">{submission.name}</div>
+                                            <div className="text-xs text-muted-foreground">{submission.email}</div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <p className="max-w-lg truncate">{submission.message}</p>
+                                        </TableCell>
+                                        <TableCell className="text-right">{format(new Date(submission.createdAt), 'PP')}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </div>
+                    <div className="flex items-center justify-end space-x-2 py-4">
+                        <Button variant="outline" size="sm" disabled>Previous</Button>
+                        <Button variant="outline" size="sm" disabled>Next</Button>
+                    </div>
+                </>
+            ) : (
+                <div className="text-center text-muted-foreground py-10">
+                    <p>No contact submissions yet.</p>
+                </div>
+            )}
         </CardContent>
       </Card>
       
@@ -110,7 +139,7 @@ export default function AdminSubmissionsPage() {
               <DialogHeader>
                 <DialogTitle>Submission from: {selectedSubmission.name}</DialogTitle>
                 <DialogDescription>
-                  {selectedSubmission.email} &bull; Received on {selectedSubmission.date}
+                  {selectedSubmission.email} &bull; Received on {format(new Date(selectedSubmission.createdAt), 'PPP p')}
                 </DialogDescription>
               </DialogHeader>
               <div className="py-4 bg-secondary/50 rounded-md px-4 my-4">

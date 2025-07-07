@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '../ui/card';
 import { Loader2, Mail, Phone, Linkedin, Instagram } from 'lucide-react';
 import { useState } from 'react';
+import { saveContactSubmission } from '@/app/landing/actions';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -48,18 +49,24 @@ export function Contact() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      await saveContactSubmission(values);
       form.reset();
       toast({
         title: 'Message Sent!',
         description: "Thanks for reaching out. We'll get back to you shortly.",
       });
-      console.log(values);
-    }, 1500);
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Submission Failed',
+        description: 'Could not send your message. Please try again later.',
+      });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   return (
