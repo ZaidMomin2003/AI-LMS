@@ -23,15 +23,17 @@ const SageMakerOutputSchema = z.object({
 });
 export type SageMakerOutput = z.infer<typeof SageMakerOutputSchema>;
 
-// This exported function is what the client-side component will call.
+// This is the public-facing function that components will call.
+// It calls the internal flow and wraps the string response in the expected object structure.
 export async function sageMakerFlow(input: SageMakerInput): Promise<SageMakerOutput> {
-  return sageMakerFlowInternal(input);
+  const responseText = await sageMakerFlowInternal(input);
+  return { response: responseText };
 }
 
+// This is a simplified prompt that asks for a direct text response, not JSON.
 const prompt = ai.definePrompt({
   name: 'sageMakerPrompt',
   input: {schema: SageMakerInputSchema},
-  output: {schema: SageMakerOutputSchema},
   prompt: `You are SageMaker, a friendly, encouraging, and knowledgeable AI study assistant for the ScholarAI platform. Your goal is to help students understand topics by answering their questions. Be clear, concise, and break down complex concepts into simple terms.
 
   Use the following question from the user to provide a helpful answer. If an image is provided, use it as context for your response.
@@ -40,9 +42,7 @@ const prompt = ai.definePrompt({
   {{#if imageDataUri}}
   Image context:
   {{media url=imageDataUri}}
-  {{/if}}
-  
-  Provide your answer in the 'response' field of the JSON output.`,
+  {{/if}}`,
   config: {
     safetySettings: [
       {
@@ -65,17 +65,15 @@ const prompt = ai.definePrompt({
   },
 });
 
+// The internal flow is simplified to return a raw string, which is more reliable.
 const sageMakerFlowInternal = ai.defineFlow(
   {
-    name: 'sageMakerFlow',
+    name: 'sageMakerFlowInternal',
     inputSchema: SageMakerInputSchema,
-    outputSchema: SageMakerOutputSchema,
+    outputSchema: z.string(),
   },
   async (input) => {
-    const {output} = await prompt(input);
-    if (!output) {
-      throw new Error("The AI model did not return a valid structured response.");
-    }
-    return output;
+    const response = await prompt(input);
+    return response.text;
   }
 );
