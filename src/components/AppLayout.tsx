@@ -107,12 +107,10 @@ function SidebarSubscriptionButton() {
 
     return (
         <SidebarMenuButton
-            asChild
-            isActive={pathname === '/pricing'}
-            tooltip={{ children: 'Manage Plan' }}
-            className="!text-primary-foreground border-0 bg-gradient-to-r from-primary to-accent font-semibold shadow-md shadow-primary/30 transition-all hover:shadow-lg hover:shadow-accent/40"
+            tooltip={{ children: 'Your Current Plan' }}
+            className="!text-primary-foreground border-0 bg-gradient-to-r from-primary to-accent font-semibold shadow-md shadow-primary/30 transition-all hover:shadow-lg hover:shadow-accent/40 cursor-default"
         >
-            <Link href="/pricing">
+            <Link href="/dashboard">
                 <Gem />
                 <span>{subscription?.planName}</span>
             </Link>
