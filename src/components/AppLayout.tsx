@@ -35,6 +35,7 @@ import {
   Map,
   Gem,
   Lock,
+  Timer,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -52,6 +53,9 @@ import { useSubscription } from '@/context/SubscriptionContext';
 import type { SubscriptionPlan } from '@/types';
 import { Skeleton } from './ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { usePomodoro } from '@/context/PomodoroContext';
+import { useTopic } from '@/context/TopicContext';
+import { useRoadmap } from '@/context/RoadmapContext';
 
 function AppLoadingScreen() {
   return (
@@ -122,6 +126,10 @@ function SidebarSubscriptionButton() {
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const { subscription, loading: subscriptionLoading } = useSubscription();
+  const { pomodoroCount, loading: pomodoroLoading } = usePomodoro();
+  const { topics, dataLoading: topicsLoading } = useTopic();
+  const { roadmap, loading: roadmapLoading } = useRoadmap();
+  
   const router = useRouter();
   const pathname = usePathname();
   const { exam } = useExam();
@@ -132,7 +140,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user, authLoading, router]);
 
-  if (authLoading || !user || subscriptionLoading) {
+  const appIsLoading = authLoading || !user || subscriptionLoading || pomodoroLoading || topicsLoading || roadmapLoading;
+
+  if (appIsLoading) {
     return <AppLoadingScreen />;
   }
 
@@ -146,7 +156,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     return email[0].toUpperCase();
   }
 
-  const isSageMakerLocked = subscription?.planName === 'Hobby';
+  const isHobby = subscription?.planName === 'Hobby';
+  const isSageMakerLocked = isHobby;
+  const isRoadmapLocked = isHobby && !!roadmap;
+  const isPomodoroLocked = isHobby && pomodoroCount > 0;
+
 
   return (
     <SidebarProvider>
@@ -205,16 +219,46 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith('/dashboard/roadmap')}
-                tooltip={{ children: 'Roadmap' }}
-              >
-                <Link href="/dashboard/roadmap">
-                  <Map />
-                  <span>Roadmap</span>
-                </Link>
-              </SidebarMenuButton>
+              <Tooltip>
+                 <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith('/dashboard/roadmap')}
+                    >
+                      <Link href="/dashboard/roadmap" className={cn(isRoadmapLocked && 'text-muted-foreground')}>
+                        <Map />
+                        <span>Roadmap</span>
+                        {isRoadmapLocked && <Lock className="ml-auto h-3 w-3" />}
+                      </Link>
+                    </SidebarMenuButton>
+                 </TooltipTrigger>
+                 {isRoadmapLocked && (
+                    <TooltipContent side="right" align="center">
+                        <p>Upgrade for unlimited roadmaps</p>
+                    </TooltipContent>
+                 )}
+               </Tooltip>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <Tooltip>
+                 <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith('/dashboard/pomodoro')}
+                    >
+                      <Link href="/dashboard/pomodoro" className={cn(isPomodoroLocked && 'text-muted-foreground')}>
+                        <Timer />
+                        <span>Pomodoro</span>
+                        {isPomodoroLocked && <Lock className="ml-auto h-3 w-3" />}
+                      </Link>
+                    </SidebarMenuButton>
+                 </TooltipTrigger>
+                 {isPomodoroLocked && (
+                    <TooltipContent side="right" align="center">
+                        <p>Upgrade for unlimited sessions</p>
+                    </TooltipContent>
+                 )}
+               </Tooltip>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton
