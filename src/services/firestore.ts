@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, type FirestoreError } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { User } from 'firebase/auth';
 
@@ -15,6 +15,10 @@ export const updateUserDoc = async (uid: string, data: object) => {
     await setDoc(userDocRef, data, { merge: true });
   } catch (error) {
     console.error("Error updating user document: ", error);
+    const firestoreError = error as FirestoreError;
+    if (firestoreError.code === 'failed-precondition') {
+        throw new Error("Firestore might not be enabled. Please check your Firebase project console.");
+    }
     throw new Error("Could not save user data.");
   }
 };
@@ -32,6 +36,11 @@ export const getUserDoc = async (uid: string) => {
     return docSnap.exists() ? docSnap.data() : null;
   } catch (error) {
     console.error("Error fetching user document: ", error);
+    const firestoreError = error as FirestoreError;
+    // This specific error code often means Firestore database has not been created/enabled.
+    if (firestoreError.code === 'failed-precondition') {
+        throw new Error("Could not fetch data. It's likely Firestore is not enabled in your Firebase project console. Please go to your Firebase project, find 'Firestore Database' in the build menu, and click 'Create database'.");
+    }
     throw new Error("Could not fetch user data.");
   }
 };
