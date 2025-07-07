@@ -18,24 +18,29 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { BookCopy, Brain, MessageCircleQuestion, Star } from 'lucide-react';
+import { BookCopy, Brain, MessageCircleQuestion, Star, Timer } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTask } from '@/context/TaskContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { usePomodoro } from '@/context/PomodoroContext';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function AnalyticsPage() {
   const { topics, dataLoading: topicsLoading } = useTopic();
   const { tasks } = useTask();
+  const { pomodoroHistory, loading: pomodoroLoading } = usePomodoro();
   const isMobile = useIsMobile();
 
   const analyticsData = useMemo(() => {
-    if (!topics || !tasks)
+    if (!topics || !tasks || !pomodoroHistory)
       return {
         dailyTopics: [],
         totalTopics: 0,
         totalFlashcards: 0,
         totalQuizQuestions: 0,
         totalPoints: 0,
+        totalPomodoroSessions: 0,
+        pomodoroTopics: [],
       };
 
     const totalTopics = topics.length;
@@ -51,6 +56,17 @@ export default function AnalyticsPage() {
     const totalPoints = tasks
         .filter(task => task.columnId === 'done')
         .reduce((acc, task) => acc + task.points, 0);
+
+    const totalPomodoroSessions = pomodoroHistory.reduce((acc, p) => acc + p.sessions, 0);
+    
+    const pomodoroTopicStats = pomodoroHistory.reduce<Record<string, number>>((acc, session) => {
+        acc[session.topic] = (acc[session.topic] || 0) + session.sessions;
+        return acc;
+    }, {});
+    const pomodoroTopics = Object.entries(pomodoroTopicStats)
+      .map(([topic, sessions]) => ({ topic, sessions }))
+      .sort((a, b) => b.sessions - a.sessions);
+
 
     const dailyTopicsMap = new Map<string, number>();
     const today = new Date();
@@ -89,8 +105,10 @@ export default function AnalyticsPage() {
       totalFlashcards,
       totalQuizQuestions,
       totalPoints,
+      totalPomodoroSessions,
+      pomodoroTopics,
     };
-  }, [topics, tasks]);
+  }, [topics, tasks, pomodoroHistory]);
 
   const chartConfig = {
     topics: {
@@ -99,7 +117,7 @@ export default function AnalyticsPage() {
     },
   };
   
-  if (topicsLoading) {
+  if (topicsLoading || pomodoroLoading) {
       return (
           <AppLayout>
               <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -222,6 +240,50 @@ export default function AnalyticsPage() {
             </div>
           </CardContent>
         </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Completed Pomodoros</CardTitle>
+                    <Timer className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">
+                        {analyticsData.totalPomodoroSessions}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                        25-minute focus blocks completed
+                    </p>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Pomodoro Topics</CardTitle>
+                    <CardDescription>Topics you've focused on during sessions.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {analyticsData.pomodoroTopics.length > 0 ? (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Topic</TableHead>
+                                    <TableHead className="text-right">Sessions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {analyticsData.pomodoroTopics.slice(0, 5).map(item => (
+                                    <TableRow key={item.topic}>
+                                        <TableCell className="font-medium truncate max-w-xs">{item.topic}</TableCell>
+                                        <TableCell className="text-right">{item.sessions}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    ) : (
+                        <p className="text-sm text-center text-muted-foreground py-4">No Pomodoro sessions completed yet.</p>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
       </div>
     </AppLayout>
   );

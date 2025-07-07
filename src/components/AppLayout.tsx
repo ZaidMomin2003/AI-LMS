@@ -126,7 +126,7 @@ function SidebarSubscriptionButton() {
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const { subscription, loading: subscriptionLoading } = useSubscription();
-  const { pomodoroCount, loading: pomodoroLoading } = usePomodoro();
+  const { pomodoroHistory, loading: pomodoroLoading } = usePomodoro();
   const { topics, dataLoading: topicsLoading } = useTopic();
   const { roadmap, loading: roadmapLoading } = useRoadmap();
   
@@ -159,7 +159,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isHobby = subscription?.planName === 'Hobby';
   const isSageMakerLocked = isHobby;
   const isRoadmapLocked = isHobby && !!roadmap;
-  const isPomodoroLocked = isHobby && pomodoroCount > 0;
+  const isPomodoroLocked = isHobby && pomodoroHistory.length > 0;
 
 
   return (

@@ -1,3 +1,4 @@
+
 export interface KeyTerm {
   term: string;
   definition: string;
@@ -49,4 +50,10 @@ export interface UserSubscription {
   stripeSessionId?: string;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
+}
+
+export interface PomodoroSession {
+  topic: string;
+  sessions: number;
+  completedAt: string;
 }

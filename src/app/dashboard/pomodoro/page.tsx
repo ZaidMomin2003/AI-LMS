@@ -66,7 +66,7 @@ const CircularProgress = ({ progress, size = 280 }: { progress: number; size?: n
 
 export default function PomodoroPage() {
   const { subscription } = useSubscription();
-  const { pomodoroCount, incrementPomodoroCount } = usePomodoro();
+  const { pomodoroHistory, addCompletedPomodoro } = usePomodoro();
   const { toast } = useToast();
 
   const [timerConfig, setTimerConfig] = useState<{ topic: string; totalSessions: number } | null>(null);
@@ -104,6 +104,10 @@ export default function PomodoroPage() {
           toast({ title: 'Time for a break! ☕️', description: 'Rest for 5 minutes.' });
         } else {
           toast({ title: 'Congratulations! 🎉', description: 'You have completed all your sessions.' });
+          addCompletedPomodoro({ 
+            topic: timerConfig!.topic,
+            sessions: timerConfig!.totalSessions
+          });
           setTimerConfig(null);
         }
       } else { // mode === 'Rest'
@@ -113,7 +117,7 @@ export default function PomodoroPage() {
         toast({ title: 'Back to work! 💪', description: 'Starting the next session.' });
       }
     }
-  }, [timeLeft, mode, currentSession, timerConfig, toast]);
+  }, [timeLeft, mode, currentSession, timerConfig, toast, addCompletedPomodoro]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -126,12 +130,9 @@ export default function PomodoroPage() {
     setMode('Work');
     setCurrentSession(1);
     setIsActive(true);
-    if (subscription?.planName === 'Hobby') {
-      incrementPomodoroCount();
-    }
   };
 
-  const isLocked = subscription?.planName === 'Hobby' && pomodoroCount > 0;
+  const isLocked = subscription?.planName === 'Hobby' && pomodoroHistory.length > 0;
 
   const resetTimer = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
