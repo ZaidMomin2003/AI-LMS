@@ -13,6 +13,7 @@ import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { MarkdownRenderer } from '@/components/MarkdownRenderer';
 
 type Inputs = {
   prompt: string;
@@ -216,7 +217,13 @@ export default function SageMakerPage() {
                       {message.image && (
                          <Image src={message.image} alt="User upload" width={200} height={200} className="rounded-lg mb-2" />
                       )}
-                      <p className="whitespace-pre-wrap">{message.content}</p>
+                      {message.role === 'assistant' ? (
+                        <div className="whitespace-pre-wrap">
+                          <MarkdownRenderer content={message.content} />
+                        </div>
+                      ) : (
+                        <p className="whitespace-pre-wrap">{message.content}</p>
+                      )}
                     </div>
                      {message.role === 'user' && (
                         <Avatar>
