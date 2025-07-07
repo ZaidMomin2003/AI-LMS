@@ -4,6 +4,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import { isFirebaseEnabled } from '@/lib/firebase';
 
 export interface ProfileData {
   phoneNumber?: string;
@@ -27,7 +28,7 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (user) {
+      if (user && isFirebaseEnabled) {
         setLoading(true);
         try {
             const userData = await getUserDoc(user.uid);
@@ -47,10 +48,10 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
   }, [user]);
 
   const updateProfile = async (data: ProfileData) => {
-    if (!user) return;
+    if (!user || !isFirebaseEnabled) return;
     const newProfile = { ...profile, ...data };
+    setProfile(newProfile); // Optimistic update
     await updateUserDoc(user.uid, { profile: newProfile });
-    setProfile(newProfile);
   };
 
   return (

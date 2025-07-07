@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, isFirebaseEnabled } from '@/lib/firebase';
 
 interface AuthContextType {
   user: User | null;
@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!auth) {
+    if (!isFirebaseEnabled || !auth) {
         console.warn("Firebase is not configured. Authentication will be disabled.");
         setLoading(false);
         return;

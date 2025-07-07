@@ -5,6 +5,7 @@ import type { ExamDetails } from '@/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import { isFirebaseEnabled } from '@/lib/firebase';
 
 interface ExamContextType {
   exam: ExamDetails | null;
@@ -29,7 +30,7 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const fetchExam = async () => {
-        if (user) {
+        if (user && isFirebaseEnabled) {
             try {
                 const userData = await getUserDoc(user.uid);
                 setExam(userData?.exam || null);
@@ -72,15 +73,15 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
   }, [exam]);
 
   const addExam = async (newExam: ExamDetails) => {
-    if (!user) return;
+    if (!user || !isFirebaseEnabled) return;
+    setExam(newExam); // Optimistic update
     await updateUserDoc(user.uid, { exam: newExam });
-    setExam(newExam);
   };
 
   const clearExam = async () => {
-    if (!user) return;
+    if (!user || !isFirebaseEnabled) return;
+    setExam(null); // Optimistic update
     await updateUserDoc(user.uid, { exam: null });
-    setExam(null);
   };
 
   return (

@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { Topic } from '@/types';
 import { useAuth } from './AuthContext';
 import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import { isFirebaseEnabled } from '@/lib/firebase';
 
 interface TopicContextType {
   topics: Topic[];
@@ -25,17 +26,16 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const fetchTopics = async () => {
-      if (user) {
+      if (user && isFirebaseEnabled) {
         setDataLoading(true);
         try {
             const userData = await getUserDoc(user.uid);
             if (userData?.topics) {
-              // Firestore Timestamps need to be converted to JS Dates
               const parsedTopics = userData.topics.map((t: any) => ({
                   ...t,
                   createdAt: t.createdAt?.toDate ? t.createdAt.toDate() : new Date(t.createdAt)
               }));
-              setTopics(parsedTopics);
+              setTopics(parsedTopics.sort((a: Topic, b: Topic) => b.createdAt.getTime() - a.createdAt.getTime()));
             } else {
               setTopics([]);
             }
@@ -54,7 +54,7 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
   }, [user]);
 
   const addTopic = async (topic: Topic) => {
-    if (!user) return;
+    if (!user || !isFirebaseEnabled) return;
     const newTopics = [topic, ...topics];
     setTopics(newTopics); // Optimistic update
     await updateUserDoc(user.uid, { topics: newTopics });

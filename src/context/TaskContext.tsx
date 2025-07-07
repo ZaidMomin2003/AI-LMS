@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { KanbanTask, TaskPriority } from '@/types';
@@ -6,6 +5,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getUserDoc, updateUserDoc } from '@/services/firestore';
 import { debounce } from 'lodash';
+import { isFirebaseEnabled } from '@/lib/firebase';
 
 interface TaskContextType {
     tasks: KanbanTask[];
@@ -17,9 +17,10 @@ interface TaskContextType {
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
-// Debounce saving to Firestore to avoid too many writes during rapid changes (like drag & drop)
 const debouncedUpdate = debounce((uid: string, tasks: KanbanTask[]) => {
-    updateUserDoc(uid, { tasks });
+    if (isFirebaseEnabled) {
+        updateUserDoc(uid, { tasks });
+    }
 }, 500);
 
 
@@ -30,7 +31,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     
     useEffect(() => {
         const fetchTasks = async () => {
-            if (user) {
+            if (user && isFirebaseEnabled) {
                 setLoading(true);
                 try {
                     const userData = await getUserDoc(user.uid);
@@ -52,7 +53,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     const setTasks: React.Dispatch<React.SetStateAction<KanbanTask[]>> = (newTasksAction) => {
         const newTasks = typeof newTasksAction === 'function' ? newTasksAction(tasks) : newTasksAction;
         setTasksInternal(newTasks);
-        if (user) {
+        if (user && isFirebaseEnabled) {
             debouncedUpdate(user.uid, newTasks);
         }
     };

@@ -5,6 +5,7 @@ import type { GenerateRoadmapOutput } from '@/ai/flows/generate-roadmap-flow';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import { isFirebaseEnabled } from '@/lib/firebase';
 
 interface RoadmapContextType {
     roadmap: GenerateRoadmapOutput | null;
@@ -21,7 +22,7 @@ export const RoadmapProvider = ({ children }: { children: React.ReactNode }) => 
 
     useEffect(() => {
         const fetchRoadmap = async () => {
-            if (user) {
+            if (user && isFirebaseEnabled) {
                 setLoading(true);
                 try {
                     const userData = await getUserDoc(user.uid);
@@ -42,7 +43,7 @@ export const RoadmapProvider = ({ children }: { children: React.ReactNode }) => 
 
     const setRoadmap = async (newRoadmap: GenerateRoadmapOutput | null) => {
         setRoadmapState(newRoadmap); // Optimistic update for UI responsiveness
-        if (!user) return;
+        if (!user || !isFirebaseEnabled) return;
         await updateUserDoc(user.uid, { roadmap: newRoadmap });
     };
 
