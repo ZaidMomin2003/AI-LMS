@@ -41,6 +41,8 @@ const prompt = ai.definePrompt({
   Image context:
   {{media url=imageDataUri}}
   {{/if}}
+
+  Ensure your response is a valid JSON object matching the output schema.
   `,
 });
 
