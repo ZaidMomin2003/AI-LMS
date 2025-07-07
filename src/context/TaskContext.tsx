@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { KanbanTask, TaskPriority } from '@/types';
@@ -11,6 +12,7 @@ interface TaskContextType {
     setTasks: React.Dispatch<React.SetStateAction<KanbanTask[]>>;
     addTask: (content: string, priority: TaskPriority, column?: 'todo' | 'in-progress' | 'done', id?: string) => void;
     findTaskById: (id: string) => KanbanTask | undefined;
+    loading: boolean;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -24,14 +26,24 @@ const debouncedUpdate = debounce((uid: string, tasks: KanbanTask[]) => {
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     const { user } = useAuth();
     const [tasks, setTasksInternal] = useState<KanbanTask[]>([]);
+    const [loading, setLoading] = useState(true);
     
     useEffect(() => {
         const fetchTasks = async () => {
             if (user) {
-                const userData = await getUserDoc(user.uid);
-                setTasksInternal(userData?.tasks || []);
+                setLoading(true);
+                try {
+                    const userData = await getUserDoc(user.uid);
+                    setTasksInternal(userData?.tasks || []);
+                } catch (error) {
+                    console.error("Failed to fetch tasks:", error);
+                    setTasksInternal([]);
+                } finally {
+                    setLoading(false);
+                }
             } else {
                 setTasksInternal([]);
+                setLoading(false);
             }
         };
         fetchTasks();
@@ -62,7 +74,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     return (
-        <TaskContext.Provider value={{ tasks, setTasks, addTask, findTaskById }}>
+        <TaskContext.Provider value={{ tasks, setTasks, addTask, findTaskById, loading }}>
             {children}
         </TaskContext.Provider>
     );

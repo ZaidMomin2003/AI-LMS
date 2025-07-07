@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { ExamDetails } from '@/types';
@@ -29,8 +30,13 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const fetchExam = async () => {
         if (user) {
-            const userData = await getUserDoc(user.uid);
-            setExam(userData?.exam || null);
+            try {
+                const userData = await getUserDoc(user.uid);
+                setExam(userData?.exam || null);
+            } catch (error) {
+                console.error("Failed to fetch exam details:", error);
+                setExam(null);
+            }
         } else {
             setExam(null);
         }

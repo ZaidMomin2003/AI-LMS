@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
@@ -28,9 +29,15 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     const fetchProfile = async () => {
       if (user) {
         setLoading(true);
-        const userData = await getUserDoc(user.uid);
-        setProfile(userData?.profile || null);
-        setLoading(false);
+        try {
+            const userData = await getUserDoc(user.uid);
+            setProfile(userData?.profile || null);
+        } catch (error) {
+            console.error("Failed to fetch profile:", error);
+            setProfile(null);
+        } finally {
+            setLoading(false);
+        }
       } else {
         setProfile(null);
         setLoading(false);

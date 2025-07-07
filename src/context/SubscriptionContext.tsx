@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { UserSubscription } from '@/types';
@@ -15,39 +16,45 @@ const SubscriptionContext = createContext<SubscriptionContextType | undefined>(u
 
 export const SubscriptionProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
-  const [subscription, setSubscription] = useState<UserSubscription | null>(null);
+  const [subscription, setSubscriptionState] = useState<UserSubscription | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSubscription = async () => {
       if (user) {
         setLoading(true);
-        const userData = await getUserDoc(user.uid);
-        if (userData?.subscription) {
-            setSubscription(userData.subscription);
-        } else {
-            // Default to Hobby plan for new users
-            const defaultSub = { planName: 'Hobby', status: 'active' } as UserSubscription;
-            setSubscription(defaultSub);
-            await updateUserDoc(user.uid, { subscription: defaultSub });
+        try {
+            const userData = await getUserDoc(user.uid);
+            if (userData?.subscription) {
+                setSubscriptionState(userData.subscription);
+            } else {
+                // Default to Hobby plan for new users
+                const defaultSub = { planName: 'Hobby', status: 'active' } as UserSubscription;
+                setSubscriptionState(defaultSub);
+                await updateUserDoc(user.uid, { subscription: defaultSub });
+            }
+        } catch (error) {
+            console.error("Failed to fetch subscription:", error);
+            setSubscriptionState(null);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
       } else {
-        setSubscription(null);
+        setSubscriptionState(null);
         setLoading(false);
       }
     };
     fetchSubscription();
   }, [user]);
 
-  const updateSubscription = async (data: UserSubscription | null) => {
+  const setSubscription = async (data: UserSubscription | null) => {
+    setSubscriptionState(data); // Optimistic update
     if (!user) return;
-    setSubscription(data);
     await updateUserDoc(user.uid, { subscription: data });
   };
 
   return (
-    <SubscriptionContext.Provider value={{ subscription, setSubscription: updateSubscription, loading }}>
+    <SubscriptionContext.Provider value={{ subscription, setSubscription, loading }}>
       {children}
     </SubscriptionContext.Provider>
   );

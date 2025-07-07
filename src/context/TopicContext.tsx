@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
@@ -26,18 +27,24 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
     const fetchTopics = async () => {
       if (user) {
         setDataLoading(true);
-        const userData = await getUserDoc(user.uid);
-        if (userData?.topics) {
-          // Firestore Timestamps need to be converted to JS Dates
-          const parsedTopics = userData.topics.map((t: any) => ({
-              ...t,
-              createdAt: t.createdAt?.toDate ? t.createdAt.toDate() : new Date(t.createdAt)
-          }));
-          setTopics(parsedTopics);
-        } else {
-          setTopics([]);
+        try {
+            const userData = await getUserDoc(user.uid);
+            if (userData?.topics) {
+              // Firestore Timestamps need to be converted to JS Dates
+              const parsedTopics = userData.topics.map((t: any) => ({
+                  ...t,
+                  createdAt: t.createdAt?.toDate ? t.createdAt.toDate() : new Date(t.createdAt)
+              }));
+              setTopics(parsedTopics);
+            } else {
+              setTopics([]);
+            }
+        } catch (error) {
+            console.error("Failed to fetch topics:", error);
+            setTopics([]);
+        } finally {
+            setDataLoading(false);
         }
-        setDataLoading(false);
       } else {
         setTopics([]);
         setDataLoading(false);
