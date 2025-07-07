@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import {
   Card,
@@ -19,48 +19,17 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 import { BookCopy, Brain, MessageCircleQuestion, Star } from 'lucide-react';
-import type { KanbanTask } from '@/types';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useAuth } from '@/context/AuthContext';
-
-const KANBAN_TASKS_STORAGE_KEY_PREFIX = 'scholarai_kanban_tasks';
+import { useTask } from '@/context/TaskContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AnalyticsPage() {
-  const { user } = useAuth();
-  const { topics } = useTopic();
-  const [kanbanTasks, setKanbanTasks] = useState<KanbanTask[]>([]);
+  const { topics, dataLoading: topicsLoading } = useTopic();
+  const { tasks } = useTask();
   const isMobile = useIsMobile();
-  const [storageKey, setStorageKey] = useState('');
-
-  useEffect(() => {
-    if (user) {
-        setStorageKey(`${KANBAN_TASKS_STORAGE_KEY_PREFIX}_${user.uid}`);
-    } else {
-        setStorageKey('');
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (storageKey) {
-      try {
-        const storedTasks = localStorage.getItem(storageKey);
-        if (storedTasks) {
-          setKanbanTasks(JSON.parse(storedTasks));
-        } else {
-          setKanbanTasks([]);
-        }
-      } catch (error) {
-          console.error("Failed to load kanban tasks from localStorage", error);
-          setKanbanTasks([]);
-      }
-    } else {
-      setKanbanTasks([]);
-    }
-  }, [storageKey]);
-
 
   const analyticsData = useMemo(() => {
-    if (!topics)
+    if (!topics || !tasks)
       return {
         dailyTopics: [],
         totalTopics: 0,
@@ -79,7 +48,7 @@ export default function AnalyticsPage() {
       0
     );
 
-    const totalPoints = kanbanTasks
+    const totalPoints = tasks
         .filter(task => task.columnId === 'done')
         .reduce((acc, task) => acc + task.points, 0);
 
@@ -121,7 +90,7 @@ export default function AnalyticsPage() {
       totalQuizQuestions,
       totalPoints,
     };
-  }, [topics, kanbanTasks]);
+  }, [topics, tasks]);
 
   const chartConfig = {
     topics: {
@@ -129,6 +98,24 @@ export default function AnalyticsPage() {
       color: 'hsl(var(--primary))',
     },
   };
+  
+  if (topicsLoading) {
+      return (
+          <AppLayout>
+              <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+                <Skeleton className="h-8 w-64 mb-2" />
+                <Skeleton className="h-4 w-96 mb-6" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Skeleton className="h-32"/>
+                    <Skeleton className="h-32"/>
+                    <Skeleton className="h-32"/>
+                    <Skeleton className="h-32"/>
+                </div>
+                <Skeleton className="h-96"/>
+              </div>
+          </AppLayout>
+      )
+  }
 
   return (
     <AppLayout>

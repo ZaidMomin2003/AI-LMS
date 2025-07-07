@@ -3,69 +3,54 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { Topic } from '@/types';
 import { useAuth } from './AuthContext';
+import { getUserDoc, updateUserDoc } from '@/services/firestore';
 
 interface TopicContextType {
   topics: Topic[];
-  addTopic: (topic: Topic) => void;
+  addTopic: (topic: Topic) => Promise<void>;
   getTopicById: (id: string) => Topic | undefined;
   loading: boolean;
-  setLoading: (loading: boolean) => void;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  dataLoading: boolean;
 }
 
 const TopicContext = createContext<TopicContextType | undefined>(undefined);
 
-const TOPICS_STORAGE_KEY_PREFIX = 'scholarai_topics';
-
 export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const [topics, setTopics] = useState<Topic[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [storageKey, setStorageKey] = useState('');
+  const [loading, setLoading] = useState(false); // For AI generation
+  const [dataLoading, setDataLoading] = useState(true); // For initial data fetch
 
   useEffect(() => {
-    if (user) {
-      setStorageKey(`${TOPICS_STORAGE_KEY_PREFIX}_${user.uid}`);
-    } else {
-      setStorageKey('');
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (storageKey) {
-      try {
-        const storedTopics = localStorage.getItem(storageKey);
-        if (storedTopics) {
-          const parsedTopics = JSON.parse(storedTopics).map((t: any) => ({
+    const fetchTopics = async () => {
+      if (user) {
+        setDataLoading(true);
+        const userData = await getUserDoc(user.uid);
+        if (userData?.topics) {
+          // Firestore Timestamps need to be converted to JS Dates
+          const parsedTopics = userData.topics.map((t: any) => ({
               ...t,
-              createdAt: new Date(t.createdAt)
+              createdAt: t.createdAt?.toDate ? t.createdAt.toDate() : new Date(t.createdAt)
           }));
           setTopics(parsedTopics);
         } else {
           setTopics([]);
         }
-      } catch (error) {
-        console.error("Failed to load topics from localStorage", error);
+        setDataLoading(false);
+      } else {
         setTopics([]);
+        setDataLoading(false);
       }
-    } else {
-      setTopics([]);
-    }
-    setIsInitialized(true);
-  }, [storageKey]);
+    };
+    fetchTopics();
+  }, [user]);
 
-  useEffect(() => {
-    if (isInitialized && storageKey) {
-        try {
-            localStorage.setItem(storageKey, JSON.stringify(topics));
-        } catch (error) {
-            console.error("Failed to save topics to localStorage", error);
-        }
-    }
-  }, [topics, isInitialized, storageKey]);
-
-  const addTopic = (topic: Topic) => {
-    setTopics((prevTopics) => [topic, ...prevTopics]);
+  const addTopic = async (topic: Topic) => {
+    if (!user) return;
+    const newTopics = [topic, ...topics];
+    setTopics(newTopics); // Optimistic update
+    await updateUserDoc(user.uid, { topics: newTopics });
   };
 
   const getTopicById = (id: string) => {
@@ -73,7 +58,7 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <TopicContext.Provider value={{ topics, addTopic, getTopicById, loading, setLoading }}>
+    <TopicContext.Provider value={{ topics, addTopic, getTopicById, loading, setLoading, dataLoading }}>
       {children}
     </TopicContext.Provider>
   );

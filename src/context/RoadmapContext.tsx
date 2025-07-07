@@ -3,6 +3,7 @@
 import type { GenerateRoadmapOutput } from '@/ai/flows/generate-roadmap-flow';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { getUserDoc, updateUserDoc } from '@/services/firestore';
 
 interface RoadmapContextType {
     roadmap: GenerateRoadmapOutput | null;
@@ -11,54 +12,27 @@ interface RoadmapContextType {
 
 const RoadmapContext = createContext<RoadmapContextType | undefined>(undefined);
 
-const ROADMAP_STORAGE_KEY_PREFIX = 'scholarai_roadmap';
-
 export const RoadmapProvider = ({ children }: { children: React.ReactNode }) => {
     const { user } = useAuth();
-    const [roadmap, setRoadmap] = useState<GenerateRoadmapOutput | null>(null);
-    const [isInitialized, setIsInitialized] = useState(false);
-    const [storageKey, setStorageKey] = useState('');
+    const [roadmap, setRoadmapState] = useState<GenerateRoadmapOutput | null>(null);
 
     useEffect(() => {
-        if (user) {
-            setStorageKey(`${ROADMAP_STORAGE_KEY_PREFIX}_${user.uid}`);
-        } else {
-            setStorageKey('');
-        }
+        const fetchRoadmap = async () => {
+            if (user) {
+                const userData = await getUserDoc(user.uid);
+                setRoadmapState(userData?.roadmap || null);
+            } else {
+                setRoadmapState(null);
+            }
+        };
+        fetchRoadmap();
     }, [user]);
 
-    useEffect(() => {
-        if (storageKey) {
-            try {
-                const storedRoadmap = localStorage.getItem(storageKey);
-                if (storedRoadmap) {
-                    setRoadmap(JSON.parse(storedRoadmap));
-                } else {
-                    setRoadmap(null);
-                }
-            } catch (error) {
-                console.error('Failed to load roadmap from localStorage', error);
-                setRoadmap(null);
-            }
-        } else {
-            setRoadmap(null);
-        }
-        setIsInitialized(true);
-    }, [storageKey]);
-
-    useEffect(() => {
-        if (isInitialized && storageKey) {
-            try {
-                if (roadmap) {
-                    localStorage.setItem(storageKey, JSON.stringify(roadmap));
-                } else {
-                    localStorage.removeItem(storageKey);
-                }
-            } catch (error) {
-                console.error('Failed to save roadmap to localStorage', error);
-            }
-        }
-    }, [roadmap, isInitialized, storageKey]);
+    const setRoadmap = async (newRoadmap: GenerateRoadmapOutput | null) => {
+        if (!user) return;
+        await updateUserDoc(user.uid, { roadmap: newRoadmap });
+        setRoadmapState(newRoadmap);
+    };
 
     return (
         <RoadmapContext.Provider value={{ roadmap, setRoadmap }}>

@@ -3,8 +3,8 @@
 import type { KanbanTask, TaskPriority } from '@/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-
-const KANBAN_TASKS_STORAGE_KEY_PREFIX = 'scholarai_kanban_tasks';
+import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import { debounce } from 'lodash';
 
 interface TaskContextType {
     tasks: KanbanTask[];
@@ -15,49 +15,36 @@ interface TaskContextType {
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
+// Debounce saving to Firestore to avoid too many writes during rapid changes (like drag & drop)
+const debouncedUpdate = debounce((uid: string, tasks: KanbanTask[]) => {
+    updateUserDoc(uid, { tasks });
+}, 500);
+
+
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     const { user } = useAuth();
-    const [tasks, setTasks] = useState<KanbanTask[]>([]);
-    const [isInitialized, setIsInitialized] = useState(false);
-    const [storageKey, setStorageKey] = useState('');
-
+    const [tasks, setTasksInternal] = useState<KanbanTask[]>([]);
+    
     useEffect(() => {
-        if (user) {
-            setStorageKey(`${KANBAN_TASKS_STORAGE_KEY_PREFIX}_${user.uid}`);
-        } else {
-            setStorageKey('');
-        }
+        const fetchTasks = async () => {
+            if (user) {
+                const userData = await getUserDoc(user.uid);
+                setTasksInternal(userData?.tasks || []);
+            } else {
+                setTasksInternal([]);
+            }
+        };
+        fetchTasks();
     }, [user]);
 
-    useEffect(() => {
-        if (storageKey) {
-            try {
-                const storedTasks = localStorage.getItem(storageKey);
-                if (storedTasks) {
-                    setTasks(JSON.parse(storedTasks));
-                } else {
-                    setTasks([]);
-                }
-            } catch (error) {
-                console.error("Failed to load tasks from localStorage", error);
-                setTasks([]);
-            }
-        } else {
-            setTasks([]);
+    const setTasks: React.Dispatch<React.SetStateAction<KanbanTask[]>> = (newTasksAction) => {
+        const newTasks = typeof newTasksAction === 'function' ? newTasksAction(tasks) : newTasksAction;
+        setTasksInternal(newTasks);
+        if (user) {
+            debouncedUpdate(user.uid, newTasks);
         }
-        setIsInitialized(true);
-    }, [storageKey]);
+    };
 
-    useEffect(() => {
-        if (isInitialized && storageKey) {
-            try {
-                localStorage.setItem(storageKey, JSON.stringify(tasks));
-            } catch (error) {
-                console.error("Failed to save tasks to localStorage", error);
-            }
-        }
-    }, [tasks, isInitialized, storageKey]);
-    
     const addTask = (content: string, priority: TaskPriority, column: 'todo' | 'in-progress' | 'done' = 'todo', id?: string) => {
         const pointsMap: Record<TaskPriority, number> = { 'Hard': 50, 'Moderate': 30, 'Easy': 15 };
         const newTask: KanbanTask = {
@@ -67,7 +54,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
             priority,
             points: pointsMap[priority],
         };
-        setTasks((prev) => [newTask, ...prev]);
+        setTasks(prev => [newTask, ...prev]);
     };
 
     const findTaskById = (id: string) => {

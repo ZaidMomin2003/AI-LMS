@@ -45,7 +45,7 @@ export function TopicForm() {
         id: crypto.randomUUID(),
         createdAt: new Date(),
       };
-      addTopic(newTopic);
+      await addTopic(newTopic);
       toast({
         title: 'Success!',
         description: `Your study materials for "${values.title}" are ready.`,

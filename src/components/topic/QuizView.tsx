@@ -10,13 +10,12 @@ import { cn } from '@/lib/utils';
 import { Progress } from '../ui/progress';
 import { RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { getUserDoc, updateUserDoc } from '@/services/firestore';
 
 interface QuizViewProps {
   quiz: QuizQuestion[];
   topicId: string;
 }
-
-const QUIZ_STATS_STORAGE_KEY_PREFIX = 'scholarai_quiz_stats';
 
 export function QuizView({ quiz, topicId }: QuizViewProps) {
   const { user } = useAuth();
@@ -24,13 +23,6 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
   const [isFinished, setIsFinished] = useState(false);
-  const [storageKey, setStorageKey] = useState('');
-
-  useEffect(() => {
-    if (user) {
-        setStorageKey(`${QUIZ_STATS_STORAGE_KEY_PREFIX}_${user.uid}`);
-    }
-  }, [user]);
 
   const score = userAnswers.reduce((acc, answer, index) => {
     if (answer === quiz[index].answer) {
@@ -40,20 +32,27 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
   }, 0);
 
   useEffect(() => {
-    if (isFinished && storageKey) {
-      try {
-        const stats = JSON.parse(localStorage.getItem(storageKey) || '{}');
-        stats[topicId] = {
-          score,
-          totalQuestions: quiz.length,
-          timestamp: new Date().toISOString(),
-        };
-        localStorage.setItem(storageKey, JSON.stringify(stats));
-      } catch (error) {
-        console.error("Failed to save quiz stats to localStorage", error);
+    const saveQuizStats = async () => {
+      if (isFinished && user) {
+        try {
+          const userData = await getUserDoc(user.uid);
+          const existingStats = userData?.quizStats || {};
+          const newStats = {
+            ...existingStats,
+            [topicId]: {
+              score,
+              totalQuestions: quiz.length,
+              timestamp: new Date().toISOString(),
+            },
+          };
+          await updateUserDoc(user.uid, { quizStats: newStats });
+        } catch (error) {
+          console.error("Failed to save quiz stats to Firestore", error);
+        }
       }
-    }
-  }, [isFinished, score, quiz.length, topicId, storageKey]);
+    };
+    saveQuizStats();
+  }, [isFinished, score, quiz.length, topicId, user]);
 
   if (!quiz || quiz.length === 0) {
     return (

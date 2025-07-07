@@ -3,6 +3,7 @@
 import type { UserSubscription } from '@/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { getUserDoc, updateUserDoc } from '@/services/firestore';
 
 interface SubscriptionContextType {
   subscription: UserSubscription | null;
@@ -12,57 +13,37 @@ interface SubscriptionContextType {
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
-const SUBSCRIPTION_STORAGE_KEY_PREFIX = 'scholarai_subscription';
-
 export const SubscriptionProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const [subscription, setSubscription] = useState<UserSubscription | null>(null);
-  const [storageKey, setStorageKey] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
-      setStorageKey(`${SUBSCRIPTION_STORAGE_KEY_PREFIX}_${user.uid}`);
-    } else {
-      setStorageKey('');
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (storageKey) {
-      try {
-        const storedSubscription = localStorage.getItem(storageKey);
-        if (storedSubscription) {
-          setSubscription(JSON.parse(storedSubscription));
+    const fetchSubscription = async () => {
+      if (user) {
+        setLoading(true);
+        const userData = await getUserDoc(user.uid);
+        if (userData?.subscription) {
+            setSubscription(userData.subscription);
         } else {
-          // Default to Hobby plan for new users
-          setSubscription({ planName: 'Hobby', status: 'active' });
+            // Default to Hobby plan for new users
+            const defaultSub = { planName: 'Hobby', status: 'active' } as UserSubscription;
+            setSubscription(defaultSub);
+            await updateUserDoc(user.uid, { subscription: defaultSub });
         }
-      } catch (error) {
-        console.error('Failed to load subscription from localStorage', error);
-        setSubscription({ planName: 'Hobby', status: 'active' });
-      } finally {
+        setLoading(false);
+      } else {
+        setSubscription(null);
         setLoading(false);
       }
-    } else {
-      setSubscription(null);
-      setLoading(false);
-    }
-  }, [storageKey]);
+    };
+    fetchSubscription();
+  }, [user]);
 
-  const updateSubscription = (data: UserSubscription | null) => {
+  const updateSubscription = async (data: UserSubscription | null) => {
+    if (!user) return;
     setSubscription(data);
-    if (storageKey) {
-        try {
-            if (data) {
-                localStorage.setItem(storageKey, JSON.stringify(data));
-            } else {
-                localStorage.removeItem(storageKey);
-            }
-        } catch (error) {
-            console.error('Failed to save subscription to localStorage', error);
-        }
-    }
+    await updateUserDoc(user.uid, { subscription: data });
   };
 
   return (

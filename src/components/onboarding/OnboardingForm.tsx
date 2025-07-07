@@ -19,7 +19,7 @@ import {
 import { useProfile } from '@/context/ProfileContext';
 import { useExam } from '@/context/ExamContext';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowRight, Check, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowRight, Check, Calendar as CalendarIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
@@ -49,6 +49,7 @@ const steps = [
 
 export function OnboardingForm() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { updateProfile } = useProfile();
   const { addExam } = useExam();
@@ -73,29 +74,44 @@ export function OnboardingForm() {
     
     if (!output) return;
 
-    if (currentStep < steps.length - 1) {
+    if (currentStep === steps.length - 1) {
+        await handleSubmit();
+    } else {
        setCurrentStep(step => step + 1);
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
     const values = getValues();
-    updateProfile({
-        phoneNumber: values.phoneNumber,
-        country: values.country,
-        grade: values.grade,
-        referralSource: values.referralSource
-    });
-    addExam({
-        name: values.examName,
-        date: values.examDate.toISOString(),
-        syllabus: `Syllabus for ${values.examName}`, // Default syllabus
-    });
-    toast({
-        title: "Welcome to ScholarAI!",
-        description: "Your profile is set up. Let's start learning.",
-    });
-    router.push('/dashboard');
+    try {
+        await Promise.all([
+            updateProfile({
+                phoneNumber: values.phoneNumber,
+                country: values.country,
+                grade: values.grade,
+                referralSource: values.referralSource
+            }),
+            addExam({
+                name: values.examName,
+                date: values.examDate.toISOString(),
+                syllabus: `Syllabus for ${values.examName}`, // Default syllabus
+            })
+        ]);
+        toast({
+            title: "Welcome to ScholarAI!",
+            description: "Your profile is set up. Let's start learning.",
+        });
+        router.push('/dashboard');
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: "Setup Failed",
+            description: "Could not save your profile. Please try again.",
+        });
+    } finally {
+        setIsSubmitting(false);
+    }
   };
   
   const progressValue = (currentStep / (steps.length - 2)) * 100;
@@ -209,7 +225,14 @@ export function OnboardingForm() {
             <div className="text-center">
               <h1 className="text-4xl font-headline font-bold mb-4">You're all set!</h1>
               <p className="text-lg text-muted-foreground mb-8">Ready to start your smarter learning journey?</p>
-              <Button onClick={handleSubmit} size="lg">Go to Dashboard <ArrowRight className="ml-2" /></Button>
+              <Button onClick={handleSubmit} size="lg" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                  ) : (
+                      <ArrowRight className="ml-2" />
+                  )}
+                  Go to Dashboard
+              </Button>
             </div>
           )}
         </motion.div>

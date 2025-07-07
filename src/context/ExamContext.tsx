@@ -3,11 +3,12 @@
 import type { ExamDetails } from '@/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import { getUserDoc, updateUserDoc } from '@/services/firestore';
 
 interface ExamContextType {
   exam: ExamDetails | null;
-  addExam: (exam: ExamDetails) => void;
-  clearExam: () => void;
+  addExam: (exam: ExamDetails) => Promise<void>;
+  clearExam: () => Promise<void>;
   timeLeft: TimeLeft | null;
 }
 
@@ -20,55 +21,22 @@ interface TimeLeft {
 
 const ExamContext = createContext<ExamContextType | undefined>(undefined);
 
-const EXAM_STORAGE_KEY_PREFIX = 'scholarai_exam_details';
-
 export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const [exam, setExam] = useState<ExamDetails | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
-  const [storageKey, setStorageKey] = useState('');
 
   useEffect(() => {
-    if (user) {
-        setStorageKey(`${EXAM_STORAGE_KEY_PREFIX}_${user.uid}`);
-    } else {
-        setStorageKey('');
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (storageKey) {
-        try {
-          const storedExam = localStorage.getItem(storageKey);
-          if (storedExam) {
-            setExam(JSON.parse(storedExam));
-          } else {
-            setExam(null);
-          }
-        } catch (error) {
-          console.error('Failed to load exam details from localStorage', error);
-          setExam(null);
-        }
-    } else {
-        setExam(null);
-    }
-    setIsInitialized(true);
-  }, [storageKey]);
-  
-  useEffect(() => {
-    if (isInitialized && storageKey) {
-      try {
-        if (exam) {
-            localStorage.setItem(storageKey, JSON.stringify(exam));
+    const fetchExam = async () => {
+        if (user) {
+            const userData = await getUserDoc(user.uid);
+            setExam(userData?.exam || null);
         } else {
-            localStorage.removeItem(storageKey);
+            setExam(null);
         }
-      } catch (error) {
-        console.error('Failed to save exam details to localStorage', error);
-      }
-    }
-  }, [exam, isInitialized, storageKey]);
+    };
+    fetchExam();
+  }, [user]);
 
   useEffect(() => {
     if (!exam?.date) {
@@ -87,6 +55,7 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
           });
       } else {
           setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+          clearExam();
       }
     }
 
@@ -96,11 +65,15 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
     return () => clearInterval(timer);
   }, [exam]);
 
-  const addExam = (newExam: ExamDetails) => {
+  const addExam = async (newExam: ExamDetails) => {
+    if (!user) return;
+    await updateUserDoc(user.uid, { exam: newExam });
     setExam(newExam);
   };
 
-  const clearExam = () => {
+  const clearExam = async () => {
+    if (!user) return;
+    await updateUserDoc(user.uid, { exam: null });
     setExam(null);
   };
 

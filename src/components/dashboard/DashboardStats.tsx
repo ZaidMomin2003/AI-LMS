@@ -5,8 +5,7 @@ import { useTopic } from '@/context/TopicContext';
 import { BookCopy, Brain, MessageCircleQuestion } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-
-const QUIZ_STATS_STORAGE_KEY_PREFIX = 'scholarai_quiz_stats';
+import { getUserDoc, updateUserDoc } from '@/services/firestore';
 
 interface QuizStats {
     [topicId: string]: {
@@ -20,33 +19,18 @@ export function DashboardStats() {
     const { user } = useAuth();
     const { topics } = useTopic();
     const [quizStats, setQuizStats] = useState<QuizStats>({});
-    const [storageKey, setStorageKey] = useState('');
 
     useEffect(() => {
-        if (user) {
-            setStorageKey(`${QUIZ_STATS_STORAGE_KEY_PREFIX}_${user.uid}`);
-        } else {
-            setStorageKey('');
-        }
-    }, [user]);
-
-    useEffect(() => {
-        if (storageKey) {
-            try {
-                const storedStats = localStorage.getItem(storageKey);
-                if (storedStats) {
-                    setQuizStats(JSON.parse(storedStats));
-                } else {
-                    setQuizStats({});
-                }
-            } catch (error) {
-                console.error("Failed to load quiz stats from localStorage", error);
+        const fetchStats = async () => {
+            if (user) {
+                const userData = await getUserDoc(user.uid);
+                setQuizStats(userData?.quizStats || {});
+            } else {
                 setQuizStats({});
             }
-        } else {
-            setQuizStats({});
-        }
-    }, [storageKey]);
+        };
+        fetchStats();
+    }, [user]);
 
     const totalFlashcards = topics.reduce((acc, t) => acc + (t.flashcards?.length || 0), 0);
     
