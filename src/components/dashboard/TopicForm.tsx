@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -18,14 +19,18 @@ import { useTopic } from '@/context/TopicContext';
 import { useRouter } from 'next/navigation';
 import { createTopicAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Lock, Star } from 'lucide-react';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import Link from 'next/link';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: 'Topic must be at least 3 characters.' }).max(100),
 });
 
 export function TopicForm() {
-  const { addTopic, loading, setLoading } = useTopic();
+  const { topics, addTopic, loading, setLoading } = useTopic();
+  const { subscription } = useSubscription();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -35,6 +40,8 @@ export function TopicForm() {
       title: '',
     },
   });
+
+  const isLocked = subscription?.planName === 'Hobby' && topics.length >= 1;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
@@ -61,6 +68,30 @@ export function TopicForm() {
       setLoading(false);
       form.reset();
     }
+  }
+
+  if (isLocked) {
+      return (
+          <Card className="text-center bg-secondary">
+             <CardHeader>
+                <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit">
+                    <Lock className="w-6 h-6" />
+                </div>
+                <CardTitle className="font-headline pt-2">Free Topic Limit Reached</CardTitle>
+             </CardHeader>
+             <CardContent>
+                <p className="text-muted-foreground">You've generated your free topic. To create unlimited study materials, please upgrade your plan.</p>
+             </CardContent>
+             <div className="p-6 pt-0">
+                 <Button asChild>
+                    <Link href="/pricing">
+                        <Star className="mr-2 h-4 w-4" />
+                        Upgrade Plan
+                    </Link>
+                </Button>
+             </div>
+          </Card>
+      )
   }
 
   return (

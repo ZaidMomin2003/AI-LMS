@@ -33,6 +33,7 @@ import {
   User,
   Map,
   Gem,
+  Lock,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -49,6 +50,7 @@ import { ExamCountdown } from './exam/ExamCountdown';
 import { useSubscription } from '@/context/SubscriptionContext';
 import type { SubscriptionPlan } from '@/types';
 import { Skeleton } from './ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 function AppLoadingScreen() {
   return (
@@ -144,6 +146,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     return email[0].toUpperCase();
   }
 
+  const isSageMakerLocked = subscription?.planName === 'Hobby';
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -168,16 +172,25 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith('/dashboard/sagemaker')}
-                tooltip={{ children: 'SageMaker' }}
-              >
-                <Link href="/dashboard/sagemaker">
-                  <Bot />
-                  <span>SageMaker</span>
-                </Link>
-              </SidebarMenuButton>
+               <Tooltip>
+                 <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith('/dashboard/sagemaker')}
+                    >
+                      <Link href="/dashboard/sagemaker" className={cn(isSageMakerLocked && 'text-muted-foreground')}>
+                        <Bot />
+                        <span>SageMaker</span>
+                        {isSageMakerLocked && <Lock className="ml-auto h-3 w-3" />}
+                      </Link>
+                    </SidebarMenuButton>
+                 </TooltipTrigger>
+                 {isSageMakerLocked && (
+                    <TooltipContent side="right" align="center">
+                        <p>Upgrade to unlock SageMaker</p>
+                    </TooltipContent>
+                 )}
+               </Tooltip>
             </SidebarMenuItem>
              <SidebarMenuItem>
               <SidebarMenuButton

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLayout } from '@/components/AppLayout';
@@ -5,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, Paperclip, Send, User, X, Sparkles, Loader2, Mic } from 'lucide-react';
+import { Bot, Paperclip, Send, User, X, Sparkles, Loader2, Mic, Lock, Star } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { sageMakerAction } from './actions';
@@ -14,6 +15,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { MarkdownRenderer } from '@/components/MarkdownRenderer';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
 
 type Inputs = {
   prompt: string;
@@ -40,6 +44,7 @@ export default function SageMakerPage() {
   const [isRecording, setIsRecording] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
+  const { subscription, loading: subscriptionLoading } = useSubscription();
   
   const { register, handleSubmit, reset, setValue } = useForm<Inputs>();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -182,6 +187,44 @@ export default function SageMakerPage() {
       setIsLoading(false);
     }
   };
+  
+  if (subscriptionLoading) {
+      return (
+          <AppLayout>
+              <div className="flex-1 p-4 md:p-6 flex justify-center items-center">
+                   <Skeleton className="w-full max-w-3xl h-[85vh]"/>
+              </div>
+          </AppLayout>
+      )
+  }
+
+  if (subscription?.planName === 'Hobby') {
+      return (
+           <AppLayout>
+              <div className="flex-1 p-4 md:p-6 flex justify-center items-center">
+                   <Card className="w-full max-w-md text-center shadow-2xl">
+                     <CardHeader>
+                        <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit">
+                            <Lock className="w-8 h-8" />
+                        </div>
+                        <CardTitle className="font-headline pt-4 text-2xl">SageMaker is a Premium Feature</CardTitle>
+                        <p className="text-muted-foreground pt-2">
+                            Upgrade your plan to get unlimited access to your personal AI study assistant.
+                        </p>
+                     </CardHeader>
+                     <CardContent>
+                        <Button asChild size="lg">
+                            <Link href="/pricing">
+                                <Star className="mr-2 h-5 w-5" />
+                                Upgrade to Pro
+                            </Link>
+                        </Button>
+                     </CardContent>
+                   </Card>
+              </div>
+          </AppLayout>
+      )
+  }
 
   return (
     <AppLayout>

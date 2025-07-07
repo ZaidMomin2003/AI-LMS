@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -22,11 +23,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Loader2, Wand2, Clock, CalendarCheck } from 'lucide-react';
+import { Calendar as CalendarIcon, Loader2, Wand2, Clock, CalendarCheck, Lock, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createRoadmapAction } from './actions';
 import type { GenerateRoadmapOutput } from '@/ai/flows/generate-roadmap-flow';
 import { useRoadmap } from '@/context/RoadmapContext';
+import { useSubscription } from '@/context/SubscriptionContext';
+import Link from 'next/link';
 
 const formSchema = z.object({
   syllabus: z.string().min(20, { message: 'Syllabus must be at least 20 characters.' }),
@@ -38,6 +41,7 @@ export default function RoadmapPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { roadmap, setRoadmap } = useRoadmap();
   const { toast } = useToast();
+  const { subscription } = useSubscription();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,6 +50,8 @@ export default function RoadmapPage() {
       hoursPerDay: 4,
     },
   });
+
+  const isLocked = subscription?.planName === 'Hobby' && !!roadmap;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -86,95 +92,118 @@ export default function RoadmapPage() {
           </p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Roadmap Generator</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="syllabus"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Syllabus / Topics</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Paste your full syllabus here, or list all the topics you need to cover."
-                          className="min-h-[150px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>The more detail you provide, the better the plan.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="hoursPerDay"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>How many hours do you study a day?</FormLabel>
-                        <FormControl>
-                          <Input type="number" min="1" max="12" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="targetDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Target Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant="outline"
-                                className={cn('w-full text-left font-normal', !field.value && 'text-muted-foreground')}
-                              >
-                                {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+        {isLocked ? (
+           <Card className="text-center">
+             <CardHeader>
+                <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit">
+                    <Lock className="w-6 h-6" />
                 </div>
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Generating Plan...
-                    </>
-                  ) : (
-                    <>
-                      <Wand2 className="mr-2 h-4 w-4" />
-                      Create My Plan
-                    </>
-                  )}
+                <CardTitle className="font-headline pt-2">Roadmap Limit Reached</CardTitle>
+             </CardHeader>
+             <CardContent className="space-y-2">
+                <p className="text-muted-foreground">You've used your one free AI roadmap generation.</p>
+                <p className="text-muted-foreground">Upgrade to a premium plan to create unlimited roadmaps!</p>
+             </CardContent>
+             <div className="p-6 pt-0">
+                 <Button asChild>
+                    <Link href="/pricing">
+                        <Star className="mr-2 h-4 w-4" />
+                        Upgrade Your Plan
+                    </Link>
                 </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+             </div>
+           </Card>
+        ) : (
+            <Card>
+            <CardHeader>
+                <CardTitle>Roadmap Generator</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <FormField
+                    control={form.control}
+                    name="syllabus"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Syllabus / Topics</FormLabel>
+                        <FormControl>
+                            <Textarea
+                            placeholder="Paste your full syllabus here, or list all the topics you need to cover."
+                            className="min-h-[150px]"
+                            {...field}
+                            />
+                        </FormControl>
+                        <FormDescription>The more detail you provide, the better the plan.</FormDescription>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                        control={form.control}
+                        name="hoursPerDay"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>How many hours do you study a day?</FormLabel>
+                            <FormControl>
+                            <Input type="number" min="1" max="12" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="targetDate"
+                        render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                            <FormLabel>Target Date</FormLabel>
+                            <Popover>
+                            <PopoverTrigger asChild>
+                                <FormControl>
+                                <Button
+                                    variant="outline"
+                                    className={cn('w-full text-left font-normal', !field.value && 'text-muted-foreground')}
+                                >
+                                    {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                                </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
+                                initialFocus
+                                />
+                            </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    </div>
+                    <Button type="submit" disabled={isLoading}>
+                    {isLoading ? (
+                        <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating Plan...
+                        </>
+                    ) : (
+                        <>
+                        <Wand2 className="mr-2 h-4 w-4" />
+                        Create My Plan
+                        </>
+                    )}
+                    </Button>
+                </form>
+                </Form>
+            </CardContent>
+            </Card>
+        )}
 
         {isLoading && (
             <div className="space-y-4 mt-8">

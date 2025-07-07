@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -6,7 +7,7 @@ import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Star, Loader2 } from 'lucide-react';
+import { Check, Star, Loader2, X } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -20,17 +21,18 @@ const allPlans = [
     {
         name: 'Hobby',
         price: '$0',
-        period: 'One-time use',
+        period: 'Free Forever',
         description: 'Perfect for trying out the power of AI learning.',
+        priceId: null,
         features: [
-            '1 Topic Generation',
-            'Generate Study Notes',
-            'Generate Flashcards',
-            'Generate a Quiz'
+            { text: '1 Topic Generation', included: true },
+            { text: '1 AI Roadmap Generation', included: true },
+            { text: 'Unlimited Study Plan Board', included: true },
+            { text: 'Exam Day Countdown', included: true },
+            { text: 'SageMaker AI Assistant', included: false },
         ],
         buttonText: 'Start for Free',
         href: '/signup',
-        priceId: null,
     },
     {
         name: 'Rapid Student',
@@ -39,10 +41,11 @@ const allPlans = [
         description: 'Ideal for short-term projects and exam cramming.',
         priceId: 'price_1Rhu8CRvzD47Amqq1RlQpX05', 
         features: [
-            'Unlimited Topic Generations',
-            'Everything in Hobby',
-            'Export to Markdown',
-            'Email Support'
+            { text: 'Unlimited Topic Generations', included: true },
+            { text: 'Unlimited AI Roadmaps', included: true },
+            { text: 'Unlimited Study Plan Board', included: true },
+            { text: 'Exam Day Countdown', included: true },
+            { text: 'SageMaker AI Assistant', included: false },
         ],
         buttonText: 'Choose Plan',
     },
@@ -53,10 +56,12 @@ const allPlans = [
         description: 'The complete toolkit for dedicated learners.',
         priceId: 'price_1Rhu9cRvzD47Amqq1XdZ7U2C',
         features: [
-            'Everything in Scholar',
-            'Advanced Quiz Options',
-            'Summarization Feature',
-            'Priority Support'
+            { text: 'Unlimited Topic Generations', included: true },
+            { text: 'Unlimited AI Roadmaps', included: true },
+            { text: 'Unlimited Study Plan Board', included: true },
+            { text: 'Exam Day Countdown', included: true },
+            { text: 'SageMaker AI Assistant', included: true },
+            { text: 'Priority Support', included: true },
         ],
         buttonText: 'Choose Plan',
         popular: true,
@@ -68,10 +73,10 @@ const allPlans = [
         description: 'For the committed lifelong learner. Save over 20%!',
         priceId: 'price_1RhuAaRvzD47Amqqx7aBXFlv',
         features: [
-            'Everything in Scholar',
-            'Early access to new features',
-            'Save 2 months',
-            'Dedicated Support Channel'
+            { text: 'Everything in Scholar Subscription', included: true },
+            { text: 'Early access to new features', included: true },
+            { text: 'Save over 20% vs. Monthly', included: true },
+            { text: 'Dedicated Support Channel', included: true },
         ],
         buttonText: 'Choose Plan',
         bestValue: true,
@@ -163,9 +168,9 @@ const PricingContent = () => {
                             <CardContent className="flex-1">
                                 <ul className="space-y-3">
                                     {plan.features.map((feature, i) => (
-                                        <li key={i} className="flex items-center gap-2 text-sm">
-                                            <Check className="h-4 w-4 text-primary" />
-                                            <span>{feature}</span>
+                                        <li key={i} className={cn("flex items-center gap-2 text-sm", feature.included ? 'text-foreground' : 'text-muted-foreground line-through' )}>
+                                            {feature.included ? <Check className="h-4 w-4 text-primary" /> : <X className="h-4 w-4 text-muted-foreground" />}
+                                            <span>{feature.text}</span>
                                         </li>
                                     ))}
                                 </ul>
