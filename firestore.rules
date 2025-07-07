@@ -1,11 +1,29 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Only allow users to read and write to their own document
-    // in the 'users' collection.
+    // Users can only read and write their own documents.
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Rules for the 'submissions' collection from the contact form.
+    match /submissions/{submissionId} {
+      // Anyone can create a submission, but we validate the data shape for security.
+      allow create: if request.resource.data.name is string &&
+                       request.resource.data.name.size() > 1 &&
+                       request.resource.data.email is string &&
+                       request.resource.data.email.matches('.+@.+..+') &&
+                       request.resource.data.message is string &&
+                       request.resource.data.message.size() > 9 &&
+                       request.resource.data.createdAt == request.time;
+
+      // Only authenticated users (like the admin) can read submissions.
+      allow read: if request.auth != null;
+
+      // Nobody can update or delete submissions through the client SDK.
+      allow update, delete: if false;
     }
   }
 }
