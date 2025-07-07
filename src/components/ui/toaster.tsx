@@ -21,7 +21,7 @@ export function Toaster() {
           <Toast key={id} {...props}>
             <div className="flex items-start gap-3">
               {props.variant === "destructive" ? (
-                <AlertTriangle className="h-5 w-5 shrink-0 text-primary" />
+                <AlertTriangle className="h-5 w-5 shrink-0 text-destructive" />
               ) : (
                 <CheckCircle className="h-5 w-5 shrink-0 text-green-500" />
               )}

@@ -1,11 +1,6 @@
-import { doc, getDoc, setDoc, getFirestore } from 'firebase/firestore';
-import { app } from '@/lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import type { User } from 'firebase/auth';
-
-if (!app) {
-    throw new Error("Firebase has not been initialized. Please check your configuration.");
-}
-const db = getFirestore(app);
 
 /**
  * Updates a user's document in the 'users' collection.
@@ -14,7 +9,7 @@ const db = getFirestore(app);
  * @param data An object containing the data to save.
  */
 export const updateUserDoc = async (uid: string, data: object) => {
-  if (!uid) return;
+  if (!uid || !db) return;
   try {
     const userDocRef = doc(db, 'users', uid);
     await setDoc(userDocRef, data, { merge: true });
@@ -30,7 +25,7 @@ export const updateUserDoc = async (uid: string, data: object) => {
  * @returns The user's document data, or null if it doesn't exist.
  */
 export const getUserDoc = async (uid: string) => {
-  if (!uid) return null;
+  if (!uid || !db) return null;
   try {
     const userDocRef = doc(db, 'users', uid);
     const docSnap = await getDoc(userDocRef);
