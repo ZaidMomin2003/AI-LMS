@@ -9,9 +9,10 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import type {Part} from 'genkit/generate';
 
 const SageMakerInputSchema = z.object({
-  prompt: z.string().describe('The user\'s question or message.'),
+  prompt: z.string().describe("The user's question or message."),
   imageDataUri: z.string().optional().describe(
     "An optional image provided by the user, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
   ),
@@ -19,61 +20,54 @@ const SageMakerInputSchema = z.object({
 export type SageMakerInput = z.infer<typeof SageMakerInputSchema>;
 
 const SageMakerOutputSchema = z.object({
-  response: z.string().describe('The AI assistant\'s response.'),
+  response: z.string().describe("The AI assistant's response."),
 });
 export type SageMakerOutput = z.infer<typeof SageMakerOutputSchema>;
 
-// This is the public-facing function that components will call.
-// It calls the internal flow and wraps the string response in the expected object structure.
-export async function sageMakerFlow(input: SageMakerInput): Promise<SageMakerOutput> {
-  const responseText = await sageMakerFlowInternal(input);
-  return { response: responseText };
-}
-
-// This is a simplified prompt that asks for a direct text response, not JSON.
-const prompt = ai.definePrompt({
-  name: 'sageMakerPrompt',
-  input: {schema: SageMakerInputSchema},
-  prompt: `You are SageMaker, a friendly, encouraging, and knowledgeable AI study assistant for the ScholarAI platform. Your goal is to help students understand topics by answering their questions. Be clear, concise, and break down complex concepts into simple terms.
-
-  Use the following question from the user to provide a helpful answer. If an image is provided, use it as context for your response.
-
-  Question: {{{prompt}}}
-  {{#if imageDataUri}}
-  Image context:
-  {{media url=imageDataUri}}
-  {{/if}}`,
-  config: {
-    safetySettings: [
-      {
-        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-        threshold: 'BLOCK_NONE',
-      },
-      {
-        category: 'HARM_CATEGORY_HATE_SPEECH',
-        threshold: 'BLOCK_NONE',
-      },
-      {
-        category: 'HARM_CATEGORY_HARASSMENT',
-        threshold: 'BLOCK_NONE',
-      },
-      {
-        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-        threshold: 'BLOCK_NONE',
-      },
-    ],
-  },
-});
-
-// The internal flow is simplified to return a raw string, which is more reliable.
-const sageMakerFlowInternal = ai.defineFlow(
+export const sageMakerFlow = ai.defineFlow(
   {
-    name: 'sageMakerFlowInternal',
+    name: 'sageMakerFlow',
     inputSchema: SageMakerInputSchema,
-    outputSchema: z.string(),
+    outputSchema: SageMakerOutputSchema,
   },
   async (input) => {
-    const response = await prompt(input);
-    return response.text;
+    const {prompt, imageDataUri} = input;
+
+    // Manually construct the prompt parts for reliability
+    const promptParts: Part[] = [
+      {
+        text: `You are SageMaker, a friendly, encouraging, and knowledgeable AI study assistant for the ScholarAI platform. Your goal is to help students understand topics by answering their questions. Be clear, concise, and break down complex concepts into simple terms.
+
+Use the following question from the user to provide a helpful answer.
+
+Question: ${prompt}`,
+      },
+    ];
+
+    // Add the image to the prompt if it exists
+    if (imageDataUri) {
+      promptParts.push({text: 'Use this image as context for your response:'});
+      promptParts.push({media: {url: imageDataUri}});
+    }
+
+    const llmResponse = await ai.generate({
+      prompt: promptParts,
+      config: {
+        safetySettings: [
+          {category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE'},
+          {category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE'},
+          {category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE'},
+          {category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE'},
+        ],
+      },
+    });
+
+    const responseText = llmResponse.text;
+
+    if (!responseText) {
+      throw new Error('The AI model returned an empty text response.');
+    }
+
+    return {response: responseText};
   }
 );
