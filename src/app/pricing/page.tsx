@@ -39,7 +39,7 @@ const allPlans = [
         price: '$7',
         period: '/ week',
         description: 'Ideal for short-term projects and exam cramming.',
-        priceId: 'price_1Rhu8CRvzD47Amqq1RlQpX05', 
+        priceId: 'price_1RiJCmRsI0LGhGhHY7V3VcWp', 
         features: [
             { text: 'Unlimited Topic Generations', included: true },
             { text: 'Unlimited AI Roadmaps', included: true },
@@ -54,7 +54,7 @@ const allPlans = [
         price: '$19',
         period: '/ month',
         description: 'The complete toolkit for dedicated learners.',
-        priceId: 'price_1Rhu9cRvzD47Amqq1XdZ7U2C',
+        priceId: 'price_1RiJCjRsI0LGhGhHmmDzBMCk',
         features: [
             { text: 'Unlimited Topic Generations', included: true },
             { text: 'Unlimited AI Roadmaps', included: true },
@@ -71,7 +71,7 @@ const allPlans = [
         price: '$169',
         period: '/ year',
         description: 'For the committed lifelong learner. Save over 20%!',
-        priceId: 'price_1RhuAaRvzD47Amqqx7aBXFlv',
+        priceId: 'price_1RiJCeRsI0LGhGhHhZXB4MEg',
         features: [
             { text: 'Everything in Scholar Subscription', included: true },
             { text: 'Early access to new features', included: true },
