@@ -31,6 +31,7 @@ export async function sageMakerFlow(input: SageMakerInput): Promise<SageMakerOut
 const prompt = ai.definePrompt({
   name: 'sageMakerPrompt',
   input: {schema: SageMakerInputSchema},
+  output: {schema: SageMakerOutputSchema},
   prompt: `You are SageMaker, a friendly, encouraging, and knowledgeable AI study assistant for the ScholarAI platform. Your goal is to help students understand topics by answering their questions. Be clear, concise, and break down complex concepts into simple terms.
 
   Use the following question from the user to provide a helpful answer. If an image is provided, use it as context for your response.
@@ -40,7 +41,8 @@ const prompt = ai.definePrompt({
   Image context:
   {{media url=imageDataUri}}
   {{/if}}
-  `,
+  
+  Provide your answer in the 'response' field of the JSON output.`,
   config: {
     safetySettings: [
       {
@@ -70,7 +72,10 @@ const sageMakerFlowInternal = ai.defineFlow(
     outputSchema: SageMakerOutputSchema,
   },
   async (input) => {
-    const response = await prompt(input);
-    return { response: response.text };
+    const {output} = await prompt(input);
+    if (!output) {
+      throw new Error("The AI model did not return a valid structured response.");
+    }
+    return output;
   }
 );
