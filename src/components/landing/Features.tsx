@@ -229,6 +229,20 @@ function ExamTimerDemo() {
     );
 }
 
+function PomodoroDemo() {
+    return (
+        <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
+            <CardHeader className="p-2 text-center">
+                <p className="font-bold font-headline">Pomodoro: Quantum Physics</p>
+            </CardHeader>
+            <CardContent className="p-4 flex flex-col items-center justify-center gap-4">
+                <div className="text-6xl font-bold font-mono text-primary">24:15</div>
+                <p className="text-lg font-semibold tracking-widest uppercase text-primary">WORK</p>
+            </CardContent>
+        </Card>
+    );
+}
+
 export function Features() {
   return (
     <section id="features" className="py-20 sm:py-32">
@@ -367,6 +381,22 @@ export function Features() {
             </div>
             <div className="flex items-center justify-center">
                 <ExamTimerDemo />
+            </div>
+        </div>
+
+        {/* Feature 8: Pomodoro Timer */}
+        <div className="mt-24 grid grid-cols-1 items-center gap-16 md:grid-cols-2">
+            <div className="flex items-center justify-center md:order-last">
+                <PomodoroDemo />
+            </div>
+            <div className="md:pl-8">
+                <div className="flex items-center gap-2">
+                    <Timer className="h-8 w-8 text-accent" />
+                    <h3 className="text-2xl font-headline font-bold">Focused Study Sessions</h3>
+                </div>
+                <p className="mt-4 text-lg text-muted-foreground">
+                    Boost your focus with the Pomodoro Technique. Break down your study sessions into 25-minute intervals of deep work, separated by short breaks. Our integrated timer keeps you on track, helping you avoid burnout and maximize productivity.
+                </p>
             </div>
         </div>
 
