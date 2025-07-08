@@ -12,6 +12,7 @@ import { FAQ } from '@/components/landing/FAQ';
 import { Contact } from '@/components/landing/Contact';
 import { Footer } from '@/components/landing/Footer';
 import { CTA } from '@/components/landing/CTA';
+import { WelcomePopup } from '@/components/landing/WelcomePopup';
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
@@ -39,6 +40,7 @@ export default function LandingPage() {
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-grow">
+        <WelcomePopup />
         <Hero />
         <Features />
         <UseCases />
