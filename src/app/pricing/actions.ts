@@ -1,3 +1,4 @@
+
 'use server';
 
 import { stripe } from '@/lib/stripe';
@@ -53,7 +54,10 @@ export async function createStripeCheckoutSession(
         let errorMessage = 'An unknown error occurred while creating the checkout session.';
         
         const stripeError = error as Stripe.errors.StripeError;
-        if (stripeError?.message) {
+
+        if (stripeError?.code === 'resource_missing') {
+            errorMessage = "Stripe Error: A price ID used in the checkout does not exist in your Stripe account's current mode (Live/Test). Please check your Price IDs in the pricing page file and your Stripe dashboard.";
+        } else if (stripeError?.message) {
             errorMessage = `Stripe Error: ${stripeError.message}`;
         } else if (error instanceof Error) {
             errorMessage = error.message;
