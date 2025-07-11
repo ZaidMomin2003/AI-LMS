@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useMemo } from 'react';
@@ -11,6 +12,7 @@ import {
 import { arrayMove, SortableContext } from '@dnd-kit/sortable';
 import { KanbanColumn } from './KanbanColumn';
 import type { KanbanTask } from '@/types';
+import { useTask } from '@/context/TaskContext';
 
 type ColumnId = 'todo' | 'in-progress' | 'done';
 
