@@ -36,6 +36,7 @@ import {
   Gem,
   Lock,
   Timer,
+  Camera,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -90,7 +91,7 @@ function SidebarSubscriptionButton() {
                 console.error("Error processing subscription update from URL", error);
             }
         }
-    }, [searchParams, setSubscription]);
+    }, [searchParams, setSubscription, pathname]);
 
 
     if (subscription?.planName === 'Hobby') {
@@ -259,6 +260,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </TooltipContent>
                  )}
                </Tooltip>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/dashboard/capture')}
+                tooltip={{ children: 'Capture' }}
+              >
+                <Link href="/dashboard/capture">
+                  <Camera />
+                  <span>Capture</span>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton
