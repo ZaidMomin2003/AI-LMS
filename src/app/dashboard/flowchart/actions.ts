@@ -1,10 +1,11 @@
+
 'use server';
 
 import {
   generateFlowchart,
   type GenerateFlowchartInput,
-  type GenerateFlowchartOutput,
 } from '@/ai/flows/generate-flowchart-flow';
+import type { GenerateFlowchartOutput } from '@/ai/flows/generate-flowchart-flow';
 
 export async function createFlowchartAction(
   input: GenerateFlowchartInput

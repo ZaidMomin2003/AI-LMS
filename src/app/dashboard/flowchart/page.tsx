@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { AppLayout } from '@/components/AppLayout';
@@ -15,21 +16,17 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Wand2, Workflow, X, PlusCircle, Download } from 'lucide-react';
+import { Loader2, Wand2, Workflow, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createFlowchartAction } from './actions';
+import { Textarea } from '@/components/ui/textarea';
 
 const formSchema = z.object({
-  topics: z
-    .array(
-      z.object({
-        value: z.string().min(3, { message: 'Topic must be at least 3 characters.' }),
-      })
-    )
-    .min(3, 'Please provide at least 3 topics.')
-    .max(6, 'You can add a maximum of 6 topics.'),
+  syllabus: z
+    .string()
+    .min(30, { message: 'Syllabus must be at least 30 characters.' })
+    .max(200, { message: 'Syllabus cannot exceed 200 characters.' }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -42,21 +39,15 @@ export default function FlowchartPage() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      topics: [{ value: '' }, { value: '' }, { value: '' }],
+      syllabus: '',
     },
-  });
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: 'topics',
   });
 
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
     setFlowchartSvg(null);
     try {
-      const topicStrings = values.topics.map(t => t.value);
-      const result = await createFlowchartAction({ topics: topicStrings });
+      const result = await createFlowchartAction({ syllabus: values.syllabus });
       setFlowchartSvg(result.svg);
       toast({
         title: 'Flowchart Generated!',
@@ -95,58 +86,38 @@ export default function FlowchartPage() {
             <Workflow /> AI Flowchart Maker
           </h2>
           <p className="text-muted-foreground">
-            Visualize your syllabus. Enter up to 6 core topics, and let AI build a flowchart for you.
+            Visualize your syllabus. Enter your topics, and let AI build a flowchart for you.
           </p>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <Card>
                 <CardHeader>
-                    <CardTitle>Enter Syllabus Topics</CardTitle>
+                    <CardTitle>Enter Your Syllabus</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                            <div className="space-y-4">
-                                {fields.map((field, index) => (
-                                    <FormField
-                                        key={field.id}
-                                        control={form.control}
-                                        name={`topics.${index}.value`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="sr-only">Topic {index + 1}</FormLabel>
-                                                <div className="flex items-center gap-2">
-                                                    <FormControl>
-                                                        <Input placeholder={`Topic ${index + 1}`} {...field} />
-                                                    </FormControl>
-                                                    {fields.length > 3 && (
-                                                        <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}>
-                                                            <X className="h-4 w-4" />
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                ))}
-                            </div>
+                            <FormField
+                                control={form.control}
+                                name="syllabus"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Syllabus Content</FormLabel>
+                                        <FormControl>
+                                            <Textarea
+                                                placeholder="e.g., Introduction to Chemistry, Atomic Structure, Chemical Bonding, States of Matter, Thermodynamics..."
+                                                className="min-h-[150px]"
+                                                {...field}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                             
-                             <Button
-                                type="button"
-                                variant="outline"
-                                size="sm"
-                                className="mt-2"
-                                onClick={() => append({ value: "" })}
-                                disabled={fields.length >= 6}
-                            >
-                                <PlusCircle className="mr-2 h-4 w-4" />
-                                Add Topic
-                            </Button>
-
                             <FormDescription>
-                                Provide between 3 and 6 topics for the best results.
+                                Provide a summary of your syllabus (30-200 characters).
                             </FormDescription>
 
                             <Button type="submit" disabled={isLoading} className="w-full">
