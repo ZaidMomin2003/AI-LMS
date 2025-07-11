@@ -9,14 +9,14 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 
-export const GenerateFlowchartInputSchema = z.object({
+const GenerateFlowchartInputSchema = z.object({
   topics: z.array(z.string().min(1)).min(1, 'At least one topic is required.'),
 });
 export type GenerateFlowchartInput = z.infer<typeof GenerateFlowchartInputSchema>;
 
-export const GenerateFlowchartOutputSchema = z.object({
+const GenerateFlowchartOutputSchema = z.object({
   svg: z.string().describe('The flowchart represented as a valid SVG string.'),
 });
 export type GenerateFlowchartOutput = z.infer<typeof GenerateFlowchartOutputSchema>;
