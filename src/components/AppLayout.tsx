@@ -37,6 +37,7 @@ import {
   Lock,
   Timer,
   Camera,
+  Workflow,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -183,6 +184,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link href="/dashboard">
                   <LayoutDashboard />
                   <span>Dashboard</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/dashboard/flowchart')}
+                tooltip={{ children: 'Flowchart Maker' }}
+              >
+                <Link href="/dashboard/flowchart">
+                  <Workflow />
+                  <span>Flowchart</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
