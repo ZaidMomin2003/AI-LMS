@@ -26,16 +26,19 @@ export async function generateFlowchart(
   input: GenerateFlowchartInput
 ): Promise<GenerateFlowchartOutput> {
   const llmResponse = await ai.generate({
-    prompt: `You are an expert in instructional design and data visualization. Your task is to create a clear, concise, and visually appealing flowchart from a given syllabus or list of topics.
+    prompt: `You are an expert in instructional design and data visualization. Your task is to create a clear, concise, and visually appealing flowchart from a given syllabus or list of topics for a DARK THEME application.
 
     **Instructions:**
     1.  Analyze the provided syllabus and determine the logical sequence and relationships of the topics.
     2.  Generate a flowchart that represents this structure.
     3.  The final output MUST be a single, valid, self-contained SVG string. Do not wrap it in markdown backticks or any other characters.
-    4.  The SVG should be styled professionally. Use rounded rectangles for nodes, arrows for connectors, and a clean, readable font.
-    5.  The SVG dimensions should be reasonably large to ensure clarity, for example, width="800" height="600".
-    6.  Use different colors to distinguish between different levels or types of topics if it enhances clarity.
-    7.  Ensure text within nodes is properly centered and does not overflow the node boundaries.
+    4.  The SVG dimensions should be reasonably large to ensure clarity, for example, width="800" height="600".
+    5.  **DARK THEME STYLING IS CRITICAL**:
+        *   **Text Color**: All text inside nodes MUST be a light color, like \`#FFFFFF\` or \`#E5E7EB\`, to be visible on a dark background.
+        *   **Node Colors**: Use a semi-dark color for node fills (e.g., \`#2d3748\`) with a brighter border (e.g., \`#4A0082\`).
+        *   **Arrow/Connector Color**: Use a light color for arrows (e.g., \`#9CA3AF\`).
+        *   **SVG Background**: The SVG background itself should be transparent. Do not add a background color to the <svg> tag.
+    6.  Ensure text within nodes is properly centered and does not overflow the node boundaries.
 
     **Syllabus:**
     ${input.syllabus}
