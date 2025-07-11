@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -27,7 +28,6 @@ const CaptureTheAnswerOutputSchema = z.object({
 });
 export type CaptureTheAnswerOutput = z.infer<typeof CaptureTheAnswerOutputSchema>;
 
-// This is now a direct async function, removing the ai.defineFlow wrapper for robustness.
 export async function captureTheAnswer(input: CaptureTheAnswerInput): Promise<CaptureTheAnswerOutput> {
   const { imageDataUri } = input;
 
@@ -35,7 +35,7 @@ export async function captureTheAnswer(input: CaptureTheAnswerInput): Promise<Ca
     {
       text: `You are an expert tutor AI. Your task is to analyze the provided image, identify the question written in it, and provide a clear, concise, and easy-to-understand answer.
       
-Your response MUST be a valid JSON object with two keys: "question" and "answer".
+Your response MUST be a valid JSON object with two keys: "question" and "answer". The JSON should not be inside a markdown block.
 - "question": A string containing the question you identified from the image.
 - "answer": A string containing a simple, direct answer to that question.
 
@@ -54,18 +54,20 @@ Image with the question is below:`,
     prompt: promptParts,
   });
 
-  const responseText = llmResponse.text.trim();
+  let responseText = llmResponse.text.trim();
+
+  // The model sometimes wraps the JSON in markdown backticks. Let's remove them.
+  if (responseText.startsWith('```json')) {
+    responseText = responseText.substring(7, responseText.length - 3).trim();
+  }
 
   try {
-    // Attempt to parse the JSON response from the model
     const parsedResponse = JSON.parse(responseText);
-    // Validate the parsed response against our Zod schema
     const validatedOutput = CaptureTheAnswerOutputSchema.parse(parsedResponse);
     return validatedOutput;
   } catch (e) {
     console.error("Failed to parse or validate AI response:", e);
     console.error("Raw AI Response:", responseText);
-    // If parsing or validation fails, throw an error to be caught by the action
     throw new Error("The AI returned an invalid response format. Please try again.");
   }
 }
