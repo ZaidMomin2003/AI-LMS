@@ -11,6 +11,7 @@ export interface ProfileData {
   country?: string;
   grade?: string;
   referralSource?: string;
+  captureCount?: number;
 }
 
 interface ProfileContextType {

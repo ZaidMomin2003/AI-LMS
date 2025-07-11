@@ -37,7 +37,6 @@ import {
   Lock,
   Timer,
   Camera,
-  Workflow,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -58,6 +57,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { usePomodoro } from '@/context/PomodoroContext';
 import { useTopic } from '@/context/TopicContext';
 import { useRoadmap } from '@/context/RoadmapContext';
+import { useProfile } from '@/context/ProfileContext';
+import { Badge } from './ui/badge';
 
 function AppLoadingScreen() {
   return (
@@ -131,6 +132,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const { pomodoroHistory, loading: pomodoroLoading } = usePomodoro();
   const { topics, dataLoading: topicsLoading } = useTopic();
   const { roadmap, loading: roadmapLoading } = useRoadmap();
+  const { profile, loading: profileLoading } = useProfile();
   
   const router = useRouter();
   const pathname = usePathname();
@@ -142,7 +144,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user, authLoading, router]);
 
-  const appIsLoading = authLoading || !user || subscriptionLoading || pomodoroLoading || topicsLoading || roadmapLoading;
+  const appIsLoading = authLoading || !user || subscriptionLoading || pomodoroLoading || topicsLoading || roadmapLoading || profileLoading;
 
   if (appIsLoading) {
     return <AppLoadingScreen />;
@@ -162,6 +164,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isSageMakerLocked = isHobby;
   const isRoadmapLocked = isHobby && !!roadmap;
   const isPomodoroLocked = isHobby && pomodoroHistory.length > 0;
+  const isCaptureLocked = isHobby && (profile?.captureCount ?? 0) >= 1;
 
 
   return (
@@ -263,16 +266,27 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                </Tooltip>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith('/dashboard/capture')}
-                tooltip={{ children: 'Capture' }}
-              >
-                <Link href="/dashboard/capture">
-                  <Camera />
-                  <span>Capture</span>
-                </Link>
-              </SidebarMenuButton>
+               <Tooltip>
+                 <TooltipTrigger asChild>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname.startsWith('/dashboard/capture')}
+                    >
+                      <Link href="/dashboard/capture" className={cn(isCaptureLocked && 'text-muted-foreground')}>
+                        <Camera />
+                        <span className="flex items-center gap-2">
+                          Capture <Badge variant="secondary" className="text-xs">Beta</Badge>
+                        </span>
+                        {isCaptureLocked && <Lock className="ml-auto h-3 w-3" />}
+                      </Link>
+                    </SidebarMenuButton>
+                 </TooltipTrigger>
+                 {isCaptureLocked && (
+                    <TooltipContent side="right" align="center">
+                        <p>Upgrade for unlimited captures</p>
+                    </TooltipContent>
+                 )}
+               </Tooltip>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton
