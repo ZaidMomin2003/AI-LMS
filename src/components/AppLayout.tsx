@@ -187,18 +187,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-             <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith('/dashboard/flowchart')}
-                tooltip={{ children: 'Flowchart Maker' }}
-              >
-                <Link href="/dashboard/flowchart">
-                  <Workflow />
-                  <span>Flowchart</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
             <SidebarMenuItem>
                <Tooltip>
                  <TooltipTrigger asChild>
