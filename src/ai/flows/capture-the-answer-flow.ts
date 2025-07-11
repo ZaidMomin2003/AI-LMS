@@ -2,7 +2,7 @@
 'use server';
 
 /**
- * @fileOverview An AI agent that analyzes an image of a question and provides an answer.
+ * @fileOverview An AI agent that analyzes an image of a question and provides an answer with a solution.
  *
  * - captureTheAnswer - A function that handles the question answering process from an image.
  * - CaptureTheAnswerInput - The input type for the captureTheAnswer function.
@@ -24,7 +24,8 @@ export type CaptureTheAnswerInput = z.infer<typeof CaptureTheAnswerInputSchema>;
 
 const CaptureTheAnswerOutputSchema = z.object({
   question: z.string().describe('The question identified from the image.'),
-  answer: z.string().describe("A simple, easy-to-understand answer to the question."),
+  answer: z.string().describe("A simple, direct answer to the question."),
+  solution: z.string().describe("A step-by-step explanation or solution for how the answer was reached."),
 });
 export type CaptureTheAnswerOutput = z.infer<typeof CaptureTheAnswerOutputSchema>;
 
@@ -33,16 +34,19 @@ export async function captureTheAnswer(input: CaptureTheAnswerInput): Promise<Ca
 
   const promptParts: Part[] = [
     {
-      text: `You are an expert tutor AI. Your task is to analyze the provided image, identify the question written in it, and provide a clear, concise, and easy-to-understand answer.
-      
-Your response MUST be a valid JSON object with two keys: "question" and "answer". The JSON should not be inside a markdown block.
-- "question": A string containing the question you identified from the image.
-- "answer": A string containing a simple, direct answer to that question.
+      text: `You are an expert tutor AI with deep knowledge across all subjects. Your task is to analyze the provided image, accurately identify the question written in it, and provide a correct, clear, and concise answer along with a step-by-step solution.
+
+Your response MUST be a valid JSON object with three keys: "question", "answer", and "solution". The JSON should not be inside a markdown block.
+
+- "question": A string containing the exact question you identified from the image.
+- "answer": A string containing the correct and direct answer to that question.
+- "solution": A string containing a simple, step-by-step explanation of how to arrive at the correct answer.
 
 Example response format:
 {
-  "question": "What is the powerhouse of the cell?",
-  "answer": "The powerhouse of the cell is the mitochondria."
+  "question": "What is 25% of 200?",
+  "answer": "50",
+  "solution": "To find 25% of 200, you can convert the percentage to a decimal by dividing by 100 (25 / 100 = 0.25). Then, multiply the decimal by the number (0.25 * 200 = 50)."
 }
 
 Image with the question is below:`,

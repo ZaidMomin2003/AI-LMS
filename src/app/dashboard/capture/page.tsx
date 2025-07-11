@@ -12,6 +12,7 @@ import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { captureAnswerAction } from './actions';
 import type { CaptureTheAnswerOutput } from '@/ai/flows/capture-the-answer-flow';
+import { Separator } from '@/components/ui/separator';
 
 export default function CapturePage() {
   const [mode, setMode] = useState<'idle' | 'capture' | 'preview'>('idle');
@@ -162,7 +163,7 @@ export default function CapturePage() {
                     </div>
                     <div className="space-y-4">
                         <h3 className="font-headline text-xl">AI's Answer</h3>
-                        <Card className="min-h-[250px] flex items-center justify-center">
+                        <Card className="min-h-[300px] flex items-center justify-center">
                             <CardContent className="p-6 w-full">
                                 {isLoading && <div className="text-center text-muted-foreground">Analyzing...</div>}
                                 {result ? (
@@ -171,13 +172,19 @@ export default function CapturePage() {
                                             <p className="font-semibold text-muted-foreground text-sm">Question Identified:</p>
                                             <p className="font-medium italic">"{result.question}"</p>
                                         </div>
-                                        <div className="pt-4 border-t">
-                                             <p className="font-semibold text-muted-foreground text-sm">Simplified Answer:</p>
-                                             <p>{result.answer}</p>
+                                        <Separator/>
+                                        <div>
+                                             <p className="font-semibold text-muted-foreground text-sm">Direct Answer:</p>
+                                             <p className="font-bold text-lg text-primary">{result.answer}</p>
+                                        </div>
+                                         <Separator/>
+                                        <div>
+                                             <p className="font-semibold text-muted-foreground text-sm">Solution:</p>
+                                             <p className="text-sm">{result.solution}</p>
                                         </div>
                                     </div>
                                 ) : (
-                                    !isLoading && <div className="text-center text-muted-foreground">The answer will appear here.</div>
+                                    !isLoading && <div className="text-center text-muted-foreground">The answer and solution will appear here.</div>
                                 )}
                             </CardContent>
                         </Card>
