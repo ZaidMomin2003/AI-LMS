@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { captureAnswerAction } from './actions';
 import type { CaptureTheAnswerOutput } from '@/ai/flows/capture-the-answer-flow';
 import { Separator } from '@/components/ui/separator';
+import { MarkdownRenderer } from '@/components/MarkdownRenderer';
 
 export default function CapturePage() {
   const [mode, setMode] = useState<'idle' | 'capture' | 'preview'>('idle');
@@ -180,7 +181,9 @@ export default function CapturePage() {
                                          <Separator/>
                                         <div>
                                              <p className="font-semibold text-muted-foreground text-sm">Solution:</p>
-                                             <p className="text-sm">{result.solution}</p>
+                                             <div className="prose prose-sm prose-invert max-w-none">
+                                                <MarkdownRenderer content={result.solution} />
+                                             </div>
                                         </div>
                                     </div>
                                 ) : (

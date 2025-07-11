@@ -25,7 +25,7 @@ export type CaptureTheAnswerInput = z.infer<typeof CaptureTheAnswerInputSchema>;
 const CaptureTheAnswerOutputSchema = z.object({
   question: z.string().describe('The question identified from the image.'),
   answer: z.string().describe("A simple, direct answer to the question."),
-  solution: z.string().describe("A step-by-step explanation or solution for how the answer was reached."),
+  solution: z.string().describe("A step-by-step explanation or solution for how the answer was reached, formatted in Markdown."),
 });
 export type CaptureTheAnswerOutput = z.infer<typeof CaptureTheAnswerOutputSchema>;
 
@@ -40,13 +40,13 @@ Your response MUST be a valid JSON object with three keys: "question", "answer",
 
 - "question": A string containing the exact question you identified from the image.
 - "answer": A string containing the correct and direct answer to that question.
-- "solution": A string containing a simple, step-by-step explanation of how to arrive at the correct answer.
+- "solution": A string containing a step-by-step explanation of how to arrive at the correct answer. **This solution must be formatted in Markdown**, using lists, bold text for emphasis, or code blocks where appropriate to make it as clear as possible.
 
 Example response format:
 {
   "question": "What is 25% of 200?",
   "answer": "50",
-  "solution": "To find 25% of 200, you can convert the percentage to a decimal by dividing by 100 (25 / 100 = 0.25). Then, multiply the decimal by the number (0.25 * 200 = 50)."
+  "solution": "To find 25% of 200, you follow these steps:\\n\\n1. **Convert the percentage to a decimal**: Divide 25 by 100, which gives you \`0.25\`.\\n2. **Multiply the decimal by the number**: \`0.25 * 200 = 50\`.\\n3. The result is your answer."
 }
 
 Image with the question is below:`,
