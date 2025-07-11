@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import type {Part} from 'genkit/generate';
 
 const CaptureTheAnswerInputSchema = z.object({
   imageDataUri: z
@@ -26,33 +27,45 @@ const CaptureTheAnswerOutputSchema = z.object({
 });
 export type CaptureTheAnswerOutput = z.infer<typeof CaptureTheAnswerOutputSchema>;
 
+// This is now a direct async function, removing the ai.defineFlow wrapper for robustness.
 export async function captureTheAnswer(input: CaptureTheAnswerInput): Promise<CaptureTheAnswerOutput> {
-  return captureTheAnswerFlow(input);
+  const { imageDataUri } = input;
+
+  const promptParts: Part[] = [
+    {
+      text: `You are an expert tutor AI. Your task is to analyze the provided image, identify the question written in it, and provide a clear, concise, and easy-to-understand answer.
+      
+Your response MUST be a valid JSON object with two keys: "question" and "answer".
+- "question": A string containing the question you identified from the image.
+- "answer": A string containing a simple, direct answer to that question.
+
+Example response format:
+{
+  "question": "What is the powerhouse of the cell?",
+  "answer": "The powerhouse of the cell is the mitochondria."
 }
 
-const prompt = ai.definePrompt({
-  name: 'captureTheAnswerPrompt',
-  input: {schema: CaptureTheAnswerInputSchema},
-  output: {schema: CaptureTheAnswerOutputSchema},
-  prompt: `You are an expert tutor AI. Your task is to analyze the provided image, identify the question written in it, and provide a clear, concise, and easy-to-understand answer.
+Image with the question is below:`,
+    },
+    { media: { url: imageDataUri } },
+  ];
 
-  1.  First, carefully read the image and determine the main question being asked. Put this in the 'question' field.
-  2.  Then, formulate a simple and direct answer to that question. Put this in the 'answer' field.
-  3.  The answer should be simple enough for a student to understand quickly. Avoid jargon where possible.
+  const llmResponse = await ai.generate({
+    prompt: promptParts,
+  });
 
-  Image with the question is below:
-  {{media url=imageDataUri}}
-  `,
-});
+  const responseText = llmResponse.text.trim();
 
-const captureTheAnswerFlow = ai.defineFlow(
-  {
-    name: 'captureTheAnswerFlow',
-    inputSchema: CaptureTheAnswerInputSchema,
-    outputSchema: CaptureTheAnswerOutputSchema,
-  },
-  async (input) => {
-    const {output} = await prompt(input);
-    return output!;
+  try {
+    // Attempt to parse the JSON response from the model
+    const parsedResponse = JSON.parse(responseText);
+    // Validate the parsed response against our Zod schema
+    const validatedOutput = CaptureTheAnswerOutputSchema.parse(parsedResponse);
+    return validatedOutput;
+  } catch (e) {
+    console.error("Failed to parse or validate AI response:", e);
+    console.error("Raw AI Response:", responseText);
+    // If parsing or validation fails, throw an error to be caught by the action
+    throw new Error("The AI returned an invalid response format. Please try again.");
   }
-);
+}
