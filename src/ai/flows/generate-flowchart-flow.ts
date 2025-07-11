@@ -49,10 +49,18 @@ export async function generateFlowchart(
     Now, generate the SVG for the syllabus above.`,
   });
 
-  const svgContent = llmResponse.text.trim();
+  let svgContent = llmResponse.text.trim();
+  
+  // The model sometimes wraps the SVG in markdown backticks. Let's remove them.
+  if (svgContent.startsWith('```svg')) {
+    svgContent = svgContent.substring(7, svgContent.length - 3).trim();
+  } else if (svgContent.startsWith('```')) {
+    svgContent = svgContent.substring(3, svgContent.length - 3).trim();
+  }
   
   // Basic validation to ensure it looks like an SVG
   if (!svgContent.startsWith('<svg') || !svgContent.endsWith('</svg>')) {
+      console.error("Invalid SVG response from AI:", svgContent);
       throw new Error('The AI did not return a valid SVG. Please try again.');
   }
 
