@@ -25,7 +25,7 @@ export function Hero() {
       <div aria-hidden="true" className="absolute inset-0 top-0 -z-10">
         <div className="absolute inset-0 bg-background" />
         <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:32px_32px] animate-grid-pan" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200%] h-[50%] bg-[radial-gradient(ellipse_at_bottom,rgba(179,102,255,0.3)_0%,transparent_70%)] blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200%] h-[50%] bg-[radial-gradient(ellipse_at_bottom,hsl(var(--primary)/0.15)_0%,transparent_70%)] blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 py-20 text-center sm:py-32">
@@ -44,7 +44,7 @@ export function Hero() {
           Stop drowning in textbooks. ScholarAI transforms any subject into clear study notes, interactive flashcards, and challenging quizzes, all in one click. Your smarter, faster learning journey starts here.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6 animate-in fade-in slide-in-from-top-20 duration-1000 delay-300">
-          <Button asChild size="sm">
+          <Button asChild size="lg">
             <Link href="/signup">
               Start Learning for Free
               <ArrowRight className="ml-2" />
