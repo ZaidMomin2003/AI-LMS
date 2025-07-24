@@ -56,7 +56,7 @@ const renderLine = (line: string, lineIndex: number) => {
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   if (!content) return null;
   
-  const lines = content.split(/\\n|\n/g);
+  const lines = content.split(/\n/g);
 
   return (
     <>
