@@ -21,7 +21,7 @@ export type GenerateStudyNotesInput = z.infer<typeof GenerateStudyNotesInputSche
 const GenerateStudyNotesOutputSchema = z.object({
   introduction: z.string().describe('A brief introduction to the topic.'),
   coreConcepts: z.string().describe("A detailed explanation of the topic's core concepts in Markdown format."),
-  examples: z.string().describe('2-3 practical examples in Markdown format.'),
+  examples: z.string().describe("2-3 practical examples in Markdown format."),
   keyFormulas: z.string().describe("Key formulas and their explanations in Markdown format. If not applicable, state 'None'."),
   keyTerms: z.string().describe("A list of the most important key terms and their definitions in 'Term: Definition' markdown format."),
 });
