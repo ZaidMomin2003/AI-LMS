@@ -18,6 +18,7 @@ import { FolderOpen, History } from 'lucide-react';
 import Link from 'next/link';
 import { AddSubjectForm } from '@/components/subjects/AddSubjectForm';
 import { useSubject } from '@/context/SubjectContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function SubjectsPage() {
   const { topics, dataLoading: topicsLoading } = useTopic();
@@ -38,6 +39,14 @@ export default function SubjectsPage() {
   const sortedSubjectKeys = Array.from(new Set([...subjectList, ...Object.keys(subjectsWithTopics)]))
     .filter(s => s !== 'Uncategorized')
     .sort();
+  
+  const SubjectSkeleton = () => (
+    <div className="space-y-2">
+      {[...Array(3)].map((_, i) => (
+        <Skeleton key={i} className="h-16 w-full" />
+      ))}
+    </div>
+  );
 
   return (
     <AppLayout>
@@ -54,7 +63,7 @@ export default function SubjectsPage() {
         <AddSubjectForm onAddSubject={addSubject} />
 
         {topicsLoading || subjectsLoading ? (
-             <p>Loading subjects...</p>
+            <SubjectSkeleton />
         ) : sortedSubjectKeys.length === 0 ? (
           <Card className="text-center mt-6">
             <CardHeader>

@@ -1,7 +1,8 @@
+
 'use server';
 
 import { db, isFirebaseEnabled } from '@/lib/firebase';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 export interface Submission {
   id: string;
@@ -19,8 +20,10 @@ export async function fetchSubmissions(): Promise<Submission[]> {
 
   try {
     const submissionsRef = collection(db, 'submissions');
-    // We removed the orderBy clause to avoid needing a custom index.
-    const q = query(submissionsRef);
+    // NOTE: This query requires a composite index on 'createdAt' in descending order.
+    // If you see a permission error in the console, Firebase will provide a link
+    // to create this index automatically.
+    const q = query(submissionsRef, orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
 
     const submissions = querySnapshot.docs.map((doc) => {
@@ -35,12 +38,12 @@ export async function fetchSubmissions(): Promise<Submission[]> {
       };
     });
     
-    // Sort the results in memory on the server.
-    submissions.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
     return submissions;
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching submissions:', error);
+    if (error.code === 'failed-precondition') {
+        console.error("Firestore Error: This query requires an index. Please check the console logs in your browser or Firebase Functions for a link to create it automatically.");
+    }
     return [];
   }
 }

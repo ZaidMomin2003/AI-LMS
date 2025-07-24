@@ -11,7 +11,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import type {Part} from 'genkit/generate';
 
 const CaptureTheAnswerInputSchema = z.object({
   imageDataUri: z
@@ -30,48 +29,37 @@ const CaptureTheAnswerOutputSchema = z.object({
 export type CaptureTheAnswerOutput = z.infer<typeof CaptureTheAnswerOutputSchema>;
 
 export async function captureTheAnswer(input: CaptureTheAnswerInput): Promise<CaptureTheAnswerOutput> {
-  const { imageDataUri } = input;
+  return captureTheAnswerFlow(input);
+}
 
-  const promptParts: Part[] = [
-    {
-      text: `You are an expert tutor AI with deep knowledge across all subjects. Your task is to analyze the provided image, accurately identify the question written in it, and provide a correct, clear, and concise answer along with a step-by-step solution.
+const prompt = ai.definePrompt({
+  name: 'captureTheAnswerPrompt',
+  input: {schema: CaptureTheAnswerInputSchema},
+  output: {schema: CaptureTheAnswerOutputSchema},
+  prompt: `You are an expert tutor AI with deep knowledge across all subjects. Your task is to analyze the provided image, accurately identify the question written in it, and provide a correct, clear, and concise answer along with a step-by-step solution.
 
-Your response MUST be a valid JSON object with three keys: "question", "answer", and "solution". The JSON should not be inside a markdown block.
+Your response MUST be a valid JSON object matching the provided schema.
 
 - "question": A string containing the exact question you identified from the image.
 - "answer": A string containing the correct and direct answer to that question.
 - "solution": A string containing a step-by-step explanation of how to arrive at the correct answer. **This solution must be formatted in Markdown**, using lists, bold text for emphasis, or code blocks where appropriate to make it as clear as possible.
 
-Example response format:
-{
-  "question": "What is 25% of 200?",
-  "answer": "50",
-  "solution": "To find 25% of 200, you follow these steps:\\n\\n1. **Convert the percentage to a decimal**: Divide 25 by 100, which gives you \`0.25\`.\\n2. **Multiply the decimal by the number**: \`0.25 * 200 = 50\`.\\n3. The result is your answer."
-}
+Image with the question is below:
+{{media url=imageDataUri}}`,
+});
 
-Image with the question is below:`,
-    },
-    { media: { url: imageDataUri } },
-  ];
 
-  const llmResponse = await ai.generate({
-    prompt: promptParts,
-  });
-
-  let responseText = llmResponse.text.trim();
-
-  // The model sometimes wraps the JSON in markdown backticks. Let's remove them.
-  if (responseText.startsWith('```json')) {
-    responseText = responseText.substring(7, responseText.length - 3).trim();
+const captureTheAnswerFlow = ai.defineFlow(
+  {
+    name: 'captureTheAnswerFlow',
+    inputSchema: CaptureTheAnswerInputSchema,
+    outputSchema: CaptureTheAnswerOutputSchema,
+  },
+  async input => {
+    const {output} = await prompt(input);
+    if (!output) {
+      throw new Error("The AI returned an invalid response format. Please try again.");
+    }
+    return output;
   }
-
-  try {
-    const parsedResponse = JSON.parse(responseText);
-    const validatedOutput = CaptureTheAnswerOutputSchema.parse(parsedResponse);
-    return validatedOutput;
-  } catch (e) {
-    console.error("Failed to parse or validate AI response:", e);
-    console.error("Raw AI Response:", responseText);
-    throw new Error("The AI returned an invalid response format. Please try again.");
-  }
-}
+);

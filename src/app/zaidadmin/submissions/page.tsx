@@ -60,17 +60,32 @@ export default function AdminSubmissionsPage() {
   };
   
   const TableSkeleton = () => (
-    <div className="space-y-2">
-      {[...Array(5)].map((_, i) => (
-        <div key={i} className="flex items-center space-x-4 p-4 border rounded-md">
-          <div className="space-y-2 flex-1">
-            <Skeleton className="h-4 w-1/4" />
-            <Skeleton className="h-4 w-2/4" />
-          </div>
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-4 w-1/4" />
-        </div>
-      ))}
+     <div className="rounded-md border">
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead className="w-[250px]"><Skeleton className="h-4 w-24" /></TableHead>
+                    <TableHead><Skeleton className="h-4 w-32" /></TableHead>
+                    <TableHead className="w-[150px] text-right"><Skeleton className="h-4 w-16 ml-auto" /></TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {[...Array(5)].map((_, i) => (
+                    <TableRow key={i}>
+                        <TableCell>
+                            <Skeleton className="h-4 w-20 mb-1" />
+                            <Skeleton className="h-3 w-32" />
+                        </TableCell>
+                        <TableCell>
+                            <Skeleton className="h-4 w-full" />
+                        </TableCell>
+                        <TableCell className="text-right">
+                           <Skeleton className="h-4 w-16 ml-auto" />
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
     </div>
   );
 

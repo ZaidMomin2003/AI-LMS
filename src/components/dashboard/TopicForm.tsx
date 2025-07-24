@@ -19,9 +19,7 @@ import { useTopic } from '@/context/TopicContext';
 import { useRouter } from 'next/navigation';
 import { createTopicAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Lock, Star, PlusCircle } from 'lucide-react';
-import { useSubscription } from '@/context/SubscriptionContext';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Loader2, PlusCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useSubject } from '@/context/SubjectContext';
 import {
@@ -31,6 +29,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { Info } from 'lucide-react';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: 'Topic must be at least 3 characters.' }).max(100),
@@ -38,9 +38,8 @@ const formSchema = z.object({
 });
 
 export function TopicForm() {
-  const { topics, addTopic, loading, setLoading } = useTopic();
+  const { addTopic, loading, setLoading } = useTopic();
   const { subjects: subjectList } = useSubject();
-  const { subscription } = useSubscription();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -50,8 +49,6 @@ export function TopicForm() {
       title: '',
     },
   });
-
-  const isLocked = subscription?.planName === 'Hobby' && topics.length >= 1;
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
@@ -80,28 +77,19 @@ export function TopicForm() {
     }
   }
 
-  if (isLocked) {
-      return (
-          <Card className="text-center bg-secondary">
-             <CardHeader>
-                <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit">
-                    <Lock className="w-6 h-6" />
-                </div>
-                <CardTitle className="font-headline pt-2">Free Topic Limit Reached</CardTitle>
-             </CardHeader>
-             <CardContent>
-                <p className="text-muted-foreground">You've generated your free topic. To create unlimited study materials, please upgrade your plan.</p>
-             </CardContent>
-             <div className="p-6 pt-0">
-                 <Button asChild>
-                    <Link href="/pricing">
-                        <Star className="mr-2 h-4 w-4" />
-                        Upgrade Plan
-                    </Link>
+  if (subjectList.length === 0) {
+    return (
+        <Alert>
+            <Info className="h-4 w-4"/>
+            <AlertTitle>Create a Subject First!</AlertTitle>
+            <AlertDescription>
+                You need to add at least one subject before you can create a topic.
+                <Button asChild variant="link" className="p-0 h-auto ml-1">
+                    <Link href="/dashboard/subjects">Go to Subjects</Link>
                 </Button>
-             </div>
-          </Card>
-      )
+            </AlertDescription>
+        </Alert>
+    )
   }
 
   return (
@@ -121,13 +109,9 @@ export function TopicForm() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {subjectList.length > 0 ? (
-                        subjectList.map((subject) => (
+                      {subjectList.map((subject) => (
                           <SelectItem key={subject} value={subject}>{subject}</SelectItem>
-                        ))
-                      ) : (
-                        <div className="p-2 text-sm text-center text-muted-foreground">No subjects created.</div>
-                      )}
+                      ))}
                       <div className="p-1 mt-1 border-t">
                          <Button asChild variant="ghost" className="w-full justify-start text-sm">
                            <Link href="/dashboard/subjects">
