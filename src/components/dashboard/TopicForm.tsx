@@ -26,6 +26,7 @@ import Link from 'next/link';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: 'Topic must be at least 3 characters.' }).max(100),
+  subject: z.string().min(2, { message: 'Subject must be at least 2 characters.' }).max(50),
 });
 
 export function TopicForm() {
@@ -38,6 +39,7 @@ export function TopicForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
+      subject: '',
     },
   });
 
@@ -46,7 +48,7 @@ export function TopicForm() {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
-      const newTopicData = await createTopicAction(values.title);
+      const newTopicData = await createTopicAction(values.title, values.subject);
       const newTopic = {
         ...newTopicData,
         id: crypto.randomUUID(),
@@ -97,22 +99,37 @@ export function TopicForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Study Topic</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g., The French Revolution, Quantum Physics" {...field} />
-              </FormControl>
-              <FormDescription>
-                What do you want to learn about today?
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+            control={form.control}
+            name="subject"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Subject</FormLabel>
+                <FormControl>
+                    <Input placeholder="e.g., Physics, History" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+            <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+                <FormItem>
+                <FormLabel>Study Topic</FormLabel>
+                <FormControl>
+                    <Input placeholder="e.g., The French Revolution" {...field} />
+                </FormControl>
+                <FormMessage />
+                </FormItem>
+            )}
+            />
+        </div>
+        <FormDescription>
+            What do you want to learn about today? Assign it to a subject.
+        </FormDescription>
         <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Generate Materials

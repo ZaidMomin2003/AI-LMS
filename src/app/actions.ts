@@ -1,3 +1,4 @@
+
 'use server';
 
 import { generateFlashcards } from '@/ai/flows/generate-flashcards';
@@ -6,7 +7,8 @@ import { generateStudyNotes } from '@/ai/flows/generate-study-notes';
 import type { Topic } from '@/types';
 
 export async function createTopicAction(
-  title: string
+  title: string,
+  subject: string
 ): Promise<Omit<Topic, 'id' | 'createdAt'>> {
   try {
     // Generate all materials in parallel
@@ -18,6 +20,7 @@ export async function createTopicAction(
 
     return {
       title,
+      subject,
       notes: notesResult.studyNotes,
       keyTerms: notesResult.keyTerms,
       flashcards: flashcardsResult.flashcards,

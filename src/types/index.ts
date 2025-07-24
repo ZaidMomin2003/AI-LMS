@@ -19,6 +19,7 @@ export interface QuizQuestion {
 export interface Topic {
   id: string;
   title: string;
+  subject: string;
   createdAt: Date;
   notes: string;
   keyTerms: KeyTerm[];

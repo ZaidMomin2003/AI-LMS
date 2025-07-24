@@ -37,6 +37,7 @@ import {
   Lock,
   Timer,
   Camera,
+  Folder,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -187,6 +188,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link href="/dashboard">
                   <LayoutDashboard />
                   <span>Dashboard</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/dashboard/subjects')}
+                tooltip={{ children: 'Subjects' }}
+              >
+                <Link href="/dashboard/subjects">
+                  <Folder />
+                  <span>Subjects</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
