@@ -19,18 +19,27 @@ import { useTopic } from '@/context/TopicContext';
 import { useRouter } from 'next/navigation';
 import { createTopicAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Lock, Star } from 'lucide-react';
+import { Loader2, Lock, Star, PlusCircle } from 'lucide-react';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import Link from 'next/link';
+import { useSubject } from '@/context/SubjectContext';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: 'Topic must be at least 3 characters.' }).max(100),
-  subject: z.string().min(2, { message: 'Subject must be at least 2 characters.' }).max(50),
+  subject: z.string({ required_error: 'Please select a subject.' }),
 });
 
 export function TopicForm() {
   const { topics, addTopic, loading, setLoading } = useTopic();
+  const { subjects: subjectList } = useSubject();
   const { subscription } = useSubscription();
   const router = useRouter();
   const { toast } = useToast();
@@ -39,7 +48,6 @@ export function TopicForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: '',
-      subject: '',
     },
   });
 
@@ -106,9 +114,30 @@ export function TopicForm() {
             render={({ field }) => (
                 <FormItem>
                 <FormLabel>Subject</FormLabel>
-                <FormControl>
-                    <Input placeholder="e.g., Physics, History" {...field} />
-                </FormControl>
+                 <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a subject" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {subjectList.length > 0 ? (
+                        subjectList.map((subject) => (
+                          <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                        ))
+                      ) : (
+                        <div className="p-2 text-sm text-center text-muted-foreground">No subjects created.</div>
+                      )}
+                      <div className="p-1 mt-1 border-t">
+                         <Button asChild variant="ghost" className="w-full justify-start text-sm">
+                           <Link href="/dashboard/subjects">
+                             <PlusCircle className="mr-2 h-4 w-4" />
+                             Add new subject
+                           </Link>
+                         </Button>
+                      </div>
+                    </SelectContent>
+                  </Select>
                 <FormMessage />
                 </FormItem>
             )}

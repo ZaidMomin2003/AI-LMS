@@ -16,11 +16,14 @@ import type { Topic } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
 import { FolderOpen, History } from 'lucide-react';
 import Link from 'next/link';
+import { AddSubjectForm } from '@/components/subjects/AddSubjectForm';
+import { useSubject } from '@/context/SubjectContext';
 
 export default function SubjectsPage() {
-  const { topics, dataLoading } = useTopic();
+  const { topics, dataLoading: topicsLoading } = useTopic();
+  const { subjects: subjectList, addSubject, loading: subjectsLoading } = useSubject();
 
-  const subjects = useMemo(() => {
+  const subjectsWithTopics = useMemo(() => {
     if (!topics) return {};
     return topics.reduce((acc: Record<string, Topic[]>, topic) => {
       const subjectKey = topic.subject || 'Uncategorized';
@@ -32,7 +35,9 @@ export default function SubjectsPage() {
     }, {});
   }, [topics]);
 
-  const sortedSubjectKeys = Object.keys(subjects).sort();
+  const sortedSubjectKeys = Array.from(new Set([...subjectList, ...Object.keys(subjectsWithTopics)]))
+    .filter(s => s !== 'Uncategorized')
+    .sort();
 
   return (
     <AppLayout>
@@ -42,14 +47,16 @@ export default function SubjectsPage() {
             My Subjects
           </h2>
           <p className="text-muted-foreground">
-            All your generated study materials, organized by subject.
+            Manage your subjects and browse your generated study materials.
           </p>
         </div>
+        
+        <AddSubjectForm onAddSubject={addSubject} />
 
-        {dataLoading && <p>Loading subjects...</p>}
-
-        {!dataLoading && sortedSubjectKeys.length === 0 ? (
-          <Card className="text-center">
+        {topicsLoading || subjectsLoading ? (
+             <p>Loading subjects...</p>
+        ) : sortedSubjectKeys.length === 0 ? (
+          <Card className="text-center mt-6">
             <CardHeader>
                 <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit">
                     <FolderOpen className="w-6 h-6" />
@@ -58,14 +65,9 @@ export default function SubjectsPage() {
             </CardHeader>
             <CardContent>
                 <p className="text-muted-foreground">
-                    Create a new topic on the dashboard to start organizing your study materials here.
+                    Add a new subject above to start organizing your study materials.
                 </p>
             </CardContent>
-            <div className="p-6 pt-0">
-                <Button asChild>
-                    <Link href="/dashboard">Go to Dashboard</Link>
-                </Button>
-            </div>
           </Card>
         ) : (
           <Accordion type="single" collapsible className="w-full space-y-2">
@@ -76,30 +78,34 @@ export default function SubjectsPage() {
                     <FolderOpen className="w-5 h-5 text-primary" />
                     <span>{subject}</span>
                     <span className="text-sm font-normal bg-muted text-muted-foreground rounded-full px-2 py-0.5">
-                      {subjects[subject].length} topics
+                      {subjectsWithTopics[subject]?.length || 0} topics
                     </span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4">
-                  <div className="space-y-3">
-                    {subjects[subject].map((topic) => (
-                      <div
-                        key={topic.id}
-                        className="flex items-center justify-between p-3 rounded-md hover:bg-secondary"
-                      >
-                        <div>
-                          <p className="font-medium">{topic.title}</p>
-                          <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1">
-                            <History className="w-3.5 h-3.5" />
-                            Created {formatDistanceToNow(new Date(topic.createdAt), { addSuffix: true })}
-                          </p>
+                    {subjectsWithTopics[subject] && subjectsWithTopics[subject].length > 0 ? (
+                        <div className="space-y-3">
+                            {subjectsWithTopics[subject].map((topic) => (
+                            <div
+                                key={topic.id}
+                                className="flex items-center justify-between p-3 rounded-md hover:bg-secondary"
+                            >
+                                <div>
+                                <p className="font-medium">{topic.title}</p>
+                                <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1">
+                                    <History className="w-3.5 h-3.5" />
+                                    Created {formatDistanceToNow(new Date(topic.createdAt), { addSuffix: true })}
+                                </p>
+                                </div>
+                                <Button asChild variant="ghost">
+                                <Link href={`/topic/${topic.id}`}>Study Topic</Link>
+                                </Button>
+                            </div>
+                            ))}
                         </div>
-                        <Button asChild variant="ghost">
-                          <Link href={`/topic/${topic.id}`}>Study Topic</Link>
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                    ) : (
+                        <p className="text-sm text-muted-foreground text-center py-4">No topics created for this subject yet.</p>
+                    )}
                 </AccordionContent>
               </AccordionItem>
             ))}

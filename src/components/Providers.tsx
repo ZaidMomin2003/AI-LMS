@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AuthProvider } from '@/context/AuthContext';
@@ -8,21 +9,24 @@ import { SubscriptionProvider } from '@/context/SubscriptionContext';
 import { TaskProvider } from '@/context/TaskContext';
 import { TopicProvider } from '@/context/TopicContext';
 import { PomodoroProvider } from '@/context/PomodoroContext';
+import { SubjectProvider } from '@/context/SubjectContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
       <ProfileProvider>
         <SubscriptionProvider>
-          <TopicProvider>
-            <TaskProvider>
-              <RoadmapProvider>
-                <PomodoroProvider>
-                  <ExamProvider>{children}</ExamProvider>
-                </PomodoroProvider>
-              </RoadmapProvider>
-            </TaskProvider>
-          </TopicProvider>
+          <SubjectProvider>
+            <TopicProvider>
+              <TaskProvider>
+                <RoadmapProvider>
+                  <PomodoroProvider>
+                    <ExamProvider>{children}</ExamProvider>
+                  </PomodoroProvider>
+                </RoadmapProvider>
+              </TaskProvider>
+            </TopicProvider>
+          </SubjectProvider>
         </SubscriptionProvider>
       </ProfileProvider>
     </AuthProvider>
