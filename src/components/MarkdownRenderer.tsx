@@ -3,7 +3,7 @@
 import React from 'react';
 
 interface MarkdownRendererProps {
-  content: string;
+  content: any; // Accept any type to be safe
 }
 
 const renderLine = (line: string, lineIndex: number) => {
@@ -54,7 +54,10 @@ const renderLine = (line: string, lineIndex: number) => {
 };
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
-  if (!content) return null;
+  // Safety check inspired by user suggestion. This is the fix.
+  if (!content || typeof content !== 'string') {
+    return null;
+  }
   
   const lines = content.split(/\n/g);
 
