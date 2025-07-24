@@ -17,7 +17,6 @@ const GenerateStudyNotesInputSchema = z.object({
 });
 export type GenerateStudyNotesInput = z.infer<typeof GenerateStudyNotesInputSchema>;
 
-// The output is now a simple string
 const GenerateStudyNotesOutputSchema = z.string().describe("A comprehensive set of study notes in Markdown format.");
 export type GenerateStudyNotesOutput = z.infer<typeof GenerateStudyNotesOutputSchema>;
 
