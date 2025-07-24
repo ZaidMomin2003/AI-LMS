@@ -65,7 +65,7 @@ export default function TopicPage() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="notes" className="space-y-4">
-            <NotesView notes={topic.notes} keyTerms={topic.keyTerms ?? []} />
+            <NotesView notes={topic.notes} />
           </TabsContent>
           <TabsContent value="flashcards" className="space-y-4">
             <FlashcardsView flashcards={topic.flashcards} />

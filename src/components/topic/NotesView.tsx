@@ -28,8 +28,9 @@ const TermPopover: React.FC<{ term: string, definition: string, children: React.
 );
 
 const HighlightedMarkdownRenderer: React.FC<{ content: string; keyTerms: StudyNotes['keyTerms'] }> = ({ content, keyTerms }) => {
-  const termsRegex = keyTerms.length > 0
-    ? new RegExp(`(${keyTerms.map(kt => kt.term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi')
+  const terms = keyTerms ?? [];
+  const termsRegex = terms.length > 0
+    ? new RegExp(`(${terms.map(kt => kt.term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi')
     : null;
 
   if (!termsRegex) {
@@ -41,7 +42,7 @@ const HighlightedMarkdownRenderer: React.FC<{ content: string; keyTerms: StudyNo
   return (
     <>
       {parts.map((part, index) => {
-        const matchedTerm = keyTerms.find(kt => kt.term.toLowerCase() === part.toLowerCase());
+        const matchedTerm = terms.find(kt => kt.term.toLowerCase() === part.toLowerCase());
         if (matchedTerm) {
           return (
             <TermPopover key={index} term={matchedTerm.term} definition={matchedTerm.definition}>
@@ -68,6 +69,8 @@ export function NotesView({ notes }: NotesViewProps) {
     );
   }
 
+  const keyTerms = notes.keyTerms ?? [];
+
   return (
     <div className="space-y-6">
         {/* Introduction */}
@@ -79,7 +82,7 @@ export function NotesView({ notes }: NotesViewProps) {
                 </CardTitle>
             </CardHeader>
             <CardContent className="prose prose-invert max-w-none">
-                <HighlightedMarkdownRenderer content={notes.introduction} keyTerms={notes.keyTerms} />
+                <HighlightedMarkdownRenderer content={notes.introduction} keyTerms={keyTerms} />
             </CardContent>
         </Card>
         
@@ -97,7 +100,7 @@ export function NotesView({ notes }: NotesViewProps) {
                     <CardContent>
                         <ScrollArea className="h-[400px] pr-4">
                             <div className="prose prose-invert max-w-none">
-                               <HighlightedMarkdownRenderer content={notes.detailedExplanation} keyTerms={notes.keyTerms} />
+                               <HighlightedMarkdownRenderer content={notes.detailedExplanation} keyTerms={keyTerms} />
                             </div>
                         </ScrollArea>
                     </CardContent>
@@ -118,7 +121,7 @@ export function NotesView({ notes }: NotesViewProps) {
                             <div key={index}>
                                 <h4 className="font-semibold">{example.title}</h4>
                                 <div className="text-sm text-muted-foreground prose prose-invert max-w-none">
-                                    <HighlightedMarkdownRenderer content={example.explanation} keyTerms={notes.keyTerms} />
+                                    <HighlightedMarkdownRenderer content={example.explanation} keyTerms={keyTerms} />
                                 </div>
                                 {index < notes.examples.length - 1 && <Separator className="my-4"/>}
                             </div>
