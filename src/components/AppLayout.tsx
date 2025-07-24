@@ -60,6 +60,7 @@ import { useTopic } from '@/context/TopicContext';
 import { useRoadmap } from '@/context/RoadmapContext';
 import { useProfile } from '@/context/ProfileContext';
 import { Badge } from './ui/badge';
+import { ThemeToggle } from './ThemeToggle';
 
 function AppLoadingScreen() {
   return (
@@ -364,6 +365,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <User className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <ThemeToggle />
+                <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>

@@ -10,25 +10,33 @@ import { TaskProvider } from '@/context/TaskContext';
 import { TopicProvider } from '@/context/TopicContext';
 import { PomodoroProvider } from '@/context/PomodoroContext';
 import { SubjectProvider } from '@/context/SubjectContext';
+import { ThemeProvider } from './ThemeProvider';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <ProfileProvider>
-        <SubscriptionProvider>
-          <SubjectProvider>
-            <TopicProvider>
-              <TaskProvider>
-                <RoadmapProvider>
-                  <PomodoroProvider>
-                    <ExamProvider>{children}</ExamProvider>
-                  </PomodoroProvider>
-                </RoadmapProvider>
-              </TaskProvider>
-            </TopicProvider>
-          </SubjectProvider>
-        </SubscriptionProvider>
-      </ProfileProvider>
-    </AuthProvider>
+    <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+    >
+        <AuthProvider>
+          <ProfileProvider>
+            <SubscriptionProvider>
+              <SubjectProvider>
+                <TopicProvider>
+                  <TaskProvider>
+                    <RoadmapProvider>
+                      <PomodoroProvider>
+                        <ExamProvider>{children}</ExamProvider>
+                      </PomodoroProvider>
+                    </RoadmapProvider>
+                  </TaskProvider>
+                </TopicProvider>
+              </SubjectProvider>
+            </SubscriptionProvider>
+          </ProfileProvider>
+        </AuthProvider>
+    </ThemeProvider>
   );
 }
