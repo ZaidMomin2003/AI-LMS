@@ -42,10 +42,10 @@ const prompt = ai.definePrompt({
 
   **Instructions for the notes:**
   - **introduction**: Start with a concise introduction.
-  - **coreConcepts**: Provide a detailed explanation of the core concepts. Use Markdown for formatting (headings, lists, bold text).
-  - **examples**: Include 2-3 clear, practical examples. Use Markdown.
+  - **coreConcepts**: Provide a detailed explanation of the core concepts. Use Markdown for formatting (headings, lists, bold text). Whenever you mention one of the key terms defined below, you MUST embed its definition directly into the text using the format [[Term|Definition]]. Be generous and use this format frequently to create a rich, interactive experience.
+  - **examples**: Include 2-3 clear, practical examples. Use Markdown. Also use the [[Term|Definition]] format in this section where appropriate.
   - **keyFormulas**: If applicable, list key formulas and their explanations. Use Markdown. If there are no formulas, the value should be 'None'.
-  - **keyTerms**: Identify and define 5-7 of the most important key terms. Format this as a list using Markdown, like '* Term: Definition'.
+  - **keyTerms**: Identify and define 8-12 of the most important key terms. Format this as a list using Markdown, like '* Term: Definition'.
   `,
 });
 
