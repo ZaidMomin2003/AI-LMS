@@ -3,15 +3,13 @@
 
 import React from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
-import { cn } from '@/lib/utils';
 
 interface MarkdownRendererProps {
   content: string;
-  keyTerms?: string;
 }
 
-// A component to render interactive key terms
-const KeyTerm = ({ term, definition }: { term: string; definition: string }) => (
+// A component to render interactive key terms from the [[Term|Definition]] format
+const KeyTerm = ({ term, definition }: { term: string; definition:string }) => (
   <Popover>
     <PopoverTrigger asChild>
       <span className="text-primary font-semibold cursor-pointer hover:underline">
@@ -29,105 +27,35 @@ const KeyTerm = ({ term, definition }: { term: string; definition: string }) => 
   </Popover>
 );
 
-// Function to escape special regex characters
-function escapeRegExp(string: string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+const renderLineWithLinks = (line: string, lineIndex: number) => {
+    // Regex to find all instances of [[Term|Definition]]
+    const termRegex = /\[\[(.*?)\|(.*?)\]\]/g;
+    const parts = line.split(termRegex);
 
-const renderLine = (line: string, lineIndex: number, keyTermsMap: Map<string, string>) => {
-  // Regex to match **bold** text, `code` snippets, or one of the key terms
-  const termsRegex =
-    keyTermsMap.size > 0
-      ? `|(${Array.from(keyTermsMap.keys()).map(escapeRegExp).join('|')})`
-      : '';
-  const regex = new RegExp(`(\`.*?\`)|(\\*\\*.*?\\*\\*)${termsRegex}`, 'g');
-
-  const parts = line.split(regex).filter((part) => part);
-
-  const renderedParts = parts.map((part, index) => {
-    // Handle Key Terms
-    if (keyTermsMap.has(part)) {
-      return (
-        <KeyTerm
-          key={`${lineIndex}-${index}`}
-          term={part}
-          definition={keyTermsMap.get(part)!}
-        />
-      );
+    if (parts.length <= 1) {
+        return line; // No key terms found in this line
     }
-    // Handle Code
-    if (part.startsWith('`') && part.endsWith('`')) {
-      return (
-        <code
-          key={`${lineIndex}-${index}`}
-          className="bg-muted text-muted-foreground rounded-sm px-1 py-0.5 font-mono"
-        >
-          {part.slice(1, -1)}
-        </code>
-      );
+
+    const elements = [];
+    for (let i = 0; i < parts.length; i++) {
+        // Text parts are at even indices (0, 3, 6, ...)
+        if (i % 3 === 0) {
+            elements.push(parts[i]);
+        } else if (i % 3 === 1) {
+            // Term is at index 1, 4, 7, ...
+            // Definition is at index 2, 5, 8, ...
+            const term = parts[i];
+            const definition = parts[i + 1];
+            elements.push(<KeyTerm key={`${lineIndex}-${i}`} term={term} definition={definition} />);
+        }
     }
-    // Handle Bold
-    if (part.startsWith('**') && part.endsWith('**')) {
-      return <strong key={`${lineIndex}-${index}`}>{part.slice(2, -2)}</strong>;
-    }
-    // Handle Regular Text
-    return part;
-  });
-
-  // Regex to match [links](url)
-  const linkRegex = /\[(.*?)\]\((.*?)\)/g;
-
-  // Process for links separately
-  const finalParts = renderedParts.map((part, index) => {
-    if (typeof part !== 'string') return part; // It's already a component
-
-    const linkParts = part.split(linkRegex).filter((p) => p);
-    if (linkParts.length <= 1) return part;
-
-    let result = [];
-    for (let i = 0; i < linkParts.length; i += 3) {
-      if (linkParts[i]) result.push(linkParts[i]); // Text before link
-      if (linkParts[i + 1] && linkParts[i + 2]) {
-        // Link text and URL
-        result.push(
-          <a
-            href={linkParts[i + 2]}
-            key={`${lineIndex}-link-${i}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline hover:text-primary/80"
-          >
-            {linkParts[i + 1]}
-          </a>
-        );
-      }
-    }
-    return result;
-  });
-
-  return <React.Fragment key={lineIndex}>{finalParts}</React.Fragment>;
+    return <>{elements}</>;
 };
 
-export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
-  content,
-  keyTerms,
-}) => {
+export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   // Safety check to ensure content is a string
   if (!content || typeof content !== 'string') {
     return null;
-  }
-
-  // Parse key terms into a Map for easy lookup
-  const keyTermsMap = new Map<string, string>();
-  if (keyTerms && typeof keyTerms === 'string') {
-    const termLines = keyTerms.split('\n');
-    termLines.forEach((line) => {
-      const match = line.match(/^\s*[\*-]\s*([^:]+):\s*(.*)/);
-      if (match) {
-        const [, term, definition] = match;
-        keyTermsMap.set(term.trim(), definition.trim());
-      }
-    });
   }
 
   const lines = content.split(/\n/g);
@@ -136,18 +64,11 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
     <>
       {lines.map((line, index) => {
         const trimmedLine = line.trim();
-        if (/^\d+\./.test(trimmedLine)) {
-          // Matches ordered lists like "1."
-          return (
-            <p key={index} className="my-1">
-              {renderLine(line, index, keyTermsMap)}
-            </p>
-          );
-        }
+        // Basic formatting for lists, etc. can be added here if needed
         if (trimmedLine.startsWith('* ') || trimmedLine.startsWith('- ')) {
           return (
-            <li key={index} className="ml-4">
-              {renderLine(trimmedLine.substring(2), index, keyTermsMap)}
+            <li key={index} className="ml-4 my-1">
+              {renderLineWithLinks(trimmedLine.substring(2), index)}
             </li>
           );
         }
@@ -156,7 +77,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         }
         return (
           <p key={index} className="my-1">
-            {renderLine(line, index, keyTermsMap)}
+            {renderLineWithLinks(line, index)}
           </p>
         );
       })}
