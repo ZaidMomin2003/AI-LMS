@@ -343,37 +343,38 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </Suspense>
             </SidebarMenuItem>
           </SidebarMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                    <Avatar className="h-9 w-9">
-                        <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? ''} />
-                        <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
-                    </Avatar>
-                    <span className="truncate">{user.displayName || user.email?.split('@')[0]}</span>
-                </SidebarMenuButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent side="top" align="end" className="w-56 mb-2">
-                <DropdownMenuLabel className="font-normal">
-                    <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
-                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                    </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={() => router.push('/dashboard/profile')} className="cursor-pointer">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <ThemeToggle />
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center justify-between">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <SidebarMenuButton>
+                        <Avatar className="h-9 w-9">
+                            <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? ''} />
+                            <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                        </Avatar>
+                        <span className="truncate">{user.displayName || user.email?.split('@')[0]}</span>
+                    </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="top" align="end" className="w-56 mb-2">
+                    <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                            <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
+                            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                        </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onSelect={() => router.push('/dashboard/profile')} className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+            <ThemeToggle />
+          </div>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
