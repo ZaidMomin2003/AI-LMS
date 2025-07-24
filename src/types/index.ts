@@ -16,7 +16,13 @@ export interface QuizQuestion {
   explanation?: string;
 }
 
-export type StudyNotes = string;
+export interface StudyNotes {
+  introduction: string;
+  coreConcepts: string;
+  examples: string;
+  keyFormulas: string;
+  keyTerms: string;
+}
 
 export interface Topic {
   id: string;
