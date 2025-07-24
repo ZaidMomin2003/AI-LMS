@@ -16,9 +16,8 @@ const GenerateStudyNotesInputSchema = z.object({
 });
 export type GenerateStudyNotesInput = z.infer<typeof GenerateStudyNotesInputSchema>;
 
-const GenerateStudyNotesOutputSchema = z.object({
-  notes: z.string().describe("A comprehensive set of study notes in Markdown format."),
-});
+// The output is now a simple string
+const GenerateStudyNotesOutputSchema = z.string().describe("A comprehensive set of study notes in Markdown format.");
 export type GenerateStudyNotesOutput = z.infer<typeof GenerateStudyNotesOutputSchema>;
 
 export async function generateStudyNotes(input: GenerateStudyNotesInput): Promise<GenerateStudyNotesOutput> {
@@ -28,12 +27,11 @@ export async function generateStudyNotes(input: GenerateStudyNotesInput): Promis
 const prompt = ai.definePrompt({
   name: 'generateStudyNotesPrompt',
   input: {schema: GenerateStudyNotesInputSchema},
-  output: {schema: GenerateStudyNotesOutputSchema},
   prompt: `You are an expert educator AI that creates high-quality, detailed, and structured study materials for any topic.
 
   Your task is to generate a comprehensive set of study notes for the topic: **{{{topic}}}**.
 
-  The output MUST be a valid JSON object with a single key "notes" containing the notes as a Markdown string.
+  The output MUST be a single, well-formatted Markdown string.
 
   **Instructions for the notes:**
   - Start with an introduction.
@@ -51,7 +49,7 @@ const generateStudyNotesFlow = ai.defineFlow(
     outputSchema: GenerateStudyNotesOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    const llmResponse = await ai.generate({ prompt: prompt.compile({ input }) });
+    return llmResponse.text;
   }
 );
