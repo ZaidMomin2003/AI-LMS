@@ -21,7 +21,7 @@ export async function createTopicAction(
     return {
       title,
       subject,
-      notes: notesResult,
+      notes: notesResult, // notesResult is now a string, which is correct
       flashcards: flashcardsResult.flashcards,
       quiz: quizResult.questions,
     };
