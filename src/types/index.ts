@@ -1,3 +1,4 @@
+import type { GenerateStudyNotesOutput } from "@/ai/flows/generate-study-notes";
 
 export interface KeyTerm {
   term: string;
@@ -16,13 +17,14 @@ export interface QuizQuestion {
   explanation?: string;
 }
 
+export type StudyNotes = GenerateStudyNotesOutput;
+
 export interface Topic {
   id: string;
   title: string;
   subject: string;
   createdAt: Date;
-  notes: string;
-  keyTerms: KeyTerm[];
+  notes: StudyNotes;
   flashcards: Flashcard[];
   quiz: QuizQuestion[];
 }
