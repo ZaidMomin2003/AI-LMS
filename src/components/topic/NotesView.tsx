@@ -10,7 +10,7 @@ interface NotesViewProps {
   notes: StudyNotes;
 }
 
-const NoteSection = ({ title, content }: { title: string, content: string | null | undefined }) => {
+const NoteSection = ({ title, content, keyTerms }: { title: string, content: string | null | undefined, keyTerms?: string }) => {
     if (!content || content.toLowerCase() === 'none') return null;
 
     return (
@@ -20,7 +20,7 @@ const NoteSection = ({ title, content }: { title: string, content: string | null
             </CardHeader>
             <CardContent>
                 <div className="prose prose-sm prose-invert max-w-none">
-                    <MarkdownRenderer content={content} />
+                    <MarkdownRenderer content={content} keyTerms={keyTerms} />
                 </div>
             </CardContent>
         </Card>
@@ -41,9 +41,9 @@ export function NotesView({ notes }: NotesViewProps) {
   return (
     <ScrollArea className="h-[calc(100vh-200px)] pr-4">
         <div className="space-y-4">
-            <NoteSection title="Introduction" content={notes.introduction} />
-            <NoteSection title="Core Concepts" content={notes.coreConcepts} />
-            <NoteSection title="Examples" content={notes.examples} />
+            <NoteSection title="Introduction" content={notes.introduction} keyTerms={notes.keyTerms} />
+            <NoteSection title="Core Concepts" content={notes.coreConcepts} keyTerms={notes.keyTerms} />
+            <NoteSection title="Examples" content={notes.examples} keyTerms={notes.keyTerms} />
             <NoteSection title="Key Formulas" content={notes.keyFormulas} />
             <NoteSection title="Key Terms" content={notes.keyTerms} />
         </div>

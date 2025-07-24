@@ -23,7 +23,7 @@ const GenerateStudyNotesOutputSchema = z.object({
   coreConcepts: z.string().describe("A detailed explanation of the topic's core concepts in Markdown format."),
   examples: z.string().describe('2-3 practical examples in Markdown format.'),
   keyFormulas: z.string().describe("Key formulas and their explanations in Markdown format. If not applicable, state 'None'."),
-  keyTerms: z.string().describe("Definitions for 5-7 of the most important key terms in Markdown format."),
+  keyTerms: z.string().describe("A list of the most important key terms and their definitions in 'Term: Definition' markdown format."),
 });
 
 export async function generateStudyNotes(input: GenerateStudyNotesInput): Promise<StudyNotes> {
@@ -45,7 +45,7 @@ const prompt = ai.definePrompt({
   - **coreConcepts**: Provide a detailed explanation of the core concepts. Use Markdown for formatting (headings, lists, bold text).
   - **examples**: Include 2-3 clear, practical examples. Use Markdown.
   - **keyFormulas**: If applicable, list key formulas and their explanations. Use Markdown. If there are no formulas, the value should be 'None'.
-  - **keyTerms**: Identify and define 5-7 of the most important key terms. Use Markdown.
+  - **keyTerms**: Identify and define 5-7 of the most important key terms. Format this as a list using Markdown, like '* Term: Definition'.
   `,
 });
 
