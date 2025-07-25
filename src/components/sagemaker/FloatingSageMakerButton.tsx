@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 import SageMakerChat from './SageMakerChat';
@@ -12,8 +12,9 @@ import { useDraggable } from '@dnd-kit/core';
 export function FloatingSageMakerButton() {
     const { subscription } = useSubscription();
     const [isOpen, setIsOpen] = useState(false);
+    // State to track if the button is being dragged to prevent opening the dialog.
     const [isDragging, setIsDragging] = useState(false);
-    const nodeRef = useRef(null);
+    const nodeRef = useRef<HTMLButtonElement>(null);
     
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: 'sagemaker-button',
@@ -29,14 +30,17 @@ export function FloatingSageMakerButton() {
     }
 
     const handlePointerDown = () => {
+        // Reset dragging state on new interaction
         setIsDragging(false);
     };
 
     const handlePointerMove = () => {
+        // If the pointer moves, we consider it a drag
         setIsDragging(true);
     };
 
     const handlePointerUp = () => {
+        // If it wasn't a drag, it's a click/tap, so open the dialog.
         if (!isDragging) {
             setIsOpen(true);
         }
@@ -45,20 +49,18 @@ export function FloatingSageMakerButton() {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <div className="fixed top-1/2 right-6 -translate-y-1/2 z-50" ref={nodeRef} style={style}>
-                <DialogTrigger asChild>
-                    <Button
-                      ref={setNodeRef}
-                      {...listeners}
-                      {...attributes}
-                      onPointerDown={handlePointerDown}
-                      onPointerMove={handlePointerMove}
-                      onPointerUp={handlePointerUp}
-                      size="icon"
-                      className="w-14 h-14 rounded-full shadow-2xl shadow-primary/30 cursor-grab active:cursor-grabbing"
-                    >
-                      <Sparkles className="w-7 h-7" />
-                    </Button>
-                </DialogTrigger>
+                <Button
+                  ref={setNodeRef}
+                  {...listeners}
+                  {...attributes}
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerUp}
+                  size="icon"
+                  className="w-14 h-14 rounded-full shadow-2xl shadow-primary/30 cursor-grab active:cursor-grabbing"
+                >
+                  <Sparkles className="w-7 h-7" />
+                </Button>
             </div>
             <DialogContent className="w-[90vw] max-w-3xl h-[85vh] p-0">
                 <SageMakerChat />
