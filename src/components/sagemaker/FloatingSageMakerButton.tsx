@@ -8,11 +8,11 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Bot, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import SageMakerChat from './SageMakerChat';
 import { useSubscription } from '@/context/SubscriptionContext';
 
-function DraggableButton() {
+function DraggableButton({ onClick }: { onClick: () => void }) {
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
     id: 'sagemaker-button',
   });
@@ -22,16 +22,17 @@ function DraggableButton() {
   } : undefined;
 
   return (
-    <Button
-      ref={setNodeRef}
-      style={style}
-      {...listeners}
-      {...attributes}
-      size="icon"
-      className="w-14 h-14 rounded-full shadow-2xl shadow-primary/30"
-    >
-      <Sparkles className="w-7 h-7" />
-    </Button>
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+        <DialogTrigger asChild>
+            <Button
+              size="icon"
+              className="w-14 h-14 rounded-full shadow-2xl shadow-primary/30 cursor-grab active:cursor-grabbing"
+              onClick={onClick}
+            >
+              <Sparkles className="w-7 h-7" />
+            </Button>
+        </DialogTrigger>
+    </div>
   );
 }
 
@@ -65,14 +66,7 @@ export function FloatingSageMakerButton() {
                     modifiers={[restrictToWindowEdges]}
                 >
                     <div style={{ transform: `translate(${position.x}px, ${position.y}px)` }}>
-                        <DialogTrigger asChild>
-                            <Button
-                              size="icon"
-                              className="w-14 h-14 rounded-full shadow-2xl shadow-primary/30"
-                            >
-                              <Sparkles className="w-7 h-7" />
-                            </Button>
-                        </DialogTrigger>
+                         <DraggableButton onClick={() => setIsOpen(true)} />
                     </div>
                 </DndContext>
             </div>
