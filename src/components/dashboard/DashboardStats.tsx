@@ -47,41 +47,37 @@ export function DashboardStats() {
         );
     }, [quizStats]);
     
-    const StatCard = ({ title, value, subtext, icon: Icon, className }: { title: string, value: string | number, subtext: string, icon: React.ElementType, className?: string }) => (
-      <Card className={cn("w-full h-full text-white/90 p-4 flex flex-col justify-between", className)}>
+    const StatCard = ({ title, value, subtext, className }: { title: string, value: string | number, subtext: string, className?: string }) => (
+      <Card className={cn("w-full h-full text-white/90 p-3 flex flex-col justify-between", className)}>
         <div className="flex justify-between items-start">
-          <p className="text-sm font-medium">{title}</p>
-          <Icon className="h-4 w-4 text-white/70" />
+          <p className="text-xs font-medium">{title}</p>
         </div>
         <div className="text-left">
-          <p className="text-3xl font-bold">{value}</p>
-          <p className="text-xs text-white/80">{subtext}</p>
+          <p className="text-2xl font-bold">{value}</p>
+          <p className="text-[11px] leading-tight text-white/80">{subtext}</p>
         </div>
       </Card>
     );
 
     return (
-        <div className="grid grid-cols-3 gap-2 sm:gap-4 h-32">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 h-28">
             <StatCard 
                 title="Total Topics"
                 value={topics.length}
                 subtext="sessions created"
-                icon={BookCopy}
-                className="bg-[#3A3102] border border-yellow-400/50"
+                className="bg-yellow-500/80 border border-yellow-400/50"
             />
             <StatCard 
                 title="Flashcards Made"
                 value={totalFlashcards}
                 subtext="terms to master"
-                icon={Brain}
-                className="bg-[#210B3B] border border-purple-400/50"
+                className="bg-purple-500/80 border border-purple-400/50"
             />
             <StatCard 
                 title="Quiz Performance"
                 value={totalAttempted > 0 ? `${totalCorrect}/${totalAttempted}` : '0/0'}
                 subtext="correctly answered"
-                icon={MessageCircleQuestion}
-                className="bg-[#3D1111] border border-red-400/50"
+                className="bg-red-500/80 border border-red-400/50"
             />
         </div>
     )
