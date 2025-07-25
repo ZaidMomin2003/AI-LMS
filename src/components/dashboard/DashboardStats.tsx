@@ -48,43 +48,38 @@ export function DashboardStats() {
     }, [quizStats]);
     
     const StatCard = ({ title, value, subtext, icon: Icon, className, iconClassName }: { title: string, value: string | number, subtext: string, icon: React.ElementType, className?: string, iconClassName?: string }) => (
-        <Card className={cn("shadow-lg", className)}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{title}</CardTitle>
-              <Icon className={cn("h-4 w-4", iconClassName)} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{value}</div>
-              <p className="text-xs opacity-80">{subtext}</p>
+        <Card className={cn("shadow-sm", className)}>
+            <CardContent className="p-4 flex items-center gap-4">
+                <div className={cn("p-3 rounded-full bg-primary/10", iconClassName)}>
+                    <Icon className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                    <p className="text-2xl font-bold">{value}</p>
+                    <p className="text-sm text-muted-foreground">{title}</p>
+                </div>
             </CardContent>
         </Card>
-    )
+    );
 
     return (
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <StatCard 
                 title="Total Topics"
                 value={topics.length}
                 subtext="sessions created"
                 icon={BookCopy}
-                className="bg-yellow-500/20 border-yellow-500/40 text-yellow-900 dark:text-yellow-200 shadow-yellow-500/10"
-                iconClassName="text-yellow-900/70 dark:text-yellow-400"
             />
             <StatCard 
                 title="Flashcards Made"
                 value={totalFlashcards}
                 subtext="terms to master"
                 icon={Brain}
-                className="bg-blue-500/20 border-blue-500/40 text-blue-900 dark:text-blue-200 shadow-blue-500/10"
-                iconClassName="text-blue-900/70 dark:text-blue-400"
             />
             <StatCard 
                 title="Quiz Performance"
                 value={totalAttempted > 0 ? `${totalCorrect}/${totalAttempted}` : '0/0'}
                 subtext="correctly answered"
                 icon={MessageCircleQuestion}
-                className="bg-green-500/20 border-green-500/40 text-green-900 dark:text-green-200 shadow-green-500/10"
-                iconClassName="text-green-900/70 dark:text-green-400"
             />
         </div>
     )
