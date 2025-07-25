@@ -19,7 +19,7 @@ import { useTopic } from '@/context/TopicContext';
 import { useRouter } from 'next/navigation';
 import { createTopicAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle } from 'lucide-react';
+import { Loader2, PlusCircle, Send } from 'lucide-react';
 import Link from 'next/link';
 import { useSubject } from '@/context/SubjectContext';
 import {
@@ -31,13 +31,18 @@ import {
 } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Info } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: 'Topic must be at least 3 characters.' }).max(100),
   subject: z.string({ required_error: 'Please select a subject.' }),
 });
 
-export function TopicForm() {
+interface TopicFormProps {
+    variant?: 'dashboard' | 'chat';
+}
+
+export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
   const { addTopic, loading, setLoading } = useTopic();
   const { subjects: subjectList } = useSubject();
   const router = useRouter();
@@ -89,6 +94,57 @@ export function TopicForm() {
                 </Button>
             </AlertDescription>
         </Alert>
+    )
+  }
+
+  if (variant === 'chat') {
+    return (
+         <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="relative">
+                <div className="flex flex-col sm:flex-row items-center gap-2 rounded-full p-2 pr-[60px] border bg-secondary">
+                    <FormField
+                        control={form.control}
+                        name="title"
+                        render={({ field }) => (
+                            <FormItem className="flex-1">
+                                <FormControl>
+                                    <Input 
+                                        placeholder="What do you want to master today?" 
+                                        {...field} 
+                                        className="h-10 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                                    />
+                                </FormControl>
+                                <FormMessage className="pl-4"/>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="subject"
+                        render={({ field }) => (
+                            <FormItem>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                    <SelectTrigger className="w-full sm:w-[150px] border-0 bg-background/50 rounded-full h-9">
+                                        <SelectValue placeholder="Subject" />
+                                    </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                    {subjectList.map((subject) => (
+                                        <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+                <Button type="submit" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-primary" disabled={loading}>
+                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                </Button>
+            </form>
+        </Form>
     )
   }
 
