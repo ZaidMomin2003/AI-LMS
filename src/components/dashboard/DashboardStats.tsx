@@ -67,24 +67,24 @@ export function DashboardStats() {
                 value={topics.length}
                 subtext="sessions created"
                 icon={BookCopy}
-                className="bg-yellow-500/10 border-yellow-500/30 text-yellow-200 shadow-lg shadow-yellow-500/10"
-                iconClassName="text-yellow-400"
+                className="bg-yellow-500/20 border-yellow-500/40 text-yellow-900 dark:text-yellow-200 shadow-lg shadow-yellow-500/10"
+                iconClassName="text-yellow-900/70 dark:text-yellow-400"
             />
             <StatCard 
                 title="Flashcards Made"
                 value={totalFlashcards}
                 subtext="terms to master"
                 icon={Brain}
-                className="bg-purple-500/10 border-purple-500/30 text-purple-200 shadow-lg shadow-purple-500/10"
-                iconClassName="text-purple-400"
+                className="bg-purple-500/20 border-purple-500/40 text-purple-900 dark:text-purple-200 shadow-lg shadow-purple-500/10"
+                iconClassName="text-purple-900/70 dark:text-purple-400"
             />
             <StatCard 
                 title="Quiz Performance"
                 value={totalAttempted > 0 ? `${totalCorrect}/${totalAttempted}` : '0/0'}
                 subtext="correctly answered"
                 icon={MessageCircleQuestion}
-                className="bg-red-500/10 border-red-500/30 text-red-200 shadow-lg shadow-red-500/10"
-                iconClassName="text-red-400"
+                className="bg-red-500/20 border-red-500/40 text-red-900 dark:text-red-200 shadow-lg shadow-red-500/10"
+                iconClassName="text-red-900/70 dark:text-red-400"
             />
         </div>
     )
