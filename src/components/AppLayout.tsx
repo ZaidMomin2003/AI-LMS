@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
+import { DndContext, type DragEndEvent } from '@dnd-kit/core';
 
 import {
   SidebarProvider,
@@ -368,10 +369,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   <span className="sr-only">Toggle Menu</span>
               </SidebarTrigger>
           </header>
-          <div className="flex-1 flex flex-col min-w-0">
-            <Suspense>{children}</Suspense>
-            <FloatingSageMakerButton />
-          </div>
+          <DndContext onDragEnd={() => {}}>
+            <div className="flex-1 flex flex-col min-w-0">
+                <Suspense>{children}</Suspense>
+                <FloatingSageMakerButton />
+            </div>
+          </DndContext>
       </SidebarInset>
     </SidebarProvider>
   );
