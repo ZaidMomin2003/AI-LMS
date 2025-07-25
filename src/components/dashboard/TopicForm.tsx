@@ -127,7 +127,7 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
                                     <FormControl>
                                     <SelectTrigger className="w-auto gap-2 border-0 bg-background/50 rounded-full h-9 px-3">
                                         <Folder className="h-4 w-4 text-muted-foreground" />
-                                        <SelectValue placeholder="Subject" />
+                                        <SelectValue placeholder="" />
                                     </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
