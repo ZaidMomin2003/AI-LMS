@@ -19,7 +19,7 @@ import { useTopic } from '@/context/TopicContext';
 import { useRouter } from 'next/navigation';
 import { createTopicAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, Send } from 'lucide-react';
+import { Loader2, PlusCircle, Send, Folder } from 'lucide-react';
 import Link from 'next/link';
 import { useSubject } from '@/context/SubjectContext';
 import {
@@ -125,7 +125,8 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
                             <FormItem>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                    <SelectTrigger className="w-[120px] sm:w-[150px] border-0 bg-background/50 rounded-full h-9">
+                                    <SelectTrigger className="w-auto gap-2 border-0 bg-background/50 rounded-full h-9 px-3">
+                                        <Folder className="h-4 w-4 text-muted-foreground" />
                                         <SelectValue placeholder="Subject" />
                                     </SelectTrigger>
                                     </FormControl>
