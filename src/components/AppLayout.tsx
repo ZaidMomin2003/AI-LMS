@@ -226,18 +226,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                  )}
                </Tooltip>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith('/dashboard/chat')}
-                tooltip={{ children: 'Chat' }}
-              >
-                <Link href="/dashboard/chat">
-                  <MessageSquare />
-                  <span>Chat</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
              <SidebarMenuItem>
               <SidebarMenuButton
                 asChild
