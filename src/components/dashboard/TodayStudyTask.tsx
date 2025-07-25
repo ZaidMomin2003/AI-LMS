@@ -1,21 +1,22 @@
+
 'use client';
 
 import { useRoadmap } from "@/context/RoadmapContext";
 import { useTask } from "@/context/TaskContext";
 import { format, isToday } from "date-fns";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Check, Info } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
+import { Checkbox } from "../ui/checkbox";
+import { cn } from "@/lib/utils";
 
 export function TodayStudyTask() {
     const { roadmap } = useRoadmap();
     const { addTask, findTaskById } = useTask();
     const { toast } = useToast();
-
-    const todayString = format(new Date(), 'MMMM d, yyyy');
 
     const todaysTask = useMemo(() => {
         if (!roadmap || !roadmap.plan) return null;
@@ -44,8 +45,8 @@ export function TodayStudyTask() {
     const taskInKanban = taskUniqueId ? findTaskById(taskUniqueId) : null;
     const isCompleted = taskInKanban?.columnId === 'done';
 
-    const handleCompleteTask = () => {
-        if (!todaysTask || !taskUniqueId) return;
+    const handleToggleComplete = () => {
+        if (!todaysTask || !taskUniqueId || isCompleted) return;
 
         addTask(
             `Roadmap: ${todaysTask.topicsToCover.substring(0, 50)}...`, 
@@ -63,15 +64,17 @@ export function TodayStudyTask() {
     if (!todaysTask) {
         return (
             <Card className="h-full">
-                <CardHeader>
-                    <CardTitle className="font-headline">Today's Goal</CardTitle>
+                <CardHeader className="p-3">
+                    <CardTitle className="font-headline text-base">Today's Goal</CardTitle>
                 </CardHeader>
-                <CardContent className="flex flex-col items-center justify-center text-center h-[150px]">
-                    <Info className="w-8 h-8 text-muted-foreground mb-2"/>
-                    <p className="text-muted-foreground">No study plan set for today.</p>
-                    <Button variant="link" asChild>
-                        <Link href="/dashboard/roadmap">Create a roadmap</Link>
-                    </Button>
+                <CardContent className="p-3 pt-0 flex items-center justify-center text-center h-[calc(100%-4rem)]">
+                    <div className="space-y-1">
+                        <Info className="w-6 h-6 text-muted-foreground mx-auto"/>
+                        <p className="text-sm text-muted-foreground">No plan for today.</p>
+                        <Button variant="link" asChild className="text-xs p-0 h-auto">
+                            <Link href="/dashboard/roadmap">Create a roadmap</Link>
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
         );
@@ -79,25 +82,31 @@ export function TodayStudyTask() {
     
     return (
         <Card className="h-full flex flex-col">
-            <CardHeader>
-                <CardTitle className="font-headline">What to study today</CardTitle>
-                <CardDescription>From your roadmap for {todayString}</CardDescription>
+            <CardHeader className="p-3">
+                <CardTitle className="font-headline text-base">Today's Study Goal</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 h-[125px] overflow-y-auto pr-2">
-                <p className="whitespace-pre-wrap text-sm">{todaysTask.topicsToCover}</p>
+            <CardContent className="p-3 pt-0 flex-1 flex items-center">
+                <div className="flex items-start gap-3 w-full">
+                     <Checkbox 
+                        id="today-task-checkbox" 
+                        checked={isCompleted} 
+                        onCheckedChange={handleToggleComplete}
+                        className="mt-1"
+                        aria-label="Mark task as complete"
+                     />
+                     <div className="flex-1">
+                        <label 
+                            htmlFor="today-task-checkbox" 
+                            className={cn(
+                                "text-sm font-medium transition-colors",
+                                isCompleted && "line-through text-muted-foreground"
+                            )}
+                        >
+                            {todaysTask.topicsToCover}
+                        </label>
+                     </div>
+                </div>
             </CardContent>
-            <CardFooter>
-                 <Button className="w-full" onClick={handleCompleteTask} disabled={isCompleted}>
-                    {isCompleted ? (
-                        <>
-                            <Check className="mr-2 h-4 w-4"/>
-                            Completed!
-                        </>
-                    ) : (
-                        "Mark as Complete"
-                    )}
-                </Button>
-            </CardFooter>
         </Card>
     )
 }
