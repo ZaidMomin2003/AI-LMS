@@ -82,7 +82,7 @@ export function ChatMain() {
        <div className="flex-1 flex flex-col items-center justify-center p-8 text-center relative z-10">
             <div className="relative w-32 h-32 mb-6">
                 <div className="absolute inset-0 bg-primary rounded-full blur-2xl animate-pulse" />
-                <Image src="https://placehold.co/128x128.png" data-ai-hint="glowing orb" alt="AI Orb" width={128} height={128} className="relative rounded-full" />
+                <Image src="/chatbot.jpg" alt="AI Orb" width={128} height={128} className="relative rounded-full" />
             </div>
 
             <h1 className="text-4xl font-bold font-headline text-foreground">
