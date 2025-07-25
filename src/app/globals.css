@@ -23,6 +23,7 @@
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 195 85% 45%;
+    --radius: 0.5rem;
     --sidebar-background: 240 4.8% 95.9%;
     --sidebar-foreground: 240 10% 3.9%;
     --sidebar-border: 240 5.9% 90%;
@@ -53,6 +54,7 @@
     --border: 240 5% 15%; /* Subtle border */
     --input: 240 5% 15%;
     --ring: 185 90% 50%; /* Ring color to match primary */
+    --radius: 0.5rem;
     --sidebar-background: 240 5% 10%; /* Sidebar matches card color */
     --sidebar-foreground: 210 20% 98%;
     --sidebar-border: 240 5% 15%;
