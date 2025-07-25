@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { DndContext, PointerSensor, useSensor, useSensors, TouchSensor } from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { useDraggable } from '@dnd-kit/core';
@@ -22,13 +22,38 @@ function DraggableButton({ onClick }: { onClick: () => void }) {
     transform: CSS.Translate.toString(transform),
   } : undefined;
 
+  // We introduce a timer to differentiate between a tap and a drag on mobile
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handlePointerDown = () => {
+    // Set a timeout. If it completes without being cleared, it's a "click".
+    clickTimeoutRef.current = setTimeout(() => {
+        onClick();
+    }, 150); // 150ms delay to register a tap
+  };
+
+  const handlePointerUp = () => {
+    // If the pointer is lifted before the timeout, it's part of a drag, so we clear the timeout.
+    if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+    }
+  };
+
+
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+    <div 
+        ref={setNodeRef} 
+        style={style} 
+        {...listeners} 
+        {...attributes}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerUp}
+        onPointerMove={handlePointerUp} // Also clear on move to register a drag
+    >
         <DialogTrigger asChild>
             <Button
               size="icon"
               className="w-14 h-14 rounded-full shadow-2xl shadow-primary/30 cursor-grab active:cursor-grabbing"
-              onClick={onClick}
             >
               <Sparkles className="w-7 h-7" />
             </Button>
@@ -42,7 +67,6 @@ export function FloatingSageMakerButton() {
     const { subscription } = useSubscription();
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState({ x: 0, y: 0 });
-    const isMobile = useIsMobile();
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -52,7 +76,7 @@ export function FloatingSageMakerButton() {
         }),
         useSensor(TouchSensor, {
              activationConstraint: {
-                delay: 250,
+                delay: 100, // Shorten delay
                 tolerance: 5,
             },
         })
