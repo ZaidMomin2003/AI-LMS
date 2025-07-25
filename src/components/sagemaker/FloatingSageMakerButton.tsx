@@ -6,7 +6,7 @@ import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Bot, Sparkles } from 'lucide-react';
 import SageMakerChat from './SageMakerChat';
@@ -65,14 +65,14 @@ export function FloatingSageMakerButton() {
                     modifiers={[restrictToWindowEdges]}
                 >
                     <div style={{ transform: `translate(${position.x}px, ${position.y}px)` }}>
-                        <Dialog.Trigger asChild>
+                        <DialogTrigger asChild>
                             <Button
                               size="icon"
                               className="w-14 h-14 rounded-full shadow-2xl shadow-primary/30"
                             >
                               <Sparkles className="w-7 h-7" />
                             </Button>
-                        </Dialog.Trigger>
+                        </DialogTrigger>
                     </div>
                 </DndContext>
             </div>
