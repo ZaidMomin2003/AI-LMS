@@ -32,6 +32,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Separator } from '../ui/separator';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: 'Topic must be at least 3 characters.' }).max(100),
@@ -97,6 +98,21 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
     )
   }
 
+  const subjectSelectContent = (
+      <SelectContent>
+        {subjectList.map((subject) => (
+            <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+        ))}
+        <Separator className="my-1"/>
+        <Button asChild variant="ghost" className="w-full justify-start font-normal h-8">
+            <Link href="/dashboard/subjects">
+                <PlusCircle className="mr-2 h-4 w-4"/>
+                Add new subject
+            </Link>
+        </Button>
+      </SelectContent>
+  );
+
   if (variant === 'chat') {
     return (
          <Form {...form}>
@@ -130,11 +146,7 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
                                         <SelectValue placeholder="" />
                                     </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent>
-                                    {subjectList.map((subject) => (
-                                        <SelectItem key={subject} value={subject}>{subject}</SelectItem>
-                                    ))}
-                                    </SelectContent>
+                                    {subjectSelectContent}
                                 </Select>
                                 <FormMessage />
                             </FormItem>
@@ -165,19 +177,7 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
                         <SelectValue placeholder="Select a subject" />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      {subjectList.map((subject) => (
-                          <SelectItem key={subject} value={subject}>{subject}</SelectItem>
-                      ))}
-                      <div className="p-1 mt-1 border-t">
-                         <Button asChild variant="ghost" className="w-full justify-start text-sm">
-                           <Link href="/dashboard/subjects">
-                             <PlusCircle className="mr-2 h-4 w-4" />
-                             Add new subject
-                           </Link>
-                         </Button>
-                      </div>
-                    </SelectContent>
+                    {subjectSelectContent}
                   </Select>
                 <FormMessage />
                 </FormItem>
