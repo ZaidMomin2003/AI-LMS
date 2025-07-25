@@ -7,16 +7,20 @@ import { format, isToday } from "date-fns";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Check, Info } from "lucide-react";
+import { Check, Info, ListTodo } from "lucide-react";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Checkbox } from "../ui/checkbox";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 
 export function TodayStudyTask() {
     const { roadmap } = useRoadmap();
     const { addTask, findTaskById } = useTask();
     const { toast } = useToast();
+    const isMobile = useIsMobile();
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const todaysTask = useMemo(() => {
         if (!roadmap || !roadmap.plan) return null;
@@ -59,24 +63,64 @@ export function TodayStudyTask() {
             title: "Congratulations! 🥳",
             description: "You've completed today's study goal. Great work!",
         });
+        
+        if (isMobile) {
+            setIsDialogOpen(false);
+        }
     }
+    
+    const TaskContent = () => (
+        <div className="flex items-start gap-3 w-full p-3">
+             <Checkbox 
+                id="today-task-checkbox" 
+                checked={isCompleted} 
+                onCheckedChange={handleToggleComplete}
+                className="mt-1"
+                aria-label="Mark task as complete"
+             />
+             <div className="flex-1">
+                <label 
+                    htmlFor="today-task-checkbox" 
+                    className={cn(
+                        "text-sm font-medium transition-colors",
+                        isCompleted && "line-through text-muted-foreground"
+                    )}
+                >
+                    {todaysTask!.topicsToCover}
+                </label>
+             </div>
+        </div>
+    );
 
-    if (!todaysTask) {
+    const NoTaskContent = () => (
+         <div className="space-y-1 p-3 flex-1 flex flex-col items-center justify-center text-center">
+            <Info className="w-6 h-6 text-muted-foreground mx-auto"/>
+            <p className="text-sm text-muted-foreground">No plan for today.</p>
+            <Button variant="link" asChild className="text-xs p-0 h-auto">
+                <Link href="/dashboard/roadmap">Create a roadmap</Link>
+            </Button>
+        </div>
+    );
+
+    if (isMobile) {
         return (
-            <Card className="h-full">
-                <CardHeader className="p-3">
-                    <CardTitle className="font-headline text-base">Today's Goal</CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 pt-0 flex items-center justify-center text-center h-[calc(100%-4rem)]">
-                    <div className="space-y-1">
-                        <Info className="w-6 h-6 text-muted-foreground mx-auto"/>
-                        <p className="text-sm text-muted-foreground">No plan for today.</p>
-                        <Button variant="link" asChild className="text-xs p-0 h-auto">
-                            <Link href="/dashboard/roadmap">Create a roadmap</Link>
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="outline" size="icon">
+                        <ListTodo className="h-5 w-5" />
+                        <span className="sr-only">View Today's Task</span>
+                    </Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Today's Study Goal</DialogTitle>
+                        <DialogDescription>
+                            This is your primary objective for today from your roadmap.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {todaysTask ? <TaskContent /> : <NoTaskContent />}
+                </DialogContent>
+            </Dialog>
         );
     }
     
@@ -85,27 +129,8 @@ export function TodayStudyTask() {
             <CardHeader className="p-3">
                 <CardTitle className="font-headline text-base">Today's Study Goal</CardTitle>
             </CardHeader>
-            <CardContent className="p-3 pt-0 flex-1 flex items-center">
-                <div className="flex items-start gap-3 w-full">
-                     <Checkbox 
-                        id="today-task-checkbox" 
-                        checked={isCompleted} 
-                        onCheckedChange={handleToggleComplete}
-                        className="mt-1"
-                        aria-label="Mark task as complete"
-                     />
-                     <div className="flex-1">
-                        <label 
-                            htmlFor="today-task-checkbox" 
-                            className={cn(
-                                "text-sm font-medium transition-colors",
-                                isCompleted && "line-through text-muted-foreground"
-                            )}
-                        >
-                            {todaysTask.topicsToCover}
-                        </label>
-                     </div>
-                </div>
+            <CardContent className="p-0 flex-1 flex items-center">
+                 {todaysTask ? <TaskContent /> : <NoTaskContent />}
             </CardContent>
         </Card>
     )

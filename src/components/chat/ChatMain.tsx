@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Send, Bot, History, BookOpen } from 'lucide-react';
+import { Send, Bot, History, BookOpen, ListTodo } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
@@ -14,16 +14,18 @@ import { ScrollArea } from '../ui/scroll-area';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { TodayStudyTask } from '../dashboard/TodayStudyTask';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 
 export function ChatMain() {
   const { user } = useAuth();
   const { topics } = useTopic();
+  const isMobile = useIsMobile();
   
   return (
     <div className="h-full flex flex-col bg-card border rounded-lg relative overflow-hidden">
         {/* Top-left: Today's Task */}
-        <div className="absolute top-4 left-4 z-20 w-[350px]">
+        <div className="absolute top-4 left-4 z-20">
              <TodayStudyTask />
         </div>
 
