@@ -86,10 +86,10 @@ export function ChatMain() {
             </div>
 
             <h1 className="text-4xl font-bold font-headline text-foreground">
-                Welcome back, {user?.displayName || 'Alex'}!
+                Hello, {user?.displayName?.split(' ')[0] || 'Scholar'}!
             </h1>
             <p className="text-muted-foreground mt-2 max-w-md mx-auto">
-                What can I help you with today? Type your query below to get started.
+                Ready to dive into a new topic? Let me know what you'd like to learn about.
             </p>
         </div>
 
