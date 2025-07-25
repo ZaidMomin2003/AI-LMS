@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
@@ -40,6 +40,7 @@ import {
   Camera,
   Folder,
   MessageSquare,
+  Sparkles,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -63,7 +64,9 @@ import { useRoadmap } from '@/context/RoadmapContext';
 import { useProfile } from '@/context/ProfileContext';
 import { Badge } from './ui/badge';
 import { ThemeToggle } from './ThemeToggle';
-import { FloatingSageMakerButton } from './sagemaker/FloatingSageMakerButton';
+import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
+import SageMakerChat from './sagemaker/SageMakerChat';
+import { Button } from './ui/button';
 
 function AppLoadingScreen() {
   return (
@@ -120,6 +123,7 @@ function SidebarSubscriptionButton() {
     return (
         <SidebarMenuButton
             asChild
+            isActive={pathname === '/pricing'}
             tooltip={{ children: 'Manage Your Plan' }}
             className="cursor-pointer border-0 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
         >
@@ -142,6 +146,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { exam } = useExam();
+  const [isSageMakerOpen, setIsSageMakerOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -169,213 +174,238 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isRoadmapLocked = isHobby && !!roadmap;
   const isPomodoroLocked = isHobby && pomodoroHistory.length > 0;
   const isCaptureLocked = isHobby && (profile?.captureCount ?? 0) >= 1;
-
+  
+  const sageMakerAllowed = subscription?.planName && ['Scholar Subscription', 'Sage Mode'].includes(subscription.planName);
 
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader>
-          <div className="flex items-center gap-3">
-            <BookOpenCheck className="w-8 h-8 text-primary" />
-            <span className="font-headline text-2xl font-bold">ScholarAI</span>
-          </div>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === '/dashboard'}
-                tooltip={{ children: 'Dashboard' }}
-              >
-                <Link href="/dashboard">
-                  <LayoutDashboard />
-                  <span>Dashboard</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith('/dashboard/subjects')}
-                tooltip={{ children: 'Subjects' }}
-              >
-                <Link href="/dashboard/subjects">
-                  <Folder />
-                  <span>Subjects</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith('/dashboard/plan')}
-                tooltip={{ children: 'Study Plan' }}
-              >
-                <Link href="/dashboard/plan">
-                  <ClipboardCheck />
-                  <span>Study Plan</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Tooltip>
-                 <TooltipTrigger asChild>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith('/dashboard/roadmap')}
-                    >
-                      <Link href="/dashboard/roadmap" className={cn(isRoadmapLocked && 'text-muted-foreground')}>
-                        <Map />
-                        <span>Roadmap</span>
-                        {isRoadmapLocked && <Lock className="ml-auto h-3 w-3" />}
-                      </Link>
-                    </SidebarMenuButton>
-                 </TooltipTrigger>
-                 {isRoadmapLocked && (
-                    <TooltipContent side="right" align="center">
-                        <p>Upgrade for unlimited roadmaps</p>
-                    </TooltipContent>
-                 )}
-               </Tooltip>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Tooltip>
-                 <TooltipTrigger asChild>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith('/dashboard/pomodoro')}
-                    >
-                      <Link href="/dashboard/pomodoro" className={cn(isPomodoroLocked && 'text-muted-foreground')}>
-                        <Timer />
-                        <span>Pomodoro</span>
-                        {isPomodoroLocked && <Lock className="ml-auto h-3 w-3" />}
-                      </Link>
-                    </SidebarMenuButton>
-                 </TooltipTrigger>
-                 {isPomodoroLocked && (
-                    <TooltipContent side="right" align="center">
-                        <p>Upgrade for unlimited sessions</p>
-                    </TooltipContent>
-                 )}
-               </Tooltip>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-               <Tooltip>
-                 <TooltipTrigger asChild>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith('/dashboard/capture')}
-                    >
-                      <Link href="/dashboard/capture" className={cn(isCaptureLocked && 'text-muted-foreground')}>
-                        <Camera />
-                        <span className="flex items-center gap-2">
-                          Capture <Badge variant="secondary" className="text-xs">Beta</Badge>
-                        </span>
-                        {isCaptureLocked && <Lock className="ml-auto h-3 w-3" />}
-                      </Link>
-                    </SidebarMenuButton>
-                 </TooltipTrigger>
-                 {isCaptureLocked && (
-                    <TooltipContent side="right" align="center">
-                        <p>Upgrade for unlimited captures</p>
-                    </TooltipContent>
-                 )}
-               </Tooltip>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith('/dashboard/analytics')}
-                tooltip={{ children: 'Analytics' }}
-              >
-                <Link href="/dashboard/analytics">
-                  <BarChart />
-                  <span>Analytics</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarContent>
-        <SidebarFooter>
-           {exam ? (
-            <ExamCountdown />
-          ) : (
+     <Dialog open={isSageMakerOpen} onOpenChange={setIsSageMakerOpen}>
+      <SidebarProvider>
+        <Sidebar>
+          <SidebarHeader>
+            <div className="flex items-center gap-3">
+              <BookOpenCheck className="w-8 h-8 text-primary" />
+              <span className="font-headline text-2xl font-bold">ScholarAI</span>
+            </div>
+          </SidebarHeader>
+          <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={pathname.startsWith('/dashboard/exam')}
-                  tooltip={{ children: 'Add Exam Countdown' }}
-                  className="border-2 border-dashed border-primary/50 bg-transparent hover:bg-primary/10 hover:border-primary/80 shadow-lg shadow-primary/20 animate-pulse"
+                  isActive={pathname === '/dashboard'}
+                  tooltip={{ children: 'Dashboard' }}
                 >
-                  <Link href="/dashboard/exam">
-                    <CalendarPlus />
-                    <span>Add Exam</span>
+                  <Link href="/dashboard">
+                    <LayoutDashboard />
+                    <span>Dashboard</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-            </SidebarMenu>
-          )}
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <Suspense fallback={<Skeleton className="h-8 w-full" />}>
-                <SidebarSubscriptionButton />
-              </Suspense>
-            </SidebarMenuItem>
-          </SidebarMenu>
-          <div className="flex items-center justify-between">
-            <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <SidebarMenuButton>
-                        <Avatar className="h-9 w-9">
-                            <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? ''} />
-                            <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
-                        </Avatar>
-                        <span className="truncate">{user.displayName || user.email?.split('@')[0]}</span>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/dashboard/subjects')}
+                  tooltip={{ children: 'Subjects' }}
+                >
+                  <Link href="/dashboard/subjects">
+                    <Folder />
+                    <span>Subjects</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/dashboard/plan')}
+                  tooltip={{ children: 'Study Plan' }}
+                >
+                  <Link href="/dashboard/plan">
+                    <ClipboardCheck />
+                    <span>Study Plan</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname.startsWith('/dashboard/roadmap')}
+                      >
+                        <Link href="/dashboard/roadmap" className={cn(isRoadmapLocked && 'text-muted-foreground')}>
+                          <Map />
+                          <span>Roadmap</span>
+                          {isRoadmapLocked && <Lock className="ml-auto h-3 w-3" />}
+                        </Link>
+                      </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isRoadmapLocked && (
+                      <TooltipContent side="right" align="center">
+                          <p>Upgrade for unlimited roadmaps</p>
+                      </TooltipContent>
+                  )}
+                </Tooltip>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname.startsWith('/dashboard/pomodoro')}
+                      >
+                        <Link href="/dashboard/pomodoro" className={cn(isPomodoroLocked && 'text-muted-foreground')}>
+                          <Timer />
+                          <span>Pomodoro</span>
+                          {isPomodoroLocked && <Lock className="ml-auto h-3 w-3" />}
+                        </Link>
+                      </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isPomodoroLocked && (
+                      <TooltipContent side="right" align="center">
+                          <p>Upgrade for unlimited sessions</p>
+                      </TooltipContent>
+                  )}
+                </Tooltip>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname.startsWith('/dashboard/capture')}
+                      >
+                        <Link href="/dashboard/capture" className={cn(isCaptureLocked && 'text-muted-foreground')}>
+                          <Camera />
+                          <span className="flex items-center gap-2">
+                            Capture <Badge variant="secondary" className="text-xs">Beta</Badge>
+                          </span>
+                          {isCaptureLocked && <Lock className="ml-auto h-3 w-3" />}
+                        </Link>
+                      </SidebarMenuButton>
+                  </TooltipTrigger>
+                  {isCaptureLocked && (
+                      <TooltipContent side="right" align="center">
+                          <p>Upgrade for unlimited captures</p>
+                      </TooltipContent>
+                  )}
+                </Tooltip>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/dashboard/analytics')}
+                  tooltip={{ children: 'Analytics' }}
+                >
+                  <Link href="/dashboard/analytics">
+                    <BarChart />
+                    <span>Analytics</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {sageMakerAllowed && (
+                <SidebarMenuItem>
+                  <DialogTrigger asChild>
+                    <SidebarMenuButton tooltip={{ children: 'SageMaker AI' }}>
+                      <Sparkles />
+                      <span>SageMaker</span>
                     </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent side="top" align="end" className="w-56 mb-2">
-                    <DropdownMenuLabel className="font-normal">
-                        <div className="flex flex-col space-y-1">
-                            <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
-                            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                        </div>
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={() => router.push('/dashboard/profile')} className="cursor-pointer">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Profile</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Log out</span>
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
-            <ThemeToggle />
-          </div>
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>
-          <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 min-w-0 md:hidden">
-              <div className="flex items-center gap-2">
-                  <BookOpenCheck className="w-6 h-6 text-primary" />
-                  <span className="font-headline text-lg font-bold">ScholarAI</span>
-              </div>
-              <SidebarTrigger>
-                  <PanelLeft className="h-5 w-5" />
-                  <span className="sr-only">Toggle Menu</span>
-              </SidebarTrigger>
-          </header>
-          <DndContext onDragEnd={() => {}}>
-            <div className="flex-1 flex flex-col min-w-0">
-                <Suspense>{children}</Suspense>
-                <FloatingSageMakerButton />
+                  </DialogTrigger>
+                </SidebarMenuItem>
+              )}
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter>
+            {exam ? (
+              <ExamCountdown />
+            ) : (
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/dashboard/exam')}
+                    tooltip={{ children: 'Add Exam Countdown' }}
+                    className="border-2 border-dashed border-primary/50 bg-transparent hover:bg-primary/10 hover:border-primary/80 shadow-lg shadow-primary/20 animate-pulse"
+                  >
+                    <Link href="/dashboard/exam">
+                      <CalendarPlus />
+                      <span>Add Exam</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            )}
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <Suspense fallback={<Skeleton className="h-8 w-full" />}>
+                  <SidebarSubscriptionButton />
+                </Suspense>
+              </SidebarMenuItem>
+            </SidebarMenu>
+            <div className="flex items-center justify-between">
+              <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                      <SidebarMenuButton>
+                          <Avatar className="h-9 w-9">
+                              <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? ''} />
+                              <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                          </Avatar>
+                          <span className="truncate">{user.displayName || user.email?.split('@')[0]}</span>
+                      </SidebarMenuButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent side="top" align="end" className="w-56 mb-2">
+                      <DropdownMenuLabel className="font-normal">
+                          <div className="flex flex-col space-y-1">
+                              <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
+                              <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                          </div>
+                      </DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onSelect={() => router.push('/dashboard/profile')} className="cursor-pointer">
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Profile</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
+                          <LogOut className="mr-2 h-4 w-4" />
+                          <span>Log out</span>
+                      </DropdownMenuItem>
+                  </DropdownMenuContent>
+              </DropdownMenu>
+              <ThemeToggle />
             </div>
-          </DndContext>
-      </SidebarInset>
-    </SidebarProvider>
+          </SidebarFooter>
+        </Sidebar>
+        <SidebarInset>
+            <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 min-w-0 md:hidden">
+                <div className="flex items-center gap-2">
+                    <BookOpenCheck className="w-6 h-6 text-primary" />
+                    <span className="font-headline text-lg font-bold">ScholarAI</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {sageMakerAllowed && (
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <Sparkles className="h-5 w-5" />
+                        <span className="sr-only">Open SageMaker</span>
+                      </Button>
+                    </DialogTrigger>
+                  )}
+                  <SidebarTrigger>
+                      <PanelLeft className="h-5 w-5" />
+                      <span className="sr-only">Toggle Menu</span>
+                  </SidebarTrigger>
+                </div>
+            </header>
+            <DndContext onDragEnd={() => {}}>
+              <div className="flex-1 flex flex-col min-w-0">
+                  <Suspense>{children}</Suspense>
+              </div>
+            </DndContext>
+        </SidebarInset>
+        <DialogContent className="w-[90vw] max-w-3xl h-[85vh] p-0">
+          <SageMakerChat />
+        </DialogContent>
+      </SidebarProvider>
+    </Dialog>
   );
 }
