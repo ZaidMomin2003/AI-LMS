@@ -25,7 +25,7 @@ export function ChatMain() {
   return (
     <div className="h-full flex flex-col bg-card border rounded-lg relative overflow-hidden">
         {/* Top-left: Today's Task */}
-        <div className="absolute top-4 left-4 z-20">
+        <div className="absolute top-4 left-4 z-20 w-1/3 pr-4">
              <TodayStudyTask />
         </div>
 
