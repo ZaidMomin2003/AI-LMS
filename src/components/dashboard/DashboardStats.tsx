@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -5,7 +6,7 @@ import { useTopic } from '@/context/TopicContext';
 import { BookCopy, Brain, MessageCircleQuestion } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import { getUserDoc } from '@/services/firestore';
 
 interface QuizStats {
     [topicId: string]: {
@@ -44,41 +45,40 @@ export function DashboardStats() {
             { totalCorrect: 0, totalAttempted: 0 }
         );
     }, [quizStats]);
+    
+    const StatCard = ({ title, value, subtext, icon: Icon }: { title: string, value: string | number, subtext: string, icon: React.ElementType }) => (
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
+              <CardTitle className="text-xs md:text-sm font-medium">{title}</CardTitle>
+              <Icon className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent className="p-3 md:p-6 pt-0">
+              <div className="text-lg md:text-2xl font-bold">{value}</div>
+              <p className="text-[10px] md:text-xs text-muted-foreground">{subtext}</p>
+            </CardContent>
+        </Card>
+    )
 
     return (
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Topics</CardTitle>
-              <BookCopy className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{topics.length}</div>
-              <p className="text-xs text-muted-foreground">study sessions created</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Flashcards Made</CardTitle>
-              <Brain className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalFlashcards}</div>
-              <p className="text-xs text-muted-foreground">terms to master</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Quiz Performance</CardTitle>
-               <MessageCircleQuestion className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {totalAttempted > 0 ? `${totalCorrect} / ${totalAttempted}` : '0 / 0'}
-              </div>
-              <p className="text-xs text-muted-foreground">questions answered correctly</p>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-3 gap-2 md:gap-4">
+            <StatCard 
+                title="Total Topics"
+                value={topics.length}
+                subtext="sessions created"
+                icon={BookCopy}
+            />
+            <StatCard 
+                title="Flashcards Made"
+                value={totalFlashcards}
+                subtext="terms to master"
+                icon={Brain}
+            />
+            <StatCard 
+                title="Quiz Performance"
+                value={totalAttempted > 0 ? `${totalCorrect}/${totalAttempted}` : '0/0'}
+                subtext="correctly answered"
+                icon={MessageCircleQuestion}
+            />
         </div>
     )
 }
