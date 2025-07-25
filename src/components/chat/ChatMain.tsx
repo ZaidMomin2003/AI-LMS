@@ -20,7 +20,7 @@ import { Badge } from '../ui/badge';
 
 export function ChatMain() {
   const { user } = useAuth();
-  const { topics } from 'useTopic';
+  const { topics } = useTopic();
   const isMobile = useIsMobile();
   
   return (
