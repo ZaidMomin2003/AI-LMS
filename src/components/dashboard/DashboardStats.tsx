@@ -49,20 +49,20 @@ export function DashboardStats() {
     
     const StatCard = ({ title, value, icon: Icon, className, iconClassName }: { title: string, value: string | number, icon: React.ElementType, className?: string, iconClassName?: string }) => (
         <Card className={cn(className)}>
-            <CardContent className="p-4 flex items-center gap-4">
+            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-4">
                 <div className={cn("p-2 rounded-lg", iconClassName)}>
-                    <Icon className="h-6 w-6" />
+                    <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
                 <div>
-                    <p className="text-2xl font-bold">{value}</p>
-                    <p className="text-sm font-medium opacity-80">{title}</p>
+                    <p className="text-xl sm:text-2xl font-bold">{value}</p>
+                    <p className="text-xs sm:text-sm font-medium opacity-80">{title}</p>
                 </div>
             </CardContent>
         </Card>
     );
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
             <StatCard 
                 title="Total Topics"
                 value={topics.length}
@@ -71,14 +71,14 @@ export function DashboardStats() {
                 iconClassName="text-yellow-900/70 dark:text-yellow-400"
             />
             <StatCard 
-                title="Flashcards Made"
+                title="Flashcards"
                 value={totalFlashcards}
                 icon={Brain}
                 className="bg-sky-500/20 border-sky-500/40 text-sky-900 dark:text-sky-200 shadow-sky-500/10"
                 iconClassName="text-sky-900/70 dark:text-sky-400"
             />
             <StatCard 
-                title="Quiz Performance"
+                title="Quiz Score"
                 value={totalAttempted > 0 ? `${totalCorrect}/${totalAttempted}` : '0/0'}
                 icon={MessageCircleQuestion}
                 className="bg-emerald-500/20 border-emerald-500/40 text-emerald-900 dark:text-emerald-200 shadow-emerald-500/10"
