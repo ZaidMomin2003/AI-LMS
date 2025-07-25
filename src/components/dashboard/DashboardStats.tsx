@@ -48,14 +48,14 @@ export function DashboardStats() {
     }, [quizStats]);
     
     const StatCard = ({ title, value, icon: Icon, className, iconClassName }: { title: string, value: string | number, icon: React.ElementType, className?: string, iconClassName?: string }) => (
-        <Card className={cn(className)}>
+        <Card className={cn("w-full", className)}>
             <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-4">
                 <div className={cn("p-2 rounded-lg", iconClassName)}>
-                    <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                    <Icon className="h-4 w-4 sm:h-6 sm:w-6" />
                 </div>
-                <div>
-                    <p className="text-xl sm:text-2xl font-bold">{value}</p>
-                    <p className="text-xs sm:text-sm font-medium opacity-80">{title}</p>
+                <div className="flex-1 min-w-0">
+                    <p className="text-lg sm:text-2xl font-bold truncate">{value}</p>
+                    <p className="text-[10px] sm:text-sm font-medium opacity-80 truncate">{title}</p>
                 </div>
             </CardContent>
         </Card>
