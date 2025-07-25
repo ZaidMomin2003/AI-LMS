@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, PointerSensor, useSensor, useSensors, TouchSensor } from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 import SageMakerChat from './SageMakerChat';
 import { useSubscription } from '@/context/SubscriptionContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 function DraggableButton({ onClick }: { onClick: () => void }) {
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
@@ -41,11 +42,18 @@ export function FloatingSageMakerButton() {
     const { subscription } = useSubscription();
     const [isOpen, setIsOpen] = useState(false);
     const [position, setPosition] = useState({ x: 0, y: 0 });
+    const isMobile = useIsMobile();
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
                 distance: 10,
+            },
+        }),
+        useSensor(TouchSensor, {
+             activationConstraint: {
+                delay: 250,
+                tolerance: 5,
             },
         })
     );
