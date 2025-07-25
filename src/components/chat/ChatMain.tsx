@@ -1,23 +1,13 @@
 
 'use client';
 
-import { Send, Bot, Code, ShoppingCart, Truck, Search } from 'lucide-react';
+import { Send, Bot } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
+import { DashboardStats } from '../dashboard/DashboardStats';
 
-const SuggestionCard = ({ icon: Icon, title, description }: { icon: any, title: string, description: string }) => (
-    <div className="bg-secondary p-3 rounded-lg flex items-center gap-4 cursor-pointer hover:bg-primary/20 transition-colors">
-        <div className="bg-primary/20 text-primary p-2 rounded-full">
-            <Icon className="h-5 w-5" />
-        </div>
-        <div>
-            <p className="font-semibold text-sm">{title}</p>
-            <p className="text-xs text-muted-foreground">{description}</p>
-        </div>
-    </div>
-)
 
 export function ChatMain() {
   const { user } = useAuth();
@@ -43,11 +33,7 @@ export function ChatMain() {
         </div>
 
         <div className="p-4 relative z-10 space-y-4">
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                <SuggestionCard icon={Truck} title="Search for suppliers" description="We will find suppliers with the best prices" />
-                <SuggestionCard icon={ShoppingCart} title="Select materials" description="AI will select the best materials" />
-                <SuggestionCard icon={Code} title="Calculation of the cost" description="Summarise the price" />
-            </div>
+             <DashboardStats />
             <div className="relative">
                 <Bot className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input placeholder="Tell us about your capabilities" className="pl-12 pr-12 h-12 rounded-full bg-secondary" />
