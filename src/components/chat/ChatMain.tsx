@@ -13,6 +13,7 @@ import { useTopic } from '@/context/TopicContext';
 import { ScrollArea } from '../ui/scroll-area';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
+import { TodayStudyTask } from '../dashboard/TodayStudyTask';
 
 
 export function ChatMain() {
@@ -21,7 +22,12 @@ export function ChatMain() {
   
   return (
     <div className="h-full flex flex-col bg-card border rounded-lg relative overflow-hidden">
-        {/* History Button and Dialog */}
+        {/* Top-left: Today's Task */}
+        <div className="absolute top-4 left-4 z-20 w-[350px]">
+             <TodayStudyTask />
+        </div>
+
+        {/* Top-right: History Button and Dialog */}
         <div className="absolute top-4 right-4 z-20">
             <Dialog>
                 <DialogTrigger asChild>
