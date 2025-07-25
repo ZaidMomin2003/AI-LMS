@@ -82,7 +82,7 @@ export function TodayStudyTask() {
                 <label 
                     htmlFor="today-task-checkbox" 
                     className={cn(
-                        "text-sm font-medium transition-colors",
+                        "text-sm font-medium transition-colors whitespace-normal",
                         isCompleted && "line-through text-muted-foreground"
                     )}
                 >
