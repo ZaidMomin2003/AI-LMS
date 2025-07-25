@@ -38,6 +38,7 @@ import {
   Timer,
   Camera,
   Folder,
+  MessageSquare,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -224,6 +225,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </TooltipContent>
                  )}
                </Tooltip>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/dashboard/chat')}
+                tooltip={{ children: 'Chat' }}
+              >
+                <Link href="/dashboard/chat">
+                  <MessageSquare />
+                  <span>Chat</span>
+                </Link>
+              </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
               <SidebarMenuButton
