@@ -47,42 +47,41 @@ export function DashboardStats() {
         );
     }, [quizStats]);
     
-    const StatCard = ({ title, value, icon: Icon, className, iconClassName }: { title: string, value: string | number, icon: React.ElementType, className?: string, iconClassName?: string }) => (
-        <Card className={cn("w-full", className)}>
-            <CardContent className="p-3 sm:p-4 flex items-center gap-2 sm:gap-4">
-                <div className={cn("p-2 rounded-lg", iconClassName)}>
-                    <Icon className="h-4 w-4 sm:h-6 sm:w-6" />
-                </div>
-                <div className="flex-1 min-w-0">
-                    <p className="text-lg sm:text-2xl font-bold truncate">{value}</p>
-                    <p className="text-[10px] sm:text-sm font-medium opacity-80 truncate">{title}</p>
-                </div>
-            </CardContent>
-        </Card>
+    const StatCard = ({ title, value, subtext, icon: Icon, className }: { title: string, value: string | number, subtext: string, icon: React.ElementType, className?: string }) => (
+      <Card className={cn("w-full h-full text-white/90 p-4 flex flex-col justify-between", className)}>
+        <div className="flex justify-between items-start">
+          <p className="text-sm font-medium">{title}</p>
+          <Icon className="h-4 w-4 text-white/70" />
+        </div>
+        <div className="text-left">
+          <p className="text-3xl font-bold">{value}</p>
+          <p className="text-xs text-white/80">{subtext}</p>
+        </div>
+      </Card>
     );
 
     return (
-        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 h-32">
             <StatCard 
                 title="Total Topics"
                 value={topics.length}
+                subtext="sessions created"
                 icon={BookCopy}
-                className="bg-yellow-500/20 border-yellow-500/40 text-yellow-900 dark:text-yellow-200 shadow-yellow-500/10"
-                iconClassName="text-yellow-900/70 dark:text-yellow-400"
+                className="bg-[#3A3102] border border-yellow-400/50"
             />
             <StatCard 
-                title="Flashcards"
+                title="Flashcards Made"
                 value={totalFlashcards}
+                subtext="terms to master"
                 icon={Brain}
-                className="bg-sky-500/20 border-sky-500/40 text-sky-900 dark:text-sky-200 shadow-sky-500/10"
-                iconClassName="text-sky-900/70 dark:text-sky-400"
+                className="bg-[#210B3B] border border-purple-400/50"
             />
             <StatCard 
-                title="Quiz Score"
+                title="Quiz Performance"
                 value={totalAttempted > 0 ? `${totalCorrect}/${totalAttempted}` : '0/0'}
+                subtext="correctly answered"
                 icon={MessageCircleQuestion}
-                className="bg-emerald-500/20 border-emerald-500/40 text-emerald-900 dark:text-emerald-200 shadow-emerald-500/10"
-                iconClassName="text-emerald-900/70 dark:text-emerald-400"
+                className="bg-[#3D1111] border border-red-400/50"
             />
         </div>
     )
