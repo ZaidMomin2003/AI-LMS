@@ -62,6 +62,7 @@ import { useRoadmap } from '@/context/RoadmapContext';
 import { useProfile } from '@/context/ProfileContext';
 import { Badge } from './ui/badge';
 import { ThemeToggle } from './ThemeToggle';
+import { FloatingSageMakerButton } from './sagemaker/FloatingSageMakerButton';
 
 function AppLoadingScreen() {
   return (
@@ -164,7 +165,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   const isHobby = subscription?.planName === 'Hobby';
-  const isSageMakerLocked = isHobby;
   const isRoadmapLocked = isHobby && !!roadmap;
   const isPomodoroLocked = isHobby && pomodoroHistory.length > 0;
   const isCaptureLocked = isHobby && (profile?.captureCount ?? 0) >= 1;
@@ -204,27 +204,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   <span>Subjects</span>
                 </Link>
               </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-               <Tooltip>
-                 <TooltipTrigger asChild>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith('/dashboard/sagemaker')}
-                    >
-                      <Link href="/dashboard/sagemaker" className={cn(isSageMakerLocked && 'text-muted-foreground')}>
-                        <Bot />
-                        <span>SageMaker</span>
-                        {isSageMakerLocked && <Lock className="ml-auto h-3 w-3" />}
-                      </Link>
-                    </SidebarMenuButton>
-                 </TooltipTrigger>
-                 {isSageMakerLocked && (
-                    <TooltipContent side="right" align="center">
-                        <p>Upgrade to unlock SageMaker</p>
-                    </TooltipContent>
-                 )}
-               </Tooltip>
             </SidebarMenuItem>
              <SidebarMenuItem>
               <SidebarMenuButton
@@ -391,6 +370,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </header>
           <div className="flex-1 flex flex-col min-w-0">
             <Suspense>{children}</Suspense>
+            <FloatingSageMakerButton />
           </div>
       </SidebarInset>
     </SidebarProvider>
