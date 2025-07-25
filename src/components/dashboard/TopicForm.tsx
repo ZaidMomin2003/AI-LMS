@@ -101,7 +101,7 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
     return (
          <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="relative">
-                <div className="flex flex-col sm:flex-row items-center gap-2 rounded-full p-2 pr-[60px] border bg-secondary">
+                <div className="flex items-center gap-2 rounded-full p-2 pr-[60px] border bg-secondary">
                     <FormField
                         control={form.control}
                         name="title"
@@ -125,7 +125,7 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
                             <FormItem>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                    <SelectTrigger className="w-full sm:w-[150px] border-0 bg-background/50 rounded-full h-9">
+                                    <SelectTrigger className="w-[120px] sm:w-[150px] border-0 bg-background/50 rounded-full h-9">
                                         <SelectValue placeholder="Subject" />
                                     </SelectTrigger>
                                     </FormControl>
