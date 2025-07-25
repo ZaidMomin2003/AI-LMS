@@ -17,28 +17,34 @@ function DraggableButton({ onClick }: { onClick: () => void }) {
   const {attributes, listeners, setNodeRef, transform} = useDraggable({
     id: 'sagemaker-button',
   });
+  
+  const isMobile = useIsMobile();
+  const [isDragging, setIsDragging] = useState(false);
+  const startPos = useRef({ x: 0, y: 0 });
 
   const style = transform ? {
     transform: CSS.Translate.toString(transform),
   } : undefined;
 
-  // We introduce a timer to differentiate between a tap and a drag on mobile
-  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handlePointerDown = () => {
-    // Set a timeout. If it completes without being cleared, it's a "click".
-    clickTimeoutRef.current = setTimeout(() => {
-        onClick();
-    }, 150); // 150ms delay to register a tap
+  const handlePointerDown = (e: React.PointerEvent) => {
+    setIsDragging(false);
+    startPos.current = { x: e.clientX, y: e.clientY };
   };
 
-  const handlePointerUp = () => {
-    // If the pointer is lifted before the timeout, it's part of a drag, so we clear the timeout.
-    if (clickTimeoutRef.current) {
-        clearTimeout(clickTimeoutRef.current);
+  const handlePointerMove = (e: React.PointerEvent) => {
+    const dx = Math.abs(e.clientX - startPos.current.x);
+    const dy = Math.abs(e.clientY - startPos.current.y);
+    if (dx > 5 || dy > 5) { // Drag threshold
+      setIsDragging(true);
     }
   };
 
+  const handlePointerUp = () => {
+    if (!isDragging) {
+      onClick();
+    }
+    setIsDragging(false);
+  };
 
   return (
     <div 
@@ -47,13 +53,19 @@ function DraggableButton({ onClick }: { onClick: () => void }) {
         {...listeners} 
         {...attributes}
         onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
-        onPointerMove={handlePointerUp} // Also clear on move to register a drag
     >
         <DialogTrigger asChild>
             <Button
               size="icon"
               className="w-14 h-14 rounded-full shadow-2xl shadow-primary/30 cursor-grab active:cursor-grabbing"
+              // Prevent the DialogTrigger from firing its own click event
+              onClick={(e) => {
+                  if (isDragging) {
+                      e.preventDefault();
+                  }
+              }}
             >
               <Sparkles className="w-7 h-7" />
             </Button>
