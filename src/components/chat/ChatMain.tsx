@@ -15,11 +15,12 @@ import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
 import { TodayStudyTask } from '../dashboard/TodayStudyTask';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Badge } from '../ui/badge';
 
 
 export function ChatMain() {
   const { user } = useAuth();
-  const { topics } = useTopic();
+  const { topics } from 'useTopic';
   const isMobile = useIsMobile();
   
   return (
@@ -54,7 +55,10 @@ export function ChatMain() {
                                     className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary"
                                 >
                                     <div className="space-y-1">
-                                    <p className="text-sm font-medium leading-none">{topic.title}</p>
+                                        <div className="flex items-center gap-2">
+                                            <p className="text-sm font-medium leading-none">{topic.title}</p>
+                                            <Badge variant="secondary">{topic.subject}</Badge>
+                                        </div>
                                     <p className="text-sm text-muted-foreground">
                                         Created {formatDistanceToNow(new Date(topic.createdAt), { addSuffix: true })}
                                     </p>
