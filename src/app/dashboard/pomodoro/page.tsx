@@ -96,23 +96,25 @@ export default function PomodoroPage() {
     if (timeLeft <= 0) {
       if (intervalRef.current) clearInterval(intervalRef.current);
       setIsActive(false);
+
+      if (!timerConfig) return; // Guard clause to prevent crash
       
       if (mode === 'Work') {
-        if (currentSession < timerConfig!.totalSessions) {
+        if (currentSession < timerConfig.totalSessions) {
           setMode('Rest');
           setTimeLeft(REST_MINUTES * 60);
           toast({ title: 'Time for a break! ☕️', description: 'Rest for 5 minutes.' });
         } else {
           toast({ title: 'Congratulations! 🎉', description: 'You have completed all your sessions.' });
           addCompletedPomodoro({ 
-            topic: timerConfig!.topic,
-            sessions: timerConfig!.totalSessions
+            topic: timerConfig.topic,
+            sessions: timerConfig.totalSessions
           });
           setTimerConfig(null);
         }
       } else { // mode === 'Rest'
         setMode('Work');
-        setTimeLeft(timerConfig!.duration * 60);
+        setTimeLeft(timerConfig.duration * 60);
         setCurrentSession((prev) => prev + 1);
         toast({ title: 'Back to work! 💪', description: 'Starting the next session.' });
       }
