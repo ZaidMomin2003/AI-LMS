@@ -11,6 +11,7 @@ interface TopicContextType {
   topics: Topic[];
   addTopic: (topic: Topic) => Promise<void>;
   getTopicById: (id: string) => Topic | undefined;
+  toggleBookmark: (topicId: string) => Promise<void>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
   dataLoading: boolean;
@@ -63,9 +64,20 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
   const getTopicById = (id: string) => {
     return topics.find((topic) => topic.id === id);
   };
+  
+  const toggleBookmark = async (topicId: string) => {
+    if (!user || !isFirebaseEnabled) return;
+    const newTopics = topics.map(topic => 
+      topic.id === topicId 
+        ? { ...topic, isBookmarked: !topic.isBookmarked } 
+        : topic
+    );
+    setTopics(newTopics);
+    await updateUserDoc(user.uid, { topics: newTopics });
+  }
 
   return (
-    <TopicContext.Provider value={{ topics, addTopic, getTopicById, loading, setLoading, dataLoading }}>
+    <TopicContext.Provider value={{ topics, addTopic, getTopicById, toggleBookmark, loading, setLoading, dataLoading }}>
       {children}
     </TopicContext.Provider>
   );

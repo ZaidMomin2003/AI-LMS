@@ -41,6 +41,7 @@ import {
   Folder,
   MessageSquare,
   Sparkles,
+  Bookmark,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -210,6 +211,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   <Link href="/dashboard/subjects">
                     <Folder />
                     <span>Subjects</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/dashboard/bookmarks')}
+                  tooltip={{ children: 'Bookmarks' }}
+                >
+                  <Link href="/dashboard/bookmarks">
+                    <Bookmark />
+                    <span>Bookmarks</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

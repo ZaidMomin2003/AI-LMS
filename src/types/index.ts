@@ -32,6 +32,7 @@ export interface Topic {
   notes: StudyNotes;
   flashcards: Flashcard[];
   quiz: QuizQuestion[];
+  isBookmarked?: boolean;
 }
 
 export type TaskPriority = 'Easy' | 'Moderate' | 'Hard';
