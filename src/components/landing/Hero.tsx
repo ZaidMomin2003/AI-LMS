@@ -3,12 +3,26 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Bot, Sparkles, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Bot, Sparkles, CheckCircle2, History, ListTodo, Send, Folder } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { FloatingIcons } from './FloatingIcons';
 import { Input } from '@/components/ui/input';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import Image from 'next/image';
+
+const StatCard = ({ title, value, subtext, className }: { title: string, value: string | number, subtext: string, className?: string }) => (
+  <Card className={`w-full h-full text-white/90 p-3 flex flex-col justify-between ${className}`}>
+    <div className="flex justify-between items-start">
+      <p className="text-xs font-medium">{title}</p>
+    </div>
+    <div className="text-left">
+      <p className="text-2xl font-bold">{value}</p>
+      <p className="text-[11px] leading-tight text-white/80">{subtext}</p>
+    </div>
+  </Card>
+);
+
 
 export function Hero() {
   const router = useRouter();
@@ -59,49 +73,62 @@ export function Hero() {
         <div className="relative mt-20 flow-root animate-in fade-in slide-in-from-top-24 duration-1000 delay-400">
           
           <Card className="max-w-4xl mx-auto p-4 rounded-xl bg-card/60 backdrop-blur-sm shadow-2xl shadow-primary/10 border-2 border-primary/10 transition-all duration-300 hover:shadow-primary/20 hover:scale-[1.02]">
-            <form onSubmit={handleGenerate}>
-              <div className="rounded-lg border bg-background/80 shadow-inner">
-                  <div className="flex items-center gap-2 p-3 border-b">
-                    <Bot className="text-primary h-6 w-6"/>
-                    <p className="text-md font-medium text-foreground">What topic do you want to master today?</p>
+             <div className="h-full flex flex-col bg-card border rounded-lg relative overflow-hidden text-left">
+                {/* Dashboard Prototype */}
+                <div className="absolute top-4 left-4 z-20 w-1/3 pr-4">
+                    <Card className="h-full flex flex-col">
+                        <CardContent className="p-3 text-center">
+                            <ListTodo className="w-5 h-5 text-muted-foreground mx-auto mb-1"/>
+                            <p className="text-xs font-semibold">Today's Goal</p>
+                        </CardContent>
+                    </Card>
                 </div>
-                <div className="p-4">
-                    <Input
-                      placeholder="e.g., The Industrial Revolution"
-                      className="text-lg font-mono bg-transparent"
-                      value={topic}
-                      onChange={(e) => setTopic(e.target.value)}
-                      required
-                    />
+                <div className="absolute top-4 right-4 z-20">
+                    <Button variant="ghost" size="icon" className="pointer-events-none">
+                        <History className="h-5 w-5" />
+                    </Button>
                 </div>
-                <div className="px-4 pb-4 flex justify-end">
-                    <Button type="submit">Generate Materials <Sparkles className="ml-2" /></Button>
+                <div 
+                    className="absolute inset-0 bg-grid-pattern opacity-10"
+                    style={{ backgroundSize: '2rem 2rem' }}
+                />
+                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center relative z-10">
+                    <div className="relative w-24 h-24 mb-4">
+                        <div className="absolute inset-0 bg-primary rounded-full blur-2xl animate-pulse" />
+                        <Image src="/chatbot.jpg" alt="AI Orb" width={96} height={96} className="relative rounded-full" />
+                    </div>
+                    <h1 className="text-3xl font-bold font-headline text-foreground">
+                        Hello, Scholar!
+                    </h1>
+                    <p className="text-muted-foreground text-sm mt-2 max-w-md mx-auto">
+                        Ready to dive into a new topic? Let me know what you'd like to learn about.
+                    </p>
                 </div>
-              </div>
-            </form>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4 text-left">
-              <Card className="bg-background/80 p-3">
-                <CardContent className="p-1">
-                  <CheckCircle2 className="text-green-500 mb-2"/>
-                  <h3 className="font-semibold">Generated Notes</h3>
-                  <p className="text-xs text-muted-foreground">Structured markdown ready.</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-background/80 p-3">
-                <CardContent className="p-1">
-                  <CheckCircle2 className="text-green-500 mb-2"/>
-                  <h3 className="font-semibold">Generated Flashcards</h3>
-                  <p className="text-xs text-muted-foreground">10 terms & definitions.</p>
-                </CardContent>
-              </Card>
-                <Card className="bg-background/80 p-3">
-                <CardContent className="p-1">
-                  <CheckCircle2 className="text-green-500 mb-2"/>
-                  <h3 className="font-semibold">Generated Quiz</h3>
-                  <p className="text-xs text-muted-foreground">5 multiple-choice questions.</p>
-                </CardContent>
-              </Card>
+                <div className="p-4 relative z-10 space-y-4">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-4 h-28">
+                        <StatCard title="Total Topics" value={0} subtext="sessions created" className="bg-yellow-500/80 border border-yellow-400/50" />
+                        <StatCard title="Flashcards Made" value={0} subtext="terms to master" className="bg-purple-500/80 border border-purple-400/50" />
+                        <StatCard title="Quiz Performance" value="0/0" subtext="correctly answered" className="bg-red-500/80 border border-red-400/50" />
+                    </div>
+                    <form onSubmit={handleGenerate}>
+                        <div className="relative">
+                            <div className="flex items-center gap-2 rounded-full p-2 pr-[60px] border bg-secondary">
+                                <Input 
+                                    placeholder="What do you want to master today?" 
+                                    className="h-10 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                                    onClick={(e) => { e.preventDefault(); router.push('/signup'); }}
+                                    readOnly
+                                />
+                                <Button size="icon" variant="ghost" className="rounded-full w-9 h-9 pointer-events-none">
+                                    <Folder className="h-4 w-4 text-muted-foreground" />
+                                </Button>
+                            </div>
+                            <Button type="submit" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-primary">
+                                <Send className="h-5 w-5" />
+                            </Button>
+                        </div>
+                    </form>
+                </div>
             </div>
           </Card>
 
