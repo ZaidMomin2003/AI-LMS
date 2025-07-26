@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Bot, Sparkles, CheckCircle2, History, ListTodo, Send, Folder, LayoutDashboard, Bookmark, ClipboardCheck, Map, Timer, Camera, BarChart, Gem, LogOut, Check, PlusCircle, ChevronDown, User } from 'lucide-react';
+import { ArrowRight, Bot, Sparkles, CheckCircle2, History, ListTodo, Send, Folder, LayoutDashboard, Bookmark, ClipboardCheck, Map, Timer, Camera, BarChart, Gem, LogOut, Check, PlusCircle, ChevronDown, User, PanelLeft } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { FloatingIcons } from './FloatingIcons';
 import { Input } from '@/components/ui/input';
@@ -91,9 +91,9 @@ export function Hero() {
         <div className="relative mt-20 flow-root animate-in fade-in slide-in-from-top-24 duration-1000 delay-400">
           
            <Card className="max-w-6xl mx-auto p-1.5 rounded-xl bg-card/60 backdrop-blur-sm shadow-2xl shadow-primary/20 border-2 border-primary/20">
-            <div className="flex h-[80vh] min-h-[600px] w-full rounded-lg bg-sidebar-DEFAULT overflow-hidden">
-                {/* Proto Sidebar */}
-                <div className="w-64 p-2 flex-shrink-0 flex flex-col bg-sidebar-DEFAULT border-r border-sidebar-border">
+            <div className="flex h-auto md:h-[80vh] md:min-h-[600px] w-full rounded-lg bg-sidebar-DEFAULT overflow-hidden">
+                {/* Proto Sidebar (Desktop) */}
+                <div className="w-64 p-2 flex-shrink-0 flex-col bg-sidebar-DEFAULT border-r border-sidebar-border hidden md:flex">
                     <div className="flex items-center gap-3 p-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-primary"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="m14 12-2-1-2 1"/><path d="M12 11V7"/></svg>
                         <span className="font-headline text-2xl font-bold">ScholarAI</span>
@@ -135,14 +135,30 @@ export function Hero() {
                     </div>
                 </div>
 
-                {/* Proto Main Content */}
+                {/* Main Content (Shared) */}
                 <div className="h-full flex-1 flex flex-col bg-card border rounded-lg relative overflow-hidden text-left">
-                    <div className="absolute top-4 right-4 z-20">
+                    {/* Proto Mobile Header */}
+                    <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 min-w-0 md:hidden">
+                        <div className="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-primary"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="m14 12-2-1-2 1"/><path d="M12 11V7"/></svg>
+                            <span className="font-headline text-lg font-bold">ScholarAI</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <Button asChild variant="ghost" size="icon" className="pointer-events-none">
+                                <Bookmark className="h-5 w-5" />
+                            </Button>
+                            <Button variant="ghost" size="icon" className="pointer-events-none">
+                                <PanelLeft className="h-5 w-5" />
+                            </Button>
+                        </div>
+                    </header>
+                    {/* Desktop-only elements */}
+                    <div className="absolute top-4 right-4 z-20 hidden md:block">
                         <Button variant="ghost" size="icon" className="pointer-events-none">
                             <History className="h-5 w-5" />
                         </Button>
                     </div>
-                    <div className="absolute top-4 left-4 z-20 w-1/3 max-w-xs pr-4">
+                    <div className="absolute top-4 left-4 z-20 w-1/3 max-w-xs pr-4 hidden md:block">
                         <Card className="h-full flex flex-col bg-secondary/50">
                             <CardContent className="p-3">
                                 <p className="font-headline text-sm mb-2">Today's Study Goal</p>
@@ -150,21 +166,22 @@ export function Hero() {
                                     <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-sm border border-primary bg-primary text-primary-foreground">
                                         <Check className="h-4 w-4" />
                                     </div>
-                                    <p className="text-xs text-muted-foreground">Thermodynamics: First law, internal energy, heat and work, various thermodynamic processes</p>
+                                    <p className="text-xs text-muted-foreground">Thermodynamics: First law, internal energy, heat and work...</p>
                                 </div>
                             </CardContent>
                         </Card>
                     </div>
+                    
                     <div 
                         className="absolute inset-0 bg-grid-pattern opacity-10"
                         style={{ backgroundSize: '2rem 2rem' }}
                     />
-                    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center relative z-10">
+                    <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 text-center relative z-10">
                         <div className="relative w-24 h-24 mb-4">
                             <div className="absolute inset-0 bg-primary rounded-full blur-2xl" />
                             <Image src="/chatbot.jpg" alt="AI Orb" width={96} height={96} className="relative rounded-full" />
                         </div>
-                        <h1 className="text-3xl font-bold font-headline text-foreground">
+                        <h1 className="text-2xl md:text-3xl font-bold font-headline text-foreground">
                             Hello, Scholar!
                         </h1>
                         <p className="text-muted-foreground text-sm mt-2 max-w-md mx-auto">
@@ -172,7 +189,7 @@ export function Hero() {
                         </p>
                     </div>
                     <div className="p-4 relative z-10 space-y-4">
-                        <div className="grid grid-cols-3 gap-2 sm:gap-4 h-28">
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4 md:h-28">
                             <StatCard title="Total Topics" value={13} subtext="sessions created" className="bg-yellow-500/80 border border-yellow-400/50" />
                             <StatCard title="Flashcards Made" value={118} subtext="terms to master" className="bg-purple-500/80 border border-purple-400/50" />
                             <StatCard title="Quiz Performance" value="13/25" subtext="correctly answered" className="bg-red-500/80 border border-red-400/50" />
@@ -180,16 +197,12 @@ export function Hero() {
                         <div className="relative">
                             <div className="flex items-center gap-2 rounded-full p-2 pr-[60px] border bg-secondary">
                                 <Input 
-                                    placeholder="What do you want to master today?" 
+                                    placeholder="What do you want to master?" 
                                     className="h-10 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 pointer-events-none"
                                 />
                                 <div className="flex items-center gap-2 p-2 rounded-full bg-background/50 border">
                                     <p className="text-sm">Physics</p>
                                 </div>
-                                 <div className="flex items-center gap-2 p-2 rounded-full bg-background/50 border">
-                                     <PlusCircle className="w-4 h-4"/>
-                                     <p className="text-sm">Add new subject</p>
-                                 </div>
                             </div>
                             <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-primary pointer-events-none">
                                 <Send className="h-5 w-5" />
