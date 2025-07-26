@@ -7,9 +7,6 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 export const metadata: Metadata = {
   title: "ScholarAI",
   description: "Your personal AI-powered study assistant.",
-  icons: {
-    icon: "/favicon.jpg",
-  },
 };
 
 export default function RootLayout({
