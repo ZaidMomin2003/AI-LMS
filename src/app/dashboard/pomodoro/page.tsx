@@ -17,12 +17,12 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
-const WORK_MINUTES = 25;
 const REST_MINUTES = 5;
 
 const formSchema = z.object({
   topic: z.string().min(3, { message: 'Please enter a task topic.' }),
   sessions: z.coerce.number().min(1, 'At least 1 session is required.').max(8, 'Maximum of 8 sessions.'),
+  duration: z.coerce.number().min(10, 'Duration must be at least 10 minutes.').max(60, 'Duration cannot exceed 60 minutes.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -69,14 +69,14 @@ export default function PomodoroPage() {
   const { pomodoroHistory, addCompletedPomodoro } = usePomodoro();
   const { toast } = useToast();
 
-  const [timerConfig, setTimerConfig] = useState<{ topic: string; totalSessions: number } | null>(null);
-  const [timeLeft, setTimeLeft] = useState(WORK_MINUTES * 60);
+  const [timerConfig, setTimerConfig] = useState<{ topic: string; totalSessions: number; duration: number } | null>(null);
+  const [timeLeft, setTimeLeft] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [mode, setMode] = useState<TimerMode>('Work');
   const [currentSession, setCurrentSession] = useState(1);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const totalTime = (mode === 'Work' ? WORK_MINUTES : REST_MINUTES) * 60;
+  const totalTime = (mode === 'Work' ? (timerConfig?.duration ?? 25) : REST_MINUTES) * 60;
   const progress = ((totalTime - timeLeft) / totalTime) * 100;
 
   useEffect(() => {
@@ -112,7 +112,7 @@ export default function PomodoroPage() {
         }
       } else { // mode === 'Rest'
         setMode('Work');
-        setTimeLeft(WORK_MINUTES * 60);
+        setTimeLeft(timerConfig!.duration * 60);
         setCurrentSession((prev) => prev + 1);
         toast({ title: 'Back to work! 💪', description: 'Starting the next session.' });
       }
@@ -121,12 +121,12 @@ export default function PomodoroPage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { topic: '', sessions: 1 },
+    defaultValues: { topic: '', sessions: 1, duration: 25 },
   });
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    setTimerConfig({ topic: data.topic, totalSessions: data.sessions });
-    setTimeLeft(WORK_MINUTES * 60);
+    setTimerConfig({ topic: data.topic, totalSessions: data.sessions, duration: data.duration });
+    setTimeLeft(data.duration * 60);
     setMode('Work');
     setCurrentSession(1);
     setIsActive(true);
@@ -192,20 +192,35 @@ export default function PomodoroPage() {
                           </FormItem>
                         )}
                       />
-                      <FormField
-                        control={form.control}
-                        name="sessions"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>How many sessions?</FormLabel>
-                            <FormControl>
-                              <Input type="number" min="1" max="8" {...field} />
-                            </FormControl>
-                             <FormDescription>One session is 25 minutes of work and a 5 minute break.</FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <FormField
+                            control={form.control}
+                            name="duration"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Session Duration (minutes)</FormLabel>
+                                <FormControl>
+                                <Input type="number" min="10" max="60" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="sessions"
+                            render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Number of Sessions</FormLabel>
+                                <FormControl>
+                                <Input type="number" min="1" max="8" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                            )}
+                        />
+                      </div>
+                       <FormDescription>One session is one block of focused work followed by a 5-minute break.</FormDescription>
                       <Button type="submit"><TimerIcon className="mr-2 h-4 w-4" />Start Focusing</Button>
                     </form>
                   </Form>
