@@ -26,6 +26,7 @@ import {
   ShieldCheck,
   Mail,
   DollarSign,
+  LifeBuoy,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -102,6 +103,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link href="/zaidadmin/submissions">
                   <Mail />
                   <span>Submissions</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/zaidadmin/support')}
+                tooltip={{ children: 'Support' }}
+              >
+                <Link href="/zaidadmin/support">
+                  <LifeBuoy />
+                  <span>Support</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
