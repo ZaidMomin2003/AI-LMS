@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { BookOpenCheck, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { ThemeToggle } from '../ThemeToggle';
 
 export function Header() {
   const { user, loading } = useAuth();
@@ -48,6 +49,7 @@ export function Header() {
               )}
             </Button>
           )}
+          <ThemeToggle />
         </div>
       </div>
     </header>
