@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Bot, Sparkles, CheckCircle2, History, ListTodo, Send, Folder } from 'lucide-react';
+import { ArrowRight, Bot, Sparkles, CheckCircle2, History, ListTodo, Send, Folder, LayoutDashboard, Bookmark, ClipboardCheck, Map, Timer, Camera, BarChart } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import { FloatingIcons } from './FloatingIcons';
 import { Input } from '@/components/ui/input';
@@ -32,6 +32,13 @@ export function Hero() {
     e.preventDefault();
     router.push('/signup');
   };
+  
+  const ProtoSidebarMenuItem = ({ icon: Icon, text }: { icon: React.ElementType, text: string }) => (
+    <div className="flex items-center gap-2 text-sm text-sidebar-foreground/80 p-2 rounded-md">
+        <Icon className="w-5 h-5" />
+        <span>{text}</span>
+    </div>
+  );
 
   return (
     <section className="relative text-center overflow-hidden">
@@ -72,62 +79,84 @@ export function Hero() {
         </div>
         <div className="relative mt-20 flow-root animate-in fade-in slide-in-from-top-24 duration-1000 delay-400">
           
-          <Card className="max-w-4xl mx-auto p-4 rounded-xl bg-card/60 backdrop-blur-sm shadow-2xl shadow-primary/10 border-2 border-primary/10 transition-all duration-300 hover:shadow-primary/20 hover:scale-[1.02]">
-             <div className="h-full flex flex-col bg-card border rounded-lg relative overflow-hidden text-left">
-                {/* Dashboard Prototype */}
-                <div className="absolute top-4 left-4 z-20 w-1/3 pr-4">
-                    <Card className="h-full flex flex-col">
-                        <CardContent className="p-3 text-center">
-                            <ListTodo className="w-5 h-5 text-muted-foreground mx-auto mb-1"/>
-                            <p className="text-xs font-semibold">Today's Goal</p>
-                        </CardContent>
-                    </Card>
-                </div>
-                <div className="absolute top-4 right-4 z-20">
-                    <Button variant="ghost" size="icon" className="pointer-events-none">
-                        <History className="h-5 w-5" />
-                    </Button>
-                </div>
-                <div 
-                    className="absolute inset-0 bg-grid-pattern opacity-10"
-                    style={{ backgroundSize: '2rem 2rem' }}
-                />
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center relative z-10">
-                    <div className="relative w-24 h-24 mb-4">
-                        <div className="absolute inset-0 bg-primary rounded-full blur-2xl animate-pulse" />
-                        <Image src="/chatbot.jpg" alt="AI Orb" width={96} height={96} className="relative rounded-full" />
+          <Card className="max-w-6xl mx-auto p-4 rounded-xl bg-card/60 backdrop-blur-sm shadow-2xl shadow-primary/10 border-2 border-primary/10 transition-all duration-300 hover:shadow-primary/20 hover:scale-[1.02] transform-gpu scale-[0.7] origin-top">
+            <div className="flex h-[80vh] min-h-[600px] w-full rounded-lg bg-sidebar overflow-hidden">
+                {/* Proto Sidebar */}
+                <div className="w-64 p-2 flex flex-col bg-sidebar-DEFAULT border-r border-sidebar-border">
+                    <div className="p-2 space-y-2">
+                        <ProtoSidebarMenuItem icon={LayoutDashboard} text="Dashboard" />
+                        <ProtoSidebarMenuItem icon={Folder} text="Subjects" />
+                        <ProtoSidebarMenuItem icon={Bookmark} text="Bookmarks" />
+                        <ProtoSidebarMenuItem icon={ClipboardCheck} text="Study Plan" />
+                        <ProtoSidebarMenuItem icon={Map} text="Roadmap" />
+                        <ProtoSidebarMenuItem icon={Timer} text="Pomodoro" />
+                        <ProtoSidebarMenuItem icon={Camera} text="Capture" />
+                        <ProtoSidebarMenuItem icon={BarChart} text="Analytics" />
                     </div>
-                    <h1 className="text-3xl font-bold font-headline text-foreground">
-                        Hello, Scholar!
-                    </h1>
-                    <p className="text-muted-foreground text-sm mt-2 max-w-md mx-auto">
-                        Ready to dive into a new topic? Let me know what you'd like to learn about.
-                    </p>
-                </div>
-                <div className="p-4 relative z-10 space-y-4">
-                    <div className="grid grid-cols-3 gap-2 sm:gap-4 h-28">
-                        <StatCard title="Total Topics" value={0} subtext="sessions created" className="bg-yellow-500/80 border border-yellow-400/50" />
-                        <StatCard title="Flashcards Made" value={0} subtext="terms to master" className="bg-purple-500/80 border border-purple-400/50" />
-                        <StatCard title="Quiz Performance" value="0/0" subtext="correctly answered" className="bg-red-500/80 border border-red-400/50" />
+                    <div className="mt-auto p-2">
+                        <div className="p-2 space-y-2 rounded-lg bg-sidebar-accent relative group/countdown">
+                             <p className="text-sm font-semibold text-sidebar-accent-foreground truncate px-1">Final Exam</p>
+                             <p className="text-center text-xs text-sidebar-foreground/70">Countdown here</p>
+                        </div>
                     </div>
-                    <form onSubmit={handleGenerate}>
-                        <div className="relative">
-                            <div className="flex items-center gap-2 rounded-full p-2 pr-[60px] border bg-secondary">
-                                <Input 
-                                    placeholder="What do you want to master today?" 
-                                    className="h-10 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
-                                    onClick={(e) => { e.preventDefault(); router.push('/signup'); }}
-                                    readOnly
-                                />
-                                <Button size="icon" variant="ghost" className="rounded-full w-9 h-9 pointer-events-none">
-                                    <Folder className="h-4 w-4 text-muted-foreground" />
+                </div>
+
+                {/* Proto Main Content */}
+                <div className="h-full flex-1 flex flex-col bg-card border rounded-lg relative overflow-hidden text-left">
+                    <div className="absolute top-4 left-4 z-20 w-1/3 pr-4">
+                        <Card className="h-full flex flex-col">
+                            <CardContent className="p-3 text-center">
+                                <ListTodo className="w-5 h-5 text-muted-foreground mx-auto mb-1"/>
+                                <p className="text-xs font-semibold">Today's Goal</p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                    <div className="absolute top-4 right-4 z-20">
+                        <Button variant="ghost" size="icon" className="pointer-events-none">
+                            <History className="h-5 w-5" />
+                        </Button>
+                    </div>
+                    <div 
+                        className="absolute inset-0 bg-grid-pattern opacity-10"
+                        style={{ backgroundSize: '2rem 2rem' }}
+                    />
+                    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center relative z-10">
+                        <div className="relative w-24 h-24 mb-4">
+                            <div className="absolute inset-0 bg-primary rounded-full blur-2xl animate-pulse" />
+                            <Image src="/chatbot.jpg" alt="AI Orb" width={96} height={96} className="relative rounded-full" />
+                        </div>
+                        <h1 className="text-3xl font-bold font-headline text-foreground">
+                            Hello, Scholar!
+                        </h1>
+                        <p className="text-muted-foreground text-sm mt-2 max-w-md mx-auto">
+                            Ready to dive into a new topic? Let me know what you'd like to learn about.
+                        </p>
+                    </div>
+                    <div className="p-4 relative z-10 space-y-4">
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4 h-28">
+                            <StatCard title="Total Topics" value={0} subtext="sessions created" className="bg-yellow-500/80 border border-yellow-400/50" />
+                            <StatCard title="Flashcards Made" value={0} subtext="terms to master" className="bg-purple-500/80 border border-purple-400/50" />
+                            <StatCard title="Quiz Performance" value="0/0" subtext="correctly answered" className="bg-red-500/80 border border-red-400/50" />
+                        </div>
+                        <form onSubmit={handleGenerate}>
+                            <div className="relative">
+                                <div className="flex items-center gap-2 rounded-full p-2 pr-[60px] border bg-secondary">
+                                    <Input 
+                                        placeholder="What do you want to master today?" 
+                                        className="h-10 border-0 bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0"
+                                        onClick={(e) => { e.preventDefault(); router.push('/signup'); }}
+                                        readOnly
+                                    />
+                                    <Button size="icon" variant="ghost" className="rounded-full w-9 h-9 pointer-events-none">
+                                        <Folder className="h-4 w-4 text-muted-foreground" />
+                                    </Button>
+                                </div>
+                                <Button type="submit" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-primary">
+                                    <Send className="h-5 w-5" />
                                 </Button>
                             </div>
-                            <Button type="submit" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-primary">
-                                <Send className="h-5 w-5" />
-                            </Button>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
           </Card>
