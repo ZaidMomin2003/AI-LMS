@@ -395,6 +395,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <span className="font-headline text-lg font-bold">ScholarAI</span>
                 </div>
                 <div className="flex items-center gap-2">
+                  <Button asChild variant="ghost" size="icon">
+                    <Link href="/dashboard/bookmarks">
+                      <Bookmark className="h-5 w-5" />
+                      <span className="sr-only">Bookmarks</span>
+                    </Link>
+                  </Button>
                   {sageMakerAllowed && (
                     <DialogTrigger asChild>
                       <Button variant="ghost" size="icon">
