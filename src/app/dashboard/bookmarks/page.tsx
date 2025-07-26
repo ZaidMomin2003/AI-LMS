@@ -1,27 +1,37 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTopic } from '@/context/TopicContext';
 import { format } from 'date-fns';
-import { Bookmark, History } from 'lucide-react';
+import { Bookmark, Search } from 'lucide-react';
 import type { Topic } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 
 export default function BookmarksPage() {
   const { topics, dataLoading } = useTopic();
+  const [searchTerm, setSearchTerm] = useState('');
 
   const bookmarkedTopics = useMemo(() => {
     if (!topics) return [];
     return topics.filter(topic => topic.isBookmarked);
   }, [topics]);
   
+  const filteredTopics = useMemo(() => {
+    if (!bookmarkedTopics) return [];
+    return bookmarkedTopics.filter(topic => 
+        topic.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        topic.subject.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [bookmarkedTopics, searchTerm]);
+
   const groupedByDate = useMemo(() => {
-    return bookmarkedTopics.reduce((acc: Record<string, Topic[]>, topic) => {
+    return filteredTopics.reduce((acc: Record<string, Topic[]>, topic) => {
       const dateKey = format(new Date(topic.createdAt), 'MMMM d, yyyy');
       if (!acc[dateKey]) {
         acc[dateKey] = [];
@@ -29,7 +39,7 @@ export default function BookmarksPage() {
       acc[dateKey].push(topic);
       return acc;
     }, {});
-  }, [bookmarkedTopics]);
+  }, [filteredTopics]);
 
   const sortedDates = Object.keys(groupedByDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
   
@@ -40,6 +50,7 @@ export default function BookmarksPage() {
                 <Skeleton className="h-8 w-64 mb-2" />
                 <Skeleton className="h-4 w-96 mb-6" />
                 <div className="space-y-6">
+                    <Skeleton className="h-10 w-full" />
                     <Skeleton className="h-10 w-48" />
                     <div className="space-y-3">
                         <Skeleton className="h-16 w-full" />
@@ -63,6 +74,16 @@ export default function BookmarksPage() {
           </p>
         </div>
         
+        <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input 
+                placeholder="Search bookmarks by title or subject..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+            />
+        </div>
+        
         {bookmarkedTopics.length === 0 ? (
            <Card className="text-center mt-6">
             <CardHeader>
@@ -77,6 +98,10 @@ export default function BookmarksPage() {
                 </p>
             </CardContent>
           </Card>
+        ) : filteredTopics.length === 0 ? (
+            <div className="text-center text-muted-foreground py-10">
+                <p>No bookmarks found for "{searchTerm}".</p>
+            </div>
         ) : (
             <div className="space-y-6">
                 {sortedDates.map(date => (
