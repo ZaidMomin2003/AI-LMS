@@ -42,6 +42,7 @@ import {
   MessageSquare,
   Sparkles,
   Bookmark,
+  LifeBuoy,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -376,6 +377,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       <DropdownMenuItem onSelect={() => router.push('/dashboard/profile')} className="cursor-pointer">
                           <User className="mr-2 h-4 w-4" />
                           <span>Profile</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onSelect={() => router.push('/dashboard/support')} className="cursor-pointer">
+                          <LifeBuoy className="mr-2 h-4 w-4" />
+                          <span>Support</span>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
