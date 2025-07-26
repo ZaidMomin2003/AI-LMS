@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "ScholarAI",
   description: "Your personal AI-powered study assistant.",
   icons: {
-    icon: "/chatbot.jpg",
+    icon: "/favicon.jpg",
   },
 };
 
