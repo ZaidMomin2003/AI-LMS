@@ -42,7 +42,7 @@ export function UseCases() {
             Adaptable to Any Learning Need
           </p>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            Whether you're studying for an exam, skilling up for work, or just satisfying your curiosity, ScholarAI is your personal learning assistant.
+            Whether you're studying for an exam, skilling up for work, or just satisfying your curiosity, Wisdomis Fun is your personal learning assistant.
           </p>
         </div>
         <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none md:grid-cols-2">

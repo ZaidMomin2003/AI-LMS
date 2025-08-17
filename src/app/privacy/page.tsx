@@ -19,7 +19,7 @@ export default function PrivacyPage() {
                         <p className="text-muted-foreground mt-2">Last updated: {lastUpdated}</p>
                     </div>
                     <div className="prose prose-invert max-w-none bg-card p-8 md:p-12 rounded-2xl border border-border/50 shadow-lg">
-                        <p>ScholarAI ("us", "we", or "our") operates the https://wisdomis.fun website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
+                        <p>Wisdomis Fun ("us", "we", or "our") operates the https://wisdomis.fun website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
 
                         <h2>1. Information Collection and Use</h2>
                         <p>We collect several different types of information for various purposes to provide and improve our Service to you.</p>
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
                         </ul>
 
                         <h2>2. Use of Data</h2>
-                        <p>ScholarAI uses the collected data for various purposes:</p>
+                        <p>Wisdomis Fun uses the collected data for various purposes:</p>
                         <ul>
                             <li>To provide and maintain the Service</li>
                             <li>To notify you about changes to our Service</li>
@@ -56,7 +56,7 @@ export default function PrivacyPage() {
                         <p>You have the right to access, update or delete the information we have on you. You can manage your account and associated data from your profile page or by contacting us directly.</p>
 
                         <h2>6. Contact Us</h2>
-                        <p>If you have any questions about this Privacy Policy, please contact us at: hello@scholarai.app</p>
+                        <p>If you have any questions about this Privacy Policy, please contact us at: hello@wisdomis.fun</p>
                     </div>
                 </div>
             </main>

@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
     setIsLoading(true);
 
     // Dummy validation
-    if (email === 'admin@scholarai.app' && password === 'password') {
+    if (email === 'admin@wisdomis.fun' && password === 'password') {
       toast({
         title: 'Login Successful',
         description: 'Redirecting to the admin dashboard...',
@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
              <BookOpenCheck className="h-8 w-8 text-primary" />
-             <span className="text-2xl font-bold font-headline">ScholarAI</span>
+             <span className="text-2xl font-bold font-headline">Wisdomis Fun</span>
           </div>
           <CardTitle className="text-2xl font-headline">Admin Portal</CardTitle>
           <CardDescription>Enter your admin credentials to access the dashboard.</CardDescription>
@@ -57,7 +57,7 @@ export default function AdminLoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="admin@scholarai.app"
+                placeholder="admin@wisdomis.fun"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -79,7 +79,7 @@ export default function AdminLoginPage() {
               Sign In
             </Button>
             <p className="text-xs text-center text-muted-foreground pt-2">
-                Use `admin@scholarai.app` and `password` to sign in.
+                Use `admin@wisdomis.fun` and `password` to sign in.
             </p>
           </form>
         </CardContent>

@@ -65,7 +65,7 @@ export function Hero() {
           <Link href="/signup" className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border px-4 py-1.5 text-sm text-muted-foreground shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-primary/30">
             <span className="absolute h-0 w-0 rounded-full bg-primary/30 transition-all duration-300 ease-in-out group-hover:h-56 group-hover:w-56"></span>
             <span className="relative z-10 flex items-center">
-              <Sparkles className="mr-2 h-4 w-4 text-primary" /> Announcing ScholarAI 2.0 &ndash; Start Learning Smarter
+              <Sparkles className="mr-2 h-4 w-4 text-primary" /> Announcing Wisdomis Fun 2.0 &ndash; Start Learning Smarter
             </span>
           </Link>
         </div>
@@ -73,7 +73,7 @@ export function Hero() {
           From Topic to <span className="text-primary">Mastery</span>, <span className="text-primary">Instantly</span>
         </h1>
         <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto animate-in fade-in slide-in-from-top-16 duration-1000 delay-200">
-          Stop drowning in textbooks. ScholarAI transforms any subject into clear study notes, interactive flashcards, and challenging quizzes, all in one click. Your smarter, faster learning journey starts here.
+          Stop drowning in textbooks. Wisdomis Fun transforms any subject into clear study notes, interactive flashcards, and challenging quizzes, all in one click. Your smarter, faster learning journey starts here.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6 animate-in fade-in slide-in-from-top-20 duration-1000 delay-300">
           <Button asChild size="lg">
@@ -96,7 +96,7 @@ export function Hero() {
                 <div className="w-64 p-2 flex-shrink-0 flex-col bg-sidebar-DEFAULT border-r border-sidebar-border hidden md:flex">
                     <div className="flex items-center gap-3 p-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-primary"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="m14 12-2-1-2 1"/><path d="M12 11V7"/></svg>
-                        <span className="font-headline text-2xl font-bold">ScholarAI</span>
+                        <span className="font-headline text-2xl font-bold">Wisdomis Fun</span>
                     </div>
                     <div className="p-2 space-y-2 mt-4 flex-1">
                         <ProtoSidebarMenuItem icon={LayoutDashboard} text="Dashboard" active />
@@ -141,7 +141,7 @@ export function Hero() {
                     <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 min-w-0 md:hidden">
                         <div className="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-primary"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="m14 12-2-1-2 1"/><path d="M12 11V7"/></svg>
-                            <span className="font-headline text-lg font-bold">ScholarAI</span>
+                            <span className="font-headline text-lg font-bold">Wisdomis Fun</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Button asChild variant="ghost" size="icon" className="pointer-events-none">

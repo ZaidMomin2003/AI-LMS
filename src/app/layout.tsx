@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "ScholarAI",
+  title: "Wisdomis Fun",
   description: "Your personal AI-powered study assistant.",
   icons: {
     icon: "/favicon.svg",

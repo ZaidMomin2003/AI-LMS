@@ -99,7 +99,7 @@ export function OnboardingForm() {
             })
         ]);
         toast({
-            title: "Welcome to ScholarAI!",
+            title: "Welcome to Wisdomis Fun!",
             description: "Your profile is set up. Let's start learning.",
         });
         router.push('/dashboard');
@@ -129,7 +129,7 @@ export function OnboardingForm() {
         >
           {currentStep === 0 && (
             <div className="text-center">
-              <h1 className="text-4xl font-headline font-bold mb-4">Welcome to ScholarAI!</h1>
+              <h1 className="text-4xl font-headline font-bold mb-4">Welcome to Wisdomis Fun!</h1>
               <p className="text-lg text-muted-foreground mb-8">Let's get your profile set up with a few quick questions.</p>
               <Button onClick={nextStep} size="lg">Let's Go <ArrowRight className="ml-2" /></Button>
             </div>

@@ -52,7 +52,7 @@ export default function DeveloperPage() {
                         </div>
                         <div>
                             <h1 className="text-4xl md:text-5xl font-headline font-bold">Zaid (Arshad)</h1>
-                            <p className="text-xl text-primary font-semibold mt-1">Creator of ScholarAI</p>
+                            <p className="text-xl text-primary font-semibold mt-1">Creator of Wisdomis Fun</p>
                             <p className="text-muted-foreground mt-4 max-w-lg">
                                 B.Tech in Computer Science & Engineering from GITAM University, based in Bijapur, Karnataka. Driven by a passion for leveraging technology to help students overcome their learning challenges and achieve academic excellence.
                             </p>

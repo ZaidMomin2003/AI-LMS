@@ -149,10 +149,8 @@ export function Contact() {
                             <p className="text-muted-foreground">Let's talk!</p>
                         </div>
                         <div className="space-y-6">
-                            <ContactInfoItem icon={<Mail size={20}/>} href="mailto:hello@scholarai.app" text="hello@scholarai.app" />
+                            <ContactInfoItem icon={<Mail size={20}/>} href="mailto:hello@wisdomis.fun" text="hello@wisdomis.fun" />
                             <ContactInfoItem icon={<Phone size={20}/>} href="tel:+917019328650" text="+91 7019328650" />
-                            <ContactInfoItem icon={<Linkedin size={20}/>} href="https://www.linkedin.com/in/arshad-momin-a3139b21b" text="Arshad Momin" />
-                            <ContactInfoItem icon={<Instagram size={20}/>} href="https://www.instagram.com/zaidwontdo/" text="zaidwontdo" />
                         </div>
                     </CardContent>
                 </Card>

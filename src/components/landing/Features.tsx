@@ -253,7 +253,7 @@ export function Features() {
             A Toolkit for Total Understanding
           </p>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            ScholarAI deconstructs any topic into the core components you need to truly learn it, not just memorize it.
+            Wisdomis Fun deconstructs any topic into the core components you need to truly learn it, not just memorize it.
           </p>
         </div>
         
@@ -312,7 +312,7 @@ export function Features() {
                    <h3 className="text-2xl font-headline font-bold">Challenging Quizzes</h3>
                 </div>
                 <p className="mt-4 text-lg text-muted-foreground">
-                    Put your knowledge to the test. ScholarAI generates custom multiple-choice quizzes that challenge you on the most important aspects of your topic. Get instant feedback on your answers to identify weak spots and confirm your mastery.
+                    Put your knowledge to the test. Our AI generates custom multiple-choice quizzes that challenge you on the most important aspects of your topic. Get instant feedback on your answers to identify weak spots and confirm your mastery.
                 </p>
             </div>
             <div className="flex items-center justify-center">

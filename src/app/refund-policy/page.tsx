@@ -24,16 +24,16 @@ export default function RefundPolicyPage() {
                         <p>Due to the nature of our digital services, we do not offer refunds or credits for any purchases, including subscription fees. Once a payment is made, it is final and non-refundable.</p>
 
                         <h3>Why No Refunds?</h3>
-                        <p>ScholarAI provides immediate access to digital content and AI-powered services. The generation of study materials incurs an instant and irreversible cost to us. Because our services are delivered instantly upon request and cannot be "returned," we are unable to provide refunds.</p>
+                        <p>Wisdomis Fun provides immediate access to digital content and AI-powered services. The generation of study materials incurs an instant and irreversible cost to us. Because our services are delivered instantly upon request and cannot be "returned," we are unable to provide refunds.</p>
 
                         <h3>Free Plan</h3>
-                        <p>We offer a free plan for you to try our services before committing to a paid subscription. We encourage you to use this plan to determine if ScholarAI is the right fit for your needs before purchasing a subscription.</p>
+                        <p>We offer a free plan for you to try our services before committing to a paid subscription. We encourage you to use this plan to determine if Wisdomis Fun is the right fit for your needs before purchasing a subscription.</p>
 
                         <h3>Cancellation</h3>
                         <p>You can cancel your subscription at any time from your account settings. Your cancellation will take effect at the end of your current billing cycle, and you will not be charged again. You will continue to have access to the service until the end of your billing period.</p>
                         
                         <h2>Contact Us</h2>
-                        <p>If you have any questions about our Refund Policy, please contact us at: hello@scholarai.app</p>
+                        <p>If you have any questions about our Refund Policy, please contact us at: hello@wisdomis.fun</p>
                     </div>
                 </div>
             </main>

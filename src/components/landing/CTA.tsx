@@ -15,7 +15,7 @@ export function CTA() {
           <Sparkles className="mx-auto h-12 w-12 text-primary-foreground/80 mb-4" />
 
           <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl font-headline">
-            Get Started with ScholarAI Today
+            Get Started with Wisdomis Fun Today
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-foreground/90">
             Join the first 100 users and get <span className="font-bold">50% off</span> your first subscription. Plus, every new account gets a free trial on us.
