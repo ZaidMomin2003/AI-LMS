@@ -1,10 +1,12 @@
+
 'use client';
 
 import React, { useState } from 'react';
-import { BrainCircuit, FileText, MessageCircleQuestion, Bot, Map, ClipboardCheck, Timer, User } from 'lucide-react';
+import { BrainCircuit, FileText, MessageCircleQuestion, Bot, Map, ClipboardCheck, Timer, User, Camera } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/card';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import Image from 'next/image';
 
 function FeatureFlashcard() {
   return (
@@ -243,6 +245,48 @@ function PomodoroDemo() {
     );
 }
 
+function CaptureDemo() {
+  return (
+    <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
+      <CardContent className="p-2 flex items-center justify-center gap-4">
+        <Image
+          src="https://placehold.co/400x300.png"
+          data-ai-hint="math problem"
+          alt="Image of a math problem"
+          width={150}
+          height={112}
+          className="rounded-md border-2 border-dashed"
+        />
+        <div className="text-primary animate-pulse">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-8 w-8"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </div>
+        <div className="bg-secondary p-3 rounded-lg flex-1">
+          <p className="text-sm font-bold">Answer:</p>
+          <p className="text-lg font-mono text-primary">x = 5</p>
+          <p className="text-xs text-muted-foreground mt-2">
+            Step-by-step solution provided...
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+
 export function Features() {
   return (
     <section id="features" className="py-20 sm:py-32">
@@ -399,6 +443,23 @@ export function Features() {
                 </p>
             </div>
         </div>
+        
+        {/* Feature 9: Capture the Answer */}
+        <div className="mt-24 grid grid-cols-1 items-center gap-16 md:grid-cols-2">
+            <div className="md:pr-8">
+                <div className="flex items-center gap-2">
+                   <Camera className="h-8 w-8 text-primary" />
+                   <h3 className="text-2xl font-headline font-bold">Capture the Answer</h3>
+                </div>
+                <p className="mt-4 text-lg text-muted-foreground">
+                    Stuck on a tricky homework problem? Just snap a picture of it. Our AI will analyze the image, identify the question, and provide you with a direct answer and a step-by-step solution to help you understand the process.
+                </p>
+            </div>
+            <div className="flex items-center justify-center">
+                 <CaptureDemo />
+            </div>
+        </div>
+
 
       </div>
     </section>
