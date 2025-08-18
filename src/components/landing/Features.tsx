@@ -250,9 +250,8 @@ function CaptureDemo() {
     <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
       <CardContent className="p-2 flex items-center justify-center gap-4">
         <Image
-          src="https://placehold.co/400x300.png"
-          data-ai-hint="math problem"
-          alt="Image of a math problem"
+          src="/question.jpg"
+          alt="A math problem on a piece of paper"
           width={150}
           height={112}
           className="rounded-md border-2 border-dashed"
