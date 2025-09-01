@@ -14,6 +14,7 @@ import { AppLayout } from '@/components/AppLayout';
 import { createCheckoutSession } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 let stripePromise: Promise<Stripe | null>;
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
@@ -96,6 +97,7 @@ const PricingContent = () => {
     const { user } = useAuth();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState<string | null>(null);
+    const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal'>('stripe');
 
     const plans = user ? allPlans.filter(p => p.priceId) : allPlans;
 
@@ -112,7 +114,6 @@ const PricingContent = () => {
         try {
             const { session } = await createCheckoutSession({ priceId, uid: user.uid });
             if (session.url) {
-                // Redirect the top-level window to break out of any iframes
                 window.top!.location.href = session.url;
             } else {
                  throw new Error("Could not create Stripe checkout session.");
@@ -139,8 +140,27 @@ const PricingContent = () => {
                         Start for free, then unlock more power as you grow. Simple, transparent pricing for every learner.
                     </p>
                 </div>
+                
+                <div className="flex justify-center my-8">
+                    <div className="inline-flex items-center rounded-full bg-muted p-1">
+                        <Button
+                            variant={paymentMethod === 'stripe' ? 'secondary' : 'ghost'}
+                            onClick={() => setPaymentMethod('stripe')}
+                            className="rounded-full px-6"
+                        >
+                            Stripe
+                        </Button>
+                        <Button
+                            variant={paymentMethod === 'paypal' ? 'secondary' : 'ghost'}
+                            onClick={() => setPaymentMethod('paypal')}
+                            className="rounded-full px-6"
+                        >
+                            PayPal
+                        </Button>
+                    </div>
+                </div>
 
-                <div className={cn("mx-auto mt-16 grid max-w-lg grid-cols-1 items-stretch gap-8", user ? 'lg:max-w-none lg:grid-cols-3' : 'lg:max-w-none lg:grid-cols-4' )}>
+                <div className={cn("mx-auto grid max-w-lg grid-cols-1 items-stretch gap-8", user ? 'lg:max-w-none lg:grid-cols-3' : 'lg:max-w-none lg:grid-cols-4' )}>
                     {plans.map((plan) => (
                         <Card key={plan.name} className={cn("relative flex flex-col", plan.popular ? "border-2 border-primary shadow-lg shadow-primary/20" : "")}>
                             {plan.popular && (
@@ -177,20 +197,45 @@ const PricingContent = () => {
                                 </ul>
                             </CardContent>
                             <CardFooter>
-                                {plan.priceId ? (
-                                    <Button
-                                        onClick={() => handleSubscribe(plan.priceId!)}
-                                        disabled={isLoading === plan.priceId}
-                                        className="w-full"
-                                        variant={plan.popular ? 'default' : 'outline'}
-                                    >
-                                        {isLoading === plan.priceId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                        {plan.buttonText}
-                                    </Button>
+                                {paymentMethod === 'stripe' ? (
+                                    plan.priceId ? (
+                                        <Button
+                                            onClick={() => handleSubscribe(plan.priceId!)}
+                                            disabled={isLoading === plan.priceId}
+                                            className="w-full"
+                                            variant={plan.popular ? 'default' : 'outline'}
+                                        >
+                                            {isLoading === plan.priceId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                            {plan.buttonText}
+                                        </Button>
+                                    ) : (
+                                        <Button asChild className="w-full" variant={'outline'}>
+                                            <Link href={plan.href!}>{plan.buttonText}</Link>
+                                        </Button>
+                                    )
                                 ) : (
-                                    <Button asChild className="w-full" variant={'outline'}>
-                                        <Link href={plan.href!}>{plan.buttonText}</Link>
-                                    </Button>
+                                     plan.priceId ? (
+                                        <TooltipProvider>
+                                            <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button
+                                                        disabled
+                                                        className="w-full"
+                                                        variant={plan.popular ? 'default' : 'outline'}
+                                                    >
+                                                        {plan.buttonText}
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>PayPal is coming soon!</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                     ) : (
+                                         <Button asChild className="w-full" variant={'outline'}>
+                                            <Link href={plan.href!}>{plan.buttonText}</Link>
+                                        </Button>
+                                     )
                                 )}
                             </CardFooter>
                         </Card>
