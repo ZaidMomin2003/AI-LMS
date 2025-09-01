@@ -15,6 +15,7 @@ import { Footer } from '@/components/landing/Footer';
 import { CTA } from '@/components/landing/CTA';
 import { WelcomePopup } from '@/components/landing/WelcomePopup';
 import { Workflow } from '@/components/landing/Workflow';
+import { Testimonials } from '@/components/landing/Testimonials';
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
@@ -45,6 +46,7 @@ export default function LandingPage() {
         <WelcomePopup />
         <Hero />
         <Workflow />
+        <Testimonials />
         <Features />
         <UseCases />
         <FAQ />

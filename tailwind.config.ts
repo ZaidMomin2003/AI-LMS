@@ -103,6 +103,10 @@ const config = {
           '0%': { transform: 'translateY(0%)' },
           '100%': { transform: 'translateY(-50%)' },
         },
+        'marquee-x': {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -111,6 +115,7 @@ const config = {
         'float': 'float 6s ease-in-out infinite',
         'text-gradient': 'text-gradient 3s linear infinite',
         'marquee-y': 'marquee-y 60s linear infinite',
+        'marquee-x': 'marquee-x 40s linear infinite',
       },
       perspective: {
         '1000': '1000px',
