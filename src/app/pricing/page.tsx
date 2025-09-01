@@ -13,9 +13,13 @@ import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
 import { createCheckoutSession } from './actions';
 import { useToast } from '@/hooks/use-toast';
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe, type Stripe } from '@stripe/stripe-js';
+import { env } from 'process';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+let stripePromise: Promise<Stripe | null>;
+if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+}
 
 const allPlans = [
     {
@@ -97,9 +101,17 @@ const PricingContent = () => {
     const plans = user ? allPlans.filter(p => p.priceId) : allPlans;
 
     const handleSubscribe = async (priceId: string) => {
+        if (!user) {
+            toast({
+                variant: 'destructive',
+                title: 'Authentication Error',
+                description: 'You must be logged in to subscribe.',
+            });
+            return;
+        }
         setIsLoading(priceId);
         try {
-            const { sessionId } = await createCheckoutSession({ priceId });
+            const { sessionId } = await createCheckoutSession({ priceId, uid: user.uid });
             const stripe = await stripePromise;
             if (!stripe) {
                 throw new Error("Stripe.js has not loaded yet.");

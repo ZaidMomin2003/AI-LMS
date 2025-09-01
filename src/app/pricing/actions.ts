@@ -7,14 +7,15 @@ import { headers } from 'next/headers';
 
 interface CreateCheckoutSessionInput {
   priceId: string;
+  uid: string;
 }
 
 export async function createCheckoutSession(
   input: CreateCheckoutSessionInput
 ): Promise<{ sessionId: string }> {
-  const user = auth.currentUser;
+  const { priceId, uid } = input;
   
-  if (!user) {
+  if (!uid) {
     throw new Error('You must be logged in to subscribe.');
   }
 
@@ -32,7 +33,7 @@ export async function createCheckoutSession(
       mode: 'subscription',
       success_url: `${origin}/dashboard`,
       cancel_url: `${origin}/pricing`,
-      client_reference_id: user.uid, // Pass the user's UID to identify them in webhooks
+      client_reference_id: uid, // Pass the user's UID to identify them in webhooks
     });
 
     if (!session.id) {
