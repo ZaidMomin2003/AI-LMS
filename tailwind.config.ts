@@ -115,7 +115,7 @@ const config = {
         'float': 'float 6s ease-in-out infinite',
         'text-gradient': 'text-gradient 3s linear infinite',
         'marquee-y': 'marquee-y 60s linear infinite',
-        'marquee-x': 'marquee-x 40s linear infinite',
+        'marquee-x': 'marquee-x 25s linear infinite',
       },
       perspective: {
         '1000': '1000px',
