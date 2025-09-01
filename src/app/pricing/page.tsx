@@ -11,18 +11,20 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
-import { createCheckoutSession } from './actions';
+import { createCheckoutSession, createPaypalOrder, capturePaypalOrder } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { motion } from 'framer-motion';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import type { SubscriptionPlan } from '@/types';
 
 const allPlans = [
     {
         name: 'Hobby',
-        price: '$0',
+        price: '0',
+        priceId: null,
         period: 'Free Forever',
         description: 'Perfect for trying out the power of AI learning.',
-        priceId: null,
         features: [
             { text: '1 Topic Generation', included: true },
             { text: '1 AI Roadmap Generation', included: true },
@@ -37,10 +39,10 @@ const allPlans = [
     },
     {
         name: 'Rapid Student',
-        price: '$7',
+        price: '7',
+        priceId: 'price_1RiJCmRsI0LGhGhHY7V3VcWp', 
         period: '/ week',
         description: 'Ideal for short-term projects and exam cramming.',
-        priceId: 'price_1RiJCmRsI0LGhGhHY7V3VcWp', 
         features: [
             { text: 'Unlimited Topic Generations', included: true },
             { text: 'Unlimited AI Roadmaps', included: true },
@@ -54,10 +56,10 @@ const allPlans = [
     },
     {
         name: 'Scholar Subscription',
-        price: '$19',
+        price: '19',
+        priceId: 'price_1RiJCjRsI0LGhGhHmmDzBMCk',
         period: '/ month',
         description: 'The complete toolkit for dedicated learners.',
-        priceId: 'price_1RiJCjRsI0LGhGhHmmDzBMCk',
         features: [
             { text: 'Unlimited Topic Generations', included: true },
             { text: 'Unlimited AI Roadmaps', included: true },
@@ -73,10 +75,10 @@ const allPlans = [
     },
     {
         name: 'Sage Mode',
-        price: '$169',
+        price: '169',
+        priceId: 'price_1RiJCeRsI0LGhGhHhZXB4MEg',
         period: '/ year',
         description: 'For the committed lifelong learner. Save over 20%!',
-        priceId: 'price_1RiJCeRsI0LGhGhHhZXB4MEg',
         features: [
             { text: 'Everything in Scholar Subscription', included: true },
             { text: 'Early access to new features', included: true },
@@ -137,6 +139,7 @@ const PaymentToggle = ({
   );
 };
 
+const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '';
 
 const PricingContent = () => {
     const { user } = useAuth();
@@ -146,7 +149,7 @@ const PricingContent = () => {
 
     const plans = user ? allPlans.filter(p => p.priceId) : allPlans;
 
-    const handleSubscribe = async (priceId: string) => {
+    const handleStripeSubscribe = async (priceId: string) => {
         if (!user) {
             toast({
                 variant: 'destructive',
@@ -175,104 +178,135 @@ const PricingContent = () => {
     };
     
     return (
-        <section id="pricing" className="py-20 sm:py-32">
-            <div className="container mx-auto px-4">
-                <div className="mx-auto max-w-2xl text-center">
-                    <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-                        Choose Your Plan
-                    </h2>
-                    <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                        Start for free, then unlock more power as you grow. Simple, transparent pricing for every learner.
-                    </p>
-                </div>
-                
-                <div className="flex justify-center my-8">
-                    <PaymentToggle paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
-                </div>
+        <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID }}>
+            <section id="pricing" className="py-20 sm:py-32">
+                <div className="container mx-auto px-4">
+                    <div className="mx-auto max-w-2xl text-center">
+                        <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+                            Choose Your Plan
+                        </h2>
+                        <p className="mt-4 text-lg leading-8 text-muted-foreground">
+                            Start for free, then unlock more power as you grow. Simple, transparent pricing for every learner.
+                        </p>
+                    </div>
+                    
+                    <div className="flex justify-center my-8">
+                        <PaymentToggle paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
+                    </div>
 
-                <div className={cn("mx-auto grid max-w-lg grid-cols-1 items-stretch gap-8", user ? 'lg:max-w-none lg:grid-cols-3' : 'lg:max-w-none lg:grid-cols-4' )}>
-                    {plans.map((plan) => (
-                        <Card key={plan.name} className={cn("relative flex flex-col", plan.popular ? "border-2 border-primary shadow-lg shadow-primary/20" : "")}>
-                            {plan.popular && (
-                                <div className="absolute top-0 -translate-y-1/2 w-full flex justify-center">
-                                    <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                                        <Star className="w-4 h-4" />
-                                        Most Popular
+                    <div className={cn("mx-auto grid max-w-lg grid-cols-1 items-stretch gap-8", user ? 'lg:max-w-none lg:grid-cols-3' : 'lg:max-w-none lg:grid-cols-4' )}>
+                        {plans.map((plan) => (
+                            <Card key={plan.name} className={cn("relative flex flex-col", plan.popular ? "border-2 border-primary shadow-lg shadow-primary/20" : "")}>
+                                {plan.popular && (
+                                    <div className="absolute top-0 -translate-y-1/2 w-full flex justify-center">
+                                        <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
+                                            <Star className="w-4 h-4" />
+                                            Most Popular
+                                        </div>
                                     </div>
-                                </div>
-                            )}
-                            {plan.bestValue && !plan.popular && (
-                                <div className="absolute top-0 -translate-y-1/2 w-full flex justify-center">
-                                    <div className="bg-accent text-accent-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                                        Best Value
-                                    </div>
-                                </div>
-                            )}
-                            <CardHeader className="pt-12">
-                                <CardTitle className="font-headline">{plan.name}</CardTitle>
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-bold tracking-tight">{plan.price}</span>
-                                    {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
-                                </div>
-                                <CardDescription>{plan.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                <ul className="space-y-3">
-                                    {plan.features.map((feature, i) => (
-                                        <li key={i} className={cn("flex items-center gap-2 text-sm", feature.included ? 'text-foreground' : 'text-muted-foreground' )}>
-                                            {feature.included ? <Check className="h-4 w-4 text-primary" /> : <X className="h-4 w-4 text-muted-foreground" />}
-                                            <span>{feature.text}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </CardContent>
-                            <CardFooter>
-                                {paymentMethod === 'stripe' ? (
-                                    plan.priceId ? (
-                                        <Button
-                                            onClick={() => handleSubscribe(plan.priceId!)}
-                                            disabled={isLoading === plan.priceId}
-                                            className="w-full"
-                                            variant={plan.popular ? 'default' : 'outline'}
-                                        >
-                                            {isLoading === plan.priceId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                            {plan.buttonText}
-                                        </Button>
-                                    ) : (
-                                        <Button asChild className="w-full" variant={'outline'}>
-                                            <Link href={plan.href!}>{plan.buttonText}</Link>
-                                        </Button>
-                                    )
-                                ) : (
-                                     plan.priceId ? (
-                                        <TooltipProvider>
-                                            <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                    <Button
-                                                        disabled
-                                                        className="w-full"
-                                                        variant={plan.popular ? 'default' : 'outline'}
-                                                    >
-                                                        {plan.buttonText}
-                                                    </Button>
-                                                </TooltipTrigger>
-                                                <TooltipContent>
-                                                    <p>PayPal is coming soon!</p>
-                                                </TooltipContent>
-                                            </Tooltip>
-                                        </TooltipProvider>
-                                     ) : (
-                                         <Button asChild className="w-full" variant={'outline'}>
-                                            <Link href={plan.href!}>{plan.buttonText}</Link>
-                                        </Button>
-                                     )
                                 )}
-                            </CardFooter>
-                        </Card>
-                    ))}
+                                {plan.bestValue && !plan.popular && (
+                                    <div className="absolute top-0 -translate-y-1/2 w-full flex justify-center">
+                                        <div className="bg-accent text-accent-foreground px-4 py-1 rounded-full text-sm font-semibold">
+                                            Best Value
+                                        </div>
+                                    </div>
+                                )}
+                                <CardHeader className="pt-12">
+                                    <CardTitle className="font-headline">{plan.name}</CardTitle>
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-4xl font-bold tracking-tight">${plan.price}</span>
+                                        {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
+                                    </div>
+                                    <CardDescription>{plan.description}</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex-1">
+                                    <ul className="space-y-3">
+                                        {plan.features.map((feature, i) => (
+                                            <li key={i} className={cn("flex items-center gap-2 text-sm", feature.included ? 'text-foreground' : 'text-muted-foreground' )}>
+                                                {feature.included ? <Check className="h-4 w-4 text-primary" /> : <X className="h-4 w-4 text-muted-foreground" />}
+                                                <span>{feature.text}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                                <CardFooter>
+                                    {paymentMethod === 'stripe' ? (
+                                        plan.priceId ? (
+                                            <Button
+                                                onClick={() => handleStripeSubscribe(plan.priceId!)}
+                                                disabled={isLoading === plan.priceId}
+                                                className="w-full"
+                                                variant={plan.popular ? 'default' : 'outline'}
+                                            >
+                                                {isLoading === plan.priceId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                                {plan.buttonText}
+                                            </Button>
+                                        ) : (
+                                            <Button asChild className="w-full" variant={'outline'}>
+                                                <Link href={plan.href!}>{plan.buttonText}</Link>
+                                            </Button>
+                                        )
+                                    ) : (
+                                        plan.priceId ? (
+                                             <div className="w-full">
+                                                <PayPalButtons
+                                                    style={{ layout: "vertical", label: "pay" }}
+                                                    disabled={isLoading !== null}
+                                                    forceReRender={[plan.price, user]}
+                                                    createOrder={async (data, actions) => {
+                                                        if (!user) {
+                                                            toast({ variant: 'destructive', title: 'Please log in to purchase.' });
+                                                            return '';
+                                                        }
+                                                        setIsLoading(plan.priceId);
+                                                        try {
+                                                            const { orderID } = await createPaypalOrder(parseFloat(plan.price));
+                                                            return orderID;
+                                                        } catch (error) {
+                                                            toast({ variant: 'destructive', title: 'Could not create PayPal order.' });
+                                                            return '';
+                                                        } finally {
+                                                            setIsLoading(null);
+                                                        }
+                                                    }}
+                                                    onApprove={async (data, actions) => {
+                                                        if (!user) return;
+                                                        setIsLoading(plan.priceId);
+                                                        try {
+                                                            const { success } = await capturePaypalOrder(data.orderID, plan.name as SubscriptionPlan, user.uid);
+                                                            if (success) {
+                                                                toast({ title: 'Payment Successful!', description: `You are now subscribed to ${plan.name}.` });
+                                                                // The subscription context will automatically update, no need to redirect
+                                                            } else {
+                                                                throw new Error('Capture failed');
+                                                            }
+                                                        } catch (error) {
+                                                            toast({ variant: 'destructive', title: 'Payment Failed', description: 'Could not finalize your payment.' });
+                                                        } finally {
+                                                            setIsLoading(null);
+                                                        }
+                                                    }}
+                                                    onError={(err) => {
+                                                        toast({ variant: 'destructive', title: 'PayPal Error', description: 'An error occurred with the PayPal transaction.' });
+                                                        setIsLoading(null);
+                                                    }}
+                                                    onCancel={() => setIsLoading(null)}
+                                                />
+                                             </div>
+                                        ) : (
+                                            <Button asChild className="w-full" variant={'outline'}>
+                                                <Link href={plan.href!}>{plan.buttonText}</Link>
+                                            </Button>
+                                        )
+                                    )}
+                                </CardFooter>
+                            </Card>
+                        ))}
+                    </div>
                 </div>
-            </div>
-         </section>
+            </section>
+        </PayPalScriptProvider>
     )
 }
 

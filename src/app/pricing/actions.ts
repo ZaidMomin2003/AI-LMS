@@ -4,6 +4,12 @@
 import { stripe } from '@/lib/stripe';
 import { headers } from 'next/headers';
 import type Stripe from 'stripe';
+import paypalClient from '@/lib/paypal';
+import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
+import { updateUserDoc } from '@/services/firestore';
+import type { UserSubscription, SubscriptionPlan } from '@/types';
+import { getPlanDetails } from './utils';
+
 
 interface CreateCheckoutSessionInput {
   priceId: string;
@@ -44,5 +50,56 @@ export async function createCheckoutSession(
   } catch (error) {
     console.error('Error creating Stripe checkout session:', error);
     throw new Error('Failed to create checkout session.');
+  }
+}
+
+export async function createPaypalOrder(price: number): Promise<{ orderID: string }> {
+  const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
+  request.prefer("return=representation");
+  request.requestBody({
+    intent: 'CAPTURE',
+    purchase_units: [
+      {
+        amount: {
+          currency_code: 'USD',
+          value: price.toString(),
+        },
+      },
+    ],
+  });
+
+  try {
+    const order = await paypalClient.execute(request);
+    return { orderID: order.result.id };
+  } catch (error) {
+    console.error('Error creating PayPal order:', error);
+    throw new Error('Failed to create PayPal order.');
+  }
+}
+
+export async function capturePaypalOrder(orderID: string, planName: SubscriptionPlan, uid: string): Promise<{ success: boolean }> {
+  const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
+  request.requestBody({} as any); // Empty body required for capture
+
+  try {
+    const capture = await paypalClient.execute(request);
+    
+    // Check if the capture was successful
+    if (capture.result.status === 'COMPLETED') {
+      // Payment is successful, update user's subscription in Firestore
+      const subscriptionData: UserSubscription = {
+        planName,
+        status: 'active',
+        paypalOrderId: capture.result.id,
+      };
+      await updateUserDoc(uid, { subscription: subscriptionData });
+      return { success: true };
+    } else {
+      console.error('PayPal capture was not successful:', capture.result);
+      return { success: false };
+    }
+  } catch (error) {
+    console.error('Error capturing PayPal order:', error);
+    throw new Error('Failed to capture PayPal order.');
   }
 }
