@@ -11,11 +11,7 @@ import { Check, Star, Loader2, X } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
-import { createStripeCheckoutSession } from './actions';
-import { useToast } from '@/hooks/use-toast';
 import { AppLayout } from '@/components/AppLayout';
-import type { SubscriptionPlan } from '@/types';
 
 const allPlans = [
     {
@@ -47,7 +43,7 @@ const allPlans = [
             { text: 'Exam Day Countdown', included: true },
             { text: 'SageMaker AI Assistant', included: false },
         ],
-        buttonText: 'Choose Plan',
+        buttonText: 'Coming Soon',
     },
     {
         name: 'Scholar Subscription',
@@ -63,7 +59,7 @@ const allPlans = [
             { text: 'SageMaker AI Assistant', included: true },
             { text: 'Priority Support', included: true },
         ],
-        buttonText: 'Choose Plan',
+        buttonText: 'Coming Soon',
         popular: true,
     },
     {
@@ -78,54 +74,15 @@ const allPlans = [
             { text: 'Save over 20% vs. Monthly', included: true },
             { text: 'Dedicated Support Channel', included: true },
         ],
-        buttonText: 'Choose Plan',
+        buttonText: 'Coming Soon',
         bestValue: true,
     },
 ]
 
 const PricingContent = () => {
     const { user } = useAuth();
-    const router = useRouter();
-    const { toast } = useToast();
-    const [loadingPriceId, setLoadingPriceId] = useState<string | null>(null);
 
     const plans = user ? allPlans.filter(p => p.priceId) : allPlans;
-
-    const handleCheckout = async (priceId: string, planName: SubscriptionPlan) => {
-        if (!user) {
-            router.push('/login?redirect=/pricing');
-            return;
-        }
-
-        setLoadingPriceId(priceId);
-        
-        try {
-            sessionStorage.setItem('pending_subscription_plan', planName);
-        } catch (e) {
-             console.error('Could not set sessionStorage for subscription plan.');
-        }
-
-        const result = await createStripeCheckoutSession({ priceId }, user.email, user.uid);
-        setLoadingPriceId(null);
-
-        if (result.url) {
-            router.push(result.url);
-        } else if (result.error) {
-            toast({
-                variant: 'destructive',
-                title: 'Checkout Error',
-                description: result.error,
-            });
-            sessionStorage.removeItem('pending_subscription_plan');
-        } else {
-             toast({
-                variant: 'destructive',
-                title: 'An Unexpected Error Occurred',
-                description: 'Could not create a checkout session. Please try again.',
-            });
-            sessionStorage.removeItem('pending_subscription_plan');
-        }
-    };
     
     return (
         <section id="pricing" className="py-20 sm:py-32">
@@ -178,14 +135,10 @@ const PricingContent = () => {
                             <CardFooter>
                                 {plan.priceId ? (
                                     <Button
-                                        onClick={() => handleCheckout(plan.priceId!, plan.name as SubscriptionPlan)}
-                                        disabled={loadingPriceId === plan.priceId}
+                                        disabled
                                         className="w-full"
                                         variant={plan.popular ? 'default' : 'outline'}
                                     >
-                                        {loadingPriceId === plan.priceId ? (
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        ) : null}
                                         {plan.buttonText}
                                     </Button>
                                 ) : (

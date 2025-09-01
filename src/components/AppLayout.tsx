@@ -2,7 +2,7 @@
 'use client';
 
 import React, { Suspense, useEffect, useState } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -57,7 +57,6 @@ import {
 import { useExam } from '@/context/ExamContext';
 import { ExamCountdown } from './exam/ExamCountdown';
 import { useSubscription } from '@/context/SubscriptionContext';
-import type { SubscriptionPlan } from '@/types';
 import { Skeleton } from './ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { usePomodoro } from '@/context/PomodoroContext';
@@ -79,32 +78,8 @@ function AppLoadingScreen() {
 }
 
 function SidebarSubscriptionButton() {
-    const { subscription, setSubscription } = useSubscription();
+    const { subscription } = useSubscription();
     const pathname = usePathname();
-    const searchParams = useSearchParams();
-
-    useEffect(() => {
-        const checkoutStatus = searchParams.get('checkout');
-        const sessionId = searchParams.get('session_id');
-
-        if (checkoutStatus === 'success' && sessionId) {
-            try {
-                const planName = sessionStorage.getItem('pending_subscription_plan') as SubscriptionPlan | null;
-                if (planName) {
-                    setSubscription({
-                        planName: planName,
-                        status: 'active',
-                        stripeSessionId: sessionId,
-                    });
-                    sessionStorage.removeItem('pending_subscription_plan');
-                    window.history.replaceState(null, '', '/dashboard');
-                }
-            } catch (error) {
-                console.error("Error processing subscription update from URL", error);
-            }
-        }
-    }, [searchParams, setSubscription, pathname]);
-
 
     if (subscription?.planName === 'Hobby') {
         return (
