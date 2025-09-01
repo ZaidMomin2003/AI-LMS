@@ -54,7 +54,7 @@ export function Hero() {
   return (
     <section className="relative text-center overflow-hidden">
       <FloatingIcons />
-      <div aria-hidden="true" className="absolute inset-0 top-0 -z-10">
+       <div aria-hidden="true" className="absolute inset-0 top-0 -z-10">
         <div className="absolute inset-0 bg-background" />
         <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:32px_32px] animate-grid-pan" />
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200%] h-[50%] bg-[radial-gradient(ellipse_at_bottom,hsl(var(--primary)/0.15)_0%,transparent_70%)] blur-3xl" />
