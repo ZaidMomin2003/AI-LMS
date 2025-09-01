@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect } from 'react';
@@ -13,6 +14,7 @@ import { Contact } from '@/components/landing/Contact';
 import { Footer } from '@/components/landing/Footer';
 import { CTA } from '@/components/landing/CTA';
 import { WelcomePopup } from '@/components/landing/WelcomePopup';
+import { Workflow } from '@/components/landing/Workflow';
 
 export default function LandingPage() {
   const { user, loading } = useAuth();
@@ -42,6 +44,7 @@ export default function LandingPage() {
       <main className="flex-grow">
         <WelcomePopup />
         <Hero />
+        <Workflow />
         <Features />
         <UseCases />
         <FAQ />
