@@ -58,7 +58,7 @@ import { useExam } from '@/context/ExamContext';
 import { ExamCountdown } from './exam/ExamCountdown';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { Skeleton } from './ui/skeleton';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from './ui/tooltip';
 import { usePomodoro } from '@/context/PomodoroContext';
 import { useTopic } from '@/context/TopicContext';
 import { useRoadmap } from '@/context/RoadmapContext';
@@ -215,69 +215,75 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={pathname.startsWith('/dashboard/roadmap')}
-                      >
-                        <Link href="/dashboard/roadmap" className={cn(isRoadmapLocked && 'text-muted-foreground')}>
-                          <Map />
-                          <span>Roadmap</span>
-                          {isRoadmapLocked && <Lock className="ml-auto h-3 w-3" />}
-                        </Link>
-                      </SidebarMenuButton>
-                  </TooltipTrigger>
-                  {isRoadmapLocked && (
-                      <TooltipContent side="right" align="center">
-                          <p>Upgrade for unlimited roadmaps</p>
-                      </TooltipContent>
-                  )}
-                </Tooltip>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={pathname.startsWith('/dashboard/roadmap')}
+                        >
+                          <Link href="/dashboard/roadmap" className={cn(isRoadmapLocked && 'text-muted-foreground')}>
+                            <Map />
+                            <span>Roadmap</span>
+                            {isRoadmapLocked && <Lock className="ml-auto h-3 w-3" />}
+                          </Link>
+                        </SidebarMenuButton>
+                    </TooltipTrigger>
+                    {isRoadmapLocked && (
+                        <TooltipContent side="right" align="center">
+                            <p>Upgrade for unlimited roadmaps</p>
+                        </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={pathname.startsWith('/dashboard/pomodoro')}
-                      >
-                        <Link href="/dashboard/pomodoro" className={cn(isPomodoroLocked && 'text-muted-foreground')}>
-                          <Timer />
-                          <span>Pomodoro</span>
-                          {isPomodoroLocked && <Lock className="ml-auto h-3 w-3" />}
-                        </Link>
-                      </SidebarMenuButton>
-                  </TooltipTrigger>
-                  {isPomodoroLocked && (
-                      <TooltipContent side="right" align="center">
-                          <p>Upgrade for unlimited sessions</p>
-                      </TooltipContent>
-                  )}
-                </Tooltip>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={pathname.startsWith('/dashboard/pomodoro')}
+                        >
+                          <Link href="/dashboard/pomodoro" className={cn(isPomodoroLocked && 'text-muted-foreground')}>
+                            <Timer />
+                            <span>Pomodoro</span>
+                            {isPomodoroLocked && <Lock className="ml-auto h-3 w-3" />}
+                          </Link>
+                        </SidebarMenuButton>
+                    </TooltipTrigger>
+                    {isPomodoroLocked && (
+                        <TooltipContent side="right" align="center">
+                            <p>Upgrade for unlimited sessions</p>
+                        </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={pathname.startsWith('/dashboard/capture')}
-                      >
-                        <Link href="/dashboard/capture" className={cn(isCaptureLocked && 'text-muted-foreground')}>
-                          <Camera />
-                          <span className="flex items-center gap-2">
-                            Capture <Badge variant="secondary" className="text-xs">Beta</Badge>
-                          </span>
-                          {isCaptureLocked && <Lock className="ml-auto h-3 w-3" />}
-                        </Link>
-                      </SidebarMenuButton>
-                  </TooltipTrigger>
-                  {isCaptureLocked && (
-                      <TooltipContent side="right" align="center">
-                          <p>Upgrade for unlimited captures</p>
-                      </TooltipContent>
-                  )}
-                </Tooltip>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={pathname.startsWith('/dashboard/capture')}
+                        >
+                          <Link href="/dashboard/capture" className={cn(isCaptureLocked && 'text-muted-foreground')}>
+                            <Camera />
+                            <span className="flex items-center gap-2">
+                              Capture <Badge variant="secondary" className="text-xs">Beta</Badge>
+                            </span>
+                            {isCaptureLocked && <Lock className="ml-auto h-3 w-3" />}
+                          </Link>
+                        </SidebarMenuButton>
+                    </TooltipTrigger>
+                    {isCaptureLocked && (
+                        <TooltipContent side="right" align="center">
+                            <p>Upgrade for unlimited captures</p>
+                        </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
@@ -291,16 +297,26 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              {sageMakerAllowed && (
-                <SidebarMenuItem>
-                  <DialogTrigger asChild>
-                    <SidebarMenuButton tooltip={{ children: 'SageMaker AI' }}>
-                      <Sparkles />
-                      <span>SageMaker</span>
-                    </SidebarMenuButton>
-                  </DialogTrigger>
-                </SidebarMenuItem>
-              )}
+              <SidebarMenuItem>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <DialogTrigger asChild disabled={!sageMakerAllowed}>
+                                <SidebarMenuButton tooltip={{ children: 'SageMaker AI' }} className={cn(!sageMakerAllowed && 'text-muted-foreground')}>
+                                    <Sparkles />
+                                    <span>SageMaker</span>
+                                    {!sageMakerAllowed && <Lock className="ml-auto h-3 w-3" />}
+                                </SidebarMenuButton>
+                            </DialogTrigger>
+                        </TooltipTrigger>
+                        {!sageMakerAllowed && (
+                            <TooltipContent side="right" align="center">
+                                <p>Upgrade to unlock SageMaker</p>
+                            </TooltipContent>
+                        )}
+                    </Tooltip>
+                </TooltipProvider>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>

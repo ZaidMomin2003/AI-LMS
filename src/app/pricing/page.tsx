@@ -23,6 +23,8 @@ const allPlans = [
         features: [
             { text: '1 Topic Generation', included: true },
             { text: '1 AI Roadmap Generation', included: true },
+            { text: '1 Pomodoro Session', included: true },
+            { text: '1 Capture the Answer', included: true },
             { text: 'Unlimited Study Plan Board', included: true },
             { text: 'Exam Day Countdown', included: true },
             { text: 'SageMaker AI Assistant', included: false },
@@ -39,6 +41,8 @@ const allPlans = [
         features: [
             { text: 'Unlimited Topic Generations', included: true },
             { text: 'Unlimited AI Roadmaps', included: true },
+            { text: 'Unlimited Pomodoro Sessions', included: true },
+            { text: 'Unlimited Captures', included: true },
             { text: 'Unlimited Study Plan Board', included: true },
             { text: 'Exam Day Countdown', included: true },
             { text: 'SageMaker AI Assistant', included: false },
@@ -54,6 +58,8 @@ const allPlans = [
         features: [
             { text: 'Unlimited Topic Generations', included: true },
             { text: 'Unlimited AI Roadmaps', included: true },
+            { text: 'Unlimited Pomodoro Sessions', included: true },
+            { text: 'Unlimited Captures', included: true },
             { text: 'Unlimited Study Plan Board', included: true },
             { text: 'Exam Day Countdown', included: true },
             { text: 'SageMaker AI Assistant', included: true },
@@ -125,7 +131,7 @@ const PricingContent = () => {
                             <CardContent className="flex-1">
                                 <ul className="space-y-3">
                                     {plan.features.map((feature, i) => (
-                                        <li key={i} className={cn("flex items-center gap-2 text-sm", feature.included ? 'text-foreground' : 'text-muted-foreground line-through' )}>
+                                        <li key={i} className={cn("flex items-center gap-2 text-sm", feature.included ? 'text-foreground' : 'text-muted-foreground' )}>
                                             {feature.included ? <Check className="h-4 w-4 text-primary" /> : <X className="h-4 w-4 text-muted-foreground" />}
                                             <span>{feature.text}</span>
                                         </li>

@@ -33,10 +33,15 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
         setLoading(true);
         try {
             const userData = await getUserDoc(user.uid);
-            setProfile(userData?.profile || null);
+            // Ensure captureCount is initialized if not present
+            const profileData = userData?.profile || {};
+            if (typeof profileData.captureCount !== 'number') {
+                profileData.captureCount = 0;
+            }
+            setProfile(profileData);
         } catch (error) {
             console.error("Failed to fetch profile:", error);
-            setProfile(null);
+            setProfile({ captureCount: 0 });
         } finally {
             setLoading(false);
         }

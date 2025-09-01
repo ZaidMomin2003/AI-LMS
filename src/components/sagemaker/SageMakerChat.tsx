@@ -195,9 +195,11 @@ export default function SageMakerChat() {
       )
   }
 
-  if (subscription?.planName === 'Hobby') {
+  const sageMakerAllowed = subscription?.planName && ['Scholar Subscription', 'Sage Mode'].includes(subscription.planName);
+
+  if (!sageMakerAllowed) {
       return (
-           <div className="flex-1 p-4 md:p-6 flex justify-center items-center">
+           <div className="flex-1 p-4 md:p-6 flex justify-center items-center h-full">
                <Card className="w-full max-w-md text-center shadow-2xl">
                  <CardHeader>
                     <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit">
