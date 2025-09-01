@@ -55,10 +55,9 @@ export type SubscriptionPlan = 'Hobby' | 'Rapid Student' | 'Scholar Subscription
 
 export interface UserSubscription {
   planName: SubscriptionPlan;
-  status: 'active' | 'inactive';
-  stripeSessionId?: string;
-  stripeCustomerId?: string;
+  status: 'active' | 'inactive' | 'trialing' | 'canceled' | 'past_due' | 'unpaid';
   stripeSubscriptionId?: string;
+  stripeCustomerId?: string;
 }
 
 export interface PomodoroSession {

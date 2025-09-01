@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState } from 'react';
@@ -12,6 +11,11 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
+import { createCheckoutSession } from './actions';
+import { useToast } from '@/hooks/use-toast';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
 
 const allPlans = [
     {
@@ -47,7 +51,7 @@ const allPlans = [
             { text: 'Exam Day Countdown', included: true },
             { text: 'SageMaker AI Assistant', included: false },
         ],
-        buttonText: 'Coming Soon',
+        buttonText: 'Get Started',
     },
     {
         name: 'Scholar Subscription',
@@ -65,7 +69,7 @@ const allPlans = [
             { text: 'SageMaker AI Assistant', included: true },
             { text: 'Priority Support', included: true },
         ],
-        buttonText: 'Coming Soon',
+        buttonText: 'Upgrade to Scholar',
         popular: true,
     },
     {
@@ -80,15 +84,40 @@ const allPlans = [
             { text: 'Save over 20% vs. Monthly', included: true },
             { text: 'Dedicated Support Channel', included: true },
         ],
-        buttonText: 'Coming Soon',
+        buttonText: 'Go Sage Mode',
         bestValue: true,
     },
 ]
 
 const PricingContent = () => {
     const { user } = useAuth();
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState<string | null>(null);
 
     const plans = user ? allPlans.filter(p => p.priceId) : allPlans;
+
+    const handleSubscribe = async (priceId: string) => {
+        setIsLoading(priceId);
+        try {
+            const { sessionId } = await createCheckoutSession({ priceId });
+            const stripe = await stripePromise;
+            if (!stripe) {
+                throw new Error("Stripe.js has not loaded yet.");
+            }
+            const { error } = await stripe.redirectToCheckout({ sessionId });
+            if (error) {
+                throw error;
+            }
+        } catch (error: any) {
+            toast({
+                variant: 'destructive',
+                title: 'Subscription Error',
+                description: error.message || 'Could not initiate subscription. Please try again.',
+            });
+        } finally {
+            setIsLoading(null);
+        }
+    };
     
     return (
         <section id="pricing" className="py-20 sm:py-32">
@@ -141,10 +170,12 @@ const PricingContent = () => {
                             <CardFooter>
                                 {plan.priceId ? (
                                     <Button
-                                        disabled
+                                        onClick={() => handleSubscribe(plan.priceId!)}
+                                        disabled={isLoading === plan.priceId}
                                         className="w-full"
                                         variant={plan.popular ? 'default' : 'outline'}
                                     >
+                                        {isLoading === plan.priceId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                         {plan.buttonText}
                                     </Button>
                                 ) : (
