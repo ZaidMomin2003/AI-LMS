@@ -2,8 +2,8 @@
 'use server';
 
 import { stripe } from '@/lib/stripe';
-import { auth } from '@/lib/firebase';
 import { headers } from 'next/headers';
+import type Stripe from 'stripe';
 
 interface CreateCheckoutSessionInput {
   priceId: string;
@@ -12,7 +12,7 @@ interface CreateCheckoutSessionInput {
 
 export async function createCheckoutSession(
   input: CreateCheckoutSessionInput
-): Promise<{ sessionId: string }> {
+): Promise<{ session: Stripe.Checkout.Session }> {
   const { priceId, uid } = input;
   
   if (!uid) {
@@ -40,7 +40,7 @@ export async function createCheckoutSession(
         throw new Error('Could not create Stripe checkout session.');
     }
 
-    return { sessionId: session.id };
+    return { session };
   } catch (error) {
     console.error('Error creating Stripe checkout session:', error);
     throw new Error('Failed to create checkout session.');

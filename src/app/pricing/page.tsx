@@ -110,14 +110,12 @@ const PricingContent = () => {
         }
         setIsLoading(priceId);
         try {
-            const { sessionId } = await createCheckoutSession({ priceId, uid: user.uid });
-            const stripe = await stripePromise;
-            if (!stripe) {
-                throw new Error("Stripe.js has not loaded yet.");
-            }
-            const { error } = await stripe.redirectToCheckout({ sessionId });
-            if (error) {
-                throw error;
+            const { session } = await createCheckoutSession({ priceId, uid: user.uid });
+            if (session.url) {
+                // Redirect the top-level window to break out of any iframes
+                window.top!.location.href = session.url;
+            } else {
+                 throw new Error("Could not create Stripe checkout session.");
             }
         } catch (error: any) {
             toast({
