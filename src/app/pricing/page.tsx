@@ -14,7 +14,6 @@ import { AppLayout } from '@/components/AppLayout';
 import { createCheckoutSession } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
-import { env } from 'process';
 
 let stripePromise: Promise<Stripe | null>;
 if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
