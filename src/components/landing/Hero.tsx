@@ -73,7 +73,7 @@ export function Hero() {
           From Topic to <span className="text-primary">Mastery</span>, <span className="text-primary">Instantly</span>
         </h1>
         <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto animate-in fade-in slide-in-from-top-16 duration-1000 delay-200">
-          Stop drowning in textbooks. Wisdomis Fun transforms any subject into clear study notes, interactive flashcards, and challenging quizzes, all in one click. Your smarter, faster learning journey starts here.
+          Ace your exams with the ultimate study toolkit. Generate ultra-detailed notes, interactive flashcards, and challenging quizzes for any topic imaginable. Stop memorizing and start mastering your subjects today.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6 animate-in fade-in slide-in-from-top-20 duration-1000 delay-300">
           <Button asChild size="lg">
