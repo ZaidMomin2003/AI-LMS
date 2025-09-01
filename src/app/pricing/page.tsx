@@ -13,13 +13,8 @@ import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
 import { createCheckoutSession } from './actions';
 import { useToast } from '@/hooks/use-toast';
-import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-
-let stripePromise: Promise<Stripe | null>;
-if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-}
+import { motion } from 'framer-motion';
 
 const allPlans = [
     {
@@ -93,6 +88,56 @@ const allPlans = [
     },
 ]
 
+const PaymentToggle = ({
+  paymentMethod,
+  setPaymentMethod,
+}: {
+  paymentMethod: 'stripe' | 'paypal';
+  setPaymentMethod: (method: 'stripe' | 'paypal') => void;
+}) => {
+  return (
+    <div
+      className="relative flex w-fit items-center rounded-full bg-muted p-1"
+    >
+      <button
+        onClick={() => setPaymentMethod('stripe')}
+        className={cn(
+          'relative z-10 rounded-full px-6 py-1.5 text-sm font-medium transition-colors',
+          paymentMethod === 'stripe' ? 'text-primary-foreground' : 'text-muted-foreground'
+        )}
+      >
+        Stripe
+      </button>
+      <button
+        onClick={() => setPaymentMethod('paypal')}
+        className={cn(
+          'relative z-10 rounded-full px-6 py-1.5 text-sm font-medium transition-colors',
+          paymentMethod === 'paypal' ? 'text-primary-foreground' : 'text-muted-foreground'
+        )}
+      >
+        PayPal
+      </button>
+      <motion.div
+        layout
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+        className="absolute inset-0 z-0 p-1"
+      >
+        <div
+          className={cn(
+            'h-full w-1/2 rounded-full bg-primary shadow-md',
+            paymentMethod === 'paypal' && 'ml-1/2'
+          )}
+          style={{
+            transform: `translateX(${paymentMethod === 'paypal' ? '100%' : '0%'})`,
+            transition: 'transform 0.3s ease-in-out',
+          }}
+        />
+      </motion.div>
+    </div>
+  );
+};
+
+
 const PricingContent = () => {
     const { user } = useAuth();
     const { toast } = useToast();
@@ -142,22 +187,7 @@ const PricingContent = () => {
                 </div>
                 
                 <div className="flex justify-center my-8">
-                    <div className="inline-flex items-center rounded-full bg-muted p-1">
-                        <Button
-                            variant={paymentMethod === 'stripe' ? 'secondary' : 'ghost'}
-                            onClick={() => setPaymentMethod('stripe')}
-                            className="rounded-full px-6"
-                        >
-                            Stripe
-                        </Button>
-                        <Button
-                            variant={paymentMethod === 'paypal' ? 'secondary' : 'ghost'}
-                            onClick={() => setPaymentMethod('paypal')}
-                            className="rounded-full px-6"
-                        >
-                            PayPal
-                        </Button>
-                    </div>
+                    <PaymentToggle paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
                 </div>
 
                 <div className={cn("mx-auto grid max-w-lg grid-cols-1 items-stretch gap-8", user ? 'lg:max-w-none lg:grid-cols-3' : 'lg:max-w-none lg:grid-cols-4' )}>
