@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
-import { Bot, BrainCircuit, CheckCircle, GraduationCap, Loader2, Map, Users } from 'lucide-react';
+import { Bot, BrainCircuit, Loader2, Map, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -14,6 +14,10 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { submitPartnerInquiry } from './actions';
+import { PartnerWorkflow } from '@/components/partner/PartnerWorkflow';
+import { PartnerFeatures } from '@/components/partner/PartnerFeatures';
+import { PartnerFAQ } from '@/components/partner/PartnerFAQ';
+import { PartnerCTA } from '@/components/partner/PartnerCTA';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Please enter your full name.' }),
@@ -177,6 +181,12 @@ export default function BecomePartnerPage() {
                         </div>
                     </div>
                 </section>
+
+                <PartnerWorkflow />
+                <PartnerFeatures />
+                <PartnerFAQ />
+                <PartnerCTA />
+
             </main>
             <Footer />
         </div>
