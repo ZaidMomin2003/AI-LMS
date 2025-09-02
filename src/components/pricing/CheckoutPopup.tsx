@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -83,7 +84,7 @@ export function CheckoutPopup({ plan, isOpen, onClose }: CheckoutPopupProps) {
             You are purchasing the <strong>{plan.name}</strong> plan for <strong>${plan.price}</strong>.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-6">
+        <div className="py-6 max-h-[60vh] overflow-y-auto px-1">
             <PayPalScriptProvider options={{ clientId: paypalClientId, currency: 'USD', intent: 'capture' }}>
                 <PayPalButtons
                     style={{ layout: "vertical", color: 'blue' }}
