@@ -58,7 +58,6 @@ export interface UserSubscription {
   status: 'active' | 'inactive' | 'trialing' | 'canceled' | 'past_due' | 'unpaid';
   stripeSubscriptionId?: string;
   stripeCustomerId?: string;
-  paypalOrderId?: string;
 }
 
 export interface PomodoroSession {
