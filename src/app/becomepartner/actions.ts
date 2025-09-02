@@ -3,6 +3,7 @@
 
 import { db, isFirebaseEnabled } from '@/lib/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { partnerChatFlow, type PartnerChatInput, type PartnerChatOutput } from '@/ai/flows/partner-chat-flow';
 
 interface PartnerInquiryData {
   name: string;
@@ -29,4 +30,13 @@ export async function submitPartnerInquiry(data: PartnerInquiryData): Promise<{ 
     console.error('Error saving partner inquiry to Firestore:', error);
     return { success: false, message: 'Could not save your inquiry. Please try again later.' };
   }
+}
+
+export async function partnerChatAction(input: PartnerChatInput): Promise<PartnerChatOutput> {
+    try {
+        return await partnerChatFlow(input);
+    } catch (error) {
+        console.error('Error in Partner Chat action:', error);
+        throw new Error('Failed to get a response from the AI.');
+    }
 }

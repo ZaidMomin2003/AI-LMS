@@ -18,6 +18,7 @@ import { PartnerWorkflow } from '@/components/partner/PartnerWorkflow';
 import { PartnerFeatures } from '@/components/partner/PartnerFeatures';
 import { PartnerFAQ } from '@/components/partner/PartnerFAQ';
 import { PartnerCTA } from '@/components/partner/PartnerCTA';
+import { PartnerChatbot } from '@/components/partner/PartnerChatbot';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Please enter your full name.' }),
@@ -102,7 +103,7 @@ export default function BecomePartnerPage() {
                                 })}
                             </div>
                         </div>
-                        <div className="flex items-center">
+                        <div id="contact-form" className="flex items-center">
                             <Card className="w-full shadow-2xl shadow-primary/10 border-primary/20">
                                 <CardHeader>
                                     <CardTitle className="font-headline text-2xl">Let's Collaborate</CardTitle>
@@ -182,6 +183,7 @@ export default function BecomePartnerPage() {
                     </div>
                 </section>
 
+                <PartnerChatbot />
                 <PartnerWorkflow />
                 <PartnerFeatures />
                 <PartnerFAQ />
