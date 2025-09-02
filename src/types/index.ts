@@ -51,7 +51,7 @@ export interface ExamDetails {
   date: string; // Storing as ISO string
 }
 
-export type SubscriptionPlan = 'Hobby' | 'Rapid Student' | 'Scholar Subscription' | 'Sage Mode';
+export type SubscriptionPlan = 'Hobby' | 'Weekly Pass' | 'Annual Pro';
 
 export interface UserSubscription {
   planName: SubscriptionPlan;
