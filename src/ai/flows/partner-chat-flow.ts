@@ -30,9 +30,16 @@ export type PartnerChatOutput = z.infer<typeof PartnerChatOutputSchema>;
 export async function partnerChatFlow(
   input: PartnerChatInput
 ): Promise<PartnerChatOutput> {
+  // Manually construct the history to ensure correct format.
+  // The AI generate function expects a `Part[]` array.
+  const history: Part[] = input.history.map(msg => ({
+    role: msg.role,
+    content: msg.content.map(c => ({ text: c.text })),
+  }));
+
   const llmResponse = await ai.generate({
     model: 'googleai/gemini-1.5-flash-latest',
-    history: input.history,
+    history: history, // Pass the correctly formatted history
     system: `You are an expert AI assistant for "Wisdomis Fun", a smart learning platform. Your role is to answer questions for potential school partners (teachers, principals, administrators). Your tone should be professional, helpful, and concise.
 
     **CRITICAL Instructions:**
