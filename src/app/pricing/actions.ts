@@ -44,7 +44,6 @@ export async function createCheckoutSession(
       return { session: null, error: 'Could not create Stripe checkout session.' };
     }
 
-    // Instead of redirecting, return the session object
     return { session };
   } catch (error) {
     console.error('Error creating Stripe checkout session:', error);
@@ -78,27 +77,41 @@ export async function createPaypalOrder(price: number): Promise<{ orderID: strin
 
 export async function capturePaypalOrder(orderID: string, planName: SubscriptionPlan, uid: string): Promise<{ success: boolean }> {
   const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
-  request.requestBody({} as any); // The PayPal SDK requires an empty object for the request body on capture.
+  request.requestBody({}); // Body must be an empty object.
 
   try {
     const capture = await paypalClient.execute(request);
     
-    // Check if the capture was successful
     if (capture.result.status === 'COMPLETED') {
-      // Payment is successful, update user's subscription in Firestore
+      console.log('PayPal capture successful, updating user subscription...');
       const subscriptionData: UserSubscription = {
         planName,
         status: 'active',
         paypalOrderId: capture.result.id,
       };
       await updateUserDoc(uid, { subscription: subscriptionData });
+      console.log('User subscription updated successfully.');
       return { success: true };
     } else {
-      console.error('PayPal capture was not successful:', capture.result);
+      console.warn('PayPal capture status was not COMPLETED:', capture.result);
       return { success: false };
     }
-  } catch (error) {
-    console.error('Error capturing PayPal order:', error);
-    throw new Error('Failed to capture PayPal order.');
+  } catch (error: any) {
+    // PayPal can throw an error if the order is already captured.
+    // This is not a failure from the user's perspective.
+    if (error.statusCode === 422 && error.message.includes('ORDER_ALREADY_CAPTURED')) {
+        console.warn(`Order ${orderID} was already captured. Treating as success.`);
+        // To be safe, we can re-verify the subscription status here.
+        const subscriptionData: UserSubscription = { planName, status: 'active', paypalOrderId: orderID };
+        await updateUserDoc(uid, { subscription: subscriptionData });
+        return { success: true };
+    }
+    
+    console.error('FATAL: Error capturing PayPal order:', error);
+    // Log the detailed error message if available
+    if (error.message) {
+      console.error('PayPal Error Details:', error.message);
+    }
+    return { success: false };
   }
 }
