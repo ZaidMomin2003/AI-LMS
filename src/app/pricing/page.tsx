@@ -56,7 +56,7 @@ const PricingContent = () => {
     const [isLoading, setIsLoading] = useState<string | null>(null);
     
     return (
-        <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, "disable-card": "card" }}>
+        <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID }}>
             <section id="pricing" className="py-20 sm:py-32">
                 <div className="container mx-auto px-4">
                     <div className="mx-auto max-w-2xl text-center">
