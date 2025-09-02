@@ -8,8 +8,6 @@ import paypalClient from '@/lib/paypal';
 import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
 import { updateUserDoc } from '@/services/firestore';
 import type { UserSubscription, SubscriptionPlan } from '@/types';
-import { getPlanDetails } from './utils';
-
 
 interface CreateCheckoutSessionInput {
   priceId: string;
@@ -18,15 +16,15 @@ interface CreateCheckoutSessionInput {
 
 export async function createCheckoutSession(
   input: CreateCheckoutSessionInput
-): Promise<{ session: Stripe.Checkout.Session | null, error?: string }> {
+): Promise<{ session: Stripe.Checkout.Session | null; error?: string }> {
   const { priceId, uid } = input;
-  
+
   if (!uid) {
     throw new Error('You must be logged in to subscribe.');
   }
 
   const origin = headers().get('origin') || 'http://localhost:3000';
-  
+
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -43,9 +41,10 @@ export async function createCheckoutSession(
     });
 
     if (!session.url) {
-        return { session: null, error: 'Could not create Stripe checkout session.' };
+      return { session: null, error: 'Could not create Stripe checkout session.' };
     }
 
+    // Instead of redirecting, return the session object
     return { session };
   } catch (error) {
     console.error('Error creating Stripe checkout session:', error);
@@ -79,8 +78,7 @@ export async function createPaypalOrder(price: number): Promise<{ orderID: strin
 
 export async function capturePaypalOrder(orderID: string, planName: SubscriptionPlan, uid: string): Promise<{ success: boolean }> {
   const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
-  // The PayPal SDK requires an empty object for the request body on capture.
-  request.requestBody({});
+  request.requestBody({} as any); // The PayPal SDK requires an empty object for the request body on capture.
 
   try {
     const capture = await paypalClient.execute(request);
