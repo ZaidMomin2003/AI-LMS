@@ -31,6 +31,7 @@ export async function partnerChatFlow(
   input: PartnerChatInput
 ): Promise<PartnerChatOutput> {
   // The AI generate function expects a `Part[]` array.
+  // The last message is the new prompt, the rest is history.
   const history: Part[] = input.history.map(msg => ({
     role: msg.role,
     content: msg.content.map(c => ({ text: c.text })),
