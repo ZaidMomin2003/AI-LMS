@@ -77,7 +77,7 @@ export async function createPaypalOrder(price: number): Promise<{ orderID: strin
 
 export async function capturePaypalOrder(orderID: string, planName: SubscriptionPlan, uid: string): Promise<{ success: boolean }> {
   const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
-  request.requestBody({});
+  request.requestBody({} as any);
 
   try {
     const capture = await paypalClient.execute(request);
@@ -95,14 +95,7 @@ export async function capturePaypalOrder(orderID: string, planName: Subscription
       return { success: false };
     }
   } catch (error: any) {
-    if (error.statusCode === 422 && error.message?.includes('ORDER_ALREADY_CAPTURED')) {
-        console.warn(`Order ${orderID} was already captured. Treating as success.`);
-        const subscriptionData: UserSubscription = { planName, status: 'active', paypalOrderId: orderID };
-        await updateUserDoc(uid, { subscription: subscriptionData });
-        return { success: true };
-    }
-    
-    console.error('FATAL: Error capturing PayPal order:', error);
+    console.error('Error capturing PayPal order:', error);
     if (error.message) {
       console.error('PayPal Error Details:', error.message);
     }

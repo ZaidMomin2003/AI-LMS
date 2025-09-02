@@ -129,7 +129,6 @@ const PricingContent = () => {
                                                         const { success } = await capturePaypalOrder(data.orderID, plan.name as SubscriptionPlan, user.uid);
                                                         if (success) {
                                                             toast({ title: 'Payment Successful!', description: `You are now subscribed to ${plan.name}.` });
-                                                            // The subscription context will automatically update, no need to redirect
                                                         } else {
                                                             throw new Error('Capture failed');
                                                         }
