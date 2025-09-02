@@ -19,6 +19,7 @@ import { PartnerFeatures } from '@/components/partner/PartnerFeatures';
 import { PartnerFAQ } from '@/components/partner/PartnerFAQ';
 import { PartnerCTA } from '@/components/partner/PartnerCTA';
 import { PartnerChatbot } from '@/components/partner/PartnerChatbot';
+import { PartnerVideo } from '@/components/partner/PartnerVideo';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Please enter your full name.' }),
@@ -184,6 +185,7 @@ export default function BecomePartnerPage() {
                 </section>
 
                 <PartnerChatbot />
+                <PartnerVideo />
                 <PartnerWorkflow />
                 <PartnerFeatures />
                 <PartnerFAQ />
