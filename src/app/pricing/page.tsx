@@ -2,6 +2,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,6 +52,7 @@ const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '';
 
 const PricingContent = () => {
     const { user } = useAuth();
+    const router = useRouter();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState<string | null>(null);
     
@@ -131,6 +133,7 @@ const PricingContent = () => {
                                                         const { success, error } = await capturePaypalOrder(data.orderID, plan.name as SubscriptionPlan, user.uid);
                                                         if (success) {
                                                             toast({ title: 'Payment Successful!', description: `You are now subscribed to ${plan.name}.` });
+                                                            router.push('/dashboard');
                                                         } else {
                                                             throw new Error(error || 'Capture failed');
                                                         }
