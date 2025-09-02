@@ -6,7 +6,7 @@ import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Star, Loader2, X } from 'lucide-react';
+import { Check, Star, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -15,35 +15,34 @@ import { createPaypalOrder, capturePaypalOrder } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import type { SubscriptionPlan } from '@/types';
+import type { OnApproveData, CreateOrderData } from '@paypal/paypal-js';
 
 const allPlans = [
     {
         name: 'Weekly Pass',
-        price: '9',
-        priceId: 'price_123_weekly', // Placeholder, not used for PayPal directly but good for consistency
+        price: '9.00',
+        priceId: 'price_123_weekly',
         period: '/ week',
         description: 'Perfect for short-term projects and exam cramming.',
         features: [
-            { text: 'Unlimited Topic Generations', included: true },
-            { text: 'Unlimited AI Roadmaps', included: true },
-            { text: 'Unlimited Pomodoro Sessions', included: true },
-            { text: 'Unlimited Captures', included: true },
-            { text: 'SageMaker AI Assistant', included: true },
+            'Unlimited Topic Generations',
+            'Unlimited AI Roadmaps',
+            'Unlimited Pomodoro Sessions',
+            'Unlimited Captures',
+            'SageMaker AI Assistant',
         ],
-        buttonText: 'Get Weekly Pass',
     },
     {
         name: 'Annual Pro',
-        price: '249',
-        priceId: 'price_123_yearly', // Placeholder
+        price: '249.00',
+        priceId: 'price_123_yearly',
         period: '/ year',
         description: 'For the committed lifelong learner. The best value.',
         features: [
-            { text: 'Everything in Weekly Pass', included: true },
-            { text: 'Early access to new features', included: true },
-            { text: 'Priority Support', included: true },
+            'Everything in Weekly Pass',
+            'Early access to new features',
+            'Priority Support',
         ],
-        buttonText: 'Go Annual Pro',
         bestValue: true,
     },
 ]
@@ -56,7 +55,7 @@ const PricingContent = () => {
     const [isLoading, setIsLoading] = useState<string | null>(null);
     
     return (
-        <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID }}>
+        <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID, currency: "USD", intent: "capture" }}>
             <section id="pricing" className="py-20 sm:py-32">
                 <div className="container mx-auto px-4">
                     <div className="mx-auto max-w-2xl text-center">
@@ -89,9 +88,9 @@ const PricingContent = () => {
                                 <CardContent className="flex-1">
                                     <ul className="space-y-3">
                                         {plan.features.map((feature, i) => (
-                                            <li key={i} className={cn("flex items-center gap-2 text-sm", feature.included ? 'text-foreground' : 'text-muted-foreground' )}>
-                                                {feature.included ? <Check className="h-4 w-4 text-primary" /> : <X className="h-4 w-4 text-muted-foreground" />}
-                                                <span>{feature.text}</span>
+                                            <li key={i} className="flex items-center gap-2 text-sm text-foreground">
+                                                <Check className="h-4 w-4 text-primary" />
+                                                <span>{feature}</span>
                                             </li>
                                         ))}
                                     </ul>
@@ -99,52 +98,56 @@ const PricingContent = () => {
                                 <CardFooter>
                                      <div className="w-full">
                                         {isLoading === plan.priceId ? (
-                                            <Button disabled className="w-full">
+                                            <Button disabled className="w-full h-[45px]">
                                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                                 Processing...
                                             </Button>
                                         ) : (
                                             <PayPalButtons
-                                                style={{ layout: "vertical", label: "pay" }}
-                                                disabled={isLoading !== null}
+                                                style={{ layout: "vertical", label: "pay", height: 45 }}
+                                                disabled={isLoading !== null || !user}
                                                 forceReRender={[plan.price, user]}
-                                                createOrder={async (data, actions) => {
+                                                createOrder={async (data: CreateOrderData) => {
                                                     if (!user) {
                                                         toast({ variant: 'destructive', title: 'Please log in to purchase.' });
                                                         return '';
                                                     }
                                                     setIsLoading(plan.priceId);
                                                     try {
-                                                        const { orderID } = await createPaypalOrder(parseFloat(plan.price));
+                                                        const { orderID, error } = await createPaypalOrder(parseFloat(plan.price));
+                                                        if (error || !orderID) {
+                                                            throw new Error(error || 'Failed to create PayPal order.');
+                                                        }
                                                         return orderID;
-                                                    } catch (error) {
-                                                        toast({ variant: 'destructive', title: 'Could not create PayPal order.' });
+                                                    } catch (err: any) {
+                                                        toast({ variant: 'destructive', title: 'Error', description: err.message });
                                                         setIsLoading(null);
                                                         return '';
                                                     }
                                                 }}
-                                                onApprove={async (data, actions) => {
+                                                onApprove={async (data: OnApproveData) => {
                                                     if (!user) return;
                                                     try {
-                                                        const { success } = await capturePaypalOrder(data.orderID, plan.name as SubscriptionPlan, user.uid);
+                                                        const { success, error } = await capturePaypalOrder(data.orderID, plan.name as SubscriptionPlan, user.uid);
                                                         if (success) {
                                                             toast({ title: 'Payment Successful!', description: `You are now subscribed to ${plan.name}.` });
                                                         } else {
-                                                            throw new Error('Capture failed');
+                                                            throw new Error(error || 'Capture failed');
                                                         }
-                                                    } catch (error) {
-                                                        toast({ variant: 'destructive', title: 'Payment Failed', description: 'Could not finalize your payment.' });
+                                                    } catch (err: any) {
+                                                        toast({ variant: 'destructive', title: 'Payment Failed', description: err.message || 'Could not finalize your payment.' });
                                                     } finally {
                                                         setIsLoading(null);
                                                     }
                                                 }}
                                                 onError={(err) => {
-                                                    toast({ variant: 'destructive', title: 'PayPal Error', description: 'An error occurred with the PayPal transaction.' });
+                                                    toast({ variant: 'destructive', title: 'PayPal Error', description: 'An error occurred with the PayPal transaction. Please try again.' });
                                                     setIsLoading(null);
                                                 }}
                                                 onCancel={() => setIsLoading(null)}
                                             />
                                         )}
+                                        {!user && <p className="text-xs text-center text-muted-foreground mt-2">Please <Link href="/login" className="underline font-semibold">log in</Link> to purchase.</p>}
                                      </div>
                                 </CardFooter>
                             </Card>

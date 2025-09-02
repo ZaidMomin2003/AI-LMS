@@ -51,7 +51,7 @@ export async function createCheckoutSession(
   }
 }
 
-export async function createPaypalOrder(price: number): Promise<{ orderID: string }> {
+export async function createPaypalOrder(price: number): Promise<{ orderID?: string; error?: string }> {
   const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
   request.prefer("return=representation");
   request.requestBody({
@@ -60,7 +60,7 @@ export async function createPaypalOrder(price: number): Promise<{ orderID: strin
       {
         amount: {
           currency_code: 'USD',
-          value: price.toString(),
+          value: price.toFixed(2),
         },
       },
     ],
@@ -69,36 +69,36 @@ export async function createPaypalOrder(price: number): Promise<{ orderID: strin
   try {
     const order = await paypalClient.execute(request);
     return { orderID: order.result.id };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating PayPal order:', error);
-    throw new Error('Failed to create PayPal order.');
+    const errorMessage = error.message || 'Failed to create PayPal order.';
+    return { error: errorMessage };
   }
 }
 
-export async function capturePaypalOrder(orderID: string, planName: SubscriptionPlan, uid: string): Promise<{ success: boolean }> {
+export async function capturePaypalOrder(orderID: string, planName: SubscriptionPlan, uid: string): Promise<{ success: boolean; error?: string }> {
   const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
-  request.requestBody({} as any);
+  request.requestBody({});
 
   try {
     const capture = await paypalClient.execute(request);
+    const captureResult = capture.result;
     
-    if (capture.result.status === 'COMPLETED') {
+    if (captureResult.status === 'COMPLETED' || captureResult.status === 'APPROVED') {
       const subscriptionData: UserSubscription = {
         planName,
         status: 'active',
-        paypalOrderId: capture.result.id,
+        paypalOrderId: captureResult.id,
       };
       await updateUserDoc(uid, { subscription: subscriptionData });
       return { success: true };
     } else {
-      console.warn('PayPal capture status was not COMPLETED:', capture.result);
-      return { success: false };
+      console.warn('PayPal capture status was not COMPLETED:', captureResult);
+      return { success: false, error: 'Payment was not completed successfully.' };
     }
   } catch (error: any) {
     console.error('Error capturing PayPal order:', error);
-    if (error.message) {
-      console.error('PayPal Error Details:', error.message);
-    }
-    return { success: false };
+     const errorMessage = error.message || 'Failed to finalize PayPal payment.';
+    return { success: false, error: errorMessage };
   }
 }
