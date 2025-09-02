@@ -1,55 +1,10 @@
 
 'use server';
 
-import { stripe } from '@/lib/stripe';
-import { headers } from 'next/headers';
-import type Stripe from 'stripe';
+import { updateUserDoc } from '@/services/firestore';
+import type { SubscriptionPlan, UserSubscription } from '@/types';
 import paypalClient from '@/lib/paypal';
 import checkoutNodeJssdk from '@paypal/checkout-server-sdk';
-import { updateUserDoc } from '@/services/firestore';
-import type { UserSubscription, SubscriptionPlan } from '@/types';
-
-interface CreateCheckoutSessionInput {
-  priceId: string;
-  uid: string;
-}
-
-export async function createCheckoutSession(
-  input: CreateCheckoutSessionInput
-): Promise<{ session: Stripe.Checkout.Session | null; error?: string }> {
-  const { priceId, uid } = input;
-
-  if (!uid) {
-    throw new Error('You must be logged in to subscribe.');
-  }
-
-  const origin = headers().get('origin') || 'http://localhost:3000';
-
-  try {
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: input.priceId,
-          quantity: 1,
-        },
-      ],
-      mode: 'subscription',
-      success_url: `${origin}/dashboard`,
-      cancel_url: `${origin}/pricing`,
-      client_reference_id: uid,
-    });
-
-    if (!session.url) {
-      return { session: null, error: 'Could not create Stripe checkout session.' };
-    }
-
-    return { session };
-  } catch (error) {
-    console.error('Error creating Stripe checkout session:', error);
-    throw new Error('Failed to create checkout session.');
-  }
-}
 
 export async function createPaypalOrder(price: number): Promise<{ orderID?: string; error?: string }> {
   const request = new checkoutNodeJssdk.orders.OrdersCreateRequest();
@@ -84,7 +39,7 @@ export async function capturePaypalOrder(orderID: string, planName: Subscription
     const capture = await paypalClient.execute(request);
     const captureResult = capture.result;
     
-    if (captureResult.status === 'COMPLETED' || captureResult.status === 'APPROVED') {
+    if (captureResult.status === 'COMPLETED') {
       const subscriptionData: UserSubscription = {
         planName,
         status: 'active',
