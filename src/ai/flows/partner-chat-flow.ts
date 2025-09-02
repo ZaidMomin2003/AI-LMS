@@ -30,7 +30,6 @@ export type PartnerChatOutput = z.infer<typeof PartnerChatOutputSchema>;
 export async function partnerChatFlow(
   input: PartnerChatInput
 ): Promise<PartnerChatOutput> {
-  // Manually construct the history to ensure correct format.
   // The AI generate function expects a `Part[]` array.
   const history: Part[] = input.history.map(msg => ({
     role: msg.role,
