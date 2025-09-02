@@ -6,7 +6,7 @@ import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Star, Loader2 } from 'lucide-react';
+import { Check, Star, Loader2, X } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -98,49 +98,54 @@ const PricingContent = () => {
                                 </CardContent>
                                 <CardFooter>
                                      <div className="w-full">
-                                        <PayPalButtons
-                                            style={{ layout: "vertical", label: "pay" }}
-                                            disabled={isLoading !== null}
-                                            forceReRender={[plan.price, user]}
-                                            createOrder={async (data, actions) => {
-                                                if (!user) {
-                                                    toast({ variant: 'destructive', title: 'Please log in to purchase.' });
-                                                    return '';
-                                                }
-                                                setIsLoading(plan.priceId);
-                                                try {
-                                                    const { orderID } = await createPaypalOrder(parseFloat(plan.price));
-                                                    return orderID;
-                                                } catch (error) {
-                                                    toast({ variant: 'destructive', title: 'Could not create PayPal order.' });
-                                                    return '';
-                                                } finally {
-                                                    setIsLoading(null);
-                                                }
-                                            }}
-                                            onApprove={async (data, actions) => {
-                                                if (!user) return;
-                                                setIsLoading(plan.priceId);
-                                                try {
-                                                    const { success } = await capturePaypalOrder(data.orderID, plan.name as SubscriptionPlan, user.uid);
-                                                    if (success) {
-                                                        toast({ title: 'Payment Successful!', description: `You are now subscribed to ${plan.name}.` });
-                                                        // The subscription context will automatically update, no need to redirect
-                                                    } else {
-                                                        throw new Error('Capture failed');
+                                        {isLoading === plan.priceId ? (
+                                            <Button disabled className="w-full">
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                Processing...
+                                            </Button>
+                                        ) : (
+                                            <PayPalButtons
+                                                style={{ layout: "vertical", label: "pay" }}
+                                                disabled={isLoading !== null}
+                                                forceReRender={[plan.price, user]}
+                                                createOrder={async (data, actions) => {
+                                                    if (!user) {
+                                                        toast({ variant: 'destructive', title: 'Please log in to purchase.' });
+                                                        return '';
                                                     }
-                                                } catch (error) {
-                                                    toast({ variant: 'destructive', title: 'Payment Failed', description: 'Could not finalize your payment.' });
-                                                } finally {
+                                                    setIsLoading(plan.priceId);
+                                                    try {
+                                                        const { orderID } = await createPaypalOrder(parseFloat(plan.price));
+                                                        return orderID;
+                                                    } catch (error) {
+                                                        toast({ variant: 'destructive', title: 'Could not create PayPal order.' });
+                                                        setIsLoading(null);
+                                                        return '';
+                                                    }
+                                                }}
+                                                onApprove={async (data, actions) => {
+                                                    if (!user) return;
+                                                    try {
+                                                        const { success } = await capturePaypalOrder(data.orderID, plan.name as SubscriptionPlan, user.uid);
+                                                        if (success) {
+                                                            toast({ title: 'Payment Successful!', description: `You are now subscribed to ${plan.name}.` });
+                                                            // The subscription context will automatically update, no need to redirect
+                                                        } else {
+                                                            throw new Error('Capture failed');
+                                                        }
+                                                    } catch (error) {
+                                                        toast({ variant: 'destructive', title: 'Payment Failed', description: 'Could not finalize your payment.' });
+                                                    } finally {
+                                                        setIsLoading(null);
+                                                    }
+                                                }}
+                                                onError={(err) => {
+                                                    toast({ variant: 'destructive', title: 'PayPal Error', description: 'An error occurred with the PayPal transaction.' });
                                                     setIsLoading(null);
-                                                }
-                                            }}
-                                            onError={(err) => {
-                                                toast({ variant: 'destructive', title: 'PayPal Error', description: 'An error occurred with the PayPal transaction.' });
-                                                setIsLoading(null);
-                                            }}
-                                            onCancel={() => setIsLoading(null)}
-                                        />
+                                                }}
+                                                onCancel={() => setIsLoading(null)}
+                                            />
+                                        )}
                                      </div>
                                 </CardFooter>
                             </Card>
