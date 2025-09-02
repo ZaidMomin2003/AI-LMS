@@ -18,7 +18,7 @@ interface CreateCheckoutSessionInput {
 
 export async function createCheckoutSession(
   input: CreateCheckoutSessionInput
-): Promise<{ session: Stripe.Checkout.Session }> {
+): Promise<{ session: Stripe.Checkout.Session | null, error?: string }> {
   const { priceId, uid } = input;
   
   if (!uid) {
@@ -39,11 +39,11 @@ export async function createCheckoutSession(
       mode: 'subscription',
       success_url: `${origin}/dashboard`,
       cancel_url: `${origin}/pricing`,
-      client_reference_id: uid, // Pass the user's UID to identify them in webhooks
+      client_reference_id: uid,
     });
 
-    if (!session.id) {
-        throw new Error('Could not create Stripe checkout session.');
+    if (!session.url) {
+        return { session: null, error: 'Could not create Stripe checkout session.' };
     }
 
     return { session };
@@ -79,7 +79,8 @@ export async function createPaypalOrder(price: number): Promise<{ orderID: strin
 
 export async function capturePaypalOrder(orderID: string, planName: SubscriptionPlan, uid: string): Promise<{ success: boolean }> {
   const request = new checkoutNodeJssdk.orders.OrdersCaptureRequest(orderID);
-  request.requestBody({} as any); // Empty body required for capture
+  // The PayPal SDK requires an empty object for the request body on capture.
+  request.requestBody({});
 
   try {
     const capture = await paypalClient.execute(request);
