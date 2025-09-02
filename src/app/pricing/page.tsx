@@ -6,15 +6,13 @@ import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Star, Loader2, X } from 'lucide-react';
+import { Check, Star, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
-import { createCheckoutSession, createPaypalOrder, capturePaypalOrder } from './actions';
+import { createPaypalOrder, capturePaypalOrder } from './actions';
 import { useToast } from '@/hooks/use-toast';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { motion } from 'framer-motion';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import type { SubscriptionPlan } from '@/types';
 
@@ -22,7 +20,7 @@ const allPlans = [
     {
         name: 'Weekly Pass',
         price: '9',
-        priceId: 'price_123_weekly', // Replace with your actual Stripe Price ID
+        priceId: 'price_123_weekly', // Placeholder, not used for PayPal directly but good for consistency
         period: '/ week',
         description: 'Perfect for short-term projects and exam cramming.',
         features: [
@@ -37,7 +35,7 @@ const allPlans = [
     {
         name: 'Annual Pro',
         price: '249',
-        priceId: 'price_123_yearly', // Replace with your actual Stripe Price ID
+        priceId: 'price_123_yearly', // Placeholder
         period: '/ year',
         description: 'For the committed lifelong learner. The best value.',
         features: [
@@ -50,90 +48,12 @@ const allPlans = [
     },
 ]
 
-const PaymentToggle = ({
-  paymentMethod,
-  setPaymentMethod,
-}: {
-  paymentMethod: 'stripe' | 'paypal';
-  setPaymentMethod: (method: 'stripe' | 'paypal') => void;
-}) => {
-  return (
-    <div
-      className="relative flex w-fit items-center rounded-full bg-muted p-1"
-    >
-      <button
-        onClick={() => setPaymentMethod('stripe')}
-        className={cn(
-          'relative z-10 rounded-full px-6 py-1.5 text-sm font-medium transition-colors',
-          paymentMethod === 'stripe' ? 'text-primary-foreground' : 'text-muted-foreground'
-        )}
-      >
-        Stripe
-      </button>
-      <button
-        onClick={() => setPaymentMethod('paypal')}
-        className={cn(
-          'relative z-10 rounded-full px-6 py-1.5 text-sm font-medium transition-colors',
-          paymentMethod === 'paypal' ? 'text-primary-foreground' : 'text-muted-foreground'
-        )}
-      >
-        PayPal
-      </button>
-      <motion.div
-        layout
-        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-        className="absolute inset-0 z-0 p-1"
-      >
-        <div
-          className={cn(
-            'h-full w-1/2 rounded-full bg-primary shadow-md',
-            paymentMethod === 'paypal' && 'ml-1/2'
-          )}
-          style={{
-            transform: `translateX(${paymentMethod === 'paypal' ? '100%' : '0%'})`,
-            transition: 'transform 0.3s ease-in-out',
-          }}
-        />
-      </motion.div>
-    </div>
-  );
-};
-
 const PAYPAL_CLIENT_ID = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || '';
 
 const PricingContent = () => {
     const { user } = useAuth();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState<string | null>(null);
-    const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'paypal'>('stripe');
-
-    const handleStripeSubscribe = async (priceId: string) => {
-        if (!user) {
-            toast({
-                variant: 'destructive',
-                title: 'Authentication Error',
-                description: 'You must be logged in to subscribe.',
-            });
-            return;
-        }
-        setIsLoading(priceId);
-        try {
-            const { session } = await createCheckoutSession({ priceId, uid: user.uid });
-            if (session.url) {
-                window.top!.location.href = session.url;
-            } else {
-                 throw new Error("Could not create Stripe checkout session.");
-            }
-        } catch (error: any) {
-            toast({
-                variant: 'destructive',
-                title: 'Subscription Error',
-                description: error.message || 'Could not initiate subscription. Please try again.',
-            });
-        } finally {
-            setIsLoading(null);
-        }
-    };
     
     return (
         <PayPalScriptProvider options={{ clientId: PAYPAL_CLIENT_ID }}>
@@ -148,11 +68,7 @@ const PricingContent = () => {
                         </p>
                     </div>
                     
-                    <div className="flex justify-center my-8">
-                        <PaymentToggle paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} />
-                    </div>
-
-                    <div className="mx-auto grid max-w-lg grid-cols-1 items-stretch gap-8 lg:max-w-4xl lg:grid-cols-2">
+                    <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-stretch gap-8 lg:max-w-4xl lg:grid-cols-2">
                         {allPlans.map((plan) => (
                             <Card key={plan.name} className={cn("relative flex flex-col", plan.bestValue ? "border-2 border-primary shadow-lg shadow-primary/20" : "")}>
                                 {plan.bestValue && (
@@ -181,75 +97,51 @@ const PricingContent = () => {
                                     </ul>
                                 </CardContent>
                                 <CardFooter>
-                                    {paymentMethod === 'stripe' ? (
-                                        plan.priceId ? (
-                                            <Button
-                                                onClick={() => handleStripeSubscribe(plan.priceId!)}
-                                                disabled={isLoading === plan.priceId}
-                                                className="w-full"
-                                                variant={plan.bestValue ? 'default' : 'outline'}
-                                            >
-                                                {isLoading === plan.priceId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                                {plan.buttonText}
-                                            </Button>
-                                        ) : (
-                                            <Button asChild className="w-full" variant={'outline'}>
-                                                <Link href={plan.href!}>{plan.buttonText}</Link>
-                                            </Button>
-                                        )
-                                    ) : (
-                                        plan.priceId ? (
-                                             <div className="w-full">
-                                                <PayPalButtons
-                                                    style={{ layout: "vertical", label: "pay" }}
-                                                    disabled={isLoading !== null}
-                                                    forceReRender={[plan.price, user]}
-                                                    createOrder={async (data, actions) => {
-                                                        if (!user) {
-                                                            toast({ variant: 'destructive', title: 'Please log in to purchase.' });
-                                                            return '';
-                                                        }
-                                                        setIsLoading(plan.priceId);
-                                                        try {
-                                                            const { orderID } = await createPaypalOrder(parseFloat(plan.price));
-                                                            return orderID;
-                                                        } catch (error) {
-                                                            toast({ variant: 'destructive', title: 'Could not create PayPal order.' });
-                                                            return '';
-                                                        } finally {
-                                                            setIsLoading(null);
-                                                        }
-                                                    }}
-                                                    onApprove={async (data, actions) => {
-                                                        if (!user) return;
-                                                        setIsLoading(plan.priceId);
-                                                        try {
-                                                            const { success } = await capturePaypalOrder(data.orderID, plan.name as SubscriptionPlan, user.uid);
-                                                            if (success) {
-                                                                toast({ title: 'Payment Successful!', description: `You are now subscribed to ${plan.name}.` });
-                                                                // The subscription context will automatically update, no need to redirect
-                                                            } else {
-                                                                throw new Error('Capture failed');
-                                                            }
-                                                        } catch (error) {
-                                                            toast({ variant: 'destructive', title: 'Payment Failed', description: 'Could not finalize your payment.' });
-                                                        } finally {
-                                                            setIsLoading(null);
-                                                        }
-                                                    }}
-                                                    onError={(err) => {
-                                                        toast({ variant: 'destructive', title: 'PayPal Error', description: 'An error occurred with the PayPal transaction.' });
-                                                        setIsLoading(null);
-                                                    }}
-                                                    onCancel={() => setIsLoading(null)}
-                                                />
-                                             </div>
-                                        ) : (
-                                            <Button asChild className="w-full" variant={'outline'}>
-                                                <Link href={plan.href!}>{plan.buttonText}</Link>
-                                            </Button>
-                                        )
-                                    )}
+                                     <div className="w-full">
+                                        <PayPalButtons
+                                            style={{ layout: "vertical", label: "pay" }}
+                                            disabled={isLoading !== null}
+                                            forceReRender={[plan.price, user]}
+                                            createOrder={async (data, actions) => {
+                                                if (!user) {
+                                                    toast({ variant: 'destructive', title: 'Please log in to purchase.' });
+                                                    return '';
+                                                }
+                                                setIsLoading(plan.priceId);
+                                                try {
+                                                    const { orderID } = await createPaypalOrder(parseFloat(plan.price));
+                                                    return orderID;
+                                                } catch (error) {
+                                                    toast({ variant: 'destructive', title: 'Could not create PayPal order.' });
+                                                    return '';
+                                                } finally {
+                                                    setIsLoading(null);
+                                                }
+                                            }}
+                                            onApprove={async (data, actions) => {
+                                                if (!user) return;
+                                                setIsLoading(plan.priceId);
+                                                try {
+                                                    const { success } = await capturePaypalOrder(data.orderID, plan.name as SubscriptionPlan, user.uid);
+                                                    if (success) {
+                                                        toast({ title: 'Payment Successful!', description: `You are now subscribed to ${plan.name}.` });
+                                                        // The subscription context will automatically update, no need to redirect
+                                                    } else {
+                                                        throw new Error('Capture failed');
+                                                    }
+                                                } catch (error) {
+                                                    toast({ variant: 'destructive', title: 'Payment Failed', description: 'Could not finalize your payment.' });
+                                                } finally {
+                                                    setIsLoading(null);
+                                                }
+                                            }}
+                                            onError={(err) => {
+                                                toast({ variant: 'destructive', title: 'PayPal Error', description: 'An error occurred with the PayPal transaction.' });
+                                                setIsLoading(null);
+                                            }}
+                                            onCancel={() => setIsLoading(null)}
+                                        />
+                                     </div>
                                 </CardFooter>
                             </Card>
                         ))}
