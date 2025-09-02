@@ -165,7 +165,7 @@ export default function BecomePartnerPage() {
                                                     render={({ field }) => (
                                                         <FormItem>
                                                             <FormLabel>WhatsApp Number</FormLabel>
-                                                            <FormControl><Input type="tel" placeholder="+91..." {...field} /></FormControl>
+                                                            <FormControl><Input type="tel" placeholder="+1..." {...field} /></FormControl>
                                                             <FormMessage />
                                                         </FormItem>
                                                     )}
