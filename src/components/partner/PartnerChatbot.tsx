@@ -21,11 +21,17 @@ interface Message {
   content: string;
 }
 
+const suggestedQuestions = [
+    "What are the benefits for teachers?",
+    "How does pricing work for schools?",
+    "How do you ensure student data privacy?",
+];
+
 export function PartnerChatbot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   
-  const { register, handleSubmit, reset } = useForm<Inputs>();
+  const { register, handleSubmit, reset, setValue } = useForm<Inputs>();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -47,7 +53,6 @@ export function PartnerChatbot() {
     setMessages(currentMessages);
     reset();
     
-    // Prepare the history for the AI (all messages except the new one)
     const history = currentMessages.slice(0, -1).map(msg => ({
         role: msg.role,
         content: [{ text: msg.content }]
@@ -58,7 +63,7 @@ export function PartnerChatbot() {
       setMessages((prev) => [...prev, { role: 'model', content: response.response }]);
     } catch (error) {
       console.error(error);
-      setMessages((prev) => [...prev, { role: 'model', content: "Sorry, I encountered an error. Please try again or use the form above to contact us." }]);
+      setMessages((prev) => [...prev, { role: 'model', content: "Sorry, I seem to have short-circuited for a moment. Please try asking that again, or use the form on this page to contact my human colleagues!" }]);
       toast({
           variant: "destructive",
           title: "An error occurred",
@@ -68,6 +73,12 @@ export function PartnerChatbot() {
       setIsLoading(false);
     }
   };
+
+  const handleSuggestionClick = (question: string) => {
+    setValue('prompt', question);
+    // You could also auto-submit here if you want:
+    // handleSubmit(onSubmit)();
+  }
 
   return (
     <section className="py-20 sm:py-24">
@@ -86,10 +97,16 @@ export function PartnerChatbot() {
                 <ScrollArea className="h-full" ref={scrollAreaRef}>
                 <div className="p-6 space-y-6">
                     {messages.length === 0 && (
-                    <div className="text-center text-muted-foreground pt-10">
+                    <div className="text-center text-muted-foreground pt-10 flex flex-col items-center gap-4">
                         <Bot size={48} className="mx-auto mb-2"/>
-                        <p>Ask me anything about our school programs!</p>
-                        <p className="text-sm">e.g., "What are the benefits for teachers?" or "How does pricing work?"</p>
+                        <p className="font-medium">Ask me anything about our school programs!</p>
+                        <div className="flex flex-wrap justify-center gap-2">
+                            {suggestedQuestions.map((q, i) => (
+                                <Button key={i} variant="outline" size="sm" onClick={() => handleSuggestionClick(q)}>
+                                    {q}
+                                </Button>
+                            ))}
+                        </div>
                     </div>
                     )}
                     {messages.map((message, index) => (
