@@ -19,6 +19,7 @@ const PartnerChatInputSchema = z.object({
       content: z.array(z.object({ text: z.string() })),
     })
   ),
+  message: z.string().describe("The new user message to process."),
 });
 export type PartnerChatInput = z.infer<typeof PartnerChatInputSchema>;
 
@@ -30,20 +31,15 @@ export type PartnerChatOutput = z.infer<typeof PartnerChatOutputSchema>;
 export async function partnerChatFlow(
   input: PartnerChatInput
 ): Promise<PartnerChatOutput> {
-  // The AI generate function expects a `Part[]` array.
-  // The last message is the new prompt, the rest is history.
-  const allMessages: Part[] = input.history.map(msg => ({
+  const history: Part[] = input.history.map(msg => ({
     role: msg.role,
     content: msg.content.map(c => ({ text: c.text })),
   }));
 
-  const history = allMessages.slice(0, -1);
-  const prompt = allMessages[allMessages.length - 1];
-
   const llmResponse = await ai.generate({
     model: 'googleai/gemini-1.5-flash-latest',
     history: history,
-    prompt: prompt,
+    prompt: input.message,
     system: `You are an expert AI assistant for "Wisdomis Fun", a smart learning platform. Your role is to answer questions for potential school partners (teachers, principals, administrators). Your tone should be professional, helpful, and concise.
 
     **CRITICAL Instructions:**

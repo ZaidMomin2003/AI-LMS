@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -46,14 +47,14 @@ export function PartnerChatbot() {
     setMessages(currentMessages);
     reset();
     
-    // Create the history object for the AI
-    const history = currentMessages.map(msg => ({
+    // Prepare the history for the AI (all messages except the new one)
+    const history = currentMessages.slice(0, -1).map(msg => ({
         role: msg.role,
         content: [{ text: msg.content }]
     }));
     
     try {
-      const response = await partnerChatAction({ history });
+      const response = await partnerChatAction({ history, message: data.prompt });
       setMessages((prev) => [...prev, { role: 'model', content: response.response }]);
     } catch (error) {
       console.error(error);
