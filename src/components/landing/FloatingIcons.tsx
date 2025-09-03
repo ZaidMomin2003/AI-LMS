@@ -1,3 +1,4 @@
+
 'use client';
 
 import { BookOpen, BrainCircuit, Lightbulb, Atom, GraduationCap } from 'lucide-react';

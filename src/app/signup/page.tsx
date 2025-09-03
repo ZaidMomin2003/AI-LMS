@@ -1,3 +1,4 @@
+
 import { SignUpForm } from '@/components/auth/SignUpForm';
 import { BookOpenCheck } from 'lucide-react';
 import Link from 'next/link';
