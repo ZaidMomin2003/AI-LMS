@@ -135,7 +135,7 @@ export function Hero() {
             <img
               src="https://i.postimg.cc/5NwYwdTn/earth.webp"
               alt="Earth"
-              className="absolute top-0 left-1/2 -z-10 mx-auto -translate-x-1/2 px-4 opacity-80"
+              className="absolute top-0 left-1/2 -z-10 mx-auto -translate-x-1/2 px-4 opacity-30 dark:opacity-80"
             />
           </div>
           <div className="relative z-10 mx-auto max-w-6xl overflow-hidden rounded-lg shadow-[0_0_50px_hsl(var(--primary)/0.2)]">

@@ -39,7 +39,7 @@ export function FAQ() {
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">
               Frequently Asked Questions
             </h2>
-            <p className="mt-4 text-lg leading-8 text-white/70">
+            <p className="mt-4 text-lg leading-8 text-muted-foreground">
               Can't find the answer you're looking for? Reach out to us through our contact section.
             </p>
           </div>
@@ -50,13 +50,13 @@ export function FAQ() {
                 <AccordionItem
                   key={index}
                   value={`item-${index}`}
-                  className="rounded-lg border border-white/10 bg-white/5 shadow-sm transition-shadow hover:shadow-md hover:shadow-primary/20 backdrop-blur-sm"
+                  className="rounded-lg border bg-card/50 shadow-sm transition-shadow hover:shadow-md hover:shadow-primary/20 backdrop-blur-sm"
                 >
                   <AccordionTrigger className="p-6 text-left hover:no-underline">
-                    <span className="flex-1 font-semibold text-white">{faq.question}</span>
+                    <span className="flex-1 font-semibold">{faq.question}</span>
                   </AccordionTrigger>
                   <AccordionContent className="px-6 pb-6">
-                    <p className="text-white/70">{faq.answer}</p>
+                    <p className="text-muted-foreground">{faq.answer}</p>
                   </AccordionContent>
                 </AccordionItem>
               ))}

@@ -16,13 +16,13 @@ const KeyTerm = ({ term, definition }: { term: string; definition: string }) => 
             {term}
             </span>
         </PopoverTrigger>
-        <PopoverContent className="w-64 z-20 bg-[#150d27] border-primary/20 text-white">
+        <PopoverContent className="w-64 z-20">
             <div className="grid gap-4">
             <div className="space-y-2">
                 <h4 className="font-medium leading-none font-headline">
                 {term}
                 </h4>
-                <p className="text-sm text-white/70">
+                <p className="text-sm text-muted-foreground">
                 {definition}
                 </p>
             </div>
@@ -42,7 +42,7 @@ const FlippableCard = () => {
         )}
       >
         <div className="absolute w-full h-full backface-hidden">
-          <Card className="h-full flex items-center justify-center p-6 bg-white/5 shadow-xl border-2 border-white/10 backdrop-blur-sm">
+          <Card className="h-full flex items-center justify-center p-6 bg-card/50 shadow-xl border-2 border-border/10 backdrop-blur-sm">
             <h4 className="font-headline text-2xl">Photosynthesis</h4>
           </Card>
         </div>
@@ -58,14 +58,14 @@ const FlippableCard = () => {
 
 const QuizCard = () => {
     return (
-        <Card className="w-full bg-white/5 p-4 shadow-lg border-2 border-white/10">
+        <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-border/10">
             <CardContent className="p-2 space-y-3">
                 <p className="font-semibold text-sm">What is the powerhouse of the cell?</p>
-                <div className="flex items-center space-x-3 rounded-md border p-3 bg-black/20 text-xs">
-                    <div className="h-3 w-3 rounded-full border-2 border-white/50"/>
+                <div className="flex items-center space-x-3 rounded-md border p-3 bg-secondary text-xs">
+                    <div className="h-3 w-3 rounded-full border-2 border-muted-foreground/50"/>
                     <p>Nucleus</p>
                 </div>
-                 <div className="flex items-center space-x-3 rounded-md border p-3 bg-black/20 text-xs border-primary bg-primary/10">
+                 <div className="flex items-center space-x-3 rounded-md border p-3 bg-secondary text-xs border-primary bg-primary/10">
                     <div className="h-3 w-3 rounded-full border-2 border-primary flex items-center justify-center">
                         <div className="h-1.5 w-1.5 rounded-full bg-primary"/>
                     </div>
@@ -83,9 +83,9 @@ const workflowSteps = [
         title: "1. Enter Your Topic",
         description: "Start by telling our AI what you want to learn. It can be anything from 'The Industrial Revolution' to 'Quantum Entanglement'.",
         demo: (
-            <Card className="w-full bg-white/5 p-4 shadow-lg border-2 border-white/10">
+            <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-border/10">
                 <CardContent className="p-2 space-y-3">
-                    <Input placeholder="e.g., The Renaissance" className="pointer-events-none bg-black/20 border-white/20" />
+                    <Input placeholder="e.g., The Renaissance" className="pointer-events-none" />
                     <Button className="w-full pointer-events-none">
                         <Sparkles className="mr-2 h-4 w-4" />
                         Generate Materials
@@ -99,11 +99,11 @@ const workflowSteps = [
         title: "2. Get Detailed Notes",
         description: "The AI instantly structures the topic into comprehensive notes, identifying and defining key terms for you.",
         demo: (
-             <Card className="w-full bg-white/5 p-4 shadow-lg border-2 border-white/10">
-                <CardHeader className="p-2 border-b border-white/10">
+             <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-border/10">
+                <CardHeader className="p-2 border-b">
                     <p className="font-mono text-sm"># The Renaissance</p>
                 </CardHeader>
-                <CardContent className="p-2 space-y-2 text-sm text-white/70">
+                <CardContent className="p-2 space-y-2 text-sm text-muted-foreground">
                     <p className="font-mono">* Rebirth of art & science</p>
                     <p className="font-mono">* Focus on <KeyTerm term="Humanism" definition="An intellectual movement that emphasized human potential." /></p>
                 </CardContent>
@@ -136,7 +136,7 @@ export function Workflow() {
                     <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">
                         Your Path to Mastery in 4 Simple Steps
                     </h2>
-                    <p className="mt-4 text-lg leading-8 text-white/70">
+                    <p className="mt-4 text-lg leading-8 text-muted-foreground">
                         From a single prompt to deep understanding, see how Wisdomis Fun streamlines your entire learning process.
                     </p>
                 </div>
@@ -156,7 +156,7 @@ export function Workflow() {
                                         <Icon className="h-8 w-8" />
                                     </div>
                                     <h3 className="mt-6 text-xl font-bold font-headline">{step.title}</h3>
-                                    <p className="mt-2 text-sm text-white/70">{step.description}</p>
+                                    <p className="mt-2 text-sm text-muted-foreground">{step.description}</p>
                                     <div className="mt-6 w-full max-w-xs">{step.demo}</div>
                                 </div>
                             );

@@ -116,14 +116,14 @@ const TestimonialCard = ({
   handle: string;
   avatar: string;
 }) => (
-  <Card className="h-full w-[350px] flex-shrink-0 snap-center rounded-2xl border-2 border-primary/10 bg-white/5 p-6 shadow-lg backdrop-blur-sm">
+  <Card className="h-full w-[350px] flex-shrink-0 snap-center rounded-2xl border-2 border-border/10 bg-card/50 p-6 shadow-lg backdrop-blur-sm">
     <CardContent className="flex h-full flex-col p-0">
       <div className="flex text-yellow-400">
         {[...Array(5)].map((_, i) => (
           <Star key={i} className="h-5 w-5 fill-current" />
         ))}
       </div>
-      <blockquote className="my-4 flex-1 text-lg leading-relaxed text-white/90">
+      <blockquote className="my-4 flex-1 text-lg leading-relaxed text-foreground/90">
         &ldquo;{quote}&rdquo;
       </blockquote>
       <footer className="flex items-center gap-4">
@@ -132,8 +132,8 @@ const TestimonialCard = ({
           <AvatarFallback>{name.charAt(0)}</AvatarFallback>
         </Avatar>
         <div>
-          <p className="font-semibold text-white">{name}</p>
-          <p className="text-sm text-white/70">{handle}</p>
+          <p className="font-semibold">{name}</p>
+          <p className="text-sm text-muted-foreground">{handle}</p>
         </div>
       </footer>
     </CardContent>
@@ -148,7 +148,7 @@ export function Testimonials() {
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">
             Loved by Learners Worldwide
           </h2>
-          <p className="mt-4 text-lg leading-8 text-white/70">
+          <p className="mt-4 text-lg leading-8 text-muted-foreground">
             See how students and professionals are transforming their study habits and acing their goals with Wisdomis Fun.
           </p>
         </div>
