@@ -2,18 +2,39 @@
 'use client';
 
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Bot, Sparkles, CheckCircle2, History, ListTodo, Send, Folder, LayoutDashboard, Bookmark, ClipboardCheck, Map, Timer, Camera, BarChart, Gem, LogOut, Check, PlusCircle, ChevronDown, User, PanelLeft } from 'lucide-react';
+import {
+    ArrowRight,
+    Bot,
+    Sparkles,
+    CheckCircle2,
+    History,
+    ListTodo,
+    Send,
+    Folder,
+    LayoutDashboard,
+    Bookmark,
+    ClipboardCheck,
+    Map,
+    Timer,
+    Camera,
+    BarChart,
+    Gem,
+    LogOut,
+    Check,
+    PlusCircle,
+    ChevronDown,
+    User,
+    PanelLeft,
+    BookOpenCheck
+} from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
-import { FloatingIcons } from './FloatingIcons';
-import { Input } from '@/components/ui/input';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
 import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '../ui/avatar';
-import { motion } from 'framer-motion';
+import { Input } from '@/components/ui/input';
 
 
 const StatCard = ({ title, value, subtext, className }: { title: string, value: string | number, subtext: string, className?: string }) => (
@@ -50,7 +71,6 @@ const TimeCardProto = ({ value, unit }: { value: string, unit: string }) => (
 
 
 export function Hero() {
-  const router = useRouter();
 
   return (
     <section
@@ -240,5 +260,3 @@ export function Hero() {
     </section>
   );
 }
-
-    
