@@ -33,19 +33,30 @@ const processLine = (line: string) => {
   const parts: (string | React.ReactNode)[] = [];
   let lastIndex = 0;
 
-  // Regex to find all instances of [[Term|Definition]]
-  const termRegex = /\[\[(.*?)\|(.*?)\]\]/g;
+  // Regex to find all instances of [[Term|Definition]] or **bold text**
+  const combinedRegex = /\[\[(.*?)\|(.*?)\]\]|\*\*(.*?)\*\*/g;
   let match;
-  while ((match = termRegex.exec(line)) !== null) {
+  
+  while ((match = combinedRegex.exec(line)) !== null) {
     // Push the text before the match
     if (match.index > lastIndex) {
       parts.push(line.substring(lastIndex, match.index));
     }
-    // Push the KeyTerm component
-    const [fullMatch, term, definition] = match;
-    parts.push(<KeyTerm key={`${term}-${match.index}`} term={term} definition={definition} />);
-    lastIndex = match.index + fullMatch.length;
+
+    // Check which pattern was matched
+    if (match[1] !== undefined && match[2] !== undefined) {
+      // It's a KeyTerm: [[Term|Definition]]
+      const [fullMatch, term, definition] = match;
+      parts.push(<KeyTerm key={`${term}-${match.index}`} term={term} definition={definition} />);
+      lastIndex = match.index + fullMatch.length;
+    } else if (match[3] !== undefined) {
+      // It's bold text: **text**
+      const [fullMatch, boldText] = match;
+      parts.push(<strong key={`bold-${match.index}`}>{boldText}</strong>);
+      lastIndex = match.index + fullMatch.length;
+    }
   }
+
   // Push the remaining text after the last match
   if (lastIndex < line.length) {
     parts.push(line.substring(lastIndex));
