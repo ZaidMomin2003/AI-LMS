@@ -6,6 +6,7 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 interface MarkdownRendererProps {
   content: string;
+  keyTerms?: string; // keyTerms is optional now
 }
 
 // A component to render interactive key terms from the [[Term|Definition]] format
@@ -27,30 +28,32 @@ const KeyTerm = ({ term, definition }: { term: string; definition:string }) => (
   </Popover>
 );
 
-const renderLineWithLinks = (line: string, lineIndex: number) => {
-    // Regex to find all instances of [[Term|Definition]]
-    const termRegex = /\[\[(.*?)\|(.*?)\]\]/g;
-    const parts = line.split(termRegex);
 
-    if (parts.length <= 1) {
-        return line; // No key terms found in this line
-    }
+const processLine = (line: string) => {
+  const parts: (string | React.ReactNode)[] = [];
+  let lastIndex = 0;
 
-    const elements = [];
-    for (let i = 0; i < parts.length; i++) {
-        // Text parts are at even indices (0, 3, 6, ...)
-        if (i % 3 === 0) {
-            elements.push(parts[i]);
-        } else if (i % 3 === 1) {
-            // Term is at index 1, 4, 7, ...
-            // Definition is at index 2, 5, 8, ...
-            const term = parts[i];
-            const definition = parts[i + 1];
-            elements.push(<KeyTerm key={`${lineIndex}-${i}`} term={term} definition={definition} />);
-        }
+  // Regex to find all instances of [[Term|Definition]]
+  const termRegex = /\[\[(.*?)\|(.*?)\]\]/g;
+  let match;
+  while ((match = termRegex.exec(line)) !== null) {
+    // Push the text before the match
+    if (match.index > lastIndex) {
+      parts.push(line.substring(lastIndex, match.index));
     }
-    return <>{elements}</>;
+    // Push the KeyTerm component
+    const [fullMatch, term, definition] = match;
+    parts.push(<KeyTerm key={`${term}-${match.index}`} term={term} definition={definition} />);
+    lastIndex = match.index + fullMatch.length;
+  }
+  // Push the remaining text after the last match
+  if (lastIndex < line.length) {
+    parts.push(line.substring(lastIndex));
+  }
+
+  return parts;
 };
+
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   // Safety check to ensure content is a string
@@ -58,29 +61,37 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
     return null;
   }
 
-  const lines = content.split(/\n/g);
+  const lines = content.split('\n');
+  const elements: React.ReactNode[] = [];
+  let inList = false;
 
-  return (
-    <>
-      {lines.map((line, index) => {
-        const trimmedLine = line.trim();
-        // Basic formatting for lists, etc. can be added here if needed
-        if (trimmedLine.startsWith('* ') || trimmedLine.startsWith('- ')) {
-          return (
-            <li key={index} className="ml-4 my-1">
-              {renderLineWithLinks(trimmedLine.substring(2), index)}
-            </li>
-          );
-        }
-        if (trimmedLine === '') {
-          return <br key={index} />;
-        }
-        return (
-          <p key={index} className="my-1">
-            {renderLineWithLinks(line, index)}
-          </p>
-        );
-      })}
-    </>
-  );
+  lines.forEach((line, index) => {
+    const trimmedLine = line.trim();
+
+    if (trimmedLine.startsWith('### ')) {
+      elements.push(<h3 key={index} className="text-lg font-semibold mt-4 mb-2">{processLine(trimmedLine.substring(4))}</h3>);
+      inList = false;
+    } else if (trimmedLine.startsWith('## ')) {
+      elements.push(<h2 key={index} className="text-xl font-semibold mt-6 mb-3 border-b pb-2">{processLine(trimmedLine.substring(3))}</h2>);
+      inList = false;
+    } else if (trimmedLine.startsWith('# ')) {
+      elements.push(<h1 key={index} className="text-2xl font-bold mt-8 mb-4">{processLine(trimmedLine.substring(2))}</h1>);
+      inList = false;
+    } else if (trimmedLine.startsWith('* ') || trimmedLine.startsWith('- ')) {
+      if (!inList) {
+        inList = true;
+        elements.push(<ul key={`ul-${index}`} className="list-disc pl-5 space-y-1 my-2"></ul>);
+      }
+      const list = elements[elements.length - 1] as React.ReactElement;
+      list.props.children.push(<li key={index}>{processLine(trimmedLine.substring(2))}</li>);
+    } else if (trimmedLine === '') {
+      inList = false;
+      // We can ignore empty lines or add <br /> if needed, for now, ignoring is cleaner
+    } else {
+      inList = false;
+      elements.push(<p key={index} className="my-2">{processLine(line)}</p>);
+    }
+  });
+
+  return <>{elements}</>;
 };
