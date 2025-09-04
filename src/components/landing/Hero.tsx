@@ -108,7 +108,7 @@ export function Hero() {
             Wisdomis Fun combines artificial intelligence with cutting-edge learning strategies to help you ace your exams with precision and ease.
           </p>
 
-          <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:mb-0 sm:flex-row">
+          <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
              <Button asChild size="lg">
                 <Link href="/signup">
                     Get Started
@@ -117,7 +117,7 @@ export function Hero() {
             <Button asChild variant="ghost">
               <a
                 href="#features"
-                className="flex w-full items-center justify-center gap-2"
+                className="flex items-center justify-center gap-2"
               >
                 <span>Learn how it works</span>
                 <ChevronDown className="w-4 h-4" />
@@ -131,6 +131,13 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
         >
+          <div className="relative flex h-40 w-full overflow-hidden md:h-64">
+            <img
+              src="https://i.postimg.cc/5NwYwdTn/earth.webp"
+              alt="Earth"
+              className="absolute top-0 left-1/2 -z-10 mx-auto -translate-x-1/2 px-4 opacity-80"
+            />
+          </div>
           <div className="relative z-10 mx-auto max-w-6xl overflow-hidden rounded-lg shadow-[0_0_50px_hsl(var(--primary)/0.2)]">
             <Card className="p-1.5 rounded-xl bg-card/60 backdrop-blur-sm border-2 border-primary/20">
             <div className="flex h-auto md:h-[80vh] md:min-h-[600px] w-full rounded-lg bg-sidebar-DEFAULT overflow-hidden">
