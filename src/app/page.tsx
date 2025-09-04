@@ -40,7 +40,7 @@ export default function LandingPage() {
   // If not loading and no user, show the landing page.
   // If a user is present, the useEffect above will redirect them.
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-[#0a0613] text-white">
       <Header />
       <main className="flex-grow">
         <WelcomePopup />

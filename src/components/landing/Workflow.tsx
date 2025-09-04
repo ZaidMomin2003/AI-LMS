@@ -16,13 +16,13 @@ const KeyTerm = ({ term, definition }: { term: string; definition: string }) => 
             {term}
             </span>
         </PopoverTrigger>
-        <PopoverContent className="w-64 z-20">
+        <PopoverContent className="w-64 z-20 bg-[#150d27] border-primary/20 text-white">
             <div className="grid gap-4">
             <div className="space-y-2">
                 <h4 className="font-medium leading-none font-headline">
                 {term}
                 </h4>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-white/70">
                 {definition}
                 </p>
             </div>
@@ -42,12 +42,12 @@ const FlippableCard = () => {
         )}
       >
         <div className="absolute w-full h-full backface-hidden">
-          <Card className="h-full flex items-center justify-center p-6 bg-card/80 shadow-xl border-2 border-accent/20 backdrop-blur-sm">
+          <Card className="h-full flex items-center justify-center p-6 bg-white/5 shadow-xl border-2 border-white/10 backdrop-blur-sm">
             <h4 className="font-headline text-2xl">Photosynthesis</h4>
           </Card>
         </div>
         <div className="absolute w-full h-full backface-hidden rotate-y-180">
-          <Card className="h-full flex items-center justify-center p-6 bg-emerald-500 text-emerald-50 shadow-lg shadow-emerald-500/50">
+          <Card className="h-full flex items-center justify-center p-6 bg-primary text-primary-foreground shadow-lg shadow-primary/50">
             <p className="text-sm text-center">The process by which green plants use sunlight to synthesize foods from carbon dioxide and water.</p>
           </Card>
         </div>
@@ -58,14 +58,14 @@ const FlippableCard = () => {
 
 const QuizCard = () => {
     return (
-        <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10">
+        <Card className="w-full bg-white/5 p-4 shadow-lg border-2 border-white/10">
             <CardContent className="p-2 space-y-3">
                 <p className="font-semibold text-sm">What is the powerhouse of the cell?</p>
-                <div className="flex items-center space-x-3 rounded-md border p-3 bg-background/50 text-xs">
-                    <div className="h-3 w-3 rounded-full border-2 border-muted-foreground"/>
+                <div className="flex items-center space-x-3 rounded-md border p-3 bg-black/20 text-xs">
+                    <div className="h-3 w-3 rounded-full border-2 border-white/50"/>
                     <p>Nucleus</p>
                 </div>
-                 <div className="flex items-center space-x-3 rounded-md border p-3 bg-background/50 text-xs border-primary bg-primary/10">
+                 <div className="flex items-center space-x-3 rounded-md border p-3 bg-black/20 text-xs border-primary bg-primary/10">
                     <div className="h-3 w-3 rounded-full border-2 border-primary flex items-center justify-center">
                         <div className="h-1.5 w-1.5 rounded-full bg-primary"/>
                     </div>
@@ -83,9 +83,9 @@ const workflowSteps = [
         title: "1. Enter Your Topic",
         description: "Start by telling our AI what you want to learn. It can be anything from 'The Industrial Revolution' to 'Quantum Entanglement'.",
         demo: (
-            <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10">
+            <Card className="w-full bg-white/5 p-4 shadow-lg border-2 border-white/10">
                 <CardContent className="p-2 space-y-3">
-                    <Input placeholder="e.g., The Renaissance" className="pointer-events-none" />
+                    <Input placeholder="e.g., The Renaissance" className="pointer-events-none bg-black/20 border-white/20" />
                     <Button className="w-full pointer-events-none">
                         <Sparkles className="mr-2 h-4 w-4" />
                         Generate Materials
@@ -99,11 +99,11 @@ const workflowSteps = [
         title: "2. Get Detailed Notes",
         description: "The AI instantly structures the topic into comprehensive notes, identifying and defining key terms for you.",
         demo: (
-             <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10">
-                <CardHeader className="p-2 border-b">
+             <Card className="w-full bg-white/5 p-4 shadow-lg border-2 border-white/10">
+                <CardHeader className="p-2 border-b border-white/10">
                     <p className="font-mono text-sm"># The Renaissance</p>
                 </CardHeader>
-                <CardContent className="p-2 space-y-2 text-sm text-muted-foreground">
+                <CardContent className="p-2 space-y-2 text-sm text-white/70">
                     <p className="font-mono">* Rebirth of art & science</p>
                     <p className="font-mono">* Focus on <KeyTerm term="Humanism" definition="An intellectual movement that emphasized human potential." /></p>
                 </CardContent>
@@ -130,13 +130,13 @@ const workflowSteps = [
 
 export function Workflow() {
     return (
-        <section id="workflow" className="py-20 sm:py-32 bg-secondary/50">
+        <section id="workflow" className="py-20 sm:py-32 bg-transparent">
             <div className="container mx-auto px-4">
                 <div className="mx-auto max-w-2xl lg:text-center">
-                    <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+                    <h2 className="text-3xl font-bold tracking-tight sm:text-4xl font-headline">
                         Your Path to Mastery in 4 Simple Steps
                     </h2>
-                    <p className="mt-4 text-lg leading-8 text-muted-foreground">
+                    <p className="mt-4 text-lg leading-8 text-white/70">
                         From a single prompt to deep understanding, see how Wisdomis Fun streamlines your entire learning process.
                     </p>
                 </div>
@@ -144,7 +144,7 @@ export function Workflow() {
                 <div className="relative mt-16">
                     {/* Dashed line for desktop */}
                     <div className="hidden lg:block absolute top-1/2 left-0 w-full h-px bg-transparent">
-                        <div className="absolute inset-0 bg-[repeating-linear-gradient(to_right,hsl(var(--border)),hsl(var(--border))_4px,transparent_4px,transparent_8px)]"></div>
+                        <div className="absolute inset-0 bg-[repeating-linear-gradient(to_right,hsl(var(--primary)/0.2),hsl(var(--primary)/0.2)_4px,transparent_4px,transparent_8px)]"></div>
                     </div>
 
                     <div className="grid grid-cols-1 gap-12 lg:grid-cols-4 lg:gap-8">
@@ -156,7 +156,7 @@ export function Workflow() {
                                         <Icon className="h-8 w-8" />
                                     </div>
                                     <h3 className="mt-6 text-xl font-bold font-headline">{step.title}</h3>
-                                    <p className="mt-2 text-sm text-muted-foreground">{step.description}</p>
+                                    <p className="mt-2 text-sm text-white/70">{step.description}</p>
                                     <div className="mt-6 w-full max-w-xs">{step.demo}</div>
                                 </div>
                             );

@@ -1,10 +1,11 @@
+
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export function CTA() {
   return (
-    <section id="cta" className="py-20 sm:py-24 bg-background">
+    <section id="cta" className="py-20 sm:py-24">
       <div className="container mx-auto px-4">
         <div className="relative isolate overflow-hidden bg-primary/90 px-6 py-24 text-center shadow-2xl rounded-2xl sm:px-16">
           

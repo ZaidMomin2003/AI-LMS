@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GraduationCap, Briefcase, TestTube2, BookOpen, type LucideProps } from 'lucide-react';
 import type { ForwardRefExoticComponent, RefAttributes } from 'react';
@@ -34,14 +35,14 @@ const useCases: {
 
 export function UseCases() {
   return (
-    <section id="use-cases" className="bg-secondary py-20 sm:py-32">
+    <section id="use-cases" className="bg-transparent py-20 sm:py-32">
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl lg:text-center">
           <h2 className="text-base font-semibold leading-7 text-primary">For Everyone</h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+          <p className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl font-headline">
             Adaptable to Any Learning Need
           </p>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground">
+          <p className="mt-6 text-lg leading-8 text-white/70">
             Whether you're studying for an exam, skilling up for work, or just satisfying your curiosity, Wisdomis Fun is your personal learning assistant.
           </p>
         </div>
@@ -49,16 +50,16 @@ export function UseCases() {
           {useCases.map((useCase) => {
             const IconComponent = useCase.icon;
             return (
-              <div key={useCase.title} className="group rounded-xl p-px transition-all duration-300 bg-gradient-to-br from-border/50 to-background hover:from-primary hover:to-accent">
-                <Card className="h-full rounded-[11px] bg-background/95">
+              <div key={useCase.title} className="group rounded-xl p-px transition-all duration-300 bg-gradient-to-br from-white/10 to-transparent hover:from-primary hover:to-primary/40">
+                <Card className="h-full rounded-[11px] bg-transparent backdrop-blur-sm">
                   <CardHeader>
                     <div className="bg-primary/10 text-primary p-3 rounded-lg w-fit mb-4 transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
                        <IconComponent className="h-8 w-8" />
                     </div>
-                    <CardTitle className="font-headline">{useCase.title}</CardTitle>
+                    <CardTitle className="font-headline text-white">{useCase.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">
+                    <p className="text-white/70">
                       {useCase.description}
                     </p>
                   </CardContent>

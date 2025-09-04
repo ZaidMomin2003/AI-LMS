@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -31,7 +32,7 @@ const ContactInfoItem = ({ icon, text, href }: { icon: React.ReactNode, text: st
         <div className="bg-primary text-primary-foreground rounded-full p-3">
             {icon}
         </div>
-        <a href={href} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors">{text}</a>
+        <a href={href} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">{text}</a>
     </div>
 );
 
@@ -70,13 +71,13 @@ export function Contact() {
   }
 
   return (
-    <section id="contact" className="py-20 sm:py-32 bg-background">
+    <section id="contact" className="py-20 sm:py-32 bg-transparent">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 gap-x-16 gap-y-12 lg:grid-cols-2">
             
             {/* Left Column: Form */}
             <div className="space-y-8">
-                 <h2 className="text-5xl font-bold tracking-tight text-foreground sm:text-6xl font-headline">
+                 <h2 className="text-5xl font-bold tracking-tight sm:text-6xl font-headline">
                     Contact
                  </h2>
                  <Form {...form}>
@@ -86,12 +87,12 @@ export function Contact() {
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel className="text-muted-foreground">Full name</FormLabel>
+                            <FormLabel className="text-white/70">Full name</FormLabel>
                             <FormControl>
                                 <Input 
                                     placeholder="Your Name" 
                                     {...field} 
-                                    className="bg-transparent border-0 border-b-2 border-muted-foreground/50 rounded-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors"
+                                    className="bg-transparent border-0 border-b-2 border-white/20 rounded-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors"
                                 />
                             </FormControl>
                             <FormMessage />
@@ -103,12 +104,12 @@ export function Contact() {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel className="text-muted-foreground">Email address</FormLabel>
+                            <FormLabel className="text-white/70">Email address</FormLabel>
                             <FormControl>
                                 <Input 
                                     placeholder="your.email@example.com" 
                                     {...field} 
-                                    className="bg-transparent border-0 border-b-2 border-muted-foreground/50 rounded-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors"
+                                    className="bg-transparent border-0 border-b-2 border-white/20 rounded-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors"
                                 />
                             </FormControl>
                             <FormMessage />
@@ -120,12 +121,12 @@ export function Contact() {
                         name="message"
                         render={({ field }) => (
                             <FormItem>
-                            <FormLabel className="text-muted-foreground">Messages</FormLabel>
+                            <FormLabel className="text-white/70">Messages</FormLabel>
                             <FormControl>
                                 <Textarea 
                                     placeholder="Your message..." 
                                     {...field} 
-                                    className="bg-transparent border-0 border-b-2 border-muted-foreground/50 rounded-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors min-h-[60px]"
+                                    className="bg-transparent border-0 border-b-2 border-white/20 rounded-none px-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:border-primary transition-colors min-h-[60px]"
                                 />
                             </FormControl>
                             <FormMessage />
@@ -142,11 +143,11 @@ export function Contact() {
 
             {/* Right Column: Contact Info Card */}
             <div className="flex items-center">
-                <Card className="w-full bg-card p-8 rounded-2xl shadow-lg">
+                <Card className="w-full bg-white/5 p-8 rounded-2xl shadow-lg border border-white/10 backdrop-blur-sm">
                     <CardContent className="p-0 space-y-8">
-                        <div className="bg-secondary p-6 rounded-xl">
-                            <h3 className="text-xl font-headline font-bold">Get in touch with us!</h3>
-                            <p className="text-muted-foreground">Let's talk!</p>
+                        <div className="bg-black/20 p-6 rounded-xl border border-white/10">
+                            <h3 className="text-xl font-headline font-bold text-white">Get in touch with us!</h3>
+                            <p className="text-white/70">Let's talk!</p>
                         </div>
                         <div className="space-y-6">
                             <ContactInfoItem icon={<Mail size={20}/>} href="mailto:hello@wisdomis.fun" text="hello@wisdomis.fun" />

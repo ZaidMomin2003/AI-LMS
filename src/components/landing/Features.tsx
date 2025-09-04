@@ -14,16 +14,16 @@ function FeatureFlashcard() {
       <div className="relative w-full h-full cursor-pointer transition-transform duration-700 transform-style-preserve-3d group-hover:rotate-y-180">
         {/* Front of the card */}
         <div className="absolute w-full h-full backface-hidden">
-          <Card className="h-full flex flex-col justify-between p-6 bg-card/80 shadow-xl border-2 border-accent/20 backdrop-blur-sm">
+          <Card className="h-full flex flex-col justify-between p-6 bg-white/5 shadow-xl border-2 border-white/10 backdrop-blur-sm">
             <h4 className="font-headline text-2xl">Humanism</h4>
-            <p className="text-right text-accent font-semibold">Term</p>
+            <p className="text-right text-primary font-semibold">Term</p>
           </Card>
         </div>
         {/* Back of the card */}
         <div className="absolute w-full h-full backface-hidden rotate-y-180">
-          <Card className="h-full flex flex-col justify-between p-6 bg-card/80 shadow-xl border-2 border-accent/20 backdrop-blur-sm">
+          <Card className="h-full flex flex-col justify-between p-6 bg-white/5 shadow-xl border-2 border-white/10 backdrop-blur-sm">
             <p className="text-sm">An outlook attaching prime importance to human rather than divine or supernatural matters.</p>
-            <p className="text-right text-accent font-semibold">Definition</p>
+            <p className="text-right text-primary font-semibold">Definition</p>
           </Card>
         </div>
       </div>
@@ -38,13 +38,13 @@ const KeyTerm = ({ term, definition }: { term: string; definition: string }) => 
           {term}
         </span>
       </PopoverTrigger>
-      <PopoverContent className="w-64 z-20">
+      <PopoverContent className="w-64 z-20 bg-[#150d27] border-primary/20 text-white">
         <div className="grid gap-4">
           <div className="space-y-2">
             <h4 className="font-medium leading-none font-headline">
               {term}
             </h4>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-white/70">
               {definition}
             </p>
           </div>
@@ -57,16 +57,16 @@ const RadioOption = ({ text, selectedOption, correctAnswer, onSelect }: { text: 
     const isSelected = selectedOption === text;
     const isCorrect = text === correctAnswer;
 
-    let stateVariant = "bg-background/50 hover:bg-secondary/50";
+    let stateVariant = "bg-black/20 hover:bg-white/10";
     if (selectedOption) {
         if (isSelected && isCorrect) {
-            stateVariant = "border-green-500 bg-green-500/10 text-foreground";
+            stateVariant = "border-green-500 bg-green-500/10 text-white";
         } else if (isSelected && !isCorrect) {
-            stateVariant = "border-red-500 bg-red-500/10 text-foreground";
+            stateVariant = "border-red-500 bg-red-500/10 text-white";
         } else if (isCorrect) {
-            stateVariant = "border-green-500/50 bg-green-500/5 text-muted-foreground";
+            stateVariant = "border-green-500/50 bg-green-500/5 text-white/70";
         } else {
-             stateVariant = "border-border bg-background/30 text-muted-foreground opacity-60";
+             stateVariant = "border-white/10 bg-black/10 text-white/70 opacity-60";
         }
     }
     
@@ -80,7 +80,7 @@ const RadioOption = ({ text, selectedOption, correctAnswer, onSelect }: { text: 
         >
             <div className={cn(
                 "h-4 w-4 rounded-full border-2 flex items-center justify-center transition-colors",
-                 isSelected ? "border-primary" : "border-muted-foreground"
+                 isSelected ? "border-primary" : "border-white/70"
             )}>
                 {isSelected && <div className="h-2 w-2 rounded-full bg-primary"/>}
             </div>
@@ -99,7 +99,7 @@ function InteractiveQuiz() {
   };
 
   return (
-    <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
+    <Card className="w-full max-w-md bg-white/5 p-4 shadow-lg border-2 border-white/10 transition-transform duration-300 hover:scale-105">
         <CardContent className="p-2 space-y-3">
             <p className="font-semibold">Who wrote "The Prince"?</p>
             {options.map((option) => (
@@ -125,13 +125,13 @@ function InteractiveQuiz() {
 
 function SageMakerDemo() {
   return (
-    <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
+    <Card className="w-full max-w-md bg-white/5 p-4 shadow-lg border-2 border-white/10 transition-transform duration-300 hover:scale-105">
       <CardContent className="p-2 space-y-3">
         <div className="flex items-start gap-3">
             <div className="bg-primary text-primary-foreground rounded-full p-2">
                 <Bot size={20}/>
             </div>
-            <div className="rounded-2xl p-3 bg-secondary rounded-bl-none max-w-[80%]">
+            <div className="rounded-2xl p-3 bg-black/30 backdrop-blur-sm rounded-bl-none max-w-[80%]">
                 <p className="text-sm">I can help with any topic! What are you curious about?</p>
             </div>
         </div>
@@ -139,7 +139,7 @@ function SageMakerDemo() {
             <div className="rounded-2xl p-3 bg-primary text-primary-foreground rounded-br-none max-w-[80%]">
                 <p className="text-sm">What's the main cause of the French Revolution?</p>
             </div>
-             <div className="bg-muted text-muted-foreground rounded-full p-2">
+             <div className="bg-white/10 text-white/70 rounded-full p-2">
                 <User size={20}/>
             </div>
         </div>
@@ -147,7 +147,7 @@ function SageMakerDemo() {
             <div className="bg-primary text-primary-foreground rounded-full p-2">
                 <Bot size={20}/>
             </div>
-            <div className="rounded-2xl p-3 bg-secondary rounded-bl-none max-w-[80%]">
+            <div className="rounded-2xl p-3 bg-black/30 backdrop-blur-sm rounded-bl-none max-w-[80%]">
                 <p className="text-sm">It was a perfect storm of social inequality, economic crisis, and Enlightenment ideas!</p>
             </div>
         </div>
@@ -158,22 +158,22 @@ function SageMakerDemo() {
 
 function RoadmapDemo() {
     return (
-        <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
-            <CardHeader className="p-2 border-b">
+        <Card className="w-full max-w-md bg-white/5 p-4 shadow-lg border-2 border-white/10 transition-transform duration-300 hover:scale-105">
+            <CardHeader className="p-2 border-b border-white/10">
                 <p className="font-bold font-headline">AI-Generated Study Roadmap</p>
             </CardHeader>
             <CardContent className="p-2 space-y-2">
-                <Card className="bg-background/80 p-3">
+                <Card className="bg-black/30 backdrop-blur-sm p-3 border-white/10">
                     <p className="text-sm font-bold">Day 1: Nov 4, 2024</p>
-                    <p className="text-xs text-muted-foreground">Intro to Quantum Mechanics</p>
+                    <p className="text-xs text-white/70">Intro to Quantum Mechanics</p>
                 </Card>
-                <Card className="bg-background/80 p-3">
+                <Card className="bg-black/30 backdrop-blur-sm p-3 border-white/10">
                     <p className="text-sm font-bold">Day 2: Nov 5, 2024</p>
-                    <p className="text-xs text-muted-foreground">Wave-Particle Duality & Uncertainty Principle</p>
+                    <p className="text-xs text-white/70">Wave-Particle Duality & Uncertainty Principle</p>
                 </Card>
-                 <Card className="bg-background/80 p-3 opacity-50">
+                 <Card className="bg-black/30 backdrop-blur-sm p-3 opacity-50 border-white/10">
                     <p className="text-sm font-bold">Day 3: Nov 6, 2024</p>
-                    <p className="text-xs text-muted-foreground">Schrödinger Equation</p>
+                    <p className="text-xs text-white/70">Schrödinger Equation</p>
                 </Card>
             </CardContent>
         </Card>
@@ -182,23 +182,23 @@ function RoadmapDemo() {
 
 function StudyPlanDemo() {
     const DemoTask = ({ title }: { title: string }) => (
-        <div className="p-2 mb-2 bg-secondary rounded-md shadow-sm">
+        <div className="p-2 mb-2 bg-black/30 backdrop-blur-sm rounded-md shadow-sm border border-white/10">
             <p className="text-xs">{title}</p>
         </div>
     );
     return (
-        <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
+        <Card className="w-full max-w-md bg-white/5 p-4 shadow-lg border-2 border-white/10 transition-transform duration-300 hover:scale-105">
             <div className="flex gap-2">
-                <div className="flex-1 bg-background/50 rounded-lg p-2">
+                <div className="flex-1 bg-black/20 backdrop-blur-sm rounded-lg p-2 border border-white/10">
                     <p className="text-sm font-bold text-center mb-2">To Do</p>
                     <DemoTask title="Read Chapter 5" />
                     <DemoTask title="Summarize notes" />
                 </div>
-                 <div className="flex-1 bg-background/50 rounded-lg p-2">
+                 <div className="flex-1 bg-black/20 backdrop-blur-sm rounded-lg p-2 border border-white/10">
                     <p className="text-sm font-bold text-center mb-2">In Progress</p>
                     <DemoTask title="Practice problems" />
                 </div>
-                 <div className="flex-1 bg-background/50 rounded-lg p-2">
+                 <div className="flex-1 bg-black/20 backdrop-blur-sm rounded-lg p-2 border border-white/10">
                     <p className="text-sm font-bold text-center mb-2">Done</p>
                     <DemoTask title="Review Chapter 4" />
                 </div>
@@ -209,13 +209,13 @@ function StudyPlanDemo() {
 
 function ExamTimerDemo() {
     const TimeCard = ({ value, unit }: { value: string, unit: string }) => (
-        <div className="flex flex-col items-center bg-background/80 p-2 rounded-lg flex-1">
+        <div className="flex flex-col items-center bg-black/30 backdrop-blur-sm p-2 rounded-lg flex-1 border border-white/10">
             <div className="text-2xl font-bold font-mono text-primary">{value}</div>
-            <div className="text-xs uppercase tracking-wider mt-1 text-muted-foreground">{unit}</div>
+            <div className="text-xs uppercase tracking-wider mt-1 text-white/70">{unit}</div>
         </div>
     )
     return (
-        <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
+        <Card className="w-full max-w-md bg-white/5 p-4 shadow-lg border-2 border-white/10 transition-transform duration-300 hover:scale-105">
             <CardHeader className="p-2 text-center">
                 <p className="font-bold font-headline">Mid-Term Exam Countdown</p>
             </CardHeader>
@@ -233,7 +233,7 @@ function ExamTimerDemo() {
 
 function PomodoroDemo() {
     return (
-        <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
+        <Card className="w-full max-w-md bg-white/5 p-4 shadow-lg border-2 border-white/10 transition-transform duration-300 hover:scale-105">
             <CardHeader className="p-2 text-center">
                 <p className="font-bold font-headline">Pomodoro: Quantum Physics</p>
             </CardHeader>
@@ -247,14 +247,14 @@ function PomodoroDemo() {
 
 function CaptureDemo() {
   return (
-    <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
+    <Card className="w-full max-w-md bg-white/5 p-4 shadow-lg border-2 border-white/10 transition-transform duration-300 hover:scale-105">
       <CardContent className="p-2 flex items-center justify-center gap-4">
         <Image
           src="/question.jpg"
           alt="A math problem on a piece of paper"
           width={150}
           height={112}
-          className="rounded-md border-2 border-dashed"
+          className="rounded-md border-2 border-dashed border-white/20"
         />
         <div className="text-primary animate-pulse">
           <svg
@@ -273,10 +273,10 @@ function CaptureDemo() {
             <path d="m12 5 7 7-7 7" />
           </svg>
         </div>
-        <div className="bg-secondary p-3 rounded-lg flex-1">
+        <div className="bg-black/30 backdrop-blur-sm p-3 rounded-lg flex-1 border border-white/10">
           <p className="text-sm font-bold">Answer:</p>
           <p className="text-lg font-mono text-primary">x = 5</p>
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="text-xs text-white/70 mt-2">
             Step-by-step solution provided...
           </p>
         </div>
@@ -292,10 +292,10 @@ export function Features() {
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-2xl lg:text-center">
           <h2 className="text-base font-semibold leading-7 text-primary">Learn Faster</h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+          <p className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl font-headline">
             A Toolkit for Total Understanding
           </p>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground">
+          <p className="mt-6 text-lg leading-8 text-white/70">
             Wisdomis Fun deconstructs any topic into the core components you need to truly learn it, not just memorize it.
           </p>
         </div>
@@ -307,18 +307,18 @@ export function Features() {
                    <FileText className="h-8 w-8 text-primary" />
                    <h3 className="text-2xl font-headline font-bold">Comprehensive Study Notes</h3>
                 </div>
-                <p className="mt-4 text-lg text-muted-foreground">
+                <p className="mt-4 text-lg text-white/70">
                     Tired of dense material? Our AI generates structured notes and automatically identifies key terms. Hover over highlighted words like{' '}
                     <KeyTerm term="Humanism" definition="An intellectual movement that emphasized human potential and achievements, rather than divine or supernatural matters." />
                     {' '}to get instant definitions, making complex topics easier to grasp.
                 </p>
             </div>
             <div className="flex items-center justify-center">
-                <Card className="w-full max-w-md bg-card/50 p-4 shadow-lg border-2 border-primary/10 transition-transform duration-300 hover:scale-105">
-                    <CardHeader className="p-2 border-b">
+                <Card className="w-full max-w-md bg-white/5 p-4 shadow-lg border-2 border-white/10 transition-transform duration-300 hover:scale-105">
+                    <CardHeader className="p-2 border-b border-white/10">
                         <p className="font-mono text-sm"># The Renaissance</p>
                     </CardHeader>
-                    <CardContent className="p-2 space-y-2 text-sm text-muted-foreground">
+                    <CardContent className="p-2 space-y-2 text-sm text-white/70">
                         <p className="font-mono">## Key Characteristics</p>
                         <p className="font-mono">* Rebirth of art & science</p>
                         <p className="font-mono">* Focus on <KeyTerm term="Humanism" definition="An intellectual movement that emphasized human potential and achievements, rather than divine or supernatural matters." /></p>
@@ -338,10 +338,10 @@ export function Features() {
             </div>
             <div className="md:pl-8">
                 <div className="flex items-center gap-2">
-                   <BrainCircuit className="h-8 w-8 text-accent" />
+                   <BrainCircuit className="h-8 w-8 text-primary" />
                    <h3 className="text-2xl font-headline font-bold">Interactive Flashcards</h3>
                 </div>
-                <p className="mt-4 text-lg text-muted-foreground">
+                <p className="mt-4 text-lg text-white/70">
                     Active recall is the secret to long-term retention. We automatically identify key terms and concepts from your topic and build a set of interactive flashcards. Test your memory, solidify your understanding, and master the vocabulary of your subject.
                 </p>
             </div>
@@ -354,7 +354,7 @@ export function Features() {
                    <MessageCircleQuestion className="h-8 w-8 text-primary" />
                    <h3 className="text-2xl font-headline font-bold">Challenging Quizzes</h3>
                 </div>
-                <p className="mt-4 text-lg text-muted-foreground">
+                <p className="mt-4 text-lg text-white/70">
                     Put your knowledge to the test. Our AI generates custom multiple-choice quizzes that challenge you on the most important aspects of your topic. Get instant feedback on your answers to identify weak spots and confirm your mastery.
                 </p>
             </div>
@@ -370,10 +370,10 @@ export function Features() {
             </div>
             <div className="md:pl-8">
                 <div className="flex items-center gap-2">
-                    <Bot className="h-8 w-8 text-accent" />
+                    <Bot className="h-8 w-8 text-primary" />
                     <h3 className="text-2xl font-headline font-bold">SageMaker AI Assistant</h3>
                 </div>
-                <p className="mt-4 text-lg text-muted-foreground">
+                <p className="mt-4 text-lg text-white/70">
                     Stuck on a concept? Get instant, conversational help from your personal AI tutor. SageMaker can explain complex topics, answer follow-up questions, and even analyze images you upload to provide context-aware assistance.
                 </p>
             </div>
@@ -386,7 +386,7 @@ export function Features() {
                     <Map className="h-8 w-8 text-primary" />
                     <h3 className="text-2xl font-headline font-bold">Personalized Study Roadmap</h3>
                 </div>
-                <p className="mt-4 text-lg text-muted-foreground">
+                <p className="mt-4 text-lg text-white/70">
                     Feeling overwhelmed by a huge syllabus? Just paste your topics, set a target date, and let our AI build a custom, day-by-day study plan. It intelligently breaks down the work into manageable chunks to guide you to success.
                 </p>
             </div>
@@ -402,10 +402,10 @@ export function Features() {
             </div>
             <div className="md:pl-8">
                 <div className="flex items-center gap-2">
-                    <ClipboardCheck className="h-8 w-8 text-accent" />
+                    <ClipboardCheck className="h-8 w-8 text-primary" />
                     <h3 className="text-2xl font-headline font-bold">Visual Study Plan Board</h3>
                 </div>
-                <p className="mt-4 text-lg text-muted-foreground">
+                <p className="mt-4 text-lg text-white/70">
                     Organize your study life. Our Kanban-style board lets you visualize your entire syllabus. Add custom tasks, prioritize what's important, and drag-and-drop your way from 'To Do' to 'Done'.
                 </p>
             </div>
@@ -418,7 +418,7 @@ export function Features() {
                     <Timer className="h-8 w-8 text-primary" />
                     <h3 className="text-2xl font-headline font-bold">Exam Countdown Timer</h3>
                 </div>
-                <p className="mt-4 text-lg text-muted-foreground">
+                <p className="mt-4 text-lg text-white/70">
                     Keep your eyes on the prize. Set a countdown for your next big exam to stay focused and motivated. Your target date will always be visible on your dashboard, reminding you of your goal.
                 </p>
             </div>
@@ -434,10 +434,10 @@ export function Features() {
             </div>
             <div className="md:pl-8">
                 <div className="flex items-center gap-2">
-                    <Timer className="h-8 w-8 text-accent" />
+                    <Timer className="h-8 w-8 text-primary" />
                     <h3 className="text-2xl font-headline font-bold">Focused Study Sessions</h3>
                 </div>
-                <p className="mt-4 text-lg text-muted-foreground">
+                <p className="mt-4 text-lg text-white/70">
                     Boost your focus with the Pomodoro Technique. Break down your study sessions into 25-minute intervals of deep work, separated by short breaks. Our integrated timer keeps you on track, helping you avoid burnout and maximize productivity.
                 </p>
             </div>
@@ -450,7 +450,7 @@ export function Features() {
                    <Camera className="h-8 w-8 text-primary" />
                    <h3 className="text-2xl font-headline font-bold">Capture the Answer</h3>
                 </div>
-                <p className="mt-4 text-lg text-muted-foreground">
+                <p className="mt-4 text-lg text-white/70">
                     Stuck on a tricky homework problem? Just snap a picture of it. Our AI will analyze the image, identify the question, and provide you with a direct answer and a step-by-step solution to help you understand the process.
                 </p>
             </div>
