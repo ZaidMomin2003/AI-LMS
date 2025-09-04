@@ -14,16 +14,19 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from 'firebase/auth';
 import { auth, googleProvider, isFirebaseEnabled } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Mail, Lock, Eye, EyeOff, School, User } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import { handleSchoolInvite } from '@/services/school';
 
 const formSchema = z.object({
+  name: z.string().min(2, { message: 'Please enter your full name.' }),
   email: z.string().email({ message: 'Invalid email address.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  inviteCode: z.string().optional(),
 });
 
 const GoogleIcon = () => (
@@ -42,8 +45,10 @@ export function SignUpForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
+      inviteCode: '',
     },
   });
 
@@ -51,7 +56,19 @@ export function SignUpForm() {
     if (!auth) return;
     setIsLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      await updateProfile(userCredential.user, { displayName: values.name });
+      
+      if (values.inviteCode) {
+        const result = await handleSchoolInvite(userCredential.user, values.inviteCode);
+        if (!result.success) {
+            toast({ variant: 'destructive', title: 'Invite Code Invalid', description: result.message });
+            // Don't halt the process, just let them know the code didn't work.
+        } else {
+             toast({ title: 'Welcome!', description: result.message });
+        }
+      }
+      
       router.push('/onboarding');
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";
@@ -83,6 +100,9 @@ export function SignUpForm() {
     setIsGoogleLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
+      // For Google Sign-in, we can't collect invite code on this form.
+      // We could direct them to a page to enter it after, or handle in onboarding.
+      // For now, just send them to onboarding.
       router.push('/onboarding');
     } catch (error: any) {
       let description = error.message;
@@ -114,6 +134,22 @@ export function SignUpForm() {
     <div className="grid gap-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+           <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                 <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <FormControl>
+                      <Input placeholder="Your Name" {...field} className="pl-10" />
+                  </FormControl>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name="email"
@@ -154,6 +190,22 @@ export function SignUpForm() {
                   >
                       {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+           <FormField
+            control={form.control}
+            name="inviteCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Invite Code (Optional)</FormLabel>
+                 <div className="relative">
+                  <School className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <FormControl>
+                      <Input placeholder="Enter code from your school" {...field} className="pl-10" />
+                  </FormControl>
                 </div>
                 <FormMessage />
               </FormItem>

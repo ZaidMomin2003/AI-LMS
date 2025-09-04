@@ -27,6 +27,7 @@ import {
   Mail,
   DollarSign,
   LifeBuoy,
+  School,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -79,6 +80,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link href="/zaidadmin/users">
                   <Users />
                   <span>Users</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={pathname.startsWith('/zaidadmin/schools')}
+                tooltip={{ children: 'Schools' }}
+              >
+                <Link href="/zaidadmin/schools">
+                  <School />
+                  <span>Schools</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
