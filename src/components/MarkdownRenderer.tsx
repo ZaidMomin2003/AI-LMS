@@ -63,35 +63,42 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
 
   const lines = content.split('\n');
   const elements: React.ReactNode[] = [];
-  let inList = false;
+  let listItems: React.ReactNode[] = [];
+
+  const flushList = () => {
+    if (listItems.length > 0) {
+      elements.push(
+        <ul key={`ul-${elements.length}`} className="list-disc pl-5 space-y-1 my-2">
+          {listItems}
+        </ul>
+      );
+      listItems = [];
+    }
+  };
 
   lines.forEach((line, index) => {
     const trimmedLine = line.trim();
 
     if (trimmedLine.startsWith('### ')) {
+      flushList();
       elements.push(<h3 key={index} className="text-lg font-semibold mt-4 mb-2">{processLine(trimmedLine.substring(4))}</h3>);
-      inList = false;
     } else if (trimmedLine.startsWith('## ')) {
+      flushList();
       elements.push(<h2 key={index} className="text-xl font-semibold mt-6 mb-3 border-b pb-2">{processLine(trimmedLine.substring(3))}</h2>);
-      inList = false;
     } else if (trimmedLine.startsWith('# ')) {
+      flushList();
       elements.push(<h1 key={index} className="text-2xl font-bold mt-8 mb-4">{processLine(trimmedLine.substring(2))}</h1>);
-      inList = false;
     } else if (trimmedLine.startsWith('* ') || trimmedLine.startsWith('- ')) {
-      if (!inList) {
-        inList = true;
-        elements.push(<ul key={`ul-${index}`} className="list-disc pl-5 space-y-1 my-2"></ul>);
-      }
-      const list = elements[elements.length - 1] as React.ReactElement;
-      list.props.children.push(<li key={index}>{processLine(trimmedLine.substring(2))}</li>);
+      listItems.push(<li key={index}>{processLine(trimmedLine.substring(2))}</li>);
     } else if (trimmedLine === '') {
-      inList = false;
-      // We can ignore empty lines or add <br /> if needed, for now, ignoring is cleaner
+      flushList();
     } else {
-      inList = false;
+      flushList();
       elements.push(<p key={index} className="my-2">{processLine(line)}</p>);
     }
   });
+  
+  flushList(); // Ensure any trailing list gets rendered
 
   return <>{elements}</>;
 };
