@@ -13,6 +13,7 @@ import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback } from '../ui/avatar';
+import { motion } from 'framer-motion';
 
 
 const StatCard = ({ title, value, subtext, className }: { title: string, value: string | number, subtext: string, className?: string }) => (
@@ -52,50 +53,71 @@ export function Hero() {
   const router = useRouter();
 
   return (
-    <section className="relative text-center overflow-hidden">
-      <FloatingIcons />
-       <div aria-hidden="true" className="absolute inset-0 top-0 -z-10">
-        <div className="absolute inset-0 bg-background" />
-        <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.05)_1px,transparent_1px)] [background-size:32px_32px] animate-grid-pan" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[200%] h-[50%] bg-[radial-gradient(ellipse_at_bottom,hsl(var(--primary)/0.15)_0%,transparent_70%)] blur-3xl" />
-      </div>
+    <section
+      className="relative w-full overflow-hidden bg-background pt-32 pb-10 font-light text-foreground antialiased md:pt-20 md:pb-16"
+    >
+      <div
+        className="absolute top-0 right-0 h-1/2 w-1/2"
+        style={{
+          background:
+            'radial-gradient(circle at 70% 30%, hsl(var(--primary)/0.15) 0%, transparent 60%)',
+        }}
+      />
+      <div
+        className="absolute top-0 left-0 h-1/2 w-1/2 -scale-x-100"
+        style={{
+          background:
+            'radial-gradient(circle at 70% 30%, hsl(var(--primary)/0.15) 0%, transparent 60%)',
+        }}
+      />
 
-      <div className="container mx-auto px-4 py-20 text-center sm:py-32">
-        <div className="flex justify-center mb-6 animate-in fade-in slide-in-from-top-20 duration-1000 delay-300">
-          <Link href="/signup" className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border px-4 py-1.5 text-sm text-muted-foreground shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-primary/30">
-            <span className="absolute h-0 w-0 rounded-full bg-primary/30 transition-all duration-300 ease-in-out group-hover:h-56 group-hover:w-56"></span>
-            <span className="relative z-10 flex items-center">
-              <Sparkles className="mr-2 h-4 w-4 text-primary" /> Announcing Wisdomis Fun 2.0 &ndash; Start Learning Smarter
-            </span>
-          </Link>
-        </div>
-        <h1 className="text-5xl font-headline font-bold tracking-tight text-foreground sm:text-7xl animate-in fade-in slide-in-from-top-12 duration-1000">
-          From Topic to <span className="text-primary">Mastery</span>, <span className="text-primary">Instantly</span>
-        </h1>
-        <p className="mt-6 text-lg leading-8 text-muted-foreground max-w-3xl mx-auto animate-in fade-in slide-in-from-top-16 duration-1000 delay-200">
-          Ace your exams with the ultimate study toolkit. Generate ultra-detailed notes, interactive flashcards, and challenging quizzes for any topic imaginable. Stop memorizing and start mastering your subjects today.
-        </p>
-        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-x-6 animate-in fade-in slide-in-from-top-20 duration-1000 delay-300">
-          <Button asChild size="lg">
-            <Link href="/signup">
-              Start Learning for Free
-              <ArrowRight className="ml-2" />
-            </Link>
-          </Button>
-          <Button asChild variant="ghost" size="sm">
-            <a href="#features">
-              Explore Features <span aria-hidden="true">→</span>
-            </a>
-          </Button>
-        </div>
-        <div className="relative mt-20 flow-root animate-in fade-in slide-in-from-top-24 duration-1000 delay-400">
-          
-           <Card className="max-w-6xl mx-auto p-1.5 rounded-xl bg-card/60 backdrop-blur-sm shadow-2xl shadow-primary/20 border-2 border-primary/20">
+      <div className="relative z-10 container mx-auto max-w-2xl px-4 text-center md:max-w-4xl md:px-6 lg:max-w-7xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+        >
+          <span className="mb-6 inline-block rounded-full border border-primary/30 px-3 py-1 text-xs text-primary">
+            THE NEXT GENERATION OF LEARNING
+          </span>
+          <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-light md:text-5xl lg:text-7xl">
+            From Topic to {' '}
+            <span className="text-primary">Mastery</span>, Instantly
+          </h1>
+          <p className="mx-auto mb-10 max-w-2xl text-lg text-muted-foreground md:text-xl">
+            Wisdomis Fun combines artificial intelligence with cutting-edge learning strategies to help you ace your exams with precision and ease.
+          </p>
+
+          <div className="mb-10 flex flex-col items-center justify-center gap-4 sm:mb-0 sm:flex-row">
+             <Button asChild size="lg">
+                <Link href="/signup">
+                    Get Started
+                </Link>
+            </Button>
+            <Button asChild variant="ghost">
+              <a
+                href="#features"
+                className="flex w-full items-center justify-center gap-2"
+              >
+                <span>Learn how it works</span>
+                <ChevronDown className="w-4 h-4" />
+              </a>
+            </Button>
+          </div>
+        </motion.div>
+        <motion.div
+          className="relative"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
+        >
+          <div className="relative z-10 mx-auto max-w-6xl overflow-hidden rounded-lg shadow-[0_0_50px_hsl(var(--primary)/0.2)]">
+            <Card className="p-1.5 rounded-xl bg-card/60 backdrop-blur-sm border-2 border-primary/20">
             <div className="flex h-auto md:h-[80vh] md:min-h-[600px] w-full rounded-lg bg-sidebar-DEFAULT overflow-hidden">
                 {/* Proto Sidebar (Desktop) */}
                 <div className="w-64 p-2 flex-shrink-0 flex-col bg-sidebar-DEFAULT border-r border-sidebar-border hidden md:flex">
                     <div className="flex items-center gap-3 p-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-primary"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="m14 12-2-1-2 1"/><path d="M12 11V7"/></svg>
+                        <BookOpenCheck className="w-8 h-8 text-primary" />
                         <span className="font-headline text-2xl font-bold">Wisdomis Fun</span>
                     </div>
                     <div className="p-2 space-y-2 mt-4 flex-1">
@@ -140,7 +162,7 @@ export function Hero() {
                     {/* Proto Mobile Header */}
                     <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 min-w-0 md:hidden">
                         <div className="flex items-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-primary"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="m14 12-2-1-2 1"/><path d="M12 11V7"/></svg>
+                            <BookOpenCheck className="w-6 h-6 text-primary" />
                             <span className="font-headline text-lg font-bold">Wisdomis Fun</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -212,9 +234,11 @@ export function Hero() {
                 </div>
             </div>
           </Card>
-
-        </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
 }
+
+    
