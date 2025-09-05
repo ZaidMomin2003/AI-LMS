@@ -99,17 +99,19 @@ export function Hero() {
         >
           <Link 
             href="#features" 
-            className="mb-6 inline-flex items-center gap-x-2 rounded-full bg-secondary p-1 pr-2 text-sm text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground sm:text-base"
+            className="mb-6 inline-flex items-center gap-x-2 rounded-full bg-secondary p-1 pr-3 text-sm text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground"
           >
-            <span className="rounded-full bg-primary px-3 py-1 font-semibold text-primary-foreground">
-              New Feature
+            <span className="mr-1">🎉</span>
+            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+              v0.4
             </span>
-            <span className="mr-1">
-              Introducing Capture the Answer
+            <span className="hidden sm:inline mr-1">
+              Capture the Answer is here!
             </span>
-            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <ArrowRight className="h-3 w-3" />
-            </div>
+             <span className="sm:hidden mr-1">
+              Capture is here!
+            </span>
+            <ArrowRight className="h-4 w-4" />
           </Link>
           <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-light md:text-5xl lg:text-7xl">
             From Topic to {' '}
