@@ -6,7 +6,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { BookOpenCheck, LogOut, School as SchoolIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cookies } from 'next/headers';
 import { schoolLogoutAction } from './actions';
 
 
