@@ -97,10 +97,19 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
         >
-          <Link href="#features" className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-secondary px-3 py-1 text-xs text-primary transition-colors hover:bg-primary/10">
-            <span className="font-bold">v0.4:</span>
-            <span>Introducing Capture the Answer</span>
-            <ArrowRight className="h-3 w-3" />
+          <Link 
+            href="#features" 
+            className="mb-6 inline-flex items-center gap-x-2 rounded-full bg-secondary p-1 pr-2 text-sm text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground sm:text-base"
+          >
+            <span className="rounded-full bg-primary px-3 py-1 font-semibold text-primary-foreground">
+              New Feature
+            </span>
+            <span className="mr-1">
+              Introducing Capture the Answer
+            </span>
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground">
+              <ArrowRight className="h-3 w-3" />
+            </div>
           </Link>
           <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-light md:text-5xl lg:text-7xl">
             From Topic to {' '}
