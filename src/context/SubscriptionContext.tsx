@@ -25,7 +25,7 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
     
     // If firebase is not configured, or if there's no user, set default and stop loading.
     if (!isFirebaseEnabled || !user) {
-      setSubscriptionState({ planName: 'Hobby', status: 'active' });
+      setSubscriptionState(null); // No default subscription
       setLoading(false);
       return;
     }
@@ -40,13 +40,10 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
       if (userData?.subscription) {
         setSubscriptionState(userData.subscription);
       } else {
-        const defaultSub: UserSubscription = { planName: 'Hobby', status: 'active' };
-        setSubscriptionState(defaultSub);
-        
-        // Only attempt to write back if the initial fetch didn't fail (i.e., we're not offline)
-        if (userData !== null) {
-          await updateUserDoc(user.uid, { subscription: defaultSub });
-        }
+        // In an invite-only system, a user should have a subscription upon creation.
+        // If they don't, we can log it but shouldn't assign a default one.
+        console.warn("User does not have a subscription object in Firestore.");
+        setSubscriptionState(null);
       }
 
       setLoading(false);
@@ -55,7 +52,7 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
     fetchSubscription().catch(error => {
         console.error("An unexpected error occurred in fetchSubscription:", error);
         if (isMounted) {
-            setSubscriptionState({ planName: 'Hobby', status: 'active' });
+            setSubscriptionState(null);
             setLoading(false);
         }
     });

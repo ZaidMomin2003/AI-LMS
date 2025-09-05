@@ -14,7 +14,7 @@ export function Header() {
         <div className="mr-4 flex items-center">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <BookOpenCheck className="h-6 w-6 text-primary" />
-            <span className="font-bold leading-tight text-base">Wisdom<br className="sm:hidden" />is Fun</span>
+            <span className="font-bold leading-tight text-base sm:whitespace-nowrap">Wisdom<br className="sm:hidden" />is Fun</span>
           </Link>
           <nav className="hidden gap-6 text-sm md:flex">
             <Link href="/#features" className="transition-colors hover:text-foreground/80 text-muted-foreground">
@@ -23,8 +23,8 @@ export function Header() {
             <Link href="/#use-cases" className="transition-colors hover:text-foreground/80 text-muted-foreground">
               Use Cases
             </Link>
-            <Link href="/pricing" className="transition-colors hover:text-foreground/80 text-muted-foreground">
-              Pricing
+             <Link href="/becomepartner" className="transition-colors hover:text-foreground/80 text-muted-foreground">
+              For Schools
             </Link>
             <Link href="https://scholar.featurebase.app/roadmap" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-foreground/80 text-muted-foreground">
               Roadmap

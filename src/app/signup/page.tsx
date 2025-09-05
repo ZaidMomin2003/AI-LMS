@@ -63,7 +63,7 @@ export default function SignUpPage() {
           <div className="grid gap-2 text-center">
             <h1 className="text-3xl font-bold font-headline">Create an Account</h1>
             <p className="text-balance text-muted-foreground">
-              Enter your details to start your AI learning journey.
+              Enter your school's invite code and your details to get started.
             </p>
           </div>
           <SignUpForm />

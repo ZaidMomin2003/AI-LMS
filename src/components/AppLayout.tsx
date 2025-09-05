@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
-import { DndContext, type DragEndEvent } from '@dnd-kit/core';
+import { DndContext } from '@dnd-kit/core';
 
 import {
   SidebarProvider,
@@ -26,20 +26,16 @@ import {
   LayoutDashboard,
   LogOut,
   Loader2,
-  Zap,
   BarChart,
-  Bot,
   ClipboardCheck,
   CalendarPlus,
   PanelLeft,
   User,
   Map,
   Gem,
-  Lock,
   Timer,
   Camera,
   Folder,
-  MessageSquare,
   Sparkles,
   Bookmark,
   LifeBuoy,
@@ -56,14 +52,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useExam } from '@/context/ExamContext';
 import { ExamCountdown } from './exam/ExamCountdown';
-import { useSubscription } from '@/context/SubscriptionContext';
-import { Skeleton } from './ui/skeleton';
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from './ui/tooltip';
-import { usePomodoro } from '@/context/PomodoroContext';
-import { useTopic } from '@/context/TopicContext';
-import { useRoadmap } from '@/context/RoadmapContext';
-import { useProfile } from '@/context/ProfileContext';
-import { Badge } from './ui/badge';
 import { ThemeToggle } from './ThemeToggle';
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
 import SageMakerChat from './sagemaker/SageMakerChat';
@@ -77,48 +65,8 @@ function AppLoadingScreen() {
   );
 }
 
-function SidebarSubscriptionButton() {
-    const { subscription } = useSubscription();
-    const pathname = usePathname();
-
-    if (subscription?.planName === 'Hobby') {
-        return (
-            <SidebarMenuButton
-                asChild
-                isActive={pathname === '/pricing'}
-                tooltip={{ children: 'Upgrade Now' }}
-                className="border-2 border-dashed border-primary/50 bg-transparent hover:bg-primary/10 hover:border-primary/80 text-primary shadow-lg shadow-primary/20 animate-pulse"
-            >
-                <Link href="/pricing">
-                    <Zap />
-                    <span>Upgrade Now</span>
-                </Link>
-            </SidebarMenuButton>
-        );
-    }
-
-    return (
-        <SidebarMenuButton
-            asChild
-            isActive={pathname === '/pricing'}
-            tooltip={{ children: 'Manage Your Plan' }}
-            className="cursor-pointer border-0 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-        >
-            <Link href="/pricing">
-                <Gem />
-                <span>{subscription?.planName}</span>
-            </Link>
-        </SidebarMenuButton>
-    );
-}
-
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
-  const { subscription, loading: subscriptionLoading } = useSubscription();
-  const { pomodoroHistory, loading: pomodoroLoading } = usePomodoro();
-  const { topics, dataLoading: topicsLoading } = useTopic();
-  const { roadmap, loading: roadmapLoading } = useRoadmap();
-  const { profile, loading: profileLoading } = useProfile();
   
   const router = useRouter();
   const pathname = usePathname();
@@ -131,7 +79,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user, authLoading, router]);
 
-  const appIsLoading = authLoading || !user || subscriptionLoading || pomodoroLoading || topicsLoading || roadmapLoading || profileLoading;
+  const appIsLoading = authLoading || !user;
 
   if (appIsLoading) {
     return <AppLoadingScreen />;
@@ -146,14 +94,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     if (!email) return 'U';
     return email[0].toUpperCase();
   }
-
-  const isHobby = subscription?.planName === 'Hobby';
-  const isRoadmapLocked = isHobby && !!roadmap;
-  const isPomodoroLocked = isHobby && pomodoroHistory.length > 0;
-  const isCaptureLocked = isHobby && (profile?.captureCount ?? 0) >= 1;
   
-  const sageMakerAllowed = subscription?.planName && ['Scholar Subscription', 'Sage Mode'].includes(subscription.planName);
-
   return (
      <Dialog open={isSageMakerOpen} onOpenChange={setIsSageMakerOpen}>
       <SidebarProvider>
@@ -215,75 +156,37 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={pathname.startsWith('/dashboard/roadmap')}
-                        >
-                          <Link href="/dashboard/roadmap" className={cn(isRoadmapLocked && 'text-muted-foreground')}>
-                            <Map />
-                            <span>Roadmap</span>
-                            {isRoadmapLocked && <Lock className="ml-auto h-3 w-3" />}
-                          </Link>
-                        </SidebarMenuButton>
-                    </TooltipTrigger>
-                    {isRoadmapLocked && (
-                        <TooltipContent side="right" align="center">
-                            <p>Upgrade for unlimited roadmaps</p>
-                        </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TooltipProvider>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/dashboard/roadmap')}
+                >
+                  <Link href="/dashboard/roadmap">
+                    <Map />
+                    <span>Roadmap</span>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={pathname.startsWith('/dashboard/pomodoro')}
-                        >
-                          <Link href="/dashboard/pomodoro" className={cn(isPomodoroLocked && 'text-muted-foreground')}>
-                            <Timer />
-                            <span>Pomodoro</span>
-                            {isPomodoroLocked && <Lock className="ml-auto h-3 w-3" />}
-                          </Link>
-                        </SidebarMenuButton>
-                    </TooltipTrigger>
-                    {isPomodoroLocked && (
-                        <TooltipContent side="right" align="center">
-                            <p>Upgrade for unlimited sessions</p>
-                        </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TooltipProvider>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/dashboard/pomodoro')}
+                >
+                  <Link href="/dashboard/pomodoro">
+                    <Timer />
+                    <span>Pomodoro</span>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={pathname.startsWith('/dashboard/capture')}
-                        >
-                          <Link href="/dashboard/capture" className={cn(isCaptureLocked && 'text-muted-foreground')}>
-                            <Camera />
-                            <span className="flex items-center gap-2">
-                              Capture <Badge variant="secondary" className="text-xs">Beta</Badge>
-                            </span>
-                            {isCaptureLocked && <Lock className="ml-auto h-3 w-3" />}
-                          </Link>
-                        </SidebarMenuButton>
-                    </TooltipTrigger>
-                    {isCaptureLocked && (
-                        <TooltipContent side="right" align="center">
-                            <p>Upgrade for unlimited captures</p>
-                        </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TooltipProvider>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith('/dashboard/capture')}
+                >
+                  <Link href="/dashboard/capture">
+                    <Camera />
+                    <span>Capture</span>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
@@ -298,24 +201,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <DialogTrigger asChild disabled={!sageMakerAllowed}>
-                                <SidebarMenuButton tooltip={{ children: 'SageMaker AI' }} className={cn(!sageMakerAllowed && 'text-muted-foreground')}>
-                                    <Sparkles />
-                                    <span>SageMaker</span>
-                                    {!sageMakerAllowed && <Lock className="ml-auto h-3 w-3" />}
-                                </SidebarMenuButton>
-                            </DialogTrigger>
-                        </TooltipTrigger>
-                        {!sageMakerAllowed && (
-                            <TooltipContent side="right" align="center">
-                                <p>Upgrade to unlock SageMaker</p>
-                            </TooltipContent>
-                        )}
-                    </Tooltip>
-                </TooltipProvider>
+                  <DialogTrigger asChild>
+                      <SidebarMenuButton tooltip={{ children: 'SageMaker AI' }}>
+                          <Sparkles />
+                          <span>SageMaker</span>
+                      </SidebarMenuButton>
+                  </DialogTrigger>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
@@ -340,11 +231,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </SidebarMenu>
             )}
             <SidebarMenu>
-              <SidebarMenuItem>
-                <Suspense fallback={<Skeleton className="h-8 w-full" />}>
-                  <SidebarSubscriptionButton />
-                </Suspense>
-              </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton
+                        asChild
+                        className="cursor-pointer border-0 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                    >
+                        <div>
+                            <Gem />
+                            <span>Annual Pro</span>
+                        </div>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
             </SidebarMenu>
             <div className="flex items-center justify-between">
               <DropdownMenu>
@@ -397,14 +294,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       <span className="sr-only">Bookmarks</span>
                     </Link>
                   </Button>
-                  {sageMakerAllowed && (
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <Sparkles className="h-5 w-5" />
-                        <span className="sr-only">Open SageMaker</span>
-                      </Button>
-                    </DialogTrigger>
-                  )}
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Sparkles className="h-5 w-5" />
+                      <span className="sr-only">Open SageMaker</span>
+                    </Button>
+                  </DialogTrigger>
                   <SidebarTrigger>
                       <PanelLeft className="h-5 w-5" />
                       <span className="sr-only">Toggle Menu</span>

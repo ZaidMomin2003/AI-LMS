@@ -16,14 +16,14 @@ export function CTA() {
           <Sparkles className="mx-auto h-12 w-12 text-primary-foreground/80 mb-4" />
 
           <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl font-headline">
-            Get Started with Wisdomis Fun Today
+            Are you an educational institution?
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-foreground/90">
-            Join the first 100 users and get <span className="font-bold">50% off</span> your first subscription. Plus, every new account gets a free trial on us.
+            Empower your students with the next generation of learning tools. Learn more about our institutional licensing and partnership opportunities.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Button asChild size="lg" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-              <Link href="/signup">Claim Free Trial &amp; Discount</Link>
+              <Link href="/becomepartner">Learn More for Schools</Link>
             </Button>
           </div>
 

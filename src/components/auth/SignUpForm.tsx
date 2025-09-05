@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -26,7 +27,7 @@ const formSchema = z.object({
   name: z.string().min(2, { message: 'Please enter your full name.' }),
   email: z.string().email({ message: 'Invalid email address.' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
-  inviteCode: z.string().optional(),
+  inviteCode: z.string().min(1, { message: 'An invite code is required.' }),
 });
 
 const GoogleIcon = () => (
@@ -56,18 +57,20 @@ export function SignUpForm() {
     if (!auth) return;
     setIsLoading(true);
     try {
+      // First, validate the invite code before creating a user.
+      const inviteResult = await handleSchoolInvite(null, values.inviteCode);
+      if (!inviteResult.success) {
+        toast({ variant: 'destructive', title: 'Sign Up Failed', description: inviteResult.message });
+        setIsLoading(false);
+        return;
+      }
+      
       const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
       await updateProfile(userCredential.user, { displayName: values.name });
       
-      if (values.inviteCode) {
-        const result = await handleSchoolInvite(userCredential.user, values.inviteCode);
-        if (!result.success) {
-            toast({ variant: 'destructive', title: 'Invite Code Invalid', description: result.message });
-            // Don't halt the process, just let them know the code didn't work.
-        } else {
-             toast({ title: 'Welcome!', description: result.message });
-        }
-      }
+      // Now, associate the user with the school and grant subscription.
+      await handleSchoolInvite(userCredential.user, values.inviteCode, true);
+      toast({ title: 'Welcome!', description: `Successfully joined ${inviteResult.schoolName}! Your account is ready.` });
       
       router.push('/onboarding');
     } catch (error: any) {
@@ -95,30 +98,6 @@ export function SignUpForm() {
     }
   }
 
-  async function handleGoogleSignIn() {
-    if (!auth || !googleProvider) return;
-    setIsGoogleLoading(true);
-    try {
-      await signInWithPopup(auth, googleProvider);
-      // For Google Sign-in, we can't collect invite code on this form.
-      // We could direct them to a page to enter it after, or handle in onboarding.
-      // For now, just send them to onboarding.
-      router.push('/onboarding');
-    } catch (error: any) {
-      let description = error.message;
-      if (error.code === 'auth/unauthorized-domain') {
-        description = "This domain is not authorized for sign-in. Please add it to your Firebase project's authorized domains list in the Authentication settings.";
-      }
-      toast({
-        variant: 'destructive',
-        title: 'Google Sign-In Failed',
-        description: description,
-      });
-    } finally {
-        setIsGoogleLoading(false);
-    }
-  }
-
   if (!isFirebaseEnabled) {
     return (
         <Alert variant="destructive">
@@ -134,6 +113,22 @@ export function SignUpForm() {
     <div className="grid gap-4">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+           <FormField
+            control={form.control}
+            name="inviteCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>School Invite Code</FormLabel>
+                 <div className="relative">
+                  <School className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <FormControl>
+                      <Input placeholder="Enter code from your school" {...field} className="pl-10" />
+                  </FormControl>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
            <FormField
             control={form.control}
             name="name"
@@ -195,42 +190,12 @@ export function SignUpForm() {
               </FormItem>
             )}
           />
-           <FormField
-            control={form.control}
-            name="inviteCode"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Invite Code (Optional)</FormLabel>
-                 <div className="relative">
-                  <School className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <FormControl>
-                      <Input placeholder="Enter code from your school" {...field} className="pl-10" />
-                  </FormControl>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <Button type="submit" className="w-full" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Create Account
           </Button>
         </form>
       </Form>
-      <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
-                </span>
-            </div>
-      </div>
-      <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isGoogleLoading}>
-        {isGoogleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
-        Google
-      </Button>
     </div>
   );
 }
