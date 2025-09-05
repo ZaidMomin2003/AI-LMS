@@ -14,7 +14,7 @@ export function Header() {
         <div className="mr-4 flex items-center">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <BookOpenCheck className="h-6 w-6 text-primary" />
-            <span className="font-bold whitespace-nowrap">Wisdomis Fun</span>
+            <span className="font-bold whitespace-nowrap text-base sm:text-lg">Wisdomis Fun</span>
           </Link>
           <nav className="hidden gap-6 text-sm md:flex">
             <Link href="/#features" className="transition-colors hover:text-foreground/80 text-muted-foreground">
