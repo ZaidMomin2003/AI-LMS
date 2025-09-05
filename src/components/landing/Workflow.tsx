@@ -141,22 +141,26 @@ export function Workflow() {
                     </p>
                 </div>
 
-                <div className="relative mt-16">
+                <div className="relative mt-24">
                     {/* Dashed line for desktop */}
-                    <div className="hidden lg:block absolute top-1/2 left-0 w-full h-px bg-transparent">
-                        <div className="absolute inset-0 bg-[repeating-linear-gradient(to_right,hsl(var(--primary)/0.2),hsl(var(--primary)/0.2)_4px,transparent_4px,transparent_8px)]"></div>
+                    <div className="hidden lg:block absolute top-8 left-0 w-full h-px bg-transparent">
+                        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-primary/30 to-transparent" 
+                             style={{ maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)' }}>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-12 lg:grid-cols-4 lg:gap-8">
+                    <div className="grid grid-cols-1 gap-y-20 lg:grid-cols-4 lg:gap-x-8">
                         {workflowSteps.map((step, index) => {
                             const Icon = step.icon;
                             return (
-                                <div key={step.title} className="flex flex-col items-center text-center lg:text-left lg:items-start relative">
-                                    <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30">
-                                        <Icon className="h-8 w-8" />
+                                <div key={step.title} className="flex flex-col items-center text-center relative">
+                                    <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-background border-2 border-primary shadow-[0_0_20px_hsl(var(--primary)/0.5)]">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                                          <Icon className="h-7 w-7" />
+                                        </div>
                                     </div>
                                     <h3 className="mt-6 text-xl font-bold font-headline">{step.title}</h3>
-                                    <p className="mt-2 text-sm text-muted-foreground">{step.description}</p>
+                                    <p className="mt-2 text-sm text-muted-foreground h-20">{step.description}</p>
                                     <div className="mt-6 w-full max-w-xs">{step.demo}</div>
                                 </div>
                             );
