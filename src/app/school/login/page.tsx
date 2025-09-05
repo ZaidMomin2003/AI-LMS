@@ -78,7 +78,7 @@ export default function SchoolAdminLoginPage() {
               Sign In
             </Button>
              <p className="text-xs text-center text-muted-foreground pt-2">
-                Use the admin email and password provided during setup.
+                Use the admin email you created and the password `password123`.
             </p>
           </form>
         </CardContent>
