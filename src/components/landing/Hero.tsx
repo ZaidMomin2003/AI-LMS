@@ -97,9 +97,11 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
         >
-          <span className="mb-6 inline-block rounded-full border border-primary/30 px-3 py-1 text-xs text-primary">
-            THE NEXT GENERATION OF LEARNING
-          </span>
+          <Link href="#features" className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-secondary px-3 py-1 text-xs text-primary transition-colors hover:bg-primary/10">
+            <span className="font-bold">v0.4:</span>
+            <span>Introducing Capture the Answer</span>
+            <ArrowRight className="h-3 w-3" />
+          </Link>
           <h1 className="mx-auto mb-6 max-w-4xl text-4xl font-light md:text-5xl lg:text-7xl">
             From Topic to {' '}
             <span className="text-primary">Mastery</span>, Instantly
