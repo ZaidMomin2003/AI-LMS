@@ -388,7 +388,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 min-w-0 md:hidden">
                 <div className="flex items-center gap-2">
                     <BookOpenCheck className="w-6 h-6 text-primary" />
-                    <span className="font-headline text-lg font-bold">Wisdomis Fun</span>
+                    <span className="font-headline text-lg font-bold leading-tight">Wisdom<br className="sm:hidden" />is Fun</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button asChild variant="ghost" size="icon">
