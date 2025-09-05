@@ -56,7 +56,7 @@ export default function SignUpPage() {
           <div className="absolute top-8 left-8 z-10">
               <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-headline text-foreground">
                   <BookOpenCheck className="h-6 w-6 text-primary" />
-                  <span className="font-bold">Wisdomis Fun</span>
+                  <span className="font-bold leading-tight">Wisdom<br/>is Fun</span>
               </Link>
           </div>
         <div className="mx-auto grid w-full max-w-sm gap-6">
