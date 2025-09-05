@@ -5,6 +5,8 @@ import { db, isFirebaseEnabled } from '@/lib/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { partnerChatFlow, type PartnerChatInput, type PartnerChatOutput } from '@/ai/flows/partner-chat-flow';
 
+// The form submission logic is no longer needed on the page, but we'll keep it here
+// in case it's needed for other purposes in the future. It is not currently used.
 interface PartnerInquiryData {
   name: string;
   designation: string;

@@ -1,35 +1,20 @@
 
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
-import { Bot, BrainCircuit, Loader2, Map, Users } from 'lucide-react';
+import { Bot, BrainCircuit, Calendar, Check, MessageSquare, Mic, User, Wand2, Map, Users } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
-import { submitPartnerInquiry } from './actions';
 import { PartnerWorkflow } from '@/components/partner/PartnerWorkflow';
 import { PartnerFeatures } from '@/components/partner/PartnerFeatures';
 import { PartnerFAQ } from '@/components/partner/PartnerFAQ';
 import { PartnerCTA } from '@/components/partner/PartnerCTA';
 import { PartnerChatbot } from '@/components/partner/PartnerChatbot';
 import { PartnerVideo } from '@/components/partner/PartnerVideo';
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Please enter your full name.' }),
-  designation: z.string().min(2, { message: 'Please enter your designation.' }),
-  organization: z.string().min(2, { message: 'Please enter your organization\'s name.' }),
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
-  whatsapp: z.string().min(10, { message: 'Please enter a valid WhatsApp number.' }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import Link from 'next/link';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Separator } from '@/components/ui/separator';
 
 const benefits = [
     { icon: Bot, text: 'Provide a 24/7 AI tutor for every student.' },
@@ -38,41 +23,13 @@ const benefits = [
     { icon: Users, text: 'Boost student engagement and improve academic outcomes.' },
 ];
 
+const callAgenda = [
+    { icon: Wand2, text: 'A live demo of the platform\'s core features.' },
+    { icon: MessageSquare, text: 'A Q&A session to address your specific needs.' },
+    { icon: Mic, text: 'Discussion about custom plans and pricing.' },
+]
+
 export default function BecomePartnerPage() {
-    const { toast } = useToast();
-    const [isLoading, setIsLoading] = useState(false);
-
-    const form = useForm<FormValues>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            name: '',
-            designation: '',
-            organization: '',
-            email: '',
-            whatsapp: '',
-        },
-    });
-
-    async function onSubmit(values: FormValues) {
-        setIsLoading(true);
-        const result = await submitPartnerInquiry(values);
-        if (result.success) {
-            toast({
-                title: 'Inquiry Sent!',
-                description: result.message,
-            });
-            form.reset();
-        } else {
-            toast({
-                variant: 'destructive',
-                title: 'Submission Failed',
-                description: result.message,
-            });
-        }
-        setIsLoading(false);
-    }
-
-
     return (
         <div className="flex min-h-screen flex-col bg-background">
             <Header />
@@ -106,78 +63,43 @@ export default function BecomePartnerPage() {
                         </div>
                         <div id="contact-form" className="flex items-center">
                             <Card className="w-full shadow-2xl shadow-primary/10 border-primary/20">
-                                <CardHeader>
-                                    <CardTitle className="font-headline text-2xl">Let's Collaborate</CardTitle>
-                                    <CardDescription>Fill out this form and we'll be in touch to discuss a partnership.</CardDescription>
+                                <CardHeader className="text-center">
+                                    <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit mb-2">
+                                        <Calendar className="w-6 h-6" />
+                                    </div>
+                                    <CardTitle className="font-headline text-2xl">Ready to Collaborate?</CardTitle>
+                                    <CardDescription>Let's find 15 minutes to connect. Book a demo to see how Wisdomis Fun can empower your students.</CardDescription>
                                 </CardHeader>
-                                <CardContent>
-                                    <Form {...form}>
-                                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                 <FormField
-                                                    control={form.control}
-                                                    name="name"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Full Name</FormLabel>
-                                                            <FormControl><Input placeholder="Your Name" {...field} /></FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                 <FormField
-                                                    control={form.control}
-                                                    name="designation"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Designation</FormLabel>
-                                                            <FormControl><Input placeholder="e.g., Principal, Teacher" {...field} /></FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
-                                             <FormField
-                                                control={form.control}
-                                                name="organization"
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormLabel>School / Organization</FormLabel>
-                                                        <FormControl><Input placeholder="Your School's Name" {...field} /></FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
-                                                )}
-                                            />
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                 <FormField
-                                                    control={form.control}
-                                                    name="email"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>Email Address</FormLabel>
-                                                            <FormControl><Input type="email" placeholder="you@yourschool.com" {...field} /></FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                                 <FormField
-                                                    control={form.control}
-                                                    name="whatsapp"
-                                                    render={({ field }) => (
-                                                        <FormItem>
-                                                            <FormLabel>WhatsApp Number</FormLabel>
-                                                            <FormControl><Input type="tel" placeholder="+1..." {...field} /></FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
-                                                    )}
-                                                />
-                                            </div>
-                                            <Button type="submit" className="w-full" disabled={isLoading}>
-                                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                                Submit Inquiry
-                                            </Button>
-                                        </form>
-                                    </Form>
+                                <CardContent className="space-y-6">
+                                    <Button asChild size="lg" className="w-full">
+                                        <Link href="https://cal.com/zaid-momin-st0o8z/wisdom-is-fun-collab" target="_blank">
+                                            Schedule a Demo
+                                        </Link>
+                                    </Button>
+                                    <Separator />
+                                    <div className="space-y-3">
+                                        <h4 className="font-semibold text-center">What to expect in our call:</h4>
+                                        <ul className="space-y-2 text-sm text-muted-foreground">
+                                            {callAgenda.map((item, index) => {
+                                                const Icon = item.icon;
+                                                return (
+                                                <li key={index} className="flex items-center gap-3">
+                                                    <div className="bg-secondary p-1.5 rounded-full"><Icon className="w-4 h-4 text-primary"/></div>
+                                                    <span>{item.text}</span>
+                                                </li>
+                                            )})}
+                                        </ul>
+                                    </div>
+                                     <div className="!mt-8 flex items-center gap-4 rounded-lg bg-secondary p-4">
+                                        <Avatar>
+                                            <AvatarImage src="/zaid.jpg" alt="Zaid Arshad" />
+                                            <AvatarFallback>ZA</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="text-sm font-semibold italic">"I'm excited to show you how we can tailor this platform for your school's success."</p>
+                                            <p className="text-xs text-muted-foreground mt-1">- Zaid Arshad, Founder</p>
+                                        </div>
+                                    </div>
                                 </CardContent>
                             </Card>
                         </div>
