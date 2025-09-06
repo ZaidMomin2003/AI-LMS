@@ -11,7 +11,8 @@ import { PartnerFAQ } from '@/components/partner/PartnerFAQ';
 import { PartnerCTA } from '@/components/partner/PartnerCTA';
 import { PartnerChatbot } from '@/components/partner/PartnerChatbot';
 import { PartnerVideo } from '@/components/partner/PartnerVideo';
-import { SchoolSignUpForm } from '@/components/auth/SchoolSignUpForm';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
 
 const benefits = [
     { icon: Bot, text: 'Provide a 24/7 AI tutor for every student.' },
@@ -53,7 +54,20 @@ export default function BecomePartnerPage() {
                             </div>
                         </div>
                         <div id="contact-form" className="flex items-center">
-                           <SchoolSignUpForm />
+                            <Card className="w-full shadow-2xl shadow-primary/10 border-primary/20">
+                                <CardHeader className="text-center">
+                                    <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit mb-2">
+                                        <Calendar className="w-6 h-6" />
+                                    </div>
+                                    <CardTitle className="font-headline text-2xl">Ready to Collaborate?</CardTitle>
+                                    <CardDescription>Let's find 40 minutes to connect. Book a demo to see how Wisdomis Fun can empower your students.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="flex justify-center">
+                                    <Button asChild size="lg">
+                                        <Link href="/signup">Create an Account</Link>
+                                    </Button>
+                                </CardContent>
+                            </Card>
                         </div>
                     </div>
                 </section>

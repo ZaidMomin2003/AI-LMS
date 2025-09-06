@@ -1,8 +1,13 @@
 
+'use client';
+
+import { useState } from 'react';
 import { SignUpForm } from '@/components/auth/SignUpForm';
+import { SchoolSignUpForm } from '@/components/auth/SchoolSignUpForm';
 import { BookOpenCheck } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const TestimonialCard = ({ quote, name, handle }: { quote: string; name: string; handle: string }) => (
     <Card className="bg-card/50 p-6 rounded-xl shadow-lg border border-border/20 backdrop-blur-sm">
@@ -40,6 +45,8 @@ const testimonials = [
   ];
 
 export default function SignUpPage() {
+  const [userType, setUserType] = useState('student');
+
   return (
     <div className="w-full min-h-screen grid grid-cols-1 lg:grid-cols-2">
       <div className="hidden lg:flex flex-col items-center justify-center bg-muted p-8 overflow-hidden relative">
@@ -60,13 +67,32 @@ export default function SignUpPage() {
               </Link>
           </div>
         <div className="mx-auto grid w-full max-w-sm gap-6">
-          <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold font-headline">Create an Account</h1>
-            <p className="text-balance text-muted-foreground">
-              Enter your school's invite code and your details to get started.
-            </p>
-          </div>
-          <SignUpForm />
+          <Tabs defaultValue="student" className="w-full" onValueChange={(value) => setUserType(value)}>
+            <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="student">Student</TabsTrigger>
+                <TabsTrigger value="institute">Institute</TabsTrigger>
+            </TabsList>
+            <TabsContent value="student">
+                <div className="grid gap-2 text-center pt-4">
+                  <h1 className="text-3xl font-bold font-headline">Create a Student Account</h1>
+                  <p className="text-balance text-muted-foreground">
+                    Enter your school's invite code and your details to get started.
+                  </p>
+                </div>
+                <SignUpForm />
+            </TabsContent>
+            <TabsContent value="institute">
+                 <div className="grid gap-2 text-center pt-4">
+                    <h1 className="text-3xl font-bold font-headline">Create an Institute Account</h1>
+                    <p className="text-balance text-muted-foreground">
+                        Set up your institution's admin profile to get started.
+                    </p>
+                </div>
+                <div className="mt-4">
+                    <SchoolSignUpForm />
+                </div>
+            </TabsContent>
+          </Tabs>
            <div className="mt-4 text-center text-sm text-muted-foreground">
             By signing up, you agree to our{' '}
             <Link href="/terms" className="underline hover:text-primary">
