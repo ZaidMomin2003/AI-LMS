@@ -2,7 +2,7 @@
 'use server';
 
 import { db, isFirebaseEnabled } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore';
 import { partnerChatFlow, type PartnerChatInput, type PartnerChatOutput } from '@/ai/flows/partner-chat-flow';
 import { z } from 'zod';
 import { customAlphabet } from 'nanoid';
@@ -34,8 +34,15 @@ export async function createSchoolAccountAction(formData: unknown): Promise<{ su
   const { schoolName, adminEmail, password, schoolSize } = result.data;
 
   try {
-    // In a real app, you'd securely hash the password. For this demo, we store it directly.
-    // This is NOT secure for production.
+    // 1. Check if a school with this email already exists
+    const schoolsRef = collection(db, 'schools');
+    const q = query(schoolsRef, where('adminEmail', '==', adminEmail));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+        return { success: false, message: 'An account with this email already exists. Please use a different email or log in.' };
+    }
+
+    // 2. If email is unique, create the new school account
     const newSchoolRef = await addDoc(collection(db, 'schools'), {
       name: schoolName,
       adminEmail: adminEmail,
@@ -46,7 +53,7 @@ export async function createSchoolAccountAction(formData: unknown): Promise<{ su
       createdAt: serverTimestamp(),
     });
 
-    // Set a session cookie to log the user in
+    // 3. Set a session cookie to log the user in
     cookies().set('school-session', newSchoolRef.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -57,8 +64,7 @@ export async function createSchoolAccountAction(formData: unknown): Promise<{ su
     return { success: true, message: 'School account created successfully!' };
   } catch (error) {
     console.error('Error creating school account:', error);
-    // You might want to check for unique email constraints if you set them up in Firestore rules
-    return { success: false, message: 'An account with this email may already exist.' };
+    return { success: false, message: 'An unexpected error occurred. Please try again later.' };
   }
 }
 
