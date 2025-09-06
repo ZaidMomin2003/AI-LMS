@@ -4,9 +4,8 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Copy, Check, Trash2, Loader2 } from 'lucide-react';
+import { Copy, Check, Trash2, Loader2, Users, FileText, MoreVertical, Receipt } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Progress } from '@/components/ui/progress';
 import type { SchoolData, SchoolUser } from './actions';
 import { removeUserFromSchool } from './actions';
 import { useToast } from '@/hooks/use-toast';
@@ -21,6 +20,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useRouter } from 'next/navigation';
 
 interface SchoolDashboardClientProps {
   initialSchool: SchoolData;
@@ -33,6 +41,7 @@ export function SchoolDashboardClient({ initialSchool, initialUsers }: SchoolDas
   const [copiedCode, setCopiedCode] = useState(false);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const { toast } = useToast();
+  const router = useRouter();
 
   const copyInviteCode = () => {
     navigator.clipboard.writeText(school.inviteCode);
@@ -45,7 +54,6 @@ export function SchoolDashboardClient({ initialSchool, initialUsers }: SchoolDas
     const result = await removeUserFromSchool(userId);
     if (result.success) {
       toast({ title: "Success", description: result.message });
-      // Refresh data by removing user and updating license count
       setUsers(prev => prev.filter(u => u.id !== userId));
       setSchool(prev => ({ ...prev, usedLicenses: Math.max(0, prev.usedLicenses - 1) }));
     } else {
@@ -54,42 +62,61 @@ export function SchoolDashboardClient({ initialSchool, initialUsers }: SchoolDas
     setIsDeleting(null);
   }
 
-  const licenseUsagePercent = (school.usedLicenses / school.totalLicenses) * 100;
+  const remainingLicenses = school.totalLicenses - school.usedLicenses;
+  // This is a placeholder as we don't track this yet.
+  const totalNotesGenerated = users.length * 15; 
 
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader>
-            <CardTitle>License Usage</CardTitle>
-            <CardDescription>Track your available student licenses.</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Active Students</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold">{school.usedLicenses} / {school.totalLicenses}</div>
-            <p className="text-xs text-muted-foreground">used licenses</p>
-            <Progress value={licenseUsagePercent} className="mt-4" />
+            <div className="text-2xl font-bold">{school.usedLicenses} / {school.totalLicenses}</div>
+            <p className="text-xs text-muted-foreground">Total licensed students</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader>
-            <CardTitle>Invite Code</CardTitle>
-            <CardDescription>Share this code with your students to sign up.</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Remaining Licenses</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4 p-3 bg-secondary rounded-lg">
-              <p className="text-2xl font-mono font-bold flex-1">{school.inviteCode}</p>
-              <Button onClick={copyInviteCode} size="icon" variant="ghost">
-                {copiedCode ? <Check className="w-5 h-5 text-green-500" /> : <Copy className="w-5 h-5" />}
-              </Button>
-            </div>
+            <div className="text-2xl font-bold">{remainingLicenses}</div>
+            <p className="text-xs text-muted-foreground">Available for new students</p>
           </CardContent>
+        </Card>
+         <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Notes Generated</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">~{totalNotesGenerated.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Across all students (est.)</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-primary/10 border-primary/20">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Manage Licenses</CardTitle>
+                 <Receipt className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+                 <p className="text-xs text-muted-foreground mb-3">Need more seats for your students?</p>
+                 <Button onClick={() => router.push('/school/dashboard/licenses')} className="w-full">
+                    Purchase Licenses
+                 </Button>
+            </CardContent>
         </Card>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Licensed Students</CardTitle>
-          <CardDescription>A list of all students who have signed up with your invite code.</CardDescription>
+          <CardDescription>A list of all students who have signed up with your invite code: <span className="font-mono font-bold">{school.inviteCode}</span></CardDescription>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
@@ -108,27 +135,39 @@ export function SchoolDashboardClient({ initialSchool, initialUsers }: SchoolDas
                       <TableCell className="font-medium">{user.displayName}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell className="text-right">
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="icon" disabled={!!isDeleting}>
-                                    {isDeleting === user.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                         <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                    <MoreVertical className="w-4 h-4" />
                                 </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action will remove the student from your school and free up their license. They will lose Pro access. This cannot be undone.
-                                </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleRemoveUser(user.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                                    Yes, remove student
-                                </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem disabled>View Details (soon)</DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-destructive focus:bg-destructive/10 focus:text-destructive">
+                                            Remove Student
+                                        </DropdownMenuItem>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action will remove the student from your school and free up their license. They will lose Pro access. This cannot be undone.
+                                        </d:AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleRemoveUser(user.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                            Yes, remove student
+                                        </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))
