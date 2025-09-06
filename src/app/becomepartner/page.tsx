@@ -4,7 +4,6 @@
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Bot, BrainCircuit, Calendar, Check, MessageSquare, Mic, User, Wand2, Map, Users } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PartnerWorkflow } from '@/components/partner/PartnerWorkflow';
 import { PartnerFeatures } from '@/components/partner/PartnerFeatures';
@@ -12,9 +11,7 @@ import { PartnerFAQ } from '@/components/partner/PartnerFAQ';
 import { PartnerCTA } from '@/components/partner/PartnerCTA';
 import { PartnerChatbot } from '@/components/partner/PartnerChatbot';
 import { PartnerVideo } from '@/components/partner/PartnerVideo';
-import Link from 'next/link';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
+import { SchoolSignUpForm } from '@/components/auth/SchoolSignUpForm';
 
 const benefits = [
     { icon: Bot, text: 'Provide a 24/7 AI tutor for every student.' },
@@ -22,12 +19,6 @@ const benefits = [
     { icon: Map, text: 'Create personalized learning roadmaps for entire classes.' },
     { icon: Users, text: 'Boost student engagement and improve academic outcomes.' },
 ];
-
-const callAgenda = [
-    { icon: Wand2, text: 'A live demo of the platform\'s core features.' },
-    { icon: MessageSquare, text: 'A Q&A session to address your specific needs.' },
-    { icon: Mic, text: 'Discussion about custom plans and pricing.' },
-]
 
 export default function BecomePartnerPage() {
     return (
@@ -62,46 +53,7 @@ export default function BecomePartnerPage() {
                             </div>
                         </div>
                         <div id="contact-form" className="flex items-center">
-                            <Card className="w-full shadow-2xl shadow-primary/10 border-primary/20">
-                                <CardHeader className="text-center">
-                                    <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit mb-2">
-                                        <Calendar className="w-6 h-6" />
-                                    </div>
-                                    <CardTitle className="font-headline text-2xl">Ready to Collaborate?</CardTitle>
-                                    <CardDescription>Let's find 40 minutes to connect. Book a demo to see how Wisdomis Fun can empower your students.</CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-6">
-                                    <Button asChild size="lg" className="w-full">
-                                        <Link href="https://cal.com/zaid-momin-st0o8z/wisdom-is-fun-collab" target="_blank">
-                                            Schedule a Demo
-                                        </Link>
-                                    </Button>
-                                    <Separator />
-                                    <div className="space-y-3">
-                                        <h4 className="font-semibold text-center">What to expect in our call:</h4>
-                                        <ul className="space-y-2 text-sm text-muted-foreground">
-                                            {callAgenda.map((item, index) => {
-                                                const Icon = item.icon;
-                                                return (
-                                                <li key={index} className="flex items-center gap-3">
-                                                    <div className="bg-secondary p-1.5 rounded-full"><Icon className="w-4 h-4 text-primary"/></div>
-                                                    <span>{item.text}</span>
-                                                </li>
-                                            )})}
-                                        </ul>
-                                    </div>
-                                     <div className="!mt-8 flex items-center gap-4 rounded-lg bg-secondary p-4">
-                                        <Avatar>
-                                            <AvatarImage src="/zaid.jpg" alt="Zaid Arshad" />
-                                            <AvatarFallback>ZA</AvatarFallback>
-                                        </Avatar>
-                                        <div>
-                                            <p className="text-sm font-semibold italic">"I'm excited to show you how we can tailor this platform for your school's success."</p>
-                                            <p className="text-xs text-muted-foreground mt-1">- Zaid Arshad, Founder</p>
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                           <SchoolSignUpForm />
                         </div>
                     </div>
                 </section>

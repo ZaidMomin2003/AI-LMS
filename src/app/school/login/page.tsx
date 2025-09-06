@@ -77,9 +77,6 @@ export default function SchoolAdminLoginPage() {
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign In
             </Button>
-             <p className="text-xs text-center text-muted-foreground pt-2">
-                Use the admin email you created and the password `password123`.
-            </p>
           </form>
         </CardContent>
       </Card>

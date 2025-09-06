@@ -16,11 +16,6 @@ interface ActionResult {
   message: string;
 }
 
-// In a real app, you'd use a proper authentication system (like Firebase Auth custom claims or a separate user table).
-// For this demo, we'll simulate a login by checking against a known password for the school admin.
-// This is NOT secure for production.
-const DEMO_ADMIN_PASSWORD = 'password123';
-
 export async function schoolLoginAction(credentials: unknown): Promise<ActionResult> {
   const result = LoginSchema.safeParse(credentials);
   if (!result.success) {
@@ -28,10 +23,6 @@ export async function schoolLoginAction(credentials: unknown): Promise<ActionRes
   }
 
   const { email, password } = result.data;
-
-  if (password !== DEMO_ADMIN_PASSWORD) {
-      return { success: false, message: 'Invalid email or password.' };
-  }
 
   if (!isFirebaseEnabled || !db) {
     return { success: false, message: 'Database is not configured.' };
@@ -43,10 +34,18 @@ export async function schoolLoginAction(credentials: unknown): Promise<ActionRes
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      return { success: false, message: 'No school found with that admin email.' };
+      return { success: false, message: 'Invalid email or password.' };
     }
 
     const schoolDoc = querySnapshot.docs[0];
+    const schoolData = schoolDoc.data();
+    
+    // In a real app, you would compare a hashed password.
+    // This is NOT secure for production.
+    if (schoolData.password !== password) {
+      return { success: false, message: 'Invalid email or password.' };
+    }
+
     const schoolId = schoolDoc.id;
 
     // Set a secure, httpOnly cookie to manage the session
