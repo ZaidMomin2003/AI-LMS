@@ -39,14 +39,8 @@ export function SchoolSignUpForm() {
 
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
-    
-    const formData = new FormData();
-    formData.append('schoolName', values.schoolName);
-    formData.append('adminEmail', values.adminEmail);
-    formData.append('password', values.password);
-    formData.append('schoolSize', values.schoolSize.toString());
 
-    const result = await createSchoolAccountAction(formData);
+    const result = await createSchoolAccountAction(values);
     
     if (result.success) {
       toast({

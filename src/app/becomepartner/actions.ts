@@ -22,16 +22,10 @@ const generateInviteCode = () => {
     return nanoid();
 };
 
-export async function createSchoolAccountAction(formData: FormData): Promise<{ success: boolean; message: string }> {
-  // Extract data from FormData
-  const rawFormData = {
-    schoolName: formData.get('schoolName'),
-    adminEmail: formData.get('adminEmail'),
-    password: formData.get('password'),
-    schoolSize: formData.get('schoolSize'),
-  };
-
-  const result = SchoolSignUpSchema.safeParse(rawFormData);
+export async function createSchoolAccountAction(
+  values: unknown
+): Promise<{ success: boolean; message: string }> {
+  const result = SchoolSignUpSchema.safeParse(values);
   if (!result.success) {
     const errorMessages = result.error.errors.map(e => e.message).join(', ');
     return { success: false, message: `Invalid form data: ${errorMessages}` };
