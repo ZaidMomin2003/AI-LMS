@@ -31,7 +31,7 @@ export async function createSchoolAccountAction(formData: unknown): Promise<{ su
     return { success: false, message: 'Database is not configured.' };
   }
 
-  const { schoolName, adminEmail, password, schoolSize } = result.data;
+  const { schoolName, adminEmail, schoolSize } = result.data;
 
   try {
     // 1. Check if a school with this email already exists
@@ -46,7 +46,6 @@ export async function createSchoolAccountAction(formData: unknown): Promise<{ su
     const newSchoolRef = await addDoc(collection(db, 'schools'), {
       name: schoolName,
       adminEmail: adminEmail,
-      password: password, // WARNING: Storing plain text passwords is not secure.
       totalLicenses: schoolSize,
       usedLicenses: 0,
       inviteCode: generateInviteCode(),

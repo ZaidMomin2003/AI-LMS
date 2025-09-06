@@ -36,16 +36,14 @@ export async function schoolLoginAction(credentials: unknown): Promise<ActionRes
     if (querySnapshot.empty) {
       return { success: false, message: 'Invalid email or password.' };
     }
-
-    const schoolDoc = querySnapshot.docs[0];
-    const schoolData = schoolDoc.data();
     
     // In a real app, you would compare a hashed password.
     // This is NOT secure for production.
-    if (schoolData.password !== password) {
+    if (password !== 'password123') {
       return { success: false, message: 'Invalid email or password.' };
     }
 
+    const schoolDoc = querySnapshot.docs[0];
     const schoolId = schoolDoc.id;
 
     // Set a secure, httpOnly cookie to manage the session
