@@ -40,7 +40,16 @@ export function SchoolSignUpForm() {
 
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
-    const result = await createSchoolAccountAction(values);
+    
+    // Create a FormData object to send to the server action
+    const formData = new FormData();
+    formData.append('schoolName', values.schoolName);
+    formData.append('adminEmail', values.adminEmail);
+    formData.append('password', values.password);
+    formData.append('schoolSize', values.schoolSize.toString());
+
+    const result = await createSchoolAccountAction(formData);
+    
     if (result.success) {
       toast({
         title: 'Account Created!',
