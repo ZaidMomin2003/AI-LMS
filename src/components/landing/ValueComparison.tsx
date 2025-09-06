@@ -79,11 +79,19 @@ export function ValueComparison() {
                             <CardHeader>
                                 <CardTitle>Estimated Annual Cost</CardTitle>
                             </CardHeader>
-                            <CardContent>
-                                <p className="text-4xl font-bold text-destructive line-through">
-                                    ${totalCost.toLocaleString()}/year
+                            <CardContent className="text-center">
+                                <p className="text-3xl font-bold text-destructive line-through">
+                                    ${totalCost.toLocaleString()}
                                 </p>
-                                <p className="mt-2 text-muted-foreground">With Wisdomis Fun, you get it all included in your institutional plan.</p>
+                                <p className="text-muted-foreground text-sm">The Old Way</p>
+
+                                <div className="my-6">
+                                    <p className="text-5xl font-bold text-primary">$199</p>
+                                    <p className="text-muted-foreground">per student, per year</p>
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                    With Wisdomis Fun, you get a comprehensive, all-in-one platform for a fraction of the cost.
+                                </p>
                             </CardContent>
                         </Card>
                     </div>
