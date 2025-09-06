@@ -26,6 +26,8 @@ const calculateCost = () => {
 
 const costPerGeneration = calculateCost();
 const generationsPerDollar = 1 / costPerGeneration;
+const generationsFor300 = generationsPerDollar * 300;
+
 
 export default function AdminCostPage() {
   return (
@@ -102,14 +104,14 @@ export default function AdminCostPage() {
             <div className="mx-auto bg-primary text-primary-foreground p-3 rounded-full w-fit mb-2">
                 <DollarSign className="w-6 h-6" />
             </div>
-            <CardTitle className="text-2xl font-headline">Generations per Dollar</CardTitle>
+            <CardTitle className="text-2xl font-headline">Generations per $300</CardTitle>
         </CardHeader>
         <CardContent className="text-center">
             <p className="text-5xl font-bold text-foreground">
-                ≈ {Math.floor(generationsPerDollar).toLocaleString()}
+                ≈ {Math.floor(generationsFor300).toLocaleString()}
             </p>
             <p className="text-muted-foreground mt-1">
-                full topic generations (notes, flashcards, and a quiz) for every $1 spent.
+                full topic generations (notes, flashcards, and a quiz) for every $300 spent.
             </p>
         </CardContent>
       </Card>
