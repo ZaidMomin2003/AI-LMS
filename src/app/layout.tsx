@@ -3,6 +3,7 @@ import { Providers } from "@/components/Providers";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Wisdomis Fun",
@@ -37,17 +38,19 @@ export default function RootLayout({
         ></link>
       </head>
       <body className="font-body antialiased">
-        <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-        >
-          <Providers>
-            {children}
-            <Toaster />
-          </Providers>
-        </ThemeProvider>
+        <Suspense>
+          <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+          >
+            <Providers>
+              {children}
+              <Toaster />
+            </Providers>
+          </ThemeProvider>
+        </Suspense>
       </body>
     </html>
   );
