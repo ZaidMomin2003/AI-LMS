@@ -102,7 +102,7 @@ export default function LoginPage() {
             ) : (
                  <div className="mt-4 text-center text-sm">
                     Don&apos;t have an institute account?{" "}
-                    <Link href="/becomepartner" className="underline font-semibold text-primary">
+                    <Link href="/signup" className="underline font-semibold text-primary">
                         Register here
                     </Link>
                 </div>
