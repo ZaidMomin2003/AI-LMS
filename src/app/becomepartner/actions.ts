@@ -7,6 +7,7 @@ import { partnerChatFlow, type PartnerChatInput, type PartnerChatOutput } from '
 import { z } from 'zod';
 import { customAlphabet } from 'nanoid';
 import { cookies } from 'next/headers';
+import bcrypt from 'bcryptjs';
 
 const SchoolSignUpSchema = z.object({
   schoolName: z.string().min(3, 'School name is required.'),
@@ -31,7 +32,7 @@ export async function createSchoolAccountAction(formData: unknown): Promise<{ su
     return { success: false, message: 'Database is not configured.' };
   }
 
-  const { schoolName, adminEmail, schoolSize } = result.data;
+  const { schoolName, adminEmail, password, schoolSize } = result.data;
 
   try {
     // 1. Check if a school with this email already exists
@@ -42,17 +43,21 @@ export async function createSchoolAccountAction(formData: unknown): Promise<{ su
         return { success: false, message: 'An account with this email already exists. Please use a different email or log in.' };
     }
 
-    // 2. If email is unique, create the new school account
+    // 2. Hash the password before storing
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 3. If email is unique, create the new school account
     const newSchoolRef = await addDoc(collection(db, 'schools'), {
       name: schoolName,
       adminEmail: adminEmail,
+      hashedPassword: hashedPassword,
       totalLicenses: schoolSize,
       usedLicenses: 0,
       inviteCode: generateInviteCode(),
       createdAt: serverTimestamp(),
     });
 
-    // 3. Set a session cookie to log the user in
+    // 4. Set a session cookie to log the user in
     cookies().set('school-session', newSchoolRef.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

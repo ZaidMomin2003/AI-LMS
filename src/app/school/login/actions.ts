@@ -5,6 +5,7 @@ import { db, isFirebaseEnabled } from '@/lib/firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { cookies } from 'next/headers';
 import { z } from 'zod';
+import bcrypt from 'bcryptjs';
 
 const LoginSchema = z.object({
   email: z.string().email(),
@@ -37,13 +38,20 @@ export async function schoolLoginAction(credentials: unknown): Promise<ActionRes
       return { success: false, message: 'Invalid email or password.' };
     }
     
-    // In a real app, you would compare a hashed password.
-    // This is NOT secure for production.
-    if (password !== 'password123') {
-      return { success: false, message: 'Invalid email or password.' };
+    const schoolDoc = querySnapshot.docs[0];
+    const schoolData = schoolDoc.data();
+
+    if (!schoolData.hashedPassword) {
+      // Fallback for older accounts without a hashed password or for security reasons.
+      return { success: false, message: 'Account not configured correctly. Please contact support.' };
     }
 
-    const schoolDoc = querySnapshot.docs[0];
+    const isPasswordValid = await bcrypt.compare(password, schoolData.hashedPassword);
+
+    if (!isPasswordValid) {
+        return { success: false, message: 'Invalid email or password.' };
+    }
+
     const schoolId = schoolDoc.id;
 
     // Set a secure, httpOnly cookie to manage the session
