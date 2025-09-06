@@ -25,7 +25,8 @@ const generateInviteCode = () => {
 export async function createSchoolAccountAction(formData: unknown): Promise<{ success: boolean; message: string }> {
   const result = SchoolSignUpSchema.safeParse(formData);
   if (!result.success) {
-    return { success: false, message: 'Invalid form data.' };
+    const errorMessages = result.error.errors.map(e => e.message).join(', ');
+    return { success: false, message: `Invalid form data: ${errorMessages}` };
   }
   
   if (!isFirebaseEnabled || !db) {
