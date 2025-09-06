@@ -9,19 +9,19 @@ import {
 const faqs = [
   {
     question: "What is Wisdomis Fun?",
-    answer: "Wisdomis Fun is an AI-powered learning platform designed to accelerate your study process. It automatically generates comprehensive study notes, interactive flashcards, and quizzes on any topic you provide.",
+    answer: "Wisdomis Fun is an AI-powered learning platform designed for schools and institutions. It automatically generates comprehensive study notes, interactive flashcards, and quizzes on any topic to enhance the learning experience.",
   },
   {
-    question: "Who is Wisdomis Fun for?",
-    answer: "It's for anyone who wants to learn more effectively. This includes students, professionals brushing up on new skills, lifelong learners, and anyone curious about a new subject.",
+    question: "How can my school get access?",
+    answer: "Access to Wisdomis Fun is provided through institutional partnerships. Your school or university can sign up for a bulk license plan, and they will receive an invite code to distribute to students.",
   },
   {
-    question: "Is Wisdomis Fun free to use?",
-    answer: "Yes, we offer a free plan for you to try our services before committing to a paid subscription. The free plan allows you to generate materials for one topic.",
+    question: "I have an invite code. What do I do?",
+    answer: "Great! Just head to our sign-up page, enter your invite code along with your details, and you'll get instant full access to the platform.",
   },
   {
     question: "What kind of topics can I generate materials for?",
-    answer: "Virtually any topic you can imagine! From historical events and scientific theories to literary analysis and technical subjects, our AI is equipped to handle a vast range of subjects.",
+    answer: "Virtually any topic you can imagine! From historical events and scientific theories to literary analysis and technical subjects, our AI is equipped to handle a vast range of subjects aligned with your curriculum.",
   },
    {
     question: "How accurate is the generated content?",

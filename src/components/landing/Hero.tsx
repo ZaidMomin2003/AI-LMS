@@ -101,9 +101,8 @@ export function Hero() {
             href="#features" 
             className="mb-6 inline-flex items-center gap-x-2 rounded-full bg-secondary p-1 pr-3 text-sm text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground"
           >
-            <span className="mr-1">🎉</span>
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
-              v0.4
+            <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">
+              🎉 v0.4
             </span>
             <span className="hidden sm:inline mr-1">
               Capture the Answer is here!
