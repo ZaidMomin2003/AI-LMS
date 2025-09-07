@@ -24,8 +24,8 @@ export default function SchoolLayout({ children }: { children: React.ReactNode }
     { href: '/school/dashboard/licenses', label: 'Licenses', icon: Receipt },
   ];
 
-  // Don't show the layout on the login page itself
-  if (pathname === '/school/login') {
+  // Don't show the layout on the login or signup pages
+  if (pathname === '/school/login' || pathname === '/school/signup') {
       return <>{children}</>;
   }
 

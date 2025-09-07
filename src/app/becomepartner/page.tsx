@@ -60,11 +60,11 @@ export default function BecomePartnerPage() {
                                         <Calendar className="w-6 h-6" />
                                     </div>
                                     <CardTitle className="font-headline text-2xl">Ready to Collaborate?</CardTitle>
-                                    <CardDescription>Let's find 40 minutes to connect. Book a demo to see how Wisdomis Fun can empower your students.</CardDescription>
+                                    <CardDescription>Create an account to get started with a demo and explore our institutional features.</CardDescription>
                                 </CardHeader>
                                 <CardContent className="flex justify-center">
                                     <Button asChild size="lg">
-                                        <Link href="/signup">Create an Account</Link>
+                                        <Link href="/school/signup">Create an Account</Link>
                                     </Button>
                                 </CardContent>
                             </Card>
