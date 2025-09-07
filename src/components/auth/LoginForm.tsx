@@ -25,8 +25,8 @@ import Link from 'next/link';
 import { getUserDoc } from '@/services/firestore';
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address.' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
+  email: z.string().email({ message: 'Please enter a valid email address.' }),
+  password: z.string().min(1, { message: 'Password is required.' }),
 });
 
 const GoogleIcon = () => (
@@ -67,9 +67,9 @@ export function LoginForm() {
       const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
       await handleSuccessfulLogin(userCredential.user);
     } catch (error: any) {
-      let description = "An unexpected error occurred. Please try again.";
-      if (error.code === 'auth/invalid-credential') {
-          description = "Invalid email or password. Please check your credentials and try again.";
+      let description = "An unknown error occurred. Please try again.";
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+          description = "The email or password you entered is incorrect. Please check your credentials and try again.";
       }
       toast({
         variant: 'destructive',
@@ -88,9 +88,9 @@ export function LoginForm() {
       const result = await signInWithPopup(auth, googleProvider);
       await handleSuccessfulLogin(result.user);
     } catch (error: any) {
-      let description = error.message;
-      if (error.code === 'auth/unauthorized-domain') {
-        description = "This domain is not authorized for sign-in. Please add it to your Firebase project's authorized domains list in the Authentication settings.";
+      let description = "An error occurred during Google Sign-In. Please try again.";
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        description = "An account already exists with this email address. Please sign in with the original method you used.";
       }
       toast({
         variant: 'destructive',
@@ -107,7 +107,7 @@ export function LoginForm() {
         <Alert variant="destructive">
             <AlertTitle>Firebase Not Configured</AlertTitle>
             <AlertDescription>
-                Authentication is disabled because Firebase credentials are not set in your environment. Please add your credentials to the .env file to enable login.
+                Authentication is disabled because Firebase is not set up correctly.
             </AlertDescription>
         </Alert>
     )
