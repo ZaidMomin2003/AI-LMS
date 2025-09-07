@@ -25,7 +25,7 @@ export async function createSchoolAccountAction(
   values: unknown
 ): Promise<{ success: boolean; message: string }> {
   if (!isFirebaseEnabled || !db) {
-    // This is a fallback for demo mode, but the primary logic is now production-ready.
+    // This is a fallback for demo mode.
     cookies().set('school-session', 'demo-school-id', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

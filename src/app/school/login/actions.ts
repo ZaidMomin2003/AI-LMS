@@ -52,6 +52,7 @@ export async function schoolLoginAction(credentials: unknown): Promise<ActionRes
     const schoolData = schoolDoc.data();
 
     if (!schoolData.hashedPassword) {
+      // This case might occur for manually added schools without a password
       return { success: false, message: 'This account may have been set up differently. Please contact support.' };
     }
     
