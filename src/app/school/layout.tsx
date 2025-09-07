@@ -16,7 +16,7 @@ export default function SchoolLayout({ children }: { children: React.ReactNode }
 
   const handleLogout = async () => {
     await schoolLogoutAction();
-    router.push('/login');
+    router.push('/school/login');
   };
 
   const navItems = [
