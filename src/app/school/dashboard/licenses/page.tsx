@@ -10,6 +10,7 @@ import { CheckCircle, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const BASE_PRICE_PER_LICENSE = 249;
+const USD_TO_INR_RATE = 83.5; // Temporary conversion rate
 
 const discountTiers = [
   { threshold: 1000, discount: 0.30, label: '30% OFF' },
@@ -47,6 +48,7 @@ export default function LicensesPage() {
   };
   
   const { originalPrice, discountedPrice, pricePerLicense, discountLabel } = calculatePrice();
+  const inrPrice = discountedPrice * USD_TO_INR_RATE;
 
   return (
     <div className="flex-1 space-y-6 p-4 md:p-8">
@@ -128,6 +130,10 @@ export default function LicensesPage() {
                         <div className="border-t pt-4 mt-4 flex justify-between text-xl font-bold">
                             <span>Total (USD)</span>
                             <span>${discountedPrice.toLocaleString()}</span>
+                        </div>
+                         <div className="flex justify-between text-base font-medium text-muted-foreground">
+                            <span>Total (INR)</span>
+                            <span>~ ₹{inrPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</span>
                         </div>
 
                          <Button size="lg" className="w-full mt-4" disabled>
