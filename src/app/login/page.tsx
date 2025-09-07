@@ -92,21 +92,12 @@ export default function LoginPage() {
                 </TabsContent>
             </Tabs>
 
-            {userType === 'student' ? (
-                 <div className="mt-4 text-center text-sm">
-                    Don&apos;t have an account?{" "}
-                    <Link href="/signup" className="underline font-semibold text-primary">
-                        Sign up
-                    </Link>
-                </div>
-            ) : (
-                 <div className="mt-4 text-center text-sm">
-                    Don&apos;t have an institute account?{" "}
-                    <Link href="/signup" className="underline font-semibold text-primary">
-                        Register here
-                    </Link>
-                </div>
-            )}
+            <div className="mt-4 text-center text-sm">
+                Don&apos;t have an account?{" "}
+                <Link href="/signup" className="underline font-semibold text-primary">
+                    Sign up
+                </Link>
+            </div>
           </div>
       </div>
     </div>

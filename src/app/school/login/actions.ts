@@ -9,7 +9,8 @@ import bcrypt from 'bcryptjs';
 
 const LoginSchema = z.object({
   email: z.string().email(),
-  password: z.string(),
+  // Password can be optional if it's a Google Sign-In flow, though this action is for email/pass
+  password: z.string().optional(),
 });
 
 interface ActionResult {
@@ -41,16 +42,23 @@ export async function schoolLoginAction(credentials: unknown): Promise<ActionRes
     const schoolDoc = querySnapshot.docs[0];
     const schoolData = schoolDoc.data();
 
-    if (!schoolData.hashedPassword) {
-      // Fallback for older accounts without a hashed password or for security reasons.
-      return { success: false, message: 'Account not configured correctly. Please contact support.' };
+    // If a password is provided, it's an email/pass login. We must validate it.
+    if (password) {
+        if (!schoolData.hashedPassword) {
+          // This account was likely created with Google and has no password.
+          return { success: false, message: 'This account uses Google Sign-In. Please log in with Google.' };
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, schoolData.hashedPassword);
+        if (!isPasswordValid) {
+            return { success: false, message: 'Invalid email or password.' };
+        }
+    } else {
+        // If no password, this is a Google Sign-In flow. 
+        // We trust the authentication has already happened on the client.
+        // We've found the school by email, so we can proceed.
     }
 
-    const isPasswordValid = await bcrypt.compare(password, schoolData.hashedPassword);
-
-    if (!isPasswordValid) {
-        return { success: false, message: 'Invalid email or password.' };
-    }
 
     const schoolId = schoolDoc.id;
 
