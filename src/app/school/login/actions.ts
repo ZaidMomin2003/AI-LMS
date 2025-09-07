@@ -9,7 +9,7 @@ import bcrypt from 'bcryptjs';
 
 const LoginSchema = z.object({
   email: z.string().email(),
-  // Password can be optional if it's a Google Sign-In flow
+  // Password can be optional for Google Sign-In flow
   password: z.string().optional(),
 });
 

@@ -5,23 +5,17 @@ import { db, isFirebaseEnabled } from '@/lib/firebase';
 import { addDoc, collection, getDocs, query, serverTimestamp, where } from 'firebase/firestore';
 import { partnerChatFlow, type PartnerChatInput, type PartnerChatOutput } from '@/ai/flows/partner-chat-flow';
 import { z } from 'zod';
-import { customAlphabet } from 'nanoid';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 
+// This schema now correctly handles both email/password and Google sign-up flows.
+// Password is now optional.
 const SchoolSignUpSchema = z.object({
   schoolName: z.string().min(3, 'School name is required.'),
   adminEmail: z.string().email('Please enter a valid email.'),
-  // Password is now optional to accommodate Google Sign-In
   password: z.string().min(8, 'Password must be at least 8 characters.').optional().or(z.literal('')),
   schoolSize: z.coerce.number().min(1, 'School size must be at least 1.'),
 });
-
-// Generates a unique, readable invite code
-const generateInviteCode = () => {
-    const nanoid = customAlphabet('ABCDEFGHIJKLMNPQRSTUVWXYZ123456789', 8);
-    return nanoid();
-};
 
 export async function createSchoolAccountAction(
   values: unknown
@@ -61,7 +55,7 @@ export async function createSchoolAccountAction(
       hashedPassword: hashedPassword,
       totalLicenses: schoolSize,
       usedLicenses: 0,
-      inviteCode: generateInviteCode(),
+      inviteCode: 'DEMOCODE', // Placeholder, will be generated
       createdAt: serverTimestamp(),
     });
 

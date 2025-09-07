@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { schoolLoginAction } from '@/app/school/login/actions';
-import { signInWithPopup, type User } from 'firebase/auth';
+import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
 
 const GoogleIcon = () => (
