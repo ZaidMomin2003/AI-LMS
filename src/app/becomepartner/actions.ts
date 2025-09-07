@@ -8,12 +8,10 @@ import { z } from 'zod';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 
-// This schema now correctly handles both email/password and Google sign-up flows.
-// Password is now optional. It only validates the core user credentials.
 const SchoolSignUpSchema = z.object({
   schoolName: z.string().min(3, 'School name is required.'),
   adminEmail: z.string().email('Please enter a valid email.'),
-  password: z.string().min(8, 'Password must be at least 8 characters.').optional().or(z.literal('')),
+  password: z.string().min(8, 'Password must be at least 8 characters.'),
   schoolSize: z.coerce.number().min(1, 'School size must be at least 1.'),
 });
 
@@ -41,17 +39,13 @@ export async function createSchoolAccountAction(
         return { success: false, message: 'An account with this email already exists. Please use a different email or log in.' };
     }
 
-    // 2. Hash the password only if it was provided
-    let hashedPassword = null;
-    if (password) {
-        hashedPassword = await bcrypt.hash(password, 10);
-    }
+    // 2. Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // 3. If email is unique, create the new school account
     const newSchoolRef = await addDoc(collection(db, 'schools'), {
       name: schoolName,
       adminEmail: adminEmail,
-      // Store hashed password if it exists, otherwise null
       hashedPassword: hashedPassword,
       totalLicenses: schoolSize,
       usedLicenses: 0,
