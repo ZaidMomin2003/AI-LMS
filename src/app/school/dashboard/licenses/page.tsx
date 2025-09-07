@@ -70,9 +70,9 @@ export default function LicensesPage() {
                         <div className="flex items-center gap-4">
                             <Slider
                                 defaultValue={[licenses]}
-                                max={2000}
+                                max={100000}
                                 min={50}
-                                step={10}
+                                step={100}
                                 onValueChange={(value) => setLicenses(value[0])}
                             />
                             <div className="flex h-12 w-24 items-center justify-center rounded-md border border-input bg-background px-3 py-2 text-lg font-bold">
@@ -81,7 +81,7 @@ export default function LicensesPage() {
                         </div>
                          <div className="flex justify-between text-xs text-muted-foreground">
                             <span>50 Licenses</span>
-                            <span>2000 Licenses</span>
+                            <span>100,000 Licenses</span>
                         </div>
                     </CardContent>
                 </Card>
