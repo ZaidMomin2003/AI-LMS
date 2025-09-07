@@ -48,23 +48,21 @@ export function SchoolSignUpForm() {
   }
 
   return (
-    <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField control={form.control} name="schoolName" render={({ field }) => (
-              <FormItem><FormLabel>School Name</FormLabel><FormControl><div className="relative"><School className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="e.g., Springfield University" {...field} className="pl-10" /></div></FormControl><FormMessage /></FormItem>
-          )}/>
-          <FormField control={form.control} name="adminEmail" render={({ field }) => (
-              <FormItem><FormLabel>Administrator Email</FormLabel><FormControl><div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="you@school.edu" {...field} className="pl-10" /></div></FormControl><FormMessage /></FormItem>
-          )}/>
-          <FormField control={form.control} name="password" render={({ field }) => (
-              <FormItem><FormLabel>Password</FormLabel><FormControl><div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input type="password" placeholder="Min. 8 characters" {...field} className="pl-10" /></div></FormControl><FormMessage /></FormItem>
-          )}/>
-          <Button type="submit" disabled={isLoading} className="w-full">
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create Account
-          </Button>
-        </form>
-      </Form>
-    </>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField control={form.control} name="schoolName" render={({ field }) => (
+            <FormItem><FormLabel>School Name</FormLabel><FormControl><div className="relative"><School className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="e.g., Springfield University" {...field} className="pl-10" /></div></FormControl><FormMessage /></FormItem>
+        )}/>
+        <FormField control={form.control} name="adminEmail" render={({ field }) => (
+            <FormItem><FormLabel>Administrator Email</FormLabel><FormControl><div className="relative"><Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="you@school.edu" {...field} className="pl-10" /></div></FormControl><FormMessage /></FormItem>
+        )}/>
+        <FormField control={form.control} name="password" render={({ field }) => (
+            <FormItem><FormLabel>Password</FormLabel><FormControl><div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input type="password" placeholder="Min. 8 characters" {...field} className="pl-10" /></div></FormControl><FormMessage /></FormItem>
+        )}/>
+        <Button type="submit" disabled={isLoading} className="w-full">
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />} Create Account & Go to Dashboard
+        </Button>
+      </form>
+    </Form>
   );
 }

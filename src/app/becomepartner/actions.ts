@@ -24,13 +24,8 @@ const SchoolSignUpSchema = z.object({
 export async function createSchoolAccountAction(
   values: unknown
 ): Promise<{ success: boolean; message: string }> {
-  const result = SchoolSignUpSchema.safeParse(values);
-  if (!result.success) {
-    const errorMessages = result.error.errors.map(e => e.message).join(', ');
-    return { success: false, message: `Invalid form data: ${errorMessages}` };
-  }
-  
-  // For the demo, we can bypass Firebase checks and just set a cookie
+  // For the demo, we bypass Firebase and immediately log the user in.
+  // This provides a seamless, error-free experience.
   if (!isFirebaseEnabled || !db) {
      cookies().set('school-session', 'demo-school-id', {
       httpOnly: true,
@@ -38,24 +33,28 @@ export async function createSchoolAccountAction(
       maxAge: 60 * 60 * 24, // 1 day
       path: '/',
     });
-    return { success: true, message: 'School account created successfully!' };
+    return { success: true, message: 'Account created! Redirecting to dashboard...' };
+  }
+  
+  const result = SchoolSignUpSchema.safeParse(values);
+  if (!result.success) {
+    const errorMessages = result.error.errors.map(e => e.message).join(', ');
+    return { success: false, message: `Invalid form data: ${errorMessages}` };
   }
 
   const { schoolName, adminEmail, password } = result.data;
 
   try {
-    // 1. Check if a school with this email already exists
     const schoolsRef = collection(db, 'schools');
     const q = query(schoolsRef, where('adminEmail', '==', adminEmail));
     const querySnapshot = await getDocs(q);
+
     if (!querySnapshot.empty) {
-        return { success: false, message: 'An account with this email already exists. Please use a different email or log in.' };
+        return { success: false, message: 'An account with this email already exists. Please log in instead.' };
     }
 
-    // 2. Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 3. If email is unique, create the new school account
     const newSchoolRef = await addDoc(collection(db, 'schools'), {
       name: schoolName,
       adminEmail: adminEmail,
@@ -66,7 +65,6 @@ export async function createSchoolAccountAction(
       createdAt: serverTimestamp(),
     });
 
-    // 4. Set a session cookie to log the user in
     cookies().set('school-session', newSchoolRef.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -74,10 +72,10 @@ export async function createSchoolAccountAction(
       path: '/',
     });
 
-    return { success: true, message: 'School account created successfully!' };
+    return { success: true, message: 'Account created successfully! Redirecting...' };
   } catch (error) {
     console.error('Error creating school account:', error);
-    return { success: false, message: 'An unexpected error occurred. Please try again later.' };
+    return { success: false, message: 'A server error occurred. Please try again later.' };
   }
 }
 
