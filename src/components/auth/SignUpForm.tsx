@@ -15,11 +15,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, signInWithPopup, updateProfile, type UserCredential } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithPopup, updateProfile, type User } from 'firebase/auth';
 import { auth, googleProvider, isFirebaseEnabled } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Loader2, Mail, Lock, Eye, EyeOff, School, User } from 'lucide-react';
+import { Loader2, Mail, Lock, Eye, EyeOff, School, User as UserIcon } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { handleSchoolInvite } from '@/services/school';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
@@ -47,7 +47,7 @@ export function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [googleUser, setGoogleUser] = useState<UserCredential | null>(null);
+  const [googleUser, setGoogleUser] = useState<User | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,6 +61,9 @@ export function SignUpForm() {
 
   const inviteCodeForm = useForm<{ inviteCode: string }>({
     resolver: zodResolver(inviteCodeSchema),
+    defaultValues: {
+        inviteCode: '',
+    }
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -111,7 +114,7 @@ export function SignUpForm() {
     setIsGoogleLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      setGoogleUser(result);
+      setGoogleUser(result.user);
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Google Sign-Up Failed', description: error.message });
     } finally {
@@ -123,7 +126,7 @@ export function SignUpForm() {
     if (!googleUser) return;
     setIsLoading(true);
     try {
-      const inviteResult = await handleSchoolInvite(googleUser.user, values.inviteCode, true);
+      const inviteResult = await handleSchoolInvite(googleUser, values.inviteCode, true);
       if (!inviteResult.success) {
         toast({ variant: 'destructive', title: 'Sign Up Failed', description: inviteResult.message });
         return;
@@ -162,9 +165,9 @@ export function SignUpForm() {
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
                    <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <FormControl>
-                        <Input placeholder="Your Name" {...field} className="pl-10" />
+                        <Input placeholder="Your Name" {...field} value={field.value ?? ''} className="pl-10" />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -180,7 +183,7 @@ export function SignUpForm() {
                    <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <FormControl>
-                        <Input placeholder="name@example.com" {...field} className="pl-10" />
+                        <Input placeholder="name@example.com" {...field} value={field.value ?? ''} className="pl-10" />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -200,6 +203,7 @@ export function SignUpForm() {
                             type={showPassword ? 'text' : 'password'}
                             placeholder="••••••••"
                             {...field}
+                            value={field.value ?? ''}
                             className="pl-10 pr-10"
                         />
                     </FormControl>
@@ -225,7 +229,7 @@ export function SignUpForm() {
                    <div className="relative">
                     <School className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <FormControl>
-                        <Input placeholder="Enter code from your school" {...field} className="pl-10" />
+                        <Input placeholder="Enter code from your school" {...field} value={field.value ?? ''} className="pl-10" />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -273,7 +277,7 @@ export function SignUpForm() {
                     <div className="relative">
                       <School className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                       <FormControl>
-                        <Input placeholder="Enter code from your school" {...field} className="pl-10" />
+                        <Input placeholder="Enter code from your school" {...field} value={field.value ?? ''} className="pl-10" />
                       </FormControl>
                     </div>
                     <FormMessage />
