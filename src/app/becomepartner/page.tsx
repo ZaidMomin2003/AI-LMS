@@ -3,7 +3,7 @@
 
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
-import { Bot, BrainCircuit, Calendar, Check, MessageSquare, Mic, User, Wand2, Map, Users } from 'lucide-react';
+import { Bot, BrainCircuit, Calendar, Users, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PartnerWorkflow } from '@/components/partner/PartnerWorkflow';
 import { PartnerFeatures } from '@/components/partner/PartnerFeatures';

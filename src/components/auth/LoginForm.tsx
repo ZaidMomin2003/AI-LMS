@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -14,13 +15,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, type User } from 'firebase/auth';
 import { auth, googleProvider, isFirebaseEnabled } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import Link from 'next/link';
+import { getUserDoc } from '@/services/firestore';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -48,15 +50,24 @@ export function LoginForm() {
     },
   });
 
+  const handleSuccessfulLogin = async (user: User) => {
+    // Check if user has onboarded. If not, redirect to onboarding.
+    const userDoc = await getUserDoc(user.uid);
+    if (userDoc && userDoc.profile) {
+      router.push('/dashboard');
+    } else {
+      router.push('/onboarding');
+    }
+  };
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     if (!auth) return;
     setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, values.email, values.password);
-      router.push('/dashboard');
+      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
+      await handleSuccessfulLogin(userCredential.user);
     } catch (error: any) {
       let description = "An unexpected error occurred. Please try again.";
-      // Firebase v9+ uses 'auth/invalid-credential' for both wrong password and user not found
       if (error.code === 'auth/invalid-credential') {
           description = "Invalid email or password. Please check your credentials and try again.";
       }
@@ -74,8 +85,8 @@ export function LoginForm() {
     if (!auth || !googleProvider) return;
     setIsGoogleLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
-      router.push('/dashboard');
+      const result = await signInWithPopup(auth, googleProvider);
+      await handleSuccessfulLogin(result.user);
     } catch (error: any) {
       let description = error.message;
       if (error.code === 'auth/unauthorized-domain') {
@@ -161,7 +172,7 @@ export function LoginForm() {
             />
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Login
+              Login with Email
             </Button>
           </form>
         </Form>
@@ -171,13 +182,13 @@ export function LoginForm() {
             </div>
             <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
+                    Or
                 </span>
             </div>
         </div>
         <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isGoogleLoading}>
           {isGoogleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
-          Google
+          Login with Google
         </Button>
     </div>
   );

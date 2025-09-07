@@ -127,7 +127,7 @@ export function SchoolSignUpForm() {
         />
         <Button type="submit" disabled={isLoading} className="w-full">
           {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-          Create Account & Go to Dashboard
+          Create Account with Email
         </Button>
       </form>
     </Form>

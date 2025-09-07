@@ -76,7 +76,7 @@ export default function SignUpPage() {
                 <div className="grid gap-2 text-center pt-4">
                   <h1 className="text-3xl font-bold font-headline">Create a Student Account</h1>
                   <p className="text-balance text-muted-foreground">
-                    Enter your school's invite code and your details to get started.
+                    Sign up with Google or email and enter your school's invite code.
                   </p>
                 </div>
                 <SignUpForm />
@@ -85,7 +85,7 @@ export default function SignUpPage() {
                  <div className="grid gap-2 text-center pt-4">
                     <h1 className="text-3xl font-bold font-headline">Create an Institute Account</h1>
                     <p className="text-balance text-muted-foreground">
-                        Set up your institution's admin profile to get started.
+                        Sign up with Google or your email to set up your admin profile.
                     </p>
                 </div>
                 <div className="mt-4">
