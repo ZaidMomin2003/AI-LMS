@@ -9,7 +9,7 @@ import bcrypt from 'bcryptjs';
 
 const LoginSchema = z.object({
   email: z.string().email(),
-  // Password can be optional if it's a Google Sign-In flow, though this action is for email/pass
+  // Password can be optional if it's a Google Sign-In flow
   password: z.string().optional(),
 });
 
@@ -57,6 +57,10 @@ export async function schoolLoginAction(credentials: unknown): Promise<ActionRes
         // If no password, this is a Google Sign-In flow. 
         // We trust the authentication has already happened on the client.
         // We've found the school by email, so we can proceed.
+        // If the account has a password, it means it wasn't created with Google.
+        if (schoolData.hashedPassword) {
+            return { success: false, message: 'This account uses an email and password. Please sign in with your password.' };
+        }
     }
 
 
