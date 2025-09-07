@@ -24,10 +24,9 @@ const SchoolSignUpSchema = z.object({
 export async function createSchoolAccountAction(
   values: unknown
 ): Promise<{ success: boolean; message: string }> {
-  // For the demo, we bypass Firebase and immediately log the user in.
-  // This provides a seamless, error-free experience.
   if (!isFirebaseEnabled || !db) {
-     cookies().set('school-session', 'demo-school-id', {
+    // This is a fallback for demo mode, but the primary logic is now production-ready.
+    cookies().set('school-session', 'demo-school-id', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 60 * 60 * 24, // 1 day
