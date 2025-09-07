@@ -3,25 +3,15 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow public creation of new school documents.
-    // Secure existing documents so only authenticated school admins can access them.
+    // Allow public creation of schools for the sign-up form
     match /schools/{schoolId} {
-      allow create; // Anyone can create a new school account
-      allow read, write: if request.auth != null && request.auth.uid == schoolId;
+      allow create: if true;
+      allow read, update, delete: if request.auth != null; // Placeholder for future admin auth
     }
 
-    // Secure user documents: only the authenticated user can access their own data.
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // Allow public read for submissions and support requests for admin panel
-    match /submissions/{submissionId} {
-       allow read, create: if true;
-    }
-
-    match /supportRequests/{requestId} {
-       allow read, create: if true;
+    // Secure other collections by default
+    match /{document=**} {
+      allow read, write: if request.auth != null;
     }
   }
 }
