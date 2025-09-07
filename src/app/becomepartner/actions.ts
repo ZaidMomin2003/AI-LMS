@@ -7,12 +7,18 @@ import { partnerChatFlow, type PartnerChatInput, type PartnerChatOutput } from '
 import { z } from 'zod';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
+import { customAlphabet } from 'nanoid';
+
+// Generates a unique, readable invite code
+const generateInviteCode = () => {
+    const nanoid = customAlphabet('ABCDEFGHIJKLMNPQRSTUVWXYZ123456789', 8);
+    return nanoid();
+};
 
 const SchoolSignUpSchema = z.object({
   schoolName: z.string().min(3, 'School name is required.'),
   adminEmail: z.string().email('Please enter a valid email.'),
   password: z.string().min(8, 'Password must be at least 8 characters.'),
-  schoolSize: z.coerce.number().min(1, 'School size must be at least 1.'),
 });
 
 export async function createSchoolAccountAction(
@@ -24,11 +30,18 @@ export async function createSchoolAccountAction(
     return { success: false, message: `Invalid form data: ${errorMessages}` };
   }
   
+  // For the demo, we can bypass Firebase checks and just set a cookie
   if (!isFirebaseEnabled || !db) {
-    return { success: false, message: 'Database is not configured.' };
+     cookies().set('school-session', 'demo-school-id', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 24, // 1 day
+      path: '/',
+    });
+    return { success: true, message: 'School account created successfully!' };
   }
 
-  const { schoolName, adminEmail, password, schoolSize } = result.data;
+  const { schoolName, adminEmail, password } = result.data;
 
   try {
     // 1. Check if a school with this email already exists
@@ -47,9 +60,9 @@ export async function createSchoolAccountAction(
       name: schoolName,
       adminEmail: adminEmail,
       hashedPassword: hashedPassword,
-      totalLicenses: schoolSize,
+      totalLicenses: 100, // Assign a default of 100 licenses
       usedLicenses: 0,
-      inviteCode: 'DEMOCODE', // Placeholder, will be generated
+      inviteCode: generateInviteCode(),
       createdAt: serverTimestamp(),
     });
 
