@@ -1,13 +1,10 @@
 
 'use client';
 
-import { useState } from 'react';
 import { LoginForm } from '@/components/auth/LoginForm';
-import { SchoolLoginForm } from '@/components/auth/SchoolLoginForm';
 import { BookOpenCheck } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const TestimonialCard = ({ quote, name, handle }: { quote: string; name: string; handle: string }) => (
     <Card className="bg-card/50 p-6 rounded-xl shadow-lg border border-border/20 backdrop-blur-sm">
@@ -45,8 +42,6 @@ const testimonials = [
   ];
 
 export default function LoginPage() {
-  const [userType, setUserType] = useState('student');
-
   return (
     <div className="w-full min-h-screen grid grid-cols-1 lg:grid-cols-2">
       <div className="hidden lg:flex flex-col items-center justify-center bg-muted p-8 overflow-hidden relative">
@@ -67,36 +62,27 @@ export default function LoginPage() {
               </Link>
           </div>
           <div className="mx-auto grid w-full max-w-sm gap-6">
-            <Tabs defaultValue="student" className="w-full" onValueChange={(value) => setUserType(value)}>
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="student">Student</TabsTrigger>
-                    <TabsTrigger value="institute">Institute</TabsTrigger>
-                </TabsList>
-                <TabsContent value="student">
-                    <div className="grid gap-2 text-center pt-4">
-                        <h1 className="text-3xl font-bold font-headline">Student Login</h1>
-                        <p className="text-balance text-muted-foreground">
-                            Enter your email below to login to your account.
-                        </p>
-                    </div>
-                    <LoginForm />
-                </TabsContent>
-                <TabsContent value="institute">
-                    <div className="grid gap-2 text-center pt-4">
-                        <h1 className="text-3xl font-bold font-headline">Institute Login</h1>
-                        <p className="text-balance text-muted-foreground">
-                            Enter your administrator credentials to sign in.
-                        </p>
-                    </div>
-                    <SchoolLoginForm />
-                </TabsContent>
-            </Tabs>
-
+            <div className="grid gap-2 text-center pt-4">
+                <h1 className="text-3xl font-bold font-headline">Student Login</h1>
+                <p className="text-balance text-muted-foreground">
+                    Enter your email below to login to your account.
+                </p>
+            </div>
+            <LoginForm />
             <div className="mt-4 text-center text-sm">
                 Don&apos;t have an account?{" "}
                 <Link href="/signup" className="underline font-semibold text-primary">
                     Sign up
                 </Link>
+            </div>
+            <div className="mt-2 text-center text-sm">
+              Are you a school administrator?{" "}
+              <Link
+                href="/school/login"
+                className="underline font-semibold text-primary"
+              >
+                Login here
+              </Link>
             </div>
           </div>
       </div>
