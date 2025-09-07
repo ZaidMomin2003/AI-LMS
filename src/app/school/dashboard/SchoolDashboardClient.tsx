@@ -156,7 +156,7 @@ export function SchoolDashboardClient({ initialSchool, initialUsers }: SchoolDas
                                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                         <AlertDialogDescription>
                                             This action will remove the student from your school and free up their license. They will lose Pro access. This cannot be undone.
-                                        </d:AlertDialogDescription>
+                                        </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
