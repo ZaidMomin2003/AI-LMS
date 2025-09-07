@@ -9,7 +9,7 @@ import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 
 // This schema now correctly handles both email/password and Google sign-up flows.
-// Password is now optional.
+// Password is now optional. It only validates the core user credentials.
 const SchoolSignUpSchema = z.object({
   schoolName: z.string().min(3, 'School name is required.'),
   adminEmail: z.string().email('Please enter a valid email.'),

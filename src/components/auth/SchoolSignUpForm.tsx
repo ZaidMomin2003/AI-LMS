@@ -78,7 +78,7 @@ export function SchoolSignUpForm() {
       const result = await signInWithPopup(auth, googleProvider);
       setGoogleUser(result.user);
     } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Google Sign-In Failed', description: error.message });
+      toast({ variant: 'destructive', title: 'Google Sign-In Failed', description: "Could not sign in with Google. Please try again or use email and password." });
     } finally {
       setIsGoogleLoading(false);
     }

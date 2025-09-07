@@ -20,8 +20,7 @@ interface ActionResult {
 export async function schoolLoginAction(credentials: unknown): Promise<ActionResult> {
   const result = LoginSchema.safeParse(credentials);
   if (!result.success) {
-    const errorMessages = result.error.errors.map(e => e.message).join(', ');
-    return { success: false, message: `There was an issue with your submission: ${errorMessages}` };
+    return { success: false, message: 'Please enter a valid email address.' };
   }
 
   const { email, password } = result.data;
