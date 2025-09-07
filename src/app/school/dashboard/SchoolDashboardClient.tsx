@@ -161,6 +161,7 @@ export function SchoolDashboardClient({ initialSchool, initialUsers }: SchoolDas
                                         <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                                         <AlertDialogAction onClick={() => handleRemoveUser(user.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                                            {isDeleting === user.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                                             Yes, remove student
                                         </AlertDialogAction>
                                         </AlertDialogFooter>

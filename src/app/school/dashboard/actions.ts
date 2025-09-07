@@ -32,8 +32,25 @@ export async function getSchoolDataForDashboard(): Promise<{
   error?: string;
 }> {
   const schoolId = cookies().get('school-session')?.value;
+  
+  // DEMO MODE: If no schoolId is found, return demo data
   if (!schoolId) {
-    redirect('/school/login');
+    const demoSchool: SchoolData = {
+        id: 'demo-school-id',
+        name: 'Wisdomis Fun Demo School',
+        adminEmail: 'admin@demoschool.com',
+        totalLicenses: 100,
+        usedLicenses: 5,
+        inviteCode: 'DEMO2024',
+    };
+    const demoUsers: SchoolUser[] = [
+        { id: 'user1', displayName: 'Alice Johnson', email: 'alice.j@example.com', createdAt: new Date().toISOString() },
+        { id: 'user2', displayName: 'Bob Williams', email: 'bob.w@example.com', createdAt: new Date().toISOString() },
+        { id: 'user3', displayName: 'Charlie Brown', email: 'charlie.b@example.com', createdAt: new Date().toISOString() },
+        { id: 'user4', displayName: 'Diana Prince', email: 'diana.p@example.com', createdAt: new Date().toISOString() },
+        { id: 'user5', displayName: 'Ethan Hunt', email: 'ethan.h@example.com', createdAt: new Date().toISOString() },
+    ];
+    return { school: demoSchool, users: demoUsers };
   }
 
   if (!isFirebaseEnabled || !db) {
@@ -85,6 +102,10 @@ export async function removeUserFromSchool(userId: string): Promise<{success: bo
     const schoolId = cookies().get('school-session')?.value;
     if (!schoolId) {
         return { success: false, message: 'Authentication error. Please log in again.' };
+    }
+     // DEMO MODE: Prevent actual deletion in demo
+    if (schoolId === 'demo-school-id') {
+        return { success: true, message: "User removed in demo mode!" };
     }
 
     if (!isFirebaseEnabled || !db) {
