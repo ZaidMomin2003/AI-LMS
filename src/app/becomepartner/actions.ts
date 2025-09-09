@@ -6,8 +6,8 @@ import { addDoc, collection, getDocs, query, serverTimestamp, where } from 'fire
 import { partnerChatFlow, type PartnerChatInput, type PartnerChatOutput } from '@/ai/flows/partner-chat-flow';
 import { z } from 'zod';
 import { cookies } from 'next/headers';
-import bcrypt from 'bcryptjs';
 import { customAlphabet } from 'nanoid';
+import { webcrypto } from 'crypto';
 
 // Generates a unique, readable invite code
 const generateInviteCode = () => {
@@ -20,6 +20,42 @@ const SchoolSignUpSchema = z.object({
   adminEmail: z.string().email('Please enter a valid email.'),
   password: z.string().min(8, 'Password must be at least 8 characters.'),
 });
+
+/**
+ * Securely hashes a password using the Web Crypto API.
+ * @param password The password to hash.
+ * @returns A promise that resolves to the hashed password.
+ */
+async function hashPassword(password: string): Promise<string> {
+    const salt = webcrypto.getRandomValues(new Uint8Array(16));
+    const encodedPassword = new TextEncoder().encode(password);
+    
+    const key = await webcrypto.subtle.importKey(
+        'raw',
+        encodedPassword,
+        { name: 'PBKDF2' },
+        false,
+        ['deriveBits']
+    );
+
+    const derivedBits = await webcrypto.subtle.deriveBits(
+        {
+            name: 'PBKDF2',
+            salt: salt,
+            iterations: 100000,
+            hash: 'SHA-256',
+        },
+        key,
+        256
+    );
+
+    const hashArray = Array.from(new Uint8Array(derivedBits));
+    const saltArray = Array.from(salt);
+
+    // Combine salt and hash, and convert to a hex string for storage
+    return Buffer.from([...saltArray, ...hashArray]).toString('hex');
+}
+
 
 export async function createSchoolAccountAction(
   values: unknown
@@ -49,7 +85,7 @@ export async function createSchoolAccountAction(
     }
 
     // 3. Securely hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
 
     // 4. Create the new school document in Firestore
     const newSchoolRef = await addDoc(collection(db, 'schools'), {
@@ -74,7 +110,7 @@ export async function createSchoolAccountAction(
   } catch (error) {
     console.error('Error creating school account:', error);
     // This will now catch Firestore permission errors if rules are incorrect
-    return { success: false, message: 'A server error occurred. Please ensure Firestore rules are set correctly and try again.' };
+    return { success: false, message: 'A server error occurred. Please try again.' };
   }
 }
 
