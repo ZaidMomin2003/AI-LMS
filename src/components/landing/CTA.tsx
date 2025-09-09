@@ -16,14 +16,14 @@ export function CTA() {
           <Sparkles className="mx-auto h-12 w-12 text-primary-foreground/80 mb-4" />
 
           <h2 className="mx-auto max-w-2xl text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl font-headline">
-            Are you an educational institution?
+            Ready to Revolutionize Your Studying?
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-primary-foreground/90">
-            Empower your students with the next generation of learning tools. Learn more about our institutional licensing and partnership opportunities.
+            Stop wasting time on manual note-taking and inefficient study methods. Unlock your full academic potential with the power of AI.
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Button asChild size="lg" className="bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-              <Link href="/becomepartner">Learn More for Schools</Link>
+              <Link href="/signup">Get Started for Free</Link>
             </Button>
           </div>
 

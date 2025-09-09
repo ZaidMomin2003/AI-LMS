@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -47,7 +48,6 @@ export function SignUpForm() {
     setIsLoading(true);
     try {
       await signUpWithEmailPassword(data.name, data.email, data.password);
-      // The onAuthStateChanged listener in AuthContext will handle the redirect.
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Sign-up Failed', description: error.message });
     } finally {
@@ -60,7 +60,6 @@ export function SignUpForm() {
     setIsGoogleLoading(true);
     try {
       await signInWithPopup(auth, googleProvider);
-      // The onAuthStateChanged listener in AuthContext will handle the redirect.
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Google Sign-Up Failed', description: error.message });
     } finally {

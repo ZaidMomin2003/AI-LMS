@@ -39,6 +39,7 @@ import {
   Sparkles,
   Bookmark,
   LifeBuoy,
+  CreditCard,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -56,6 +57,8 @@ import { ThemeToggle } from './ThemeToggle';
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
 import SageMakerChat from './sagemaker/SageMakerChat';
 import { Button } from './ui/button';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { Badge } from './ui/badge';
 
 function AppLoadingScreen() {
   return (
@@ -71,6 +74,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { exam } = useExam();
+  const { subscription } = useSubscription();
   const [isSageMakerOpen, setIsSageMakerOpen] = useState(false);
 
   useEffect(() => {
@@ -234,12 +238,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <SidebarMenuItem>
                     <SidebarMenuButton
                         asChild
-                        className="cursor-pointer border-0 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
+                        className={cn("cursor-pointer border-0 text-primary-foreground font-semibold",
+                          subscription?.status === 'active' ? 'bg-green-500 hover:bg-green-500/90' : 'bg-primary hover:bg-primary/90'
+                        )}
+                        isActive={pathname.startsWith('/dashboard/subscription')}
                     >
-                        <div>
+                        <Link href="/dashboard/subscription">
                             <Gem />
-                            <span>Annual Pro</span>
-                        </div>
+                            <span>{subscription?.status === 'active' ? `${subscription.planName} Plan` : 'Upgrade to Pro'}</span>
+                        </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
@@ -265,6 +272,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       <DropdownMenuItem onSelect={() => router.push('/dashboard/profile')} className="cursor-pointer">
                           <User className="mr-2 h-4 w-4" />
                           <span>Profile</span>
+                      </DropdownMenuItem>
+                       <DropdownMenuItem onSelect={() => router.push('/dashboard/subscription')} className="cursor-pointer">
+                          <CreditCard className="mr-2 h-4 w-4" />
+                          <span>Subscription</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem onSelect={() => router.push('/dashboard/support')} className="cursor-pointer">
                           <LifeBuoy className="mr-2 h-4 w-4" />

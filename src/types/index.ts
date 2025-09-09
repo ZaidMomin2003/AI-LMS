@@ -28,7 +28,7 @@ export interface Topic {
   id: string;
   title: string;
   subject: string;
-  createdAt: string; // Ensure this is a string for serialization
+  createdAt: string; 
   notes: StudyNotes;
   flashcards: Flashcard[];
   quiz: QuizQuestion[];
@@ -48,7 +48,7 @@ export interface KanbanTask {
 export interface ExamDetails {
   name: string;
   syllabus: string;
-  date: string; // Storing as ISO string
+  date: string; 
 }
 
 export type SubscriptionPlan = 'Hobby' | 'Weekly Pass' | 'Annual Pro';
@@ -64,7 +64,7 @@ export interface UserSubscription {
 export interface PomodoroSession {
   topic: string;
   sessions: number;
-  completedAt: string; // Ensure this is a string for serialization
+  completedAt: string; 
 }
 
 export interface School {
@@ -74,5 +74,5 @@ export interface School {
   totalLicenses: number;
   usedLicenses: number;
   inviteCode: string;
-  createdAt: string; // Ensure this is a string for serialization
+  createdAt: string; 
 }

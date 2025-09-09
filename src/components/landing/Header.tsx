@@ -23,9 +23,6 @@ export function Header() {
             <Link href="/#use-cases" className="transition-colors hover:text-foreground/80 text-muted-foreground">
               Use Cases
             </Link>
-             <Link href="/becomepartner" className="transition-colors hover:text-foreground/80 text-muted-foreground">
-              For Schools
-            </Link>
             <Link href="/#faq" className="transition-colors hover:text-foreground/80 text-muted-foreground">
               FAQ
             </Link>

@@ -75,15 +75,6 @@ export default function LoginPage() {
                     Sign up
                 </Link>
             </div>
-            <div className="mt-2 text-center text-sm">
-              Are you a school administrator?{" "}
-              <Link
-                href="/school/login"
-                className="underline font-semibold text-primary"
-              >
-                Login here
-              </Link>
-            </div>
           </div>
       </div>
     </div>
