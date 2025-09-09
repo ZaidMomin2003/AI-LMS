@@ -34,10 +34,10 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
             if (userData?.topics) {
               const parsedTopics = userData.topics.map((t: any) => ({
                   ...t,
-                  // Convert Timestamp/Date to ISO string for serialization
+                  // Convert Firestore Timestamp to a serializable ISO string to prevent errors.
                   createdAt: t.createdAt?.toDate ? t.createdAt.toDate().toISOString() : new Date(t.createdAt).toISOString()
               }));
-              // Sort by date string
+              // Sort by date string after conversion
               setTopics(parsedTopics.sort((a: Topic, b: Topic) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
             } else {
               setTopics([]);
@@ -60,8 +60,6 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user || !isFirebaseEnabled) return;
     const newTopics = [topic, ...topics];
     setTopics(newTopics); // Optimistic update
-    // When saving, convert date strings back to something Firestore can use if needed,
-    // though Firestore SDK can handle ISO strings and convert them to Timestamps.
     await updateUserDoc(user.uid, { topics: newTopics });
   };
 

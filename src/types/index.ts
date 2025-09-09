@@ -28,7 +28,7 @@ export interface Topic {
   id: string;
   title: string;
   subject: string;
-  createdAt: string; // Changed from Date to string to fix serialization error
+  createdAt: string; // Ensure this is a string for serialization
   notes: StudyNotes;
   flashcards: Flashcard[];
   quiz: QuizQuestion[];
