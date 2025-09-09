@@ -8,7 +8,7 @@ import { Download, Loader2, PlusCircle, Copy, Check } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { fetchSchools, createSchool, type School, type NewSchoolData } from './actions';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -179,7 +179,7 @@ export default function AdminSchoolsPage() {
                                             </Button>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="text-right">{format(new Date(school.createdAt), 'PP')}</TableCell>
+                                    <TableCell className="text-right">{format(parseISO(school.createdAt), 'PP')}</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

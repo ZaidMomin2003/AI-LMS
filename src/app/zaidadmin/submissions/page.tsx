@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -12,7 +13,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { fetchSubmissions, type Submission } from './actions';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 
 
@@ -128,7 +129,7 @@ export default function AdminSubmissionsPage() {
                                         <TableCell>
                                             <p className="max-w-lg truncate">{submission.message}</p>
                                         </TableCell>
-                                        <TableCell className="text-right">{format(new Date(submission.createdAt), 'PP')}</TableCell>
+                                        <TableCell className="text-right">{format(parseISO(submission.createdAt), 'PP')}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -154,7 +155,7 @@ export default function AdminSubmissionsPage() {
               <DialogHeader>
                 <DialogTitle>Submission from: {selectedSubmission.name}</DialogTitle>
                 <DialogDescription>
-                  {selectedSubmission.email} &bull; Received on {format(new Date(selectedSubmission.createdAt), 'PPP p')}
+                  {selectedSubmission.email} &bull; Received on {format(parseISO(selectedSubmission.createdAt), 'PPP p')}
                 </DialogDescription>
               </DialogHeader>
               <div className="py-4 bg-secondary/50 rounded-md px-4 my-4">

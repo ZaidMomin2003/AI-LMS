@@ -2,7 +2,7 @@
 'use server';
 
 import { db, isFirebaseEnabled } from '@/lib/firebase';
-import { collection, getDocs, addDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, addDoc, serverTimestamp, query, orderBy, type Timestamp } from 'firebase/firestore';
 import { customAlphabet } from 'nanoid';
 
 export interface School {
@@ -62,6 +62,8 @@ export async function fetchSchools(): Promise<School[]> {
 
     const schools = querySnapshot.docs.map((doc) => {
       const data = doc.data();
+      // **THIS IS THE FIX**: Convert Firestore Timestamp to ISO string immediately.
+      const createdAtTimestamp = data.createdAt as Timestamp;
       return {
         id: doc.id,
         name: data.name,
@@ -69,7 +71,7 @@ export async function fetchSchools(): Promise<School[]> {
         totalLicenses: data.totalLicenses,
         usedLicenses: data.usedLicenses,
         inviteCode: data.inviteCode,
-        createdAt: data.createdAt?.toDate().toISOString() ?? new Date().toISOString(),
+        createdAt: createdAtTimestamp?.toDate ? createdAtTimestamp.toDate().toISOString() : new Date().toISOString(),
       };
     });
     

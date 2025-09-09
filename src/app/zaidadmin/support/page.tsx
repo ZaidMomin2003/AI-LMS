@@ -13,7 +13,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { fetchSupportRequests, type SupportRequest } from './actions';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 
@@ -128,7 +128,7 @@ export default function AdminSupportPage() {
                                         <TableCell>
                                             <Badge variant="secondary">{request.queryType}</Badge>
                                         </TableCell>
-                                        <TableCell className="text-right">{format(new Date(request.createdAt), 'PP')}</TableCell>
+                                        <TableCell className="text-right">{format(parseISO(request.createdAt), 'PP')}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -150,7 +150,7 @@ export default function AdminSupportPage() {
               <DialogHeader>
                 <DialogTitle>Request from: {selectedRequest.name}</DialogTitle>
                 <DialogDescription>
-                  {selectedRequest.email} &bull; Received on {format(new Date(selectedRequest.createdAt), 'PPP p')}
+                  {selectedRequest.email} &bull; Received on {format(parseISO(selectedRequest.createdAt), 'PPP p')}
                 </DialogDescription>
               </DialogHeader>
               <div className="flex items-center gap-2">

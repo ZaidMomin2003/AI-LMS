@@ -6,6 +6,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getUserDoc, updateUserDoc } from '@/services/firestore';
 import { isFirebaseEnabled } from '@/lib/firebase';
+import type { Timestamp } from 'firebase/firestore';
 
 interface ExamContextType {
   exam: ExamDetails | null;
@@ -33,11 +34,12 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
         if (user && isFirebaseEnabled) {
             try {
                 const userData = await getUserDoc(user.uid);
-                // Ensure date is a string
                 if (userData?.exam) {
                     const examData = userData.exam;
+                    // **THIS IS THE FIX**: Convert Firestore Timestamp to ISO string immediately.
                     if (examData.date && typeof examData.date !== 'string') {
-                        examData.date = examData.date.toDate().toISOString();
+                        const dateTimestamp = examData.date as Timestamp;
+                        examData.date = dateTimestamp.toDate().toISOString();
                     }
                     setExam(examData);
                 } else {
@@ -71,7 +73,7 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
           });
       } else {
           setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-          clearExam();
+          // Don't auto-clear the exam, let the user do it.
       }
     }
 
@@ -84,7 +86,12 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
   const addExam = async (newExam: ExamDetails) => {
     if (!user || !isFirebaseEnabled) return;
     setExam(newExam); // Optimistic update
-    await updateUserDoc(user.uid, { exam: newExam });
+    // When saving, convert the date string back to a Date object for Firestore
+    const examToSave = {
+        ...newExam,
+        date: new Date(newExam.date),
+    };
+    await updateUserDoc(user.uid, { exam: examToSave });
   };
 
   const clearExam = async () => {

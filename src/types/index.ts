@@ -66,3 +66,13 @@ export interface PomodoroSession {
   sessions: number;
   completedAt: string; // Ensure this is a string for serialization
 }
+
+export interface School {
+  id: string;
+  name: string;
+  adminEmail: string;
+  totalLicenses: number;
+  usedLicenses: number;
+  inviteCode: string;
+  createdAt: string; // Ensure this is a string for serialization
+}
