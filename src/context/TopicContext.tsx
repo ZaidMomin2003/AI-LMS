@@ -60,8 +60,15 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
 
   const addTopic = async (topic: Topic) => {
     if (!user || !isFirebaseEnabled) return;
-    const newTopics = [topic, ...topics];
+    // Ensure the new topic's createdAt is a string before adding to state
+    const topicWithStringDate = {
+      ...topic,
+      createdAt: new Date(topic.createdAt).toISOString(),
+    };
+    const newTopics = [topicWithStringDate, ...topics];
     setTopics(newTopics); // Optimistic update
+    
+    // When saving to Firestore, convert strings back to Date objects
     const topicsToSave = newTopics.map(t => ({...t, createdAt: new Date(t.createdAt)}));
     await updateUserDoc(user.uid, { topics: topicsToSave });
   };
