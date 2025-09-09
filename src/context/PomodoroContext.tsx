@@ -6,6 +6,7 @@ import { useAuth } from './AuthContext';
 import { getUserDoc, updateUserDoc } from '@/services/firestore';
 import { isFirebaseEnabled } from '@/lib/firebase';
 import type { PomodoroSession } from '@/types';
+import type { Timestamp } from 'firebase/firestore';
 
 interface PomodoroContextType {
   pomodoroHistory: PomodoroSession[];
@@ -26,7 +27,18 @@ export const PomodoroProvider = ({ children }: { children: React.ReactNode }) =>
         setLoading(true);
         try {
           const userData = await getUserDoc(user.uid);
-          setPomodoroHistory(userData?.pomodoroHistory || []);
+          if (userData?.pomodoroHistory) {
+            const parsedHistory = userData.pomodoroHistory.map((s: any) => {
+                const completedAtTimestamp = s.completedAt as Timestamp;
+                return {
+                    ...s,
+                    completedAt: completedAtTimestamp?.toDate ? completedAtTimestamp.toDate().toISOString() : new Date().toISOString()
+                };
+            });
+            setPomodoroHistory(parsedHistory);
+          } else {
+            setPomodoroHistory([]);
+          }
         } catch (error) {
           console.error("Failed to fetch pomodoro history:", error);
           setPomodoroHistory([]);

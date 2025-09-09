@@ -64,5 +64,5 @@ export interface UserSubscription {
 export interface PomodoroSession {
   topic: string;
   sessions: number;
-  completedAt: string;
+  completedAt: string; // Ensure this is a string for serialization
 }

@@ -79,15 +79,17 @@ export default function AnalyticsPage() {
     }
 
     topics.forEach((topic) => {
-      const topicDate = parseISO(topic.createdAt); // Use parseISO for string dates
-      // Check if the topic was created within the last 7 days
-      if (isAfter(topicDate, subDays(today, 7))) {
-        const formattedDate = format(topicDate, 'MMM d');
-        if (dailyTopicsMap.has(formattedDate)) {
-          dailyTopicsMap.set(
-            formattedDate,
-            dailyTopicsMap.get(formattedDate)! + 1
-          );
+      if (topic.createdAt) {
+        try {
+          const topicDate = parseISO(topic.createdAt);
+          if (isAfter(topicDate, subDays(today, 7))) {
+            const formattedDate = format(topicDate, 'MMM d');
+            if (dailyTopicsMap.has(formattedDate)) {
+              dailyTopicsMap.set(formattedDate, dailyTopicsMap.get(formattedDate)! + 1);
+            }
+          }
+        } catch (error) {
+          console.error("Error parsing date:", topic.createdAt, error);
         }
       }
     });

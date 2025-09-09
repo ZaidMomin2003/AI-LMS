@@ -33,7 +33,16 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
         if (user && isFirebaseEnabled) {
             try {
                 const userData = await getUserDoc(user.uid);
-                setExam(userData?.exam || null);
+                // Ensure date is a string
+                if (userData?.exam) {
+                    const examData = userData.exam;
+                    if (examData.date && typeof examData.date !== 'string') {
+                        examData.date = examData.date.toDate().toISOString();
+                    }
+                    setExam(examData);
+                } else {
+                    setExam(null);
+                }
             } catch (error) {
                 console.error("Failed to fetch exam details:", error);
                 setExam(null);

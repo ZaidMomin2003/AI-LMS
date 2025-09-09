@@ -6,6 +6,7 @@ import type { Topic } from '@/types';
 import { useAuth } from './AuthContext';
 import { getUserDoc, updateUserDoc } from '@/services/firestore';
 import { isFirebaseEnabled } from '@/lib/firebase';
+import type { Timestamp } from 'firebase/firestore';
 
 interface TopicContextType {
   topics: Topic[];
@@ -32,12 +33,13 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const userData = await getUserDoc(user.uid);
             if (userData?.topics) {
-              const parsedTopics = userData.topics.map((t: any) => ({
-                  ...t,
-                  // Convert Firestore Timestamp to a serializable ISO string to prevent errors.
-                  createdAt: t.createdAt?.toDate ? t.createdAt.toDate().toISOString() : new Date(t.createdAt).toISOString()
-              }));
-              // Sort by date string after conversion
+              const parsedTopics = userData.topics.map((t: any) => {
+                  const createdAtTimestamp = t.createdAt as Timestamp;
+                  return {
+                      ...t,
+                      createdAt: createdAtTimestamp?.toDate ? createdAtTimestamp.toDate().toISOString() : new Date().toISOString()
+                  };
+              });
               setTopics(parsedTopics.sort((a: Topic, b: Topic) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
             } else {
               setTopics([]);
