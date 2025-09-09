@@ -71,7 +71,6 @@ export default function AnalyticsPage() {
     const dailyTopicsMap = new Map<string, number>();
     const today = new Date();
 
-    // Initialize map for the last 7 days
     for (let i = 6; i >= 0; i--) {
       const date = subDays(today, i);
       const formattedDate = format(date, 'MMM d');

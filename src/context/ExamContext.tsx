@@ -36,7 +36,6 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
                 const userData = await getUserDoc(user.uid);
                 if (userData?.exam) {
                     const examData = userData.exam;
-                    // **THIS IS THE FIX**: Convert Firestore Timestamp to ISO string immediately.
                     if (examData.date && typeof examData.date !== 'string') {
                         const dateTimestamp = examData.date as Timestamp;
                         examData.date = dateTimestamp.toDate().toISOString();
@@ -73,7 +72,6 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
           });
       } else {
           setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-          // Don't auto-clear the exam, let the user do it.
       }
     }
 
@@ -86,7 +84,6 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
   const addExam = async (newExam: ExamDetails) => {
     if (!user || !isFirebaseEnabled) return;
     setExam(newExam); // Optimistic update
-    // When saving, convert the date string back to a Date object for Firestore
     const examToSave = {
         ...newExam,
         date: new Date(newExam.date),

@@ -2,7 +2,7 @@
 'use server';
 
 import { db, isFirebaseEnabled } from '@/lib/firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, type Timestamp } from 'firebase/firestore';
 
 export interface Submission {
   id: string;
@@ -20,21 +20,18 @@ export async function fetchSubmissions(): Promise<Submission[]> {
 
   try {
     const submissionsRef = collection(db, 'submissions');
-    // NOTE: This query requires a composite index on 'createdAt' in descending order.
-    // If you see a permission error in the console, Firebase will provide a link
-    // to create this index automatically.
     const q = query(submissionsRef, orderBy('createdAt', 'desc'));
     const querySnapshot = await getDocs(q);
 
     const submissions = querySnapshot.docs.map((doc) => {
       const data = doc.data();
+      const createdAtTimestamp = data.createdAt as Timestamp;
       return {
         id: doc.id,
         name: data.name,
         email: data.email,
         message: data.message,
-        // Firestore Timestamps need to be converted to a serializable format (ISO string)
-        createdAt: data.createdAt?.toDate().toISOString() ?? new Date().toISOString(),
+        createdAt: createdAtTimestamp?.toDate ? createdAtTimestamp.toDate().toISOString() : new Date().toISOString(),
       };
     });
     

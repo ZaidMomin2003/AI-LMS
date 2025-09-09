@@ -59,8 +59,8 @@ export const PomodoroProvider = ({ children }: { children: React.ReactNode }) =>
         ...session,
         completedAt: new Date().toISOString(),
     }
-    const newHistory = [...pomodoroHistory, newSession];
-    setPomodoroHistory(newHistory); // Optimistic update
+    const newHistory = [...pomodoroHistory, newSession].map(s => ({...s, completedAt: new Date(s.completedAt)}));
+    setPomodoroHistory(newHistory.map(s => ({...s, completedAt: s.completedAt.toISOString()}))); // Optimistic update
     await updateUserDoc(user.uid, { pomodoroHistory: newHistory });
   };
 

@@ -33,7 +33,6 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
         try {
             const userData = await getUserDoc(user.uid);
             if (userData?.topics) {
-              // **THIS IS THE FIX**: Convert Firestore Timestamp to ISO string immediately.
               const parsedTopics = userData.topics.map((t: any) => {
                   const createdAtTimestamp = t.createdAt as Timestamp;
                   return {
@@ -63,7 +62,6 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
     if (!user || !isFirebaseEnabled) return;
     const newTopics = [topic, ...topics];
     setTopics(newTopics); // Optimistic update
-    // When saving, convert date strings back to Date objects for Firestore
     const topicsToSave = newTopics.map(t => ({...t, createdAt: new Date(t.createdAt)}));
     await updateUserDoc(user.uid, { topics: topicsToSave });
   };

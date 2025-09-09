@@ -21,10 +21,9 @@ export interface NewSchoolData {
     totalLicenses: number;
 }
 
-// Generates a unique, readable invite code
 const generateInviteCode = () => {
     const nanoid = customAlphabet('ABCDEFGHIJKLMNPQRSTUVWXYZ123456789', 8);
-    return nanoid(); // e.g., 'A4R2-Y7X9'
+    return nanoid();
 };
 
 export async function createSchool(data: NewSchoolData): Promise<{ success: boolean; message: string }> {
@@ -62,7 +61,6 @@ export async function fetchSchools(): Promise<School[]> {
 
     const schools = querySnapshot.docs.map((doc) => {
       const data = doc.data();
-      // **THIS IS THE FIX**: Convert Firestore Timestamp to ISO string immediately.
       const createdAtTimestamp = data.createdAt as Timestamp;
       return {
         id: doc.id,

@@ -2,7 +2,7 @@
 'use server';
 
 import { db, isFirebaseEnabled } from '@/lib/firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, type Timestamp } from 'firebase/firestore';
 
 export interface SupportRequest {
   id: string;
@@ -27,6 +27,7 @@ export async function fetchSupportRequests(): Promise<SupportRequest[]> {
 
     const requests = querySnapshot.docs.map((doc) => {
       const data = doc.data();
+      const createdAtTimestamp = data.createdAt as Timestamp;
       return {
         id: doc.id,
         name: data.name,
@@ -34,7 +35,7 @@ export async function fetchSupportRequests(): Promise<SupportRequest[]> {
         queryType: data.queryType,
         message: data.message,
         status: data.status || 'new',
-        createdAt: data.createdAt?.toDate().toISOString() ?? new Date().toISOString(),
+        createdAt: createdAtTimestamp?.toDate ? createdAtTimestamp.toDate().toISOString() : new Date().toISOString(),
       };
     });
     
