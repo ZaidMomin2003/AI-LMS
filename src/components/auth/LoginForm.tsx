@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -42,16 +41,6 @@ export function LoginForm() {
     defaultValues: { email: '', password: '' },
   });
 
-  const handleSuccessfulLogin = async (user: User) => {
-    // Check if user has onboarded. If not, redirect to onboarding.
-    const userDoc = await getUserDoc(user.uid);
-    if (userDoc && userDoc.profile) {
-      router.push('/dashboard');
-    } else {
-      router.push('/onboarding');
-    }
-  };
-
   const onSubmit = async (data: FormValues) => {
     setIsLoading(true);
     try {
@@ -72,10 +61,8 @@ export function LoginForm() {
     if (!auth || !googleProvider) return;
     setIsGoogleLoading(true);
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      // The onAuthStateChanged listener handles the redirect logic now,
-      // but we can still check for onboarding status here as a backup.
-      await handleSuccessfulLogin(result.user);
+      await signInWithPopup(auth, googleProvider);
+      // The onAuthStateChanged listener in AuthContext will handle the redirect.
     } catch (error: any) {
       toast({
         variant: 'destructive',

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -44,24 +43,6 @@ export function SignUpForm() {
     defaultValues: { name: '', email: '', password: '' },
   });
 
-  const handleSuccessfulSignUp = async (user: User) => {
-    // Check if the user is new or returning.
-    const userDoc = await getUserDoc(user.uid);
-    if (userDoc && userDoc.profile) {
-      // This is a returning user, send them to the dashboard.
-      router.push('/dashboard');
-    } else {
-      // This is a new user. Give them a default subscription and send to onboarding.
-      const defaultSubscription: UserSubscription = {
-        planName: 'Hobby', // Assign a default free plan
-        status: 'active',
-      };
-      await updateUserDoc(user.uid, { subscription: defaultSubscription, email: user.email, displayName: user.displayName });
-      toast({ title: 'Welcome!', description: "Let's get your profile set up." });
-      router.push('/onboarding');
-    }
-  };
-
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
     try {
@@ -78,10 +59,8 @@ export function SignUpForm() {
     if (!auth || !googleProvider) return;
     setIsGoogleLoading(true);
     try {
-      const result = await signInWithPopup(auth, googleProvider);
-      // The onAuthStateChanged listener handles the redirect logic now,
-      // but we can still check for onboarding status here as a backup.
-      await handleSuccessfulSignUp(result.user);
+      await signInWithPopup(auth, googleProvider);
+      // The onAuthStateChanged listener in AuthContext will handle the redirect.
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Google Sign-Up Failed', description: error.message });
     } finally {
