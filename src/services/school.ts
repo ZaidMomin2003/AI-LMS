@@ -66,6 +66,8 @@ export async function handleSchoolInvite(
     const userUpdateData = {
       schoolId: schoolDoc.id,
       subscription: proSubscription,
+      email: user.email,
+      displayName: user.displayName,
     };
     
     const userDocRef = doc(db, 'users', user.uid);

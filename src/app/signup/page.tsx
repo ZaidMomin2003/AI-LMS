@@ -65,7 +65,7 @@ export default function SignUpPage() {
             <div className="grid gap-2 text-center pt-4">
                 <h1 className="text-3xl font-bold font-headline">Create a Student Account</h1>
                 <p className="text-balance text-muted-foreground">
-                Sign up with Google or email and enter your school's invite code.
+                Get started in seconds by signing up with your Google account.
                 </p>
             </div>
             <SignUpForm />

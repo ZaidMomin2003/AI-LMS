@@ -1,39 +1,16 @@
 
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword, signInWithPopup, updateProfile, type User } from 'firebase/auth';
+import { signInWithPopup, type User } from 'firebase/auth';
 import { auth, googleProvider, isFirebaseEnabled } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Loader2, Mail, Lock, Eye, EyeOff, School, User as UserIcon } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { handleSchoolInvite } from '@/services/school';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Please enter your full name.' }),
-  email: z.string().email({ message: 'Invalid email address.' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
-  inviteCode: z.string().min(1, { message: 'An invite code is required.' }),
-});
-
-const inviteCodeSchema = z.object({
-  inviteCode: z.string().min(1, { message: 'An invite code is required.' }),
-});
+import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import type { UserSubscription } from '@/types';
 
 const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
@@ -44,77 +21,32 @@ const GoogleIcon = () => (
 export function SignUpForm() {
   const router = useRouter();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [googleUser, setGoogleUser] = useState<User | null>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      password: '',
-      inviteCode: '',
-    },
-  });
-
-  const inviteCodeForm = useForm<{ inviteCode: string }>({
-    resolver: zodResolver(inviteCodeSchema),
-    defaultValues: {
-        inviteCode: '',
-    }
-  });
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!auth) return;
-    setIsLoading(true);
-    try {
-      const inviteResult = await handleSchoolInvite(null, values.inviteCode);
-      if (!inviteResult.success) {
-        toast({ variant: 'destructive', title: 'Sign Up Failed', description: inviteResult.message });
-        setIsLoading(false);
-        return;
-      }
-      
-      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
-      await updateProfile(userCredential.user, { displayName: values.name });
-      
-      await handleSchoolInvite(userCredential.user, values.inviteCode, true);
-      toast({ title: 'Welcome!', description: `Successfully joined ${inviteResult.schoolName}! Your account is ready.` });
-      
+  const handleSuccessfulSignUp = async (user: User) => {
+    // Check if the user is new or returning.
+    const userDoc = await getUserDoc(user.uid);
+    if (userDoc && userDoc.profile) {
+      // This is a returning user, send them to the dashboard.
+      router.push('/dashboard');
+    } else {
+      // This is a new user. Give them a default subscription and send to onboarding.
+      const defaultSubscription: UserSubscription = {
+        planName: 'Hobby', // Assign a default free plan
+        status: 'active',
+      };
+      await updateUserDoc(user.uid, { subscription: defaultSubscription, email: user.email, displayName: user.displayName });
+      toast({ title: 'Welcome!', description: "Let's get your profile set up." });
       router.push('/onboarding');
-    } catch (error: any) {
-      let description = "An unexpected error occurred. Please try again.";
-      switch (error.code) {
-        case 'auth/email-already-in-use':
-          description = 'This email is already in use. Please log in instead.';
-          break;
-        case 'auth/invalid-email':
-          description = 'Please enter a valid email address.';
-          break;
-        case 'auth/weak-password':
-          description = 'Password is too weak. It must be at least 6 characters long.';
-          break;
-        default:
-          description = "Couldn't create your account. Please try again later.";
-      }
-      toast({
-        variant: 'destructive',
-        title: 'Sign Up Failed',
-        description: description,
-      });
-    } finally {
-      setIsLoading(false);
     }
-  }
+  };
 
   const handleGoogleSignUp = async () => {
     if (!auth || !googleProvider) return;
     setIsGoogleLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      setGoogleUser(result.user);
+      await handleSuccessfulSignUp(result.user);
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Google Sign-Up Failed', description: error.message });
     } finally {
@@ -122,176 +54,23 @@ export function SignUpForm() {
     }
   };
 
-  const handleInviteCodeSubmit = async (values: { inviteCode: string }) => {
-    if (!googleUser) return;
-    setIsLoading(true);
-    try {
-      const inviteResult = await handleSchoolInvite(googleUser, values.inviteCode, true);
-      if (!inviteResult.success) {
-        toast({ variant: 'destructive', title: 'Sign Up Failed', description: inviteResult.message });
-        return;
-      }
-      toast({ title: 'Welcome!', description: `Successfully joined ${inviteResult.schoolName}! Your account is ready.` });
-      router.push('/onboarding');
-    } catch (error: any) {
-      toast({ variant: 'destructive', title: 'Sign Up Failed', description: "Could not process your invite code." });
-    } finally {
-      setIsLoading(false);
-      setGoogleUser(null);
-    }
-  };
-
-
   if (!isFirebaseEnabled) {
     return (
         <Alert variant="destructive">
             <AlertTitle>Firebase Not Configured</AlertTitle>
             <AlertDescription>
-                Authentication is disabled because Firebase credentials are not set in your environment. Please add your credentials to the .env file to enable registration.
+                Authentication is disabled because Firebase is not set up correctly.
             </AlertDescription>
         </Alert>
     )
   }
 
   return (
-    <>
-      <div className="grid gap-4">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                   <div className="relative">
-                    <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <FormControl>
-                        <Input placeholder="Your Name" {...field} value={field.value ?? ''} className="pl-10" />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <FormControl>
-                        <Input placeholder="name@example.com" {...field} value={field.value ?? ''} className="pl-10" />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <FormControl>
-                        <Input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="••••••••"
-                            {...field}
-                            value={field.value ?? ''}
-                            className="pl-10 pr-10"
-                        />
-                    </FormControl>
-                     <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="inviteCode"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>School Invite Code</FormLabel>
-                   <div className="relative">
-                    <School className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <FormControl>
-                        <Input placeholder="Enter code from your school" {...field} value={field.value ?? ''} className="pl-10" />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Sign up with Email
-            </Button>
-          </form>
-        </Form>
-        <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                    Or
-                </span>
-            </div>
-        </div>
+    <div className="grid gap-4">
         <Button variant="outline" className="w-full" onClick={handleGoogleSignUp} disabled={isGoogleLoading}>
           {isGoogleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
           Sign up with Google
         </Button>
-      </div>
-
-      <Dialog open={!!googleUser} onOpenChange={(open) => !open && setGoogleUser(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>One Last Step!</DialogTitle>
-            <DialogDescription>
-              Please enter your school's invite code to complete your registration.
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...inviteCodeForm}>
-            <form onSubmit={inviteCodeForm.handleSubmit(handleInviteCodeSubmit)} className="space-y-4 pt-4">
-              <FormField
-                control={inviteCodeForm.control}
-                name="inviteCode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>School Invite Code</FormLabel>
-                    <div className="relative">
-                      <School className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <FormControl>
-                        <Input placeholder="Enter code from your school" {...field} value={field.value ?? ''} className="pl-10" />
-                      </FormControl>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Complete Sign-up
-              </Button>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
-    </>
+    </div>
   );
 }

@@ -1,33 +1,15 @@
 
 'use client';
 
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword, signInWithPopup, type User } from 'firebase/auth';
+import { signInWithPopup, type User } from 'firebase/auth';
 import { auth, googleProvider, isFirebaseEnabled } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import Link from 'next/link';
 import { getUserDoc } from '@/services/firestore';
-
-const formSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
-  password: z.string().min(1, { message: 'Password is required.' }),
-});
 
 const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
@@ -38,17 +20,7 @@ const GoogleIcon = () => (
 export function LoginForm() {
   const router = useRouter();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
 
   const handleSuccessfulLogin = async (user: User) => {
     // Check if user has onboarded. If not, redirect to onboarding.
@@ -59,27 +31,6 @@ export function LoginForm() {
       router.push('/onboarding');
     }
   };
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!auth) return;
-    setIsLoading(true);
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, values.email, values.password);
-      await handleSuccessfulLogin(userCredential.user);
-    } catch (error: any) {
-      let description = "An unknown error occurred. Please try again.";
-      if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-          description = "The email or password you entered is incorrect. Please check your credentials and try again.";
-      }
-      toast({
-        variant: 'destructive',
-        title: 'Login Failed',
-        description: description,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   async function handleGoogleSignIn() {
     if (!auth || !googleProvider) return;
@@ -115,77 +66,6 @@ export function LoginForm() {
 
   return (
     <div className="grid gap-4">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <FormControl>
-                        <Input placeholder="name@example.com" {...field} className="pl-10" />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                    <div className="flex items-center">
-                        <FormLabel>Password</FormLabel>
-                        <Link
-                            href="#"
-                            className="ml-auto inline-block text-sm underline"
-                        >
-                            Forgot your password?
-                        </Link>
-                    </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <FormControl>
-                        <Input
-                            type={showPassword ? 'text' : 'password'}
-                            placeholder="••••••••"
-                            {...field}
-                            className="pl-10 pr-10"
-                        />
-                    </FormControl>
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </button>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Login with Email
-            </Button>
-          </form>
-        </Form>
-        <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                    Or
-                </span>
-            </div>
-        </div>
         <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isGoogleLoading}>
           {isGoogleLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <GoogleIcon />}
           Login with Google
