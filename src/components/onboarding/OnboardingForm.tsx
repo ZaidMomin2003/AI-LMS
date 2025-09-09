@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -69,8 +70,10 @@ export function OnboardingForm() {
   const { control, trigger, getValues } = form;
 
   const nextStep = async () => {
-    const fields = steps[currentStep].fields;
-    const output = await trigger(fields as (keyof OnboardingData)[], { shouldFocus: true });
+    const currentFields = steps[currentStep].fields;
+    // The `as any` is a safe workaround here because zodResolver expects all fields,
+    // but trigger correctly handles a subset.
+    const output = await trigger(currentFields as any, { shouldFocus: true });
     
     if (!output) return;
 
@@ -85,19 +88,24 @@ export function OnboardingForm() {
     setIsSubmitting(true);
     const values = getValues();
     try {
+        const profileData = {
+            phoneNumber: values.phoneNumber,
+            country: values.country,
+            grade: values.grade,
+            referralSource: values.referralSource
+        };
+        const examData = {
+            name: values.examName,
+            date: values.examDate.toISOString(),
+            syllabus: `Syllabus for ${values.examName}`, // Default syllabus
+        };
+
+        // Use Promise.all to run updates in parallel
         await Promise.all([
-            updateProfile({
-                phoneNumber: values.phoneNumber,
-                country: values.country,
-                grade: values.grade,
-                referralSource: values.referralSource
-            }),
-            addExam({
-                name: values.examName,
-                date: values.examDate.toISOString(),
-                syllabus: `Syllabus for ${values.examName}`, // Default syllabus
-            })
+            updateProfile(profileData),
+            addExam(examData)
         ]);
+
         toast({
             title: "Welcome to Wisdomis Fun!",
             description: "Your profile is set up. Let's start learning.",
@@ -229,7 +237,7 @@ export function OnboardingForm() {
                   {isSubmitting ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
                   ) : (
-                      <ArrowRight className="ml-2" />
+                      <Check className="mr-2" />
                   )}
                   Go to Dashboard
               </Button>
