@@ -65,7 +65,7 @@ export default function LoginPage() {
             <div className="grid gap-2 text-center pt-4">
                 <h1 className="text-3xl font-bold font-headline">Student Login</h1>
                 <p className="text-balance text-muted-foreground">
-                    Use your Google account to sign in.
+                    Enter your credentials to access your dashboard.
                 </p>
             </div>
             <LoginForm />
