@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
@@ -65,12 +65,8 @@ export function SignUpForm() {
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setIsLoading(true);
     try {
-      const user = await signUpWithEmailPassword(data.name, data.email, data.password);
-      if (user) {
-        await handleSuccessfulSignUp(user);
-      } else {
-        throw new Error("Sign up failed, please try again.");
-      }
+      await signUpWithEmailPassword(data.name, data.email, data.password);
+      // The onAuthStateChanged listener in AuthContext will handle the redirect.
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Sign-up Failed', description: error.message });
     } finally {
@@ -83,6 +79,8 @@ export function SignUpForm() {
     setIsGoogleLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
+      // The onAuthStateChanged listener handles the redirect logic now,
+      // but we can still check for onboarding status here as a backup.
       await handleSuccessfulSignUp(result.user);
     } catch (error: any) {
       toast({ variant: 'destructive', title: 'Google Sign-Up Failed', description: error.message });

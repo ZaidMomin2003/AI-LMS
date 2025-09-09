@@ -14,13 +14,12 @@ import {
  * @param name The user's full name.
  * @param email The user's email.
  * @param password The user's password.
- * @returns The created user object or null on failure.
  */
 export async function signUpWithEmailPassword(
   name: string,
   email: string,
   password: string
-): Promise<User | null> {
+): Promise<void> {
   if (!auth) {
     throw new Error("Firebase is not initialized.");
   }
@@ -29,7 +28,6 @@ export async function signUpWithEmailPassword(
     const user = userCredential.user;
     // Update the user's profile with their name
     await updateProfile(user, { displayName: name });
-    return user;
   } catch (error: any) {
     // Provide more user-friendly error messages
     switch (error.code) {
@@ -47,18 +45,16 @@ export async function signUpWithEmailPassword(
  * Signs in a user with email and password.
  * @param email The user's email.
  * @param password The user's password.
- * @returns The signed-in user object or null on failure.
  */
 export async function signInWithEmailPassword(
   email: string,
   password: string
-): Promise<User | null> {
+): Promise<void> {
   if (!auth) {
     throw new Error("Firebase is not initialized.");
   }
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential.user;
+    await signInWithEmailAndPassword(auth, email, password);
   } catch (error: any) {
     switch (error.code) {
       case 'auth/user-not-found':

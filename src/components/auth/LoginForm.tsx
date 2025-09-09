@@ -55,12 +55,8 @@ export function LoginForm() {
   const onSubmit = async (data: FormValues) => {
     setIsLoading(true);
     try {
-      const user = await signInWithEmailPassword(data.email, data.password);
-      if (user) {
-        await handleSuccessfulLogin(user);
-      } else {
-        throw new Error("Login failed. Please check your credentials.");
-      }
+      await signInWithEmailPassword(data.email, data.password);
+      // The onAuthStateChanged listener in AuthContext will handle the redirect.
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -77,6 +73,8 @@ export function LoginForm() {
     setIsGoogleLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
+      // The onAuthStateChanged listener handles the redirect logic now,
+      // but we can still check for onboarding status here as a backup.
       await handleSuccessfulLogin(result.user);
     } catch (error: any) {
       toast({
