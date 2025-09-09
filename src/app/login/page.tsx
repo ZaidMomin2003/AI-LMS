@@ -1,10 +1,10 @@
 
 'use client';
 
-import { LoginForm } from '@/components/auth/LoginForm';
 import { BookOpenCheck } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
 
 const TestimonialCard = ({ quote, name, handle }: { quote: string; name: string; handle: string }) => (
     <Card className="bg-card/50 p-6 rounded-xl shadow-lg border border-border/20 backdrop-blur-sm">
@@ -63,12 +63,12 @@ export default function LoginPage() {
           </div>
           <div className="mx-auto grid w-full max-w-sm gap-6">
             <div className="grid gap-2 text-center pt-4">
-                <h1 className="text-3xl font-bold font-headline">Student Login</h1>
+                <h1 className="text-3xl font-bold font-headline">Welcome Back!</h1>
                 <p className="text-balance text-muted-foreground">
-                    Enter your credentials to access your dashboard.
+                    Sign in with Google to access your dashboard.
                 </p>
             </div>
-            <LoginForm />
+            <GoogleSignInButton />
             <div className="mt-4 text-center text-sm">
                 Don&apos;t have an account?{" "}
                 <Link href="/signup" className="underline font-semibold text-primary">

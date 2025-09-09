@@ -1,10 +1,10 @@
 
 'use client';
 
-import { SignUpForm } from '@/components/auth/SignUpForm';
 import { BookOpenCheck } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
 
 const TestimonialCard = ({ quote, name, handle }: { quote: string; name: string; handle: string }) => (
     <Card className="bg-card/50 p-6 rounded-xl shadow-lg border border-border/20 backdrop-blur-sm">
@@ -63,12 +63,12 @@ export default function SignUpPage() {
           </div>
         <div className="mx-auto grid w-full max-w-sm gap-6">
             <div className="grid gap-2 text-center pt-4">
-                <h1 className="text-3xl font-bold font-headline">Create a Student Account</h1>
+                <h1 className="text-3xl font-bold font-headline">Create Your Account</h1>
                 <p className="text-balance text-muted-foreground">
-                    Get started in seconds by filling out the form below.
+                    Get started in seconds by signing up with your Google account.
                 </p>
             </div>
-            <SignUpForm />
+            <GoogleSignInButton />
             <div className="mt-4 text-center text-sm text-muted-foreground">
                 By signing up, you agree to our{' '}
                 <Link href="/terms" className="underline hover:text-primary">
