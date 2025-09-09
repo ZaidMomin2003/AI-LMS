@@ -37,7 +37,7 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
                   const createdAtTimestamp = t.createdAt as Timestamp;
                   return {
                       ...t,
-                      createdAt: createdAtTimestamp?.toDate ? createdAtTimestamp.toDate().toISOString() : new Date().toISOString()
+                      createdAt: createdAtTimestamp?.toDate ? createdAtTimestamp.toDate().toISOString() : new Date(t.createdAt).toISOString()
                   };
               });
               setTopics(parsedTopics.sort((a: Topic, b: Topic) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
