@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTopic } from '@/context/TopicContext';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import { Bookmark, Search } from 'lucide-react';
 import type { Topic } from '@/types';
 import { Button } from '@/components/ui/button';
@@ -32,7 +32,7 @@ export default function BookmarksPage() {
 
   const groupedByDate = useMemo(() => {
     return filteredTopics.reduce((acc: Record<string, Topic[]>, topic) => {
-      const dateKey = format(new Date(topic.createdAt), 'MMMM d, yyyy');
+      const dateKey = format(parseISO(topic.createdAt), 'MMMM d, yyyy');
       if (!acc[dateKey]) {
         acc[dateKey] = [];
       }

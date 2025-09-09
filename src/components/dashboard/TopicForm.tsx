@@ -33,6 +33,7 @@ import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '../ui/separator';
+import type { Topic } from '@/types';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: 'Topic must be at least 3 characters.' }).max(100),
@@ -60,10 +61,11 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
     setLoading(true);
     try {
       const newTopicData = await createTopicAction(values.title, values.subject);
-      const newTopic = {
+      const newTopic: Topic = {
         ...newTopicData,
         id: crypto.randomUUID(),
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(), // Use ISO string
+        isBookmarked: false,
       };
       await addTopic(newTopic);
       toast({

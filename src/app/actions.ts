@@ -9,7 +9,7 @@ import type { Topic } from '@/types';
 export async function createTopicAction(
   title: string,
   subject: string
-): Promise<Omit<Topic, 'id' | 'createdAt'>> {
+): Promise<Omit<Topic, 'id' | 'createdAt' | 'isBookmarked'>> {
   try {
     // Generate all materials in parallel
     const [notesResult, flashcardsResult, quizResult] = await Promise.all([

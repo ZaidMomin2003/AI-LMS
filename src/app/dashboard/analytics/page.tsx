@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useTopic } from '@/context/TopicContext';
-import { format, subDays, isAfter } from 'date-fns';
+import { format, subDays, isAfter, parseISO } from 'date-fns';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import {
   ChartContainer,
@@ -79,7 +79,7 @@ export default function AnalyticsPage() {
     }
 
     topics.forEach((topic) => {
-      const topicDate = new Date(topic.createdAt);
+      const topicDate = parseISO(topic.createdAt); // Use parseISO for string dates
       // Check if the topic was created within the last 7 days
       if (isAfter(topicDate, subDays(today, 7))) {
         const formattedDate = format(topicDate, 'MMM d');

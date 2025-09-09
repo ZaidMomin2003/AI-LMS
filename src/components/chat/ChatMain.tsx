@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { useTopic } from '@/context/TopicContext';
 import { ScrollArea } from '../ui/scroll-area';
 import Link from 'next/link';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, parseISO } from 'date-fns';
 import { TodayStudyTask } from '../dashboard/TodayStudyTask';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '../ui/badge';
@@ -58,7 +58,7 @@ export function ChatMain() {
                                             <Badge variant="secondary">{topic.subject}</Badge>
                                         </div>
                                     <p className="text-sm text-muted-foreground">
-                                        Created {formatDistanceToNow(new Date(topic.createdAt), { addSuffix: true })}
+                                        Created {formatDistanceToNow(parseISO(topic.createdAt), { addSuffix: true })}
                                     </p>
                                     </div>
                                     <Button asChild variant="ghost" size="sm">

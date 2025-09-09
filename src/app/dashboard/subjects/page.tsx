@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTopic } from '@/context/TopicContext';
 import type { Topic } from '@/types';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, parseISO } from 'date-fns';
 import { FolderOpen, History } from 'lucide-react';
 import Link from 'next/link';
 import { AddSubjectForm } from '@/components/subjects/AddSubjectForm';
@@ -103,7 +103,7 @@ export default function SubjectsPage() {
                                 <p className="font-medium">{topic.title}</p>
                                 <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-1">
                                     <History className="w-3.5 h-3.5" />
-                                    Created {formatDistanceToNow(new Date(topic.createdAt), { addSuffix: true })}
+                                    Created {formatDistanceToNow(parseISO(topic.createdAt), { addSuffix: true })}
                                 </p>
                                 </div>
                                 <Button asChild variant="ghost">
