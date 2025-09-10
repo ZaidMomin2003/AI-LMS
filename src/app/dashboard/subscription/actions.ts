@@ -8,10 +8,18 @@ import type {
   Order,
   PurchaseUnit,
 } from '@paypal/checkout-server-sdk/lib/orders/lib';
+import 'dotenv/config';
+
+// --- CRITICAL: Environment Variable Validation ---
+if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) {
+  throw new Error(
+    'PayPal client ID or secret is not defined in environment variables. Please check your .env file.'
+  );
+}
 
 const environment = new paypal.core.SandboxEnvironment(
-  process.env.PAYPAL_CLIENT_ID!,
-  process.env.PAYPAL_CLIENT_SECRET!
+  process.env.PAYPAL_CLIENT_ID,
+  process.env.PAYPAL_CLIENT_SECRET
 );
 const client = new paypal.core.PayPalHttpClient(environment);
 
