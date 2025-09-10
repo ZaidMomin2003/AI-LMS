@@ -61,17 +61,17 @@ function SubscriptionComponent() {
                 alt="AI Research Assistant"
                 layout="fill"
                 objectFit="cover"
-                className="absolute inset-0 z-0 opacity-40"
+                className="absolute inset-0 z-0 opacity-50"
             />
-            <div className="absolute inset-0 z-10 bg-gradient-to-t sm:bg-gradient-to-t from-black via-black/80 to-transparent" />
+            <div className="absolute inset-0 z-10 bg-gradient-to-t sm:bg-gradient-to-t from-black/80 via-black/60 to-transparent" />
 
-            <div className="relative z-20 mx-auto flex h-full w-full max-w-sm flex-col justify-end sm:justify-between text-white pb-8 sm:pb-0">
+            <div className="relative z-20 mx-auto flex h-full w-full max-w-sm flex-col justify-end sm:justify-center text-white pb-8 sm:pb-0">
                 <div>
                     <h1 className="text-3xl font-bold font-headline">Wisdomis Fun Pro</h1>
                     <p className="mt-2 text-white/80">Unlock the most powerful AI study assistant.</p>
                 </div>
 
-                <div className="my-8 space-y-3">
+                <div className="my-8 space-y-2">
                     {features.map((feature, index) => (
                         <div key={index} className="flex items-center gap-3">
                             <Check className="h-4 w-4 text-blue-400 shrink-0" />
