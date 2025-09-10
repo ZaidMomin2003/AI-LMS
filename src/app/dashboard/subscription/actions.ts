@@ -1,6 +1,7 @@
 
 'use server';
 
+import 'dotenv/config';
 import { auth } from '@/lib/firebase';
 import { updateUserDoc } from '@/services/firestore';
 import paypal from '@paypal/checkout-server-sdk';
@@ -8,7 +9,7 @@ import type {
   Order,
   PurchaseUnit,
 } from '@paypal/checkout-server-sdk/lib/orders/lib';
-import 'dotenv/config';
+
 
 // Helper function to get a configured PayPal client
 function getPayPalClient() {
