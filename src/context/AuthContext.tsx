@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
@@ -10,6 +11,17 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType>({ user: null, loading: true });
+
+async function setSessionCookie(user: User) {
+    const idToken = await user.getIdToken();
+    await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain',
+        },
+        body: idToken,
+    });
+}
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -24,8 +36,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      if (user) {
+          setSessionCookie(user);
+      }
       setLoading(false);
-      // Removed the redirect from here to allow for onboarding checks
     });
 
     return () => unsubscribe();
