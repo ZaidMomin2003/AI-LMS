@@ -10,7 +10,6 @@ import { Bookmark, Search, Loader2 } from 'lucide-react';
 import type { Topic } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { useRouter } from 'next/navigation';

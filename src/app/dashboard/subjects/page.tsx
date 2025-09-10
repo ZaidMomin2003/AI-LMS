@@ -18,7 +18,6 @@ import { FolderOpen, History, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { AddSubjectForm } from '@/components/subjects/AddSubjectForm';
 import { useSubject } from '@/context/SubjectContext';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { useRouter } from 'next/navigation';
 
@@ -50,14 +49,6 @@ function SubjectsContent() {
     .filter(s => s !== 'Uncategorized')
     .sort();
   
-  const SubjectSkeleton = () => (
-    <div className="space-y-2">
-      {[...Array(3)].map((_, i) => (
-        <Skeleton key={i} className="h-16 w-full" />
-      ))}
-    </div>
-  );
-
   if (subLoading || topicsLoading || subjectsLoading || !subscription || subscription.status !== 'active') {
     return (
         <div className="flex h-full w-full items-center justify-center bg-background">

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import {
   Card,
@@ -21,12 +21,10 @@ import {
 import { BookCopy, Brain, MessageCircleQuestion, Star, Timer } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTask } from '@/context/TaskContext';
-import { Skeleton } from '@/components/ui/skeleton';
 import { usePomodoro } from '@/context/PomodoroContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 
 function AnalyticsContent() {

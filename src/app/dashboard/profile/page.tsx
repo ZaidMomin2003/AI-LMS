@@ -9,11 +9,11 @@ import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/AuthContext';
 import { useExam } from '@/context/ExamContext';
 import { useProfile } from '@/context/ProfileContext';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 function ProfileContent() {
     const { user } = useAuth();
