@@ -1,4 +1,4 @@
-
+import 'dotenv/config';
 import admin from 'firebase-admin';
 
 // Function to parse the service account key from environment variable
@@ -17,17 +17,23 @@ const getServiceAccount = () => {
   }
 };
 
-let firebaseAdmin: admin.app.App;
-
-// Initialize Firebase Admin SDK only if it hasn't been already.
-if (!admin.apps.length) {
-  const serviceAccount = getServiceAccount(); // This will throw if it fails.
-  firebaseAdmin = admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-} else {
-  firebaseAdmin = admin.app();
+/**
+ * A function to get the initialized Firebase Admin app.
+ * It initializes the app if it hasn't been already.
+ * This approach is more robust than top-level initialization.
+ * @returns {admin.app.App} The initialized Firebase Admin app.
+ */
+function getFirebaseAdmin() {
+  if (!admin.apps.length) {
+    const serviceAccount = getServiceAccount(); // This will throw if it fails.
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+  }
+  return admin.app();
 }
+
+export const firebaseAdmin = getFirebaseAdmin();
 
 /**
  * A simple function to check if the admin app is initialized.
@@ -37,7 +43,3 @@ if (!admin.apps.length) {
 export function isFirebaseAdminInitialized(): boolean {
     return admin.apps.length > 0;
 }
-
-// Export the initialized admin instance.
-// Note: Direct usage is preferred over the function check now.
-export { firebaseAdmin };

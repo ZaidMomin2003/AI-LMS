@@ -1,5 +1,4 @@
 
-import 'dotenv/config';
 import { NextRequest, NextResponse } from 'next/server';
 import { firebaseAdmin, isFirebaseAdminInitialized } from '@/lib/firebase-admin';
 

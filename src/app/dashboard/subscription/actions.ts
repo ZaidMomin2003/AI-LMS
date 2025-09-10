@@ -1,6 +1,5 @@
 
 'use server';
-import 'dotenv/config';
 
 import { cookies } from 'next/headers';
 import { headers } from 'next/headers';
