@@ -5,15 +5,12 @@ import React, { useState, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { CheckCircle, Gem, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { createStripeCheckoutSession, createPayPalOrder, capturePayPalOrder } from './actions';
+import { createPayPalOrder } from './actions';
 import { useSubscription } from '@/context/SubscriptionContext';
-
-type PaymentGateway = 'stripe' | 'paypal';
 
 const PlanCard = ({ 
     planName, 
@@ -69,7 +66,6 @@ const PlanCard = ({
 
 
 export default function SubscriptionPage() {
-    const [paymentGateway, setPaymentGateway] = useState<PaymentGateway>('stripe');
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
     const { subscription, loading: subLoading } = useSubscription();
@@ -77,16 +73,9 @@ export default function SubscriptionPage() {
     const handleChoosePlan = async (plan: 'Weekly Pass' | 'Annual Pro') => {
         setIsLoading(true);
         try {
-            if (paymentGateway === 'stripe') {
-                await createStripeCheckoutSession(plan);
-            } else {
-                const { orderID } = await createPayPalOrder(plan);
-                // Handle PayPal client-side approval flow
-                // This would typically involve a library like @paypal/react-paypal-js
-                // For this example, we'll simulate it.
-                toast({ title: "PayPal Order Created", description: "Please complete payment in the PayPal window." });
-                // In a real app, you would open the PayPal window and then call capturePayPalOrder on approval.
-            }
+            const { approvalUrl } = await createPayPalOrder(plan);
+            // Redirect user to PayPal to approve the payment
+            window.location.href = approvalUrl;
         } catch (error: any) {
             toast({
                 variant: 'destructive',
@@ -132,13 +121,7 @@ export default function SubscriptionPage() {
                 )}
 
                 <div className="flex items-center justify-center space-x-2">
-                    <Label htmlFor="payment-gateway" className={cn(paymentGateway === 'stripe' ? 'text-foreground' : 'text-muted-foreground')}>Stripe (Cards)</Label>
-                    <Switch
-                        id="payment-gateway"
-                        checked={paymentGateway === 'paypal'}
-                        onCheckedChange={(checked) => setPaymentGateway(checked ? 'paypal' : 'stripe')}
-                    />
-                    <Label htmlFor="payment-gateway" className={cn(paymentGateway === 'paypal' ? 'text-foreground' : 'text-muted-foreground')}>PayPal</Label>
+                    <Label className='text-muted-foreground'>Payments powered by PayPal</Label>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
