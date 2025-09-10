@@ -38,7 +38,7 @@ const client = new paypal.core.PayPalHttpClient(environment);
 
 
 async function getAuthenticatedUser() {
-  if (!isFirebaseAdminInitialized) {
+  if (!isFirebaseAdminInitialized()) {
       throw new Error("Firebase Admin is not initialized.");
   }
   const sessionCookie = cookies().get('session')?.value;

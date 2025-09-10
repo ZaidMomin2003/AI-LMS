@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { firebaseAdmin, isFirebaseAdminInitialized } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
-  if (!isFirebaseAdminInitialized) {
+  if (!isFirebaseAdminInitialized()) {
       console.error("Firebase Admin not initialized. Cannot create session cookie.");
       return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
   }
