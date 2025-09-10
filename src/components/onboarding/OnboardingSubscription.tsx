@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Check, Loader2 } from 'lucide-react';
 import { createPayPalOrder } from '@/app/dashboard/subscription/actions';
-import { useSubscription } from '@/context/SubscriptionContext';
 import Image from 'next/image';
 
 const features = [
@@ -61,9 +60,9 @@ function SubscriptionComponent() {
                 alt="AI Research Assistant"
                 layout="fill"
                 objectFit="cover"
-                className="absolute inset-0 z-0 opacity-50"
+                className="absolute inset-0 z-0 opacity-40"
             />
-            <div className="absolute inset-0 z-10 bg-gradient-to-t sm:bg-gradient-to-t from-black/80 via-black/60 to-transparent" />
+            <div className="absolute inset-0 z-10 bg-gradient-to-t sm:bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
             <div className="relative z-20 mx-auto flex h-full w-full max-w-sm flex-col justify-end sm:justify-center text-white pb-8 sm:pb-0">
                 <div>

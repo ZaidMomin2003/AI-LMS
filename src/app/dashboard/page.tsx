@@ -30,7 +30,7 @@ function DashboardContent() {
                             });
                              // Manually update the subscription context
                             setSubscription({
-                                planName: planName,
+                                planName: planName as any,
                                 status: 'active',
                                 paypalOrderId: token,
                             });
