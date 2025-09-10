@@ -11,6 +11,8 @@ const getServiceAccount = () => {
   
   try {
     const serviceAccount = JSON.parse(serviceAccountString);
+    // The private key in the .env file has its newlines escaped. We need to replace them back to actual newlines.
+    serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
     return serviceAccount as admin.ServiceAccount;
   } catch (error) {
     console.error("Firebase Admin SDK Error: Could not parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid JSON string in your .env file.", error);
