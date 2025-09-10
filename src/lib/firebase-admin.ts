@@ -4,27 +4,30 @@ import admin from 'firebase-admin';
 const getServiceAccount = () => {
   const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
   if (!serviceAccountJson) {
-    // Throw a clear error if the key is not set. This prevents downstream issues.
-    throw new Error('Firebase Admin SDK Error: FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.');
+    // Return null instead of throwing an error if the key is not set.
+    console.error("Firebase Admin SDK Error: FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set. Server-side features requiring admin privileges (like processing payments or creating sessions) will be disabled.");
+    return null;
   }
   try {
     // Replace escaped newlines for environments that require it.
     return JSON.parse(serviceAccountJson.replace(/\\n/g, '\n'));
   } catch (error) {
-    throw new Error("Firebase Admin SDK Error: Could not parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid JSON string.");
+    console.error("Firebase Admin SDK Error: Could not parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid JSON string.", error);
+    return null;
   }
 };
 
-// Initialize Firebase Admin only if it hasn't been initialized yet.
-// This is the single source of truth for the admin app instance.
+// Initialize Firebase Admin only if it hasn't been initialized yet and the service account is available.
 if (!admin.apps.length) {
-  try {
-    admin.initializeApp({
-      credential: admin.credential.cert(getServiceAccount()),
-    });
-  } catch (error: any) {
-      console.error("Firebase Admin initialization error:", error.message);
-      // We are not re-throwing here, but the check below will handle it.
+  const serviceAccount = getServiceAccount();
+  if (serviceAccount) {
+    try {
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+      });
+    } catch (error: any) {
+        console.error("Firebase Admin initialization error:", error.message);
+    }
   }
 }
 
@@ -32,4 +35,7 @@ export const firebaseAdmin = admin;
 
 // Export a simple boolean to check if the admin app is initialized.
 // This is more reliable than checking admin.apps.length elsewhere.
-export const isFirebaseAdminInitialized = () => admin.apps.length > 0;
+export const isFirebaseAdminInitialized = () => {
+    // The SDK is only initialized if the service account key was provided and valid.
+    return admin.apps.length > 0;
+}
