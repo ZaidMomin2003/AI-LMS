@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Check, Loader2 } from 'lucide-react';
-import { capturePayPalOrder, createPayPalOrder } from '@/app/dashboard/subscription/actions';
+import { createPayPalOrder } from '@/app/dashboard/subscription/actions';
 import { useSubscription } from '@/context/SubscriptionContext';
 import Image from 'next/image';
 
@@ -23,7 +23,6 @@ function SubscriptionComponent() {
     const [price, setPrice] = useState('299.00');
     const { toast } = useToast();
     const router = useRouter();
-    const { setSubscription } = useSubscription();
     const searchParams = useSearchParams();
 
     const hasPromo = searchParams.get('promo') === 'true';
@@ -37,36 +36,18 @@ function SubscriptionComponent() {
     const handleSubscription = async () => {
         setIsLoading(true);
         try {
-            const { orderID } = await createPayPalOrder('Annual Pro', price);
-            
-            // This is a simplified flow. In a real app, you'd use the PayPal JS SDK
-            // to open the checkout window and get the onApprove callback.
-            // For this project, we'll simulate the approval and capture immediately.
-            const captureResponse = await capturePayPalOrder(orderID);
-            
-            if (captureResponse.success) {
-                toast({
-                    title: 'Payment Successful!',
-                    description: "Welcome to Wisdomis Fun Pro! You now have full access.",
-                });
-                
-                // Manually set subscription state before redirecting
-                setSubscription({
-                    planName: 'Annual Pro',
-                    status: 'active',
-                    paypalOrderId: orderID,
-                });
-
-                router.push('/dashboard');
+            const { approvalUrl } = await createPayPalOrder('Annual Pro', price);
+            if (approvalUrl) {
+                // Redirect user to PayPal to approve the payment
+                window.location.href = approvalUrl;
             } else {
-                 throw new Error("Failed to capture PayPal order.");
+                throw new Error("Could not get PayPal approval URL.");
             }
-
         } catch (error: any) {
             toast({
                 variant: 'destructive',
                 title: 'Payment Error',
-                description: error.message || 'An unexpected error occurred.',
+                description: error.message || 'An unexpected error occurred while setting up PayPal.',
             });
             setIsLoading(false);
         }
@@ -115,7 +96,7 @@ function SubscriptionComponent() {
                         disabled={isLoading}
                         className="mt-4 h-12 w-full rounded-full bg-blue-500 text-lg font-semibold text-white transition-all hover:bg-blue-400"
                     >
-                         {isLoading ? <Loader2 className="animate-spin" /> : 'Subscribe'}
+                         {isLoading ? <Loader2 className="animate-spin" /> : 'Subscribe with PayPal'}
                     </Button>
                     <p className="mt-4 text-center text-xs text-white/50">
                         By subscribing, you agree to our Terms and Privacy Policy. Cancel anytime.

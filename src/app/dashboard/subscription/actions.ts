@@ -24,11 +24,18 @@ const getURL = () => {
 };
 
 // PayPal environment setup
-const environment = new paypal.core.SandboxEnvironment(
-  process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
-  process.env.PAYPAL_CLIENT_SECRET!
-);
+const environment =
+  process.env.NODE_ENV === 'production'
+    ? new paypal.core.LiveEnvironment(
+        process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
+        process.env.PAYPAL_CLIENT_SECRET!
+      )
+    : new paypal.core.SandboxEnvironment(
+        process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
+        process.env.PAYPAL_CLIENT_SECRET!
+      );
 const client = new paypal.core.PayPalHttpClient(environment);
+
 
 async function getAuthenticatedUser() {
   if (!isFirebaseAdminInitialized) {
@@ -117,14 +124,19 @@ export async function createPayPalOrder(plan: 'Weekly Pass' | 'Annual Pro', pric
             brand_name: 'Wisdomis Fun',
             landing_page: 'LOGIN',
             user_action: 'PAY_NOW',
-            return_url: `${getURL()}/dashboard?payment_success=true`,
+            return_url: `${getURL()}/dashboard?payment_success=true&provider=paypal`,
             cancel_url: `${getURL()}/dashboard/subscription`,
         }
     });
 
     try {
         const order = await client.execute(request);
-        return { orderID: order.result.id };
+        const approveLink = order.result.links.find((link: { rel: string; }) => link.rel === 'approve');
+        if (approveLink) {
+            return { approvalUrl: approveLink.href };
+        } else {
+            throw new Error('No approval link found in PayPal order response.');
+        }
     } catch (err) {
         console.error('Error creating PayPal order:', err);
         throw new Error('Could not create PayPal order.');
@@ -159,9 +171,9 @@ export async function capturePayPalOrder(orderID: string) {
 
         await updateUserDoc(user.uid, { subscription });
 
-        return { success: true };
-    } catch (err) {
-        console.error('Error capturing PayPal order:', err);
+        return { success: true, planName: customIdData.planName };
+    } catch (err: any) {
+        console.error('Error capturing PayPal order:', err.message);
         throw new Error('Payment could not be processed.');
     }
 }
