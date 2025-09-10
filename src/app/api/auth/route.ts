@@ -5,7 +5,8 @@ import { firebaseAdmin, isFirebaseAdminInitialized } from '@/lib/firebase-admin'
 export async function POST(request: NextRequest) {
   if (!isFirebaseAdminInitialized()) {
       console.error("Firebase Admin not initialized. Cannot create session cookie.");
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+      // Return a clearer error to the client.
+      return NextResponse.json({ error: 'Server configuration error: Firebase Admin is not initialized.' }, { status: 500 });
   }
 
   const idToken = await request.text();
