@@ -86,10 +86,9 @@ export default function LoginPage() {
             <p className="text-muted-foreground">See what others are saying about their journey with us.</p>
         </div>
         <div
-            className="group relative mt-12 w-full max-w-2xl overflow-hidden [mask-image:linear-gradient(to_bottom,transparent_0%,#000_15%,#000_85%,transparent_100%)]"
-            style={{ height: '450px' }}
+            className="group relative mt-12 w-full max-w-4xl overflow-hidden [mask-image:linear-gradient(to_right,transparent_0%,#000_10%,#000_90%,transparent_100%)]"
         >
-            <div className="flex animate-marquee-y flex-col items-center gap-4 pr-4 group-hover:[animation-play-state:paused]">
+            <div className="flex animate-marquee-x items-stretch gap-8 pr-8 group-hover:[animation-play-state:paused]">
             {[...testimonials, ...testimonials].map((t, i) => (
                 <TestimonialCard key={i} {...t} />
             ))}
@@ -103,15 +102,13 @@ export default function LoginPage() {
           aria-hidden="true" 
           className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background md:hidden" 
         />
-        <div className="w-full max-w-sm text-center">
-            <Link href="/" className="mb-8 inline-flex items-center gap-2">
-                <BookOpenCheck className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold font-headline">Wisdomis Fun</span>
-            </Link>
-        </div>
         <Card className="w-full max-w-sm bg-card/50 backdrop-blur-sm">
             <CardContent className="p-8 space-y-4">
-                 <div className="text-center">
+                 <div className="w-full max-w-sm text-center">
+                    <Link href="/" className="mb-4 inline-flex items-center gap-2">
+                        <BookOpenCheck className="h-8 w-8 text-primary" />
+                        <span className="text-2xl font-bold font-headline">Wisdomis Fun</span>
+                    </Link>
                     <h1 className="text-2xl font-bold font-headline">Welcome Back!</h1>
                     <p className="text-muted-foreground">Sign in to continue your learning journey.</p>
                 </div>
