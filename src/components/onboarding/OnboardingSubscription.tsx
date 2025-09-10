@@ -15,6 +15,7 @@ const features = [
     "AI-Powered Notes, Flashcards & Quizzes",
     "SageMaker AI Assistant",
     "Personalized Study Roadmaps",
+    "Capture the Answer (Photo Solver)",
     "Early access to new features",
 ];
 
@@ -60,7 +61,7 @@ function SubscriptionComponent() {
                 alt="AI Research Assistant"
                 layout="fill"
                 objectFit="cover"
-                className="absolute inset-0 z-0 opacity-30"
+                className="absolute inset-0 z-0 opacity-40"
             />
             <div className="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/80 to-transparent" />
 
@@ -70,11 +71,11 @@ function SubscriptionComponent() {
                     <p className="mt-2 text-white/80">Unlock the most powerful AI study assistant.</p>
                 </div>
 
-                <div className="my-8 space-y-3">
+                <div className="my-6 space-y-2 text-sm">
                     {features.map((feature, index) => (
                         <div key={index} className="flex items-center gap-3">
-                            <Check className="h-5 w-5 text-blue-400" />
-                            <span>{feature}</span>
+                            <Check className="h-4 w-4 text-blue-400 shrink-0" />
+                            <span className="text-white/90">{feature}</span>
                         </div>
                     ))}
                 </div>
