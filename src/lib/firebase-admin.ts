@@ -1,5 +1,8 @@
-
 import admin from 'firebase-admin';
+import { config } from 'dotenv';
+
+// Load environment variables from .env file
+config();
 
 // This function now correctly handles the service account key.
 const getServiceAccount = () => {
@@ -11,7 +14,7 @@ const getServiceAccount = () => {
     // The key is now a correctly quoted string, so it can be parsed directly.
     return JSON.parse(serviceAccountJson);
   } catch (error) {
-    console.error("Firebase Admin SDK Error: Could not parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid JSON string in your .env file.", error);
+    console.error("Firebase Admin SDK Error: Could not parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid JSON string in your .env file and wrapped in quotes.", error);
     throw new Error('Firebase Admin SDK Error: FIREBASE_SERVICE_ACCOUNT_KEY is malformed.');
   }
 };
