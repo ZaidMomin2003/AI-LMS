@@ -11,7 +11,7 @@ const getServiceAccount = () => {
     projectId: process.env.FIREBASE_SERVICE_ACCOUNT_PROJECT_ID,
     privateKeyId: process.env.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY_ID,
     // CRITICAL FIX: Replace escaped newlines with actual newlines for the private key.
-    privateKey: process.env.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+    privateKey: (process.env.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
     clientEmail: process.env.FIREBASE_SERVICE_ACCOUNT_CLIENT_EMAIL,
     // The following are standard for service accounts and can be hardcoded
     type: "service_account",
@@ -24,6 +24,8 @@ const getServiceAccount = () => {
   // Basic validation to ensure all required fields are present
   for (const [key, value] of Object.entries(serviceAccount)) {
     if (!value) {
+      // This check will now fail gracefully if a key is missing.
+      console.error(`Firebase Admin SDK Error: Missing environment variable for service account key: ${key}`);
       throw new Error(`Firebase Admin SDK Error: Missing environment variable for service account key: ${key}`);
     }
   }
