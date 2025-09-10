@@ -1,93 +1,63 @@
 
 'use client';
 
-import { BookOpenCheck } from 'lucide-react';
+import { BookOpenCheck, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
-import Image from 'next/image';
-
-const TestimonialCard = ({ quote, name, handle }: { quote: string; name: string; handle: string }) => (
-    <Card className="bg-card/50 p-6 rounded-xl shadow-lg border border-border/20 backdrop-blur-sm">
-        <CardContent className="p-0">
-            <p className="text-foreground/80 mb-4">&ldquo;{quote}&rdquo;</p>
-            <footer className="font-semibold">
-                <p className="text-foreground">{name}</p>
-                <p className="text-muted-foreground text-sm font-normal">{handle}</p>
-            </footer>
-        </CardContent>
-    </Card>
-);
-
-const testimonials = [
-    {
-      quote: "This platform has single-handedly saved me hours of manual note-taking. The AI-generated content is accurate and incredibly helpful for exam prep.",
-      name: "Sofia Davis",
-      handle: "Biochemistry Student"
-    },
-    {
-      quote: "As a professional, I need to get up to speed on new topics fast. Wisdomis Fun is my secret weapon for client meetings.",
-      name: "Alex Johnson",
-      handle: "Tech Consultant"
-    },
-    {
-      quote: "I've never been a great test-taker, but the quizzes helped me identify my weak spots. My grades have actually improved!",
-      name: "Maria Garcia",
-      handle: "High School Junior"
-    },
-     {
-      quote: "The best part is how it adapts to any subject I throw at it, from history to complex scientific theories. It's a game-changer.",
-      name: "Chen Wei",
-      handle: "Lifelong Learner"
-    }
-  ];
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function LoginPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/dashboard');
+    }
+  }, [user, loading, router]);
+
+  if (loading || user) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
+  
   return (
-    <div className="w-full min-h-screen grid grid-cols-1 lg:grid-cols-2">
-      <div className="hidden lg:flex flex-col items-center justify-center bg-muted p-8 overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-muted via-background/50 to-muted -z-0" />
-          <div className="relative w-full max-w-md h-full max-h-[80vh] [mask-image:linear-gradient(to_bottom,transparent_0%,#000_10%,#000_90%,transparent_100%)] z-10">
-              <div className="animate-marquee-y space-y-4">
-                  {[...testimonials, ...testimonials].map((t, i) => (
-                      <TestimonialCard key={i} {...t} />
-                  ))}
-              </div>
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4">
+      <div 
+        aria-hidden="true" 
+        className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" 
+      />
+      <Card className="w-full max-w-sm overflow-hidden border-border/20 bg-card/60 shadow-lg backdrop-blur-lg">
+        <CardContent className="p-8 text-center">
+          <Link href="/" className="mb-8 inline-flex items-center gap-2">
+            <BookOpenCheck className="h-8 w-8 text-primary" />
+            <span className="text-2xl font-bold font-headline">Wisdomis Fun</span>
+          </Link>
+          <div className="grid gap-2">
+            <h1 className="text-2xl font-bold font-headline">Welcome Back!</h1>
+            <p className="text-balance text-muted-foreground">
+              Sign in with Google to access your dashboard.
+            </p>
           </div>
-      </div>
-      <div className="relative flex flex-col items-center justify-end p-6 sm:p-12">
-        <Image
-          src="/signin.png"
-          alt="Sign in background"
-          layout="fill"
-          objectFit="cover"
-          className="z-0"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10" />
-        <div className="relative z-20 w-full max-w-sm">
-          <div className="absolute top-8 left-8 z-10">
-              <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-headline text-white">
-                  <BookOpenCheck className="h-6 w-6 text-primary" />
-                  <span className="font-bold leading-tight">Wisdom<br className="sm:hidden" />is Fun</span>
-              </Link>
-          </div>
-          <div className="grid gap-6 text-center text-white pb-10">
-            <div className="grid gap-2">
-                <h1 className="text-3xl font-bold font-headline">Welcome Back!</h1>
-                <p className="text-balance text-white/80">
-                    Sign in with Google to access your dashboard.
-                </p>
-            </div>
+
+          <div className="my-8">
             <GoogleSignInButton />
-            <div className="mt-4 text-center text-sm">
-                Don&apos;t have an account?{" "}
-                <Link href="/signup" className="underline font-semibold text-primary">
-                    Sign up
-                </Link>
-            </div>
           </div>
-        </div>
-      </div>
+          
+          <div className="text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="underline font-semibold text-primary">
+              Sign up
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
