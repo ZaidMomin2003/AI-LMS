@@ -3,7 +3,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth, isFirebaseEnabled } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -15,7 +14,6 @@ const AuthContext = createContext<AuthContextType>({ user: null, loading: true }
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     if (!isFirebaseEnabled || !auth) {
@@ -27,14 +25,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
-      if (user) {
-        // Redirect to dashboard if user is logged in
-        router.push('/dashboard');
-      }
+      // Removed the redirect from here to allow for onboarding checks
     });
 
     return () => unsubscribe();
-  }, [router]);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, loading }}>
