@@ -10,18 +10,20 @@ import type {
 } from '@paypal/checkout-server-sdk/lib/orders/lib';
 import 'dotenv/config';
 
-// --- CRITICAL: Environment Variable Validation ---
-if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) {
-  throw new Error(
-    'PayPal client ID or secret is not defined in environment variables. Please check your .env file.'
-  );
+// Helper function to get a configured PayPal client
+function getPayPalClient() {
+  const clientId = process.env.PAYPAL_CLIENT_ID;
+  const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
+
+  if (!clientId || !clientSecret) {
+    console.error('PayPal client ID or secret is not defined in environment variables.');
+    throw new Error('PayPal credentials are not configured on the server.');
+  }
+
+  const environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
+  return new paypal.core.PayPalHttpClient(environment);
 }
 
-const environment = new paypal.core.SandboxEnvironment(
-  process.env.PAYPAL_CLIENT_ID,
-  process.env.PAYPAL_CLIENT_SECRET
-);
-const client = new paypal.core.PayPalHttpClient(environment);
 
 export async function createPayPalOrder(
   plan: 'Weekly Pass' | 'Annual Pro',
@@ -30,7 +32,8 @@ export async function createPayPalOrder(
   if (!process.env.NEXT_PUBLIC_APP_URL) {
       throw new Error('NEXT_PUBLIC_APP_URL is not set in the environment variables.');
   }
-
+  
+  const client = getPayPalClient();
   const request = new paypal.orders.OrdersCreateRequest();
 
   const planDetails = {
@@ -71,10 +74,8 @@ export async function createPayPalOrder(
     }
     return { orderID: order.id, approvalUrl: approvalLink.href };
   } catch (error: any) {
-    // Enhanced error logging to capture specific PayPal API errors
     console.error('Error creating PayPal order:', JSON.stringify(error, null, 2));
     
-    // Check if the error is a PayPal specific error with a detailed message
     if (error.statusCode && error.result && error.result.message) {
       throw new Error(`PayPal API Error: ${error.result.message}`);
     }
@@ -86,6 +87,7 @@ export async function createPayPalOrder(
 export async function capturePayPalOrder(
   orderID: string
 ): Promise<{ success: boolean; planName: string }> {
+  const client = getPayPalClient();
   const request = new paypal.orders.OrdersCaptureRequest(orderID);
   request.requestBody({});
 
