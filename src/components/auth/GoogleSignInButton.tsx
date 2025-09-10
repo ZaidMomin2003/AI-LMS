@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Button } from '../ui/button';
+import { useAuth } from '@/context/AuthContext';
 
 const GoogleIcon = () => (
     <svg className="h-5 w-5" viewBox="0 0 48 48">
@@ -18,13 +19,16 @@ const GoogleIcon = () => (
 export function GoogleSignInButton() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const { setSession } = useAuth();
 
   async function handleGoogleSignIn() {
     if (!auth || !googleProvider) return;
     setIsLoading(true);
     try {
-      await signInWithPopup(auth, googleProvider);
-      // The onAuthStateChanged listener in AuthContext will handle the redirect.
+      const userCredential = await signInWithPopup(auth, googleProvider);
+      // Explicitly wait for the session cookie to be set
+      await setSession(userCredential.user);
+      // The redirect is now handled by the page's useEffect, which will see the new user state.
     } catch (error: any) {
       toast({
         variant: 'destructive',
