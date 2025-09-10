@@ -8,8 +8,8 @@ const getServiceAccount = () => {
     throw new Error('Firebase Admin SDK Error: FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.');
   }
   try {
-    // Correctly parse the JSON by handling the newline characters in the private key.
-    return JSON.parse(serviceAccountJson.replace(/\\n/g, '\\n'));
+    // The key is now a correctly quoted string, so it can be parsed directly.
+    return JSON.parse(serviceAccountJson);
   } catch (error) {
     console.error("Firebase Admin SDK Error: Could not parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid JSON string in your .env file.", error);
     throw new Error('Firebase Admin SDK Error: FIREBASE_SERVICE_ACCOUNT_KEY is malformed.');
