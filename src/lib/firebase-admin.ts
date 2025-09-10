@@ -1,23 +1,26 @@
 
 import admin from 'firebase-admin';
 
-// This function now correctly builds the service account object from the single environment variable.
+// This function now correctly builds the service account object from individual environment variables.
+// This is a more robust method than parsing a single JSON string.
 const getServiceAccount = () => {
-  const serviceAccountString = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  const privateKey = process.env.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY;
+  if (!privateKey) {
+    throw new Error('Firebase Admin SDK Error: FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY environment variable is not set.');
+  }
 
-  if (!serviceAccountString) {
-    throw new Error('Firebase Admin SDK Error: FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.');
+  const serviceAccount: admin.ServiceAccount = {
+    projectId: process.env.FIREBASE_SERVICE_ACCOUNT_PROJECT_ID,
+    privateKey: privateKey.replace(/\\n/g, '\n'), // Ensure newlines are correctly formatted.
+    clientEmail: process.env.FIREBASE_SERVICE_ACCOUNT_CLIENT_EMAIL,
+  };
+
+  // Basic validation to ensure all required fields are present.
+  if (!serviceAccount.projectId || !serviceAccount.clientEmail) {
+      throw new Error('Firebase Admin SDK Error: Missing projectId or clientEmail in service account configuration.');
   }
-  
-  try {
-    const serviceAccount = JSON.parse(serviceAccountString);
-    // The private key in the .env file has its newlines escaped. We need to replace them back to actual newlines.
-    serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
-    return serviceAccount as admin.ServiceAccount;
-  } catch (error) {
-    console.error("Firebase Admin SDK Error: Could not parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid JSON string in your .env file.", error);
-    throw new Error('Firebase Admin SDK Error: FIREBASE_SERVICE_ACCOUNT_KEY is malformed.');
-  }
+
+  return serviceAccount;
 };
 
 
