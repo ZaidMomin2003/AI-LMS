@@ -8,7 +8,7 @@ import Stripe from 'stripe';
 import type { UserSubscription } from '@/types';
 import { updateUserDoc } from '@/services/firestore';
 import paypal from '@paypal/checkout-server-sdk';
-import { firebaseAdmin, isFirebaseAdminInitialized } from '@/lib/firebase-admin';
+import { getFirebaseAdmin, isFirebaseAdminInitialized } from '@/lib/firebase-admin';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2024-04-10',
@@ -37,6 +37,7 @@ const client = new paypal.core.PayPalHttpClient(environment);
 
 
 async function getAuthenticatedUser() {
+  const firebaseAdmin = getFirebaseAdmin(); // Ensure admin is initialized
   if (!isFirebaseAdminInitialized()) {
       throw new Error("Firebase Admin is not initialized.");
   }
