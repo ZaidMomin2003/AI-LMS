@@ -1,11 +1,13 @@
 
 import 'dotenv/config';
-import { auth } from 'firebase-admin';
 import { NextRequest, NextResponse } from 'next/server';
-import { initAdmin } from '@/lib/firebase-admin';
+import { firebaseAdmin, isFirebaseAdminInitialized } from '@/lib/firebase-admin';
 
 export async function POST(request: NextRequest) {
-  await initAdmin();
+  if (!isFirebaseAdminInitialized) {
+      console.error("Firebase Admin not initialized. Cannot create session cookie.");
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+  }
 
   const idToken = await request.text();
 
@@ -17,7 +19,7 @@ export async function POST(request: NextRequest) {
   const expiresIn = 60 * 60 * 24 * 5 * 1000;
 
   try {
-    const sessionCookie = await auth().createSessionCookie(idToken, { expiresIn });
+    const sessionCookie = await firebaseAdmin.auth().createSessionCookie(idToken, { expiresIn });
     const options = {
       name: 'session',
       value: sessionCookie,

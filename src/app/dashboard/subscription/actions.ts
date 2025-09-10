@@ -2,7 +2,6 @@
 'use server';
 import 'dotenv/config';
 
-import { auth as adminAuth } from 'firebase-admin';
 import { cookies } from 'next/headers';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -10,7 +9,7 @@ import Stripe from 'stripe';
 import type { UserSubscription } from '@/types';
 import { updateUserDoc } from '@/services/firestore';
 import paypal from '@paypal/checkout-server-sdk';
-import { initAdmin } from '@/lib/firebase-admin';
+import { firebaseAdmin, isFirebaseAdminInitialized } from '@/lib/firebase-admin';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2024-04-10',
@@ -32,13 +31,16 @@ const environment = new paypal.core.SandboxEnvironment(
 const client = new paypal.core.PayPalHttpClient(environment);
 
 async function getAuthenticatedUser() {
-  await initAdmin();
+  if (!isFirebaseAdminInitialized) {
+      console.error("Firebase Admin is not initialized. Cannot authenticate user.");
+      return null;
+  }
   const sessionCookie = cookies().get('session')?.value;
   if (!sessionCookie) {
     return null;
   }
   try {
-    const decodedClaims = await adminAuth().verifySessionCookie(sessionCookie, true);
+    const decodedClaims = await firebaseAdmin.auth().verifySessionCookie(sessionCookie, true);
     return decodedClaims;
   } catch (error) {
     console.error('Error verifying session cookie:', error);
