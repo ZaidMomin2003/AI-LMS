@@ -12,6 +12,7 @@ export interface ProfileData {
   grade?: string;
   referralSource?: string;
   captureCount?: number;
+  institute?: string;
 }
 
 interface ProfileContextType {
@@ -33,15 +34,18 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
         setLoading(true);
         try {
             const userData = await getUserDoc(user.uid);
-            // Ensure captureCount is initialized if not present
-            const profileData = userData?.profile || {};
-            if (typeof profileData.captureCount !== 'number') {
-                profileData.captureCount = 0;
+            if (userData && userData.profile) {
+                const profileData = userData.profile;
+                if (typeof profileData.captureCount !== 'number') {
+                    profileData.captureCount = 0;
+                }
+                setProfile(profileData);
+            } else {
+                setProfile(null);
             }
-            setProfile(profileData);
         } catch (error) {
             console.error("Failed to fetch profile:", error);
-            setProfile({ captureCount: 0 });
+            setProfile(null);
         } finally {
             setLoading(false);
         }

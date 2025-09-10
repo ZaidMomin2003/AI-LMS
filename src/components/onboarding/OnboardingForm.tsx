@@ -26,6 +26,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
 import { format } from 'date-fns';
 
+const instituteCodeSchema = z.object({
+  institute: z.string().min(1, 'Please select your institute.'),
+  instituteCode: z.string().optional(),
+});
+
 const onboardingSchema = z.object({
   phoneNumber: z.string().min(10, 'Please enter a valid phone number.').optional().or(z.literal('')),
   country: z.string().min(2, 'Please enter a country.'),
@@ -33,7 +38,7 @@ const onboardingSchema = z.object({
   examName: z.string().min(3, 'Please enter an exam name.'),
   examDate: z.date({ required_error: 'Please select an exam date.' }),
   referralSource: z.string({ required_error: 'Please select an option.' }),
-});
+}).and(instituteCodeSchema);
 
 type OnboardingData = z.infer<typeof onboardingSchema>;
 
@@ -42,6 +47,7 @@ const steps = [
   { id: 'phone', fields: ['phoneNumber'] },
   { id: 'country', fields: ['country'] },
   { id: 'grade', fields: ['grade'] },
+  { id: 'institute', fields: ['institute', 'instituteCode'] },
   { id: 'exam', fields: ['examName', 'examDate'] },
   { id: 'referral', fields: ['referralSource'] },
   { id: 'finish', fields: [] },
@@ -64,20 +70,35 @@ export function OnboardingForm() {
       grade: '',
       examName: '',
       referralSource: '',
+      institute: '',
+      instituteCode: '',
     },
   });
 
-  const { control, trigger, getValues } = form;
+  const { control, trigger, getValues, setError, clearErrors } = form;
+  
+  const validateInstituteCode = () => {
+    const { institute, instituteCode } = getValues();
+    if (institute === "Zaid's Personal University" && instituteCode && instituteCode !== 'Zaid2003') {
+        setError('instituteCode', { type: 'manual', message: 'Invalid institute code.' });
+        return false;
+    }
+    clearErrors('instituteCode');
+    return true;
+  };
+
 
   const nextStep = async () => {
     const currentFields = steps[currentStep].fields;
-    // The `as any` is a safe workaround here because zodResolver expects all fields,
-    // but trigger correctly handles a subset.
     const output = await trigger(currentFields as any, { shouldFocus: true });
     
     if (!output) return;
+    
+    if (steps[currentStep].id === 'institute') {
+        if (!validateInstituteCode()) return;
+    }
 
-    if (currentStep === steps.length - 1) {
+    if (currentStep === steps.length - 2) { // The step before finish
         await handleSubmit();
     } else {
        setCurrentStep(step => step + 1);
@@ -87,37 +108,42 @@ export function OnboardingForm() {
   const handleSubmit = async () => {
     setIsSubmitting(true);
     const values = getValues();
+
+    if (!validateInstituteCode()) {
+        setIsSubmitting(false);
+        return;
+    }
+
     try {
         const profileData = {
             phoneNumber: values.phoneNumber,
             country: values.country,
             grade: values.grade,
-            referralSource: values.referralSource
+            referralSource: values.referralSource,
+            institute: values.institute,
         };
         const examData = {
             name: values.examName,
             date: values.examDate.toISOString(),
-            syllabus: `Syllabus for ${values.examName}`, // Default syllabus
+            syllabus: `Syllabus for ${values.examName}`,
         };
 
-        // Use Promise.all to run updates in parallel
         await Promise.all([
             updateProfile(profileData),
             addExam(examData)
         ]);
+        
+        const instituteCode = values.instituteCode?.trim();
+        const discounted = instituteCode === 'Zaid2003';
 
-        toast({
-            title: "Welcome to Wisdomis Fun!",
-            description: "Your profile is set up. Let's start learning.",
-        });
-        router.push('/dashboard');
+        router.push(`/onboarding?step=subscribe&promo=${discounted}`);
+
     } catch (error) {
         toast({
             variant: "destructive",
             title: "Setup Failed",
             description: "Could not save your profile. Please try again.",
         });
-    } finally {
         setIsSubmitting(false);
     }
   };
@@ -175,8 +201,41 @@ export function OnboardingForm() {
               />
             </div>
           )}
-
+          
           {currentStep === 4 && (
+             <div className="space-y-6 max-w-md mx-auto">
+                <label className="text-2xl font-headline font-semibold block text-center">Select your institute</label>
+                <Controller
+                    name="institute"
+                    control={control}
+                    render={({ field }) => (
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger className="text-lg h-12">
+                            <SelectValue placeholder="Select an institute..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Zaid's Personal University">Zaid's Personal University</SelectItem>
+                            <SelectItem value="Dummy University 1">Dummy University 1</SelectItem>
+                            <SelectItem value="Dummy College 2">Dummy College 2</SelectItem>
+                            <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    )}
+                />
+                 <Controller
+                    name="instituteCode"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                        <div>
+                            <Input {...field} placeholder="Institute Code (optional)" className="text-center text-lg h-12" />
+                            {fieldState.error && <p className="text-destructive text-sm mt-2 text-center">{fieldState.error.message}</p>}
+                        </div>
+                    )}
+                />
+             </div>
+          )}
+
+          {currentStep === 5 && (
             <div className="space-y-6 max-w-md mx-auto">
               <label className="text-2xl font-headline font-semibold block text-center">What's your next big exam?</label>
               <Controller
@@ -204,7 +263,7 @@ export function OnboardingForm() {
             </div>
           )}
 
-          {currentStep === 5 && (
+          {currentStep === 6 && (
             <div>
               <label className="text-2xl font-headline font-semibold block text-center mb-6">How did you hear about us?</label>
               <Controller
@@ -229,20 +288,6 @@ export function OnboardingForm() {
             </div>
           )}
 
-           {currentStep === 6 && (
-            <div className="text-center">
-              <h1 className="text-4xl font-headline font-bold mb-4">You're all set!</h1>
-              <p className="text-lg text-muted-foreground mb-8">Ready to start your smarter learning journey?</p>
-              <Button onClick={handleSubmit} size="lg" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
-                  ) : (
-                      <Check className="mr-2" />
-                  )}
-                  Go to Dashboard
-              </Button>
-            </div>
-          )}
         </motion.div>
       </AnimatePresence>
 
@@ -250,8 +295,8 @@ export function OnboardingForm() {
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 w-full max-w-md px-4">
             <div className="flex items-center gap-4">
                 <Progress value={progressValue} className="h-2" />
-                <Button onClick={nextStep}>
-                    OK <Check className="ml-2 w-4 h-4" />
+                <Button onClick={nextStep} disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin"/> : <>OK <Check className="ml-2 w-4 h-4" /></>}
                 </Button>
             </div>
         </div>

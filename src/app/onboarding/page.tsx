@@ -4,15 +4,18 @@
 import { OnboardingForm } from '@/components/onboarding/OnboardingForm';
 import { BookOpenCheck, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useProfile } from '@/context/ProfileContext';
+import { OnboardingSubscription } from '@/components/onboarding/OnboardingSubscription';
 
-export default function OnboardingPage() {
+function OnboardingComponent() {
     const { user, loading: authLoading } = useAuth();
     const { profile, loading: profileLoading } = useProfile();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const step = searchParams.get('step');
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -20,13 +23,15 @@ export default function OnboardingPage() {
             return;
         }
         
-        // If profile data exists, user has already onboarded.
-        if (!profileLoading && profile) {
+        // If profile exists and we are not on the subscription step, user has onboarded.
+        if (!profileLoading && profile && step !== 'subscribe') {
             router.replace('/dashboard');
         }
-    }, [user, authLoading, profile, profileLoading, router]);
+    }, [user, authLoading, profile, profileLoading, router, step]);
 
-    if (authLoading || profileLoading) {
+    const isLoading = authLoading || profileLoading;
+
+    if (isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-background">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -34,7 +39,10 @@ export default function OnboardingPage() {
         );
     }
     
-    // Only show the form if the user is authenticated but hasn't onboarded yet
+    if (step === 'subscribe') {
+        return <OnboardingSubscription />;
+    }
+
     if (user && !profile) {
         return (
             <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4">
@@ -51,10 +59,22 @@ export default function OnboardingPage() {
         );
     }
 
-    // Fallback loading screen while redirecting
     return (
         <div className="flex h-screen w-full items-center justify-center bg-background">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
         </div>
+    );
+}
+
+
+export default function OnboardingPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex h-screen w-full items-center justify-center bg-background">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+        }>
+            <OnboardingComponent />
+        </Suspense>
     );
 }

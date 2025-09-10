@@ -16,7 +16,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
 const getURL = () => {
   const headersList = headers();
   const host = headersList.get('host');
-  return `http://${host}`;
+  // Use https in production, http otherwise.
+  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+  return `${protocol}://${host}`;
 };
 
 // PayPal environment setup
@@ -65,13 +67,18 @@ export async function createStripeCheckoutSession(plan: 'Weekly Pass' | 'Annual 
   }
 }
 
-export async function createPayPalOrder(plan: 'Weekly Pass' | 'Annual Pro') {
+export async function createPayPalOrder(plan: 'Weekly Pass' | 'Annual Pro', price?: string) {
     const user = auth.currentUser;
     if (!user) {
         throw new Error('User is not authenticated.');
     }
     
-    const price = plan === 'Weekly Pass' ? '7.00' : '49.00';
+    let planPrice: string;
+    if (price) {
+        planPrice = price;
+    } else {
+        planPrice = plan === 'Weekly Pass' ? '7.00' : '49.00';
+    }
     
     const request = new paypal.orders.OrdersCreateRequest();
     request.prefer("return=representation");
@@ -80,7 +87,7 @@ export async function createPayPalOrder(plan: 'Weekly Pass' | 'Annual Pro') {
         purchase_units: [{
             amount: {
                 currency_code: 'USD',
-                value: price,
+                value: planPrice,
             },
             description: `Wisdomis Fun - ${plan}`,
             custom_id: JSON.stringify({ userId: user.uid, planName: plan }),
