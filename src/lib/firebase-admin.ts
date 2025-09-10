@@ -9,6 +9,7 @@ const getServiceAccount = () => {
   const serviceAccount = {
     projectId: process.env.FIREBASE_SERVICE_ACCOUNT_PROJECT_ID,
     privateKeyId: process.env.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY_ID,
+    // CRITICAL FIX: Replace escaped newlines with actual newlines for the private key.
     privateKey: process.env.FIREBASE_SERVICE_ACCOUNT_PRIVATE_KEY?.replace(/\\n/g, '\n'),
     clientEmail: process.env.FIREBASE_SERVICE_ACCOUNT_CLIENT_EMAIL,
     // The following are standard for service accounts and can be hardcoded
