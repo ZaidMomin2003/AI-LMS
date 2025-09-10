@@ -83,11 +83,6 @@ export default function SignUpPage() {
             className="absolute inset-0 h-full w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-secondary to-secondary" 
         />
         <div className="relative z-10 space-y-4 text-center">
-            <Link href="/" className="mb-8 inline-flex items-center gap-2">
-                <BookOpenCheck className="h-8 w-8 text-primary" />
-                <span className="text-2xl font-bold font-headline">Wisdomis Fun</span>
-            </Link>
-            <h2 className="text-3xl font-bold font-headline">Start Your Journey to Smarter Learning</h2>
             <p className="text-muted-foreground">Join thousands of students who are already studying more effectively.</p>
         </div>
         <div
@@ -108,11 +103,12 @@ export default function SignUpPage() {
           aria-hidden="true" 
           className="absolute inset-0 -z-10 h-full w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background md:hidden" 
         />
-         <div className="w-full max-w-sm text-center md:hidden mb-12">
-            <Link href="/" className="mb-8 inline-flex items-center gap-2">
+        <div className="w-full max-w-sm text-center">
+            <Link href="/" className="mb-4 inline-flex items-center gap-2">
                 <BookOpenCheck className="h-8 w-8 text-primary" />
                 <span className="text-2xl font-bold font-headline">Wisdomis Fun</span>
             </Link>
+            <h2 className="text-3xl font-bold font-headline mb-8">Start Your Journey to Smarter Learning</h2>
         </div>
          <Card className="w-full max-w-sm bg-card/50 backdrop-blur-sm">
             <CardContent className="p-8 space-y-4">
