@@ -43,7 +43,7 @@ async function getAuthenticatedUser() {
   }
   const sessionCookie = cookies().get('session')?.value;
   if (!sessionCookie) {
-    throw new Error("Session cookie not found.");
+    throw new Error("User is not authenticated.");
   }
   try {
     const decodedClaims = await firebaseAdmin.auth().verifySessionCookie(sessionCookie, true);

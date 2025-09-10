@@ -6,33 +6,25 @@ import 'dotenv/config';
 const getServiceAccount = () => {
   const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
   if (!serviceAccountJson) {
+    console.error('Firebase Admin SDK Error: FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.');
     return null;
   }
   try {
-    // This replaces escaped newlines (a common issue when parsing from env vars)
-    // with actual newlines before parsing.
-    const sanitizedJson = serviceAccountJson.replace(/\\n/g, '\n');
-    return JSON.parse(sanitizedJson);
+    // This replaces escaped newlines with actual newlines before parsing.
+    return JSON.parse(serviceAccountJson.replace(/\\n/g, '\n'));
   } catch (error) {
-    console.error("Error parsing FIREBASE_SERVICE_ACCOUNT_KEY:", error);
+    console.error("Firebase Admin SDK Error: Could not parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid JSON string.", error);
     return null;
   }
 };
 
 // Initialize Firebase Admin SDK only if it hasn't been already.
-// This is a singleton pattern to prevent re-initialization.
 if (!admin.apps.length) {
   const serviceAccount = getServiceAccount();
   if (serviceAccount) {
-    try {
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
-      });
-    } catch (error) {
-       console.error('Firebase Admin SDK initialization error:', error);
-    }
-  } else {
-    console.error('Could not initialize Firebase Admin SDK: Service Account Key is missing or invalid in environment variables.');
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
   }
 }
 
