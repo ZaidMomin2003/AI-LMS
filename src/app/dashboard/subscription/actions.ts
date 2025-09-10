@@ -1,3 +1,4 @@
+
 'use server';
 
 import { auth } from '@/lib/firebase';
@@ -18,6 +19,10 @@ export async function createPayPalOrder(
   plan: 'Weekly Pass' | 'Annual Pro',
   price?: string
 ): Promise<{ orderID: string; approvalUrl: string }> {
+  if (!process.env.NEXT_PUBLIC_APP_URL) {
+      throw new Error('NEXT_PUBLIC_APP_URL is not set in the environment variables.');
+  }
+
   const request = new paypal.orders.OrdersCreateRequest();
 
   const planDetails = {
@@ -58,8 +63,15 @@ export async function createPayPalOrder(
     }
     return { orderID: order.id, approvalUrl: approvalLink.href };
   } catch (error: any) {
-    console.error('Error creating PayPal order:', error.message);
-    throw new Error('Failed to create PayPal order.');
+    // Enhanced error logging to capture specific PayPal API errors
+    console.error('Error creating PayPal order:', JSON.stringify(error, null, 2));
+    
+    // Check if the error is a PayPal specific error with a detailed message
+    if (error.statusCode && error.result && error.result.message) {
+      throw new Error(`PayPal API Error: ${error.result.message}`);
+    }
+    
+    throw new Error('Failed to create PayPal order. Check server logs for details.');
   }
 }
 
