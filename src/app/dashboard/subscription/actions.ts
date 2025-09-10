@@ -39,28 +39,24 @@ const client = new paypal.core.PayPalHttpClient(environment);
 
 async function getAuthenticatedUser() {
   if (!isFirebaseAdminInitialized) {
-      console.error("Firebase Admin is not initialized. Cannot authenticate user.");
-      return null;
+      throw new Error("Firebase Admin is not initialized.");
   }
   const sessionCookie = cookies().get('session')?.value;
   if (!sessionCookie) {
-    return null;
+    throw new Error("Session cookie not found.");
   }
   try {
     const decodedClaims = await firebaseAdmin.auth().verifySessionCookie(sessionCookie, true);
     return decodedClaims;
   } catch (error) {
     console.error('Error verifying session cookie:', error);
-    return null;
+    throw new Error("User is not authenticated.");
   }
 }
 
 
 export async function createStripeCheckoutSession(plan: 'Weekly Pass' | 'Annual Pro') {
   const user = await getAuthenticatedUser();
-  if (!user) {
-    throw new Error('User is not authenticated.');
-  }
 
   const priceId = plan === 'Weekly Pass' 
     ? process.env.STRIPE_WEEKLY_PRICE_ID 
@@ -97,9 +93,6 @@ export async function createStripeCheckoutSession(plan: 'Weekly Pass' | 'Annual 
 
 export async function createPayPalOrder(plan: 'Weekly Pass' | 'Annual Pro', price?: string) {
     const user = await getAuthenticatedUser();
-    if (!user) {
-        throw new Error('User is not authenticated.');
-    }
     
     let planPrice: string;
     if (price) {
@@ -146,9 +139,6 @@ export async function createPayPalOrder(plan: 'Weekly Pass' | 'Annual Pro', pric
 
 export async function capturePayPalOrder(orderID: string) {
     const user = await getAuthenticatedUser();
-    if (!user) {
-        throw new Error('User is not authenticated.');
-    }
 
     const request = new paypal.orders.OrdersCaptureRequest(orderID);
     request.requestBody({});
