@@ -5,6 +5,7 @@ import { BookOpenCheck } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton';
+import Image from 'next/image';
 
 const TestimonialCard = ({ quote, name, handle }: { quote: string; name: string; handle: string }) => (
     <Card className="bg-card/50 p-6 rounded-xl shadow-lg border border-border/20 backdrop-blur-sm">
@@ -54,17 +55,26 @@ export default function LoginPage() {
               </div>
           </div>
       </div>
-      <div className="flex items-center justify-center p-6 sm:p-12 relative">
+      <div className="relative flex flex-col items-center justify-end p-6 sm:p-12">
+        <Image
+          src="/signin.png"
+          alt="Sign in background"
+          layout="fill"
+          objectFit="cover"
+          className="z-0"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-10" />
+        <div className="relative z-20 w-full max-w-sm">
           <div className="absolute top-8 left-8 z-10">
-              <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-headline text-foreground">
+              <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-headline text-white">
                   <BookOpenCheck className="h-6 w-6 text-primary" />
                   <span className="font-bold leading-tight">Wisdom<br className="sm:hidden" />is Fun</span>
               </Link>
           </div>
-          <div className="mx-auto grid w-full max-w-sm gap-6">
-            <div className="grid gap-2 text-center pt-4">
+          <div className="grid gap-6 text-center text-white pb-10">
+            <div className="grid gap-2">
                 <h1 className="text-3xl font-bold font-headline">Welcome Back!</h1>
-                <p className="text-balance text-muted-foreground">
+                <p className="text-balance text-white/80">
                     Sign in with Google to access your dashboard.
                 </p>
             </div>
@@ -76,6 +86,7 @@ export default function LoginPage() {
                 </Link>
             </div>
           </div>
+        </div>
       </div>
     </div>
   );

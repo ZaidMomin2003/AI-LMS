@@ -49,17 +49,14 @@ export function GoogleSignInButton() {
   return (
     <div
       onClick={handleGoogleSignIn}
-      className="group relative flex w-full cursor-pointer items-center justify-center gap-4 rounded-xl border-2 border-border bg-background p-4 text-center transition-all duration-300 hover:border-primary hover:shadow-lg hover:shadow-primary/20"
+      className="group relative flex w-full cursor-pointer items-center justify-center gap-4 rounded-xl border-2 border-white/20 bg-white/10 p-4 text-center text-white backdrop-blur-sm transition-all duration-300 hover:border-primary hover:bg-white/20 hover:shadow-lg hover:shadow-primary/20"
     >
-      <div className="absolute top-2 right-2 rounded-full bg-secondary p-1 text-xs text-muted-foreground transition-opacity group-hover:opacity-0">
-        Magic Sign-in
-      </div>
       <GoogleIcon />
       <div className="text-left">
-        <p className="font-semibold text-foreground">
-            {isLoading ? 'Redirecting...' : 'Sign in with Google'}
+        <p className="font-semibold">
+            {isLoading ? 'Redirecting...' : 'Continue with Google'}
         </p>
-        <p className="text-sm text-muted-foreground">One-click secure access.</p>
+        <p className="text-sm text-white/70">One-click secure access.</p>
       </div>
       {isLoading && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
     </div>
