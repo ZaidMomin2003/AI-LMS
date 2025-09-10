@@ -1,21 +1,31 @@
 
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTopic } from '@/context/TopicContext';
 import { format, parseISO } from 'date-fns';
-import { Bookmark, Search } from 'lucide-react';
+import { Bookmark, Search, Loader2 } from 'lucide-react';
 import type { Topic } from '@/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { useRouter } from 'next/navigation';
 
-export default function BookmarksPage() {
+function BookmarksContent() {
   const { topics, dataLoading } = useTopic();
   const [searchTerm, setSearchTerm] = useState('');
+  const { subscription, loading: subLoading } = useSubscription();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!subLoading && (!subscription || subscription.status !== 'active')) {
+        router.replace('/onboarding?step=subscribe');
+    }
+  }, [subscription, subLoading, router]);
 
   const bookmarkedTopics = useMemo(() => {
     if (!topics) return [];
@@ -43,22 +53,11 @@ export default function BookmarksPage() {
 
   const sortedDates = Object.keys(groupedByDate).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
   
-  if (dataLoading) {
+  if (subLoading || dataLoading || !subscription || subscription.status !== 'active') {
       return (
-          <AppLayout>
-              <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-                <Skeleton className="h-8 w-64 mb-2" />
-                <Skeleton className="h-4 w-96 mb-6" />
-                <div className="space-y-6">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-48" />
-                    <div className="space-y-3">
-                        <Skeleton className="h-16 w-full" />
-                        <Skeleton className="h-16 w-full" />
-                    </div>
-                </div>
-              </div>
-          </AppLayout>
+          <div className="flex h-full w-full items-center justify-center bg-background">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          </div>
       )
   }
 
@@ -131,4 +130,8 @@ export default function BookmarksPage() {
       </div>
     </AppLayout>
   );
+}
+
+export default function BookmarksPage() {
+    return <BookmarksContent />;
 }

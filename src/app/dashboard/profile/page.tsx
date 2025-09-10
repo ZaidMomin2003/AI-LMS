@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLayout } from '@/components/AppLayout';
@@ -9,11 +10,23 @@ import { useAuth } from '@/context/AuthContext';
 import { useExam } from '@/context/ExamContext';
 import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 
-export default function ProfilePage() {
+function ProfileContent() {
     const { user } = useAuth();
     const { exam } = useExam();
     const { profile, loading: profileLoading } = useProfile();
+    const { subscription, loading: subLoading } = useSubscription();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!subLoading && (!subscription || subscription.status !== 'active')) {
+            router.replace('/onboarding?step=subscribe');
+        }
+    }, [subscription, subLoading, router]);
 
     const ProfileInput = ({ id, label, value, loading, ...props }: { id: string; label: string; value: string; loading: boolean; [key: string]: any; }) => (
         <div className="space-y-2">
@@ -22,6 +35,14 @@ export default function ProfilePage() {
         </div>
     );
     
+    if (subLoading || profileLoading || !subscription || subscription.status !== 'active') {
+        return (
+            <div className="flex h-full w-full items-center justify-center bg-background">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+        );
+    }
+
     return (
         <AppLayout>
             <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -59,4 +80,8 @@ export default function ProfilePage() {
             </div>
         </AppLayout>
     )
+}
+
+export default function ProfilePage() {
+    return <ProfileContent />;
 }

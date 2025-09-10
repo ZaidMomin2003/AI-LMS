@@ -8,19 +8,28 @@ import { QuizView } from '@/components/topic/QuizView';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTopic } from '@/context/TopicContext';
-import { FileText, BrainCircuit, MessageCircleQuestion, ArrowLeft, Bookmark } from 'lucide-react';
+import { FileText, BrainCircuit, MessageCircleQuestion, ArrowLeft, Bookmark, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { Topic } from '@/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useSubscription } from '@/context/SubscriptionContext';
 
-export default function TopicPage() {
+function TopicContent() {
   const params = useParams();
   const { getTopicById, toggleBookmark } = useTopic();
   const [topic, setTopic] = useState<Topic | null>(null);
   const { toast } = useToast();
+  const { subscription, loading: subLoading } = useSubscription();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!subLoading && (!subscription || subscription.status !== 'active')) {
+        router.replace('/onboarding?step=subscribe');
+    }
+  }, [subscription, subLoading, router]);
 
   useEffect(() => {
     if (typeof params.id === 'string') {
@@ -41,6 +50,14 @@ export default function TopicPage() {
         });
     }
   };
+
+  if (subLoading || !subscription || subscription.status !== 'active') {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-background">
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!topic) {
     return (
@@ -99,4 +116,8 @@ export default function TopicPage() {
       </div>
     </AppLayout>
   );
+}
+
+export default function TopicPage() {
+    return <TopicContent />;
 }

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -21,6 +21,8 @@ import { Loader2, Wand2, Workflow, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { createFlowchartAction } from './actions';
 import { Textarea } from '@/components/ui/textarea';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   syllabus: z
@@ -31,10 +33,18 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function FlowchartPage() {
+function FlowchartContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [flowchartSvg, setFlowchartSvg] = useState<string | null>(null);
   const { toast } = useToast();
+  const { subscription, loading: subLoading } = useSubscription();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!subLoading && (!subscription || subscription.status !== 'active')) {
+        router.replace('/onboarding?step=subscribe');
+    }
+  }, [subscription, subLoading, router]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -77,6 +87,14 @@ export default function FlowchartPage() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+  if (subLoading || !subscription || subscription.status !== 'active') {
+    return (
+        <div className="flex h-full w-full items-center justify-center bg-background">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+    );
+  }
 
   return (
     <AppLayout>
@@ -164,4 +182,8 @@ export default function FlowchartPage() {
       </div>
     </AppLayout>
   );
+}
+
+export default function FlowchartPage() {
+    return <FlowchartContent />;
 }

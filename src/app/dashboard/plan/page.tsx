@@ -1,12 +1,33 @@
+
 'use client';
 import { AppLayout } from '@/components/AppLayout';
 import { CreateTaskForm } from '@/components/plan/CreateTaskForm';
 import { KanbanBoard } from '@/components/plan/KanbanBoard';
+import { useSubscription } from '@/context/SubscriptionContext';
 import { useTask } from '@/context/TaskContext';
 import type { TaskPriority } from '@/types';
+import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
-export default function StudyPlanPage() {
+function StudyPlanContent() {
     const { tasks, setTasks, addTask } = useTask();
+    const { subscription, loading: subLoading } = useSubscription();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!subLoading && (!subscription || subscription.status !== 'active')) {
+            router.replace('/onboarding?step=subscribe');
+        }
+    }, [subscription, subLoading, router]);
+
+    if (subLoading || !subscription || subscription.status !== 'active') {
+        return (
+            <div className="flex h-full w-full items-center justify-center bg-background">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+        );
+    }
     
     const handleAddTask = (content: string, priority: TaskPriority) => {
         addTask(content, priority);
@@ -33,4 +54,8 @@ export default function StudyPlanPage() {
             </div>
         </AppLayout>
     );
+}
+
+export default function StudyPlanPage() {
+    return <StudyPlanContent />;
 }

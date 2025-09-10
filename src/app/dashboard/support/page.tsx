@@ -26,9 +26,11 @@ import {
 } from '@/components/ui/select';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { submitSupportRequest } from './actions';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Please enter your name.'),
@@ -39,10 +41,18 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export default function SupportPage() {
+function SupportContent() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const { subscription, loading: subLoading } = useSubscription();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!subLoading && (!subscription || subscription.status !== 'active')) {
+        router.replace('/onboarding?step=subscribe');
+    }
+  }, [subscription, subLoading, router]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -71,6 +81,14 @@ export default function SupportPage() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if (subLoading || !subscription || subscription.status !== 'active') {
+    return (
+        <div className="flex h-full w-full items-center justify-center bg-background">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+    );
   }
 
   return (
@@ -177,4 +195,8 @@ export default function SupportPage() {
       </div>
     </AppLayout>
   );
+}
+
+export default function SupportPage() {
+    return <SupportContent />;
 }

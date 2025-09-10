@@ -11,9 +11,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { usePomodoro } from '@/context/PomodoroContext';
-import { Play, Pause, RotateCcw, Timer as TimerIcon } from 'lucide-react';
+import { Play, Pause, RotateCcw, Timer as TimerIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { useRouter } from 'next/navigation';
 
 const REST_MINUTES = 5;
 
@@ -61,8 +63,7 @@ const CircularProgress = ({ progress, size = 280 }: { progress: number; size?: n
   );
 };
 
-
-export default function PomodoroPage() {
+function PomodoroContent() {
   const { addCompletedPomodoro } = usePomodoro();
   const { toast } = useToast();
 
@@ -72,6 +73,15 @@ export default function PomodoroPage() {
   const [mode, setMode] = useState<TimerMode>('Work');
   const [currentSession, setCurrentSession] = useState(1);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { subscription, loading: subLoading } = useSubscription();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!subLoading && (!subscription || subscription.status !== 'active')) {
+        router.replace('/onboarding?step=subscribe');
+    }
+  }, [subscription, subLoading, router]);
 
   const totalTime = (mode === 'Work' ? (timerConfig?.duration ?? 25) : REST_MINUTES) * 60;
   const progress = ((totalTime - timeLeft) / totalTime) * 100;
@@ -139,6 +149,14 @@ export default function PomodoroPage() {
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
+
+  if (subLoading || !subscription || subscription.status !== 'active') {
+    return (
+        <div className="flex h-full w-full items-center justify-center bg-background">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+    );
+  }
 
   return (
     <AppLayout>
@@ -233,4 +251,8 @@ export default function PomodoroPage() {
       </div>
     </AppLayout>
   );
+}
+
+export default function PomodoroPage() {
+    return <PomodoroContent />;
 }

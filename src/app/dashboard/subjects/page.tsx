@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import { AppLayout } from '@/components/AppLayout';
 import {
   Accordion,
@@ -10,19 +10,29 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTopic } from '@/context/TopicContext';
 import type { Topic } from '@/types';
 import { formatDistanceToNow, parseISO } from 'date-fns';
-import { FolderOpen, History } from 'lucide-react';
+import { FolderOpen, History, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { AddSubjectForm } from '@/components/subjects/AddSubjectForm';
 import { useSubject } from '@/context/SubjectContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { useRouter } from 'next/navigation';
 
-export default function SubjectsPage() {
+function SubjectsContent() {
   const { topics, dataLoading: topicsLoading } = useTopic();
   const { subjects: subjectList, addSubject, loading: subjectsLoading } = useSubject();
+  const { subscription, loading: subLoading } = useSubscription();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!subLoading && (!subscription || subscription.status !== 'active')) {
+        router.replace('/onboarding?step=subscribe');
+    }
+  }, [subscription, subLoading, router]);
 
   const subjectsWithTopics = useMemo(() => {
     if (!topics) return {};
@@ -48,6 +58,14 @@ export default function SubjectsPage() {
     </div>
   );
 
+  if (subLoading || topicsLoading || subjectsLoading || !subscription || subscription.status !== 'active') {
+    return (
+        <div className="flex h-full w-full items-center justify-center bg-background">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+    );
+  }
+
   return (
     <AppLayout>
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -62,9 +80,7 @@ export default function SubjectsPage() {
         
         <AddSubjectForm onAddSubject={addSubject} />
 
-        {topicsLoading || subjectsLoading ? (
-            <SubjectSkeleton />
-        ) : sortedSubjectKeys.length === 0 ? (
+        {sortedSubjectKeys.length === 0 ? (
           <Card className="text-center mt-6">
             <CardHeader>
                 <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit">
@@ -123,4 +139,8 @@ export default function SubjectsPage() {
       </div>
     </AppLayout>
   );
+}
+
+export default function SubjectsPage() {
+    return <SubjectsContent />;
 }

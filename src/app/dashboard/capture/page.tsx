@@ -13,8 +13,10 @@ import { captureAnswerAction } from './actions';
 import type { CaptureTheAnswerOutput } from '@/ai/flows/capture-the-answer-flow';
 import { Separator } from '@/components/ui/separator';
 import { MarkdownRenderer } from '@/components/MarkdownRenderer';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { useRouter } from 'next/navigation';
 
-export default function CapturePage() {
+function CaptureContent() {
   const [mode, setMode] = useState<'idle' | 'capture' | 'preview'>('idle');
   const [imageData, setImageData] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +25,14 @@ export default function CapturePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const { subscription, loading: subLoading } = useSubscription();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!subLoading && (!subscription || subscription.status !== 'active')) {
+        router.replace('/onboarding?step=subscribe');
+    }
+  }, [subscription, subLoading, router]);
 
   useEffect(() => {
     return () => {
@@ -107,6 +117,13 @@ export default function CapturePage() {
     if(fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  if (subLoading || !subscription || subscription.status !== 'active') {
+    return (
+        <div className="flex h-full w-full items-center justify-center bg-background">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+    );
+  }
 
   const renderContent = () => {
     switch(mode) {
@@ -210,4 +227,8 @@ export default function CapturePage() {
       </div>
     </AppLayout>
   );
+}
+
+export default function CapturePage() {
+    return <CaptureContent />;
 }

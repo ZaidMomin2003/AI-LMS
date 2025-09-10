@@ -24,12 +24,24 @@ import { useTask } from '@/context/TaskContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { usePomodoro } from '@/context/PomodoroContext';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { Loader2 } from 'lucide-react';
 
-export default function AnalyticsPage() {
+function AnalyticsContent() {
   const { topics, dataLoading: topicsLoading } = useTopic();
   const { tasks } = useTask();
   const { pomodoroHistory, loading: pomodoroLoading } = usePomodoro();
   const isMobile = useIsMobile();
+  const { subscription, loading: subLoading } = useSubscription();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!subLoading && (!subscription || subscription.status !== 'active')) {
+        router.replace('/onboarding?step=subscribe');
+    }
+  }, [subscription, subLoading, router]);
 
   const analyticsData = useMemo(() => {
     if (!topics || !tasks || !pomodoroHistory)
@@ -117,25 +129,15 @@ export default function AnalyticsPage() {
       color: 'hsl(var(--primary))',
     },
   };
-  
-  if (topicsLoading || pomodoroLoading) {
+
+  if (subLoading || topicsLoading || pomodoroLoading || !subscription || subscription.status !== 'active') {
       return (
-          <AppLayout>
-              <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-                <Skeleton className="h-8 w-64 mb-2" />
-                <Skeleton className="h-4 w-96 mb-6" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <Skeleton className="h-32"/>
-                    <Skeleton className="h-32"/>
-                    <Skeleton className="h-32"/>
-                    <Skeleton className="h-32"/>
-                </div>
-                <Skeleton className="h-96"/>
-              </div>
-          </AppLayout>
+          <div className="flex h-full w-full items-center justify-center bg-background">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          </div>
       )
   }
-
+  
   return (
     <AppLayout>
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
@@ -288,4 +290,8 @@ export default function AnalyticsPage() {
       </div>
     </AppLayout>
   );
+}
+
+export default function AnalyticsPage() {
+    return <AnalyticsContent />;
 }

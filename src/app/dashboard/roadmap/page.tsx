@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -27,6 +27,8 @@ import { Calendar as CalendarIcon, Loader2, Wand2, Clock, CalendarCheck } from '
 import { useToast } from '@/hooks/use-toast';
 import { createRoadmapAction } from './actions';
 import { useRoadmap } from '@/context/RoadmapContext';
+import { useSubscription } from '@/context/SubscriptionContext';
+import { useRouter } from 'next/navigation';
 
 const formSchema = z.object({
   syllabus: z.string().min(20, { message: 'Syllabus must be at least 20 characters.' }),
@@ -34,10 +36,18 @@ const formSchema = z.object({
   targetDate: z.date({ required_error: 'A target date is required.' }),
 });
 
-export default function RoadmapPage() {
+function RoadmapContent() {
   const [isLoading, setIsLoading] = useState(false);
   const { roadmap, setRoadmap } = useRoadmap();
   const { toast } = useToast();
+  const { subscription, loading: subLoading } = useSubscription();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!subLoading && (!subscription || subscription.status !== 'active')) {
+        router.replace('/onboarding?step=subscribe');
+    }
+  }, [subscription, subLoading, router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -72,6 +82,14 @@ export default function RoadmapPage() {
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if (subLoading || !subscription || subscription.status !== 'active') {
+    return (
+        <div className="flex h-full w-full items-center justify-center bg-background">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        </div>
+    );
   }
 
   return (
@@ -237,4 +255,8 @@ export default function RoadmapPage() {
       </div>
     </AppLayout>
   );
+}
+
+export default function RoadmapPage() {
+    return <RoadmapContent />;
 }
