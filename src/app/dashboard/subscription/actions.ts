@@ -67,7 +67,9 @@ export async function createPayPalOrder(
       },
     });
 
-    const order: Order = await client.execute(request);
+    const response = await client.execute(request);
+    const order: Order = response.result;
+
     const approvalLink = order.links.find(
       (link) => link.rel === 'approve'
     );
