@@ -54,7 +54,7 @@ import {
 import { useExam } from '@/context/ExamContext';
 import { ExamCountdown } from './exam/ExamCountdown';
 import { ThemeToggle } from './ThemeToggle';
-import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import SageMakerChat from './sagemaker/SageMakerChat';
 import { Button } from './ui/button';
 import { useSubscription } from '@/context/SubscriptionContext';
@@ -323,7 +323,19 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
             </DndContext>
         </SidebarInset>
-        <DialogContent className="w-[90vw] max-w-3xl h-[85vh] p-0">
+        <DialogContent className="w-[90vw] max-w-3xl h-[85vh] p-0 flex flex-col">
+           <DialogHeader className="p-4 border-b">
+                <DialogTitle className="font-headline flex items-center gap-3">
+                    <Sparkles className="w-8 h-8 text-primary" />
+                    <div>
+                        SageMaker
+                        <p className="text-sm font-normal text-muted-foreground">Your personal AI study assistant</p>
+                    </div>
+                </DialogTitle>
+                <DialogDescription className="sr-only">
+                    An AI-powered chat assistant to help with your studies.
+                </DialogDescription>
+            </DialogHeader>
           <SageMakerChat />
         </DialogContent>
       </SidebarProvider>

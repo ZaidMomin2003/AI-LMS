@@ -2,10 +2,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, Paperclip, Send, User, X, Sparkles, Loader2, Mic } from 'lucide-react';
+import { Bot, Paperclip, Send, User, X, Loader2, Mic } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { sageMakerAction } from '@/app/dashboard/sagemaker/actions';
@@ -184,16 +184,7 @@ export default function SageMakerChat() {
   };
 
   return (
-    <Card className="w-full h-full flex flex-col shadow-2xl border-none">
-      <CardHeader className="border-b">
-        <CardTitle className="font-headline flex items-center gap-3">
-          <Sparkles className="w-8 h-8 text-primary" />
-          <div>
-            SageMaker
-            <p className="text-sm font-normal text-muted-foreground">Your personal AI study assistant</p>
-          </div>
-        </CardTitle>
-      </CardHeader>
+    <Card className="w-full h-full flex flex-col shadow-none border-none rounded-none">
       <CardContent className="flex-1 p-0 overflow-hidden">
         <ScrollArea className="h-full" ref={scrollAreaRef}>
           <div className="p-6 space-y-6">
