@@ -1,11 +1,5 @@
 
-'use server';
-
 import admin from 'firebase-admin';
-import { config } from 'dotenv';
-
-// Load environment variables from .env file.
-config({ path: '.env' });
 
 // This function now correctly handles the service account key.
 const getServiceAccount = () => {
