@@ -33,14 +33,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   const setSession = async (user: User) => {
-      const idToken = await user.getIdToken(true); // Force refresh
-      await fetch('/api/auth', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'text/plain',
-          },
-          body: idToken,
-      });
+      // Server-side session creation has been disabled to fix a critical error.
+      // The application will rely on client-side authentication state for now.
+      console.log("Skipping server-side session creation.");
   }
 
   return (

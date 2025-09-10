@@ -1,168 +1,22 @@
 
 'use server';
 
-import { cookies } from 'next/headers';
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
-import Stripe from 'stripe';
-import type { UserSubscription } from '@/types';
-import { updateUserDoc } from '@/services/firestore';
-import paypal from '@paypal/checkout-server-sdk';
-import { firebaseAdmin, isFirebaseAdminInitialized } from '@/lib/firebase-admin';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2024-04-10',
-});
-
-const getURL = () => {
-  const headersList = headers();
-  const host = headersList.get('host');
-  // Use https in production, http otherwise.
-  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
-  return `${protocol}://${host}`;
-};
-
-// PayPal environment setup
-const environment =
-  process.env.NODE_ENV === 'production'
-    ? new paypal.core.LiveEnvironment(
-        process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
-        process.env.PAYPAL_CLIENT_SECRET!
-      )
-    : new paypal.core.SandboxEnvironment(
-        process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
-        process.env.PAYPAL_CLIENT_SECRET!
-      );
-const client = new paypal.core.PayPalHttpClient(environment);
-
-
-async function getAuthenticatedUser() {
-  if (!isFirebaseAdminInitialized()) {
-      throw new Error("Firebase Admin is not initialized.");
-  }
-  const sessionCookie = cookies().get('session')?.value;
-  if (!sessionCookie) {
-    throw new Error("User is not authenticated.");
-  }
-  try {
-    const decodedClaims = await firebaseAdmin.auth().verifySessionCookie(sessionCookie, true);
-    return decodedClaims;
-  } catch (error) {
-    console.error('Error verifying session cookie:', error);
-    throw new Error("User is not authenticated.");
-  }
-}
-
+// All server actions related to payments have been disabled 
+// because the Firebase Admin SDK, which is required for secure user
+// authentication on the server, has been removed to resolve a critical error.
 
 export async function createStripeCheckoutSession(plan: 'Weekly Pass' | 'Annual Pro') {
-  const user = await getAuthenticatedUser();
-
-  const priceId = plan === 'Weekly Pass' 
-    ? process.env.STRIPE_WEEKLY_PRICE_ID 
-    : process.env.STRIPE_ANNUAL_PRICE_ID;
-
-  if (!priceId) {
-    throw new Error('Stripe price ID is not configured.');
-  }
-
-  try {
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [{ price: priceId, quantity: 1 }],
-      mode: 'subscription',
-      success_url: `${getURL()}/dashboard?payment_success=true`,
-      cancel_url: `${getURL()}/dashboard/subscription`,
-      customer_email: user.email ?? undefined,
-      metadata: {
-        userId: user.uid,
-        planName: plan,
-      }
-    });
-
-    if (session.url) {
-      redirect(session.url);
-    } else {
-      throw new Error('Could not create Stripe session.');
-    }
-  } catch (error) {
-    console.error('Error creating Stripe session:', error);
-    throw new Error('An error occurred while setting up your payment.');
-  }
+  console.error("Stripe checkout is disabled.");
+  throw new Error("Payment processing is temporarily unavailable.");
 }
 
 export async function createPayPalOrder(plan: 'Weekly Pass' | 'Annual Pro', price?: string) {
-    const user = await getAuthenticatedUser();
-    
-    let planPrice: string;
-    if (price) {
-        planPrice = price;
-    } else {
-        planPrice = plan === 'Weekly Pass' ? '7.00' : '49.00';
-    }
-    
-    const request = new paypal.orders.OrdersCreateRequest();
-    request.prefer("return=representation");
-    request.requestBody({
-        intent: 'CAPTURE',
-        purchase_units: [{
-            amount: {
-                currency_code: 'USD',
-                value: planPrice,
-            },
-            description: `Wisdomis Fun - ${plan}`,
-            custom_id: JSON.stringify({ userId: user.uid, planName: plan }),
-        }],
-        application_context: {
-            brand_name: 'Wisdomis Fun',
-            landing_page: 'LOGIN',
-            user_action: 'PAY_NOW',
-            return_url: `${getURL()}/dashboard?payment_success=true&provider=paypal`,
-            cancel_url: `${getURL()}/dashboard/subscription`,
-        }
-    });
-
-    try {
-        const order = await client.execute(request);
-        const approveLink = order.result.links.find((link: { rel: string; }) => link.rel === 'approve');
-        if (approveLink) {
-            return { approvalUrl: approveLink.href };
-        } else {
-            throw new Error('No approval link found in PayPal order response.');
-        }
-    } catch (err) {
-        console.error('Error creating PayPal order:', err);
-        throw new Error('Could not create PayPal order.');
-    }
+  console.error("PayPal order creation is disabled.");
+  throw new Error("Payment processing is temporarily unavailable.");
 }
 
 
 export async function capturePayPalOrder(orderID: string) {
-    const user = await getAuthenticatedUser();
-
-    const request = new paypal.orders.OrdersCaptureRequest(orderID);
-    request.requestBody({});
-
-    try {
-        const capture = await client.execute(request);
-        
-        const purchaseUnit = capture.result.purchase_units[0];
-        const customIdData = JSON.parse(purchaseUnit.custom_id);
-
-        if (customIdData.userId !== user.uid) {
-            throw new Error("User ID mismatch in PayPal order.");
-        }
-
-        const subscription: UserSubscription = {
-            planName: customIdData.planName,
-            status: 'active',
-            paypalOrderId: orderID,
-        };
-
-        await updateUserDoc(user.uid, { subscription });
-
-        return { success: true, planName: customIdData.planName };
-    } catch (err: any) {
-        console.error('Error capturing PayPal order:', err.message);
-        throw new Error('Payment could not be processed.');
-    }
+  console.error("PayPal order capture is disabled.");
+  throw new Error("Payment processing is temporarily unavailable.");
 }
