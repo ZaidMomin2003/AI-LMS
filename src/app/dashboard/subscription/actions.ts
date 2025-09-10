@@ -18,7 +18,8 @@ function getPayPalClient() {
 
   if (!clientId || !clientSecret) {
     console.error('PayPal client ID or secret is not defined in environment variables.');
-    throw new Error('PayPal credentials are not configured on the server.');
+    // This specific error will be caught and shown to the user.
+    throw new Error('PayPal credentials are not configured on the server. Please ensure PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET are set in the .env file.');
   }
 
   const environment = new paypal.core.SandboxEnvironment(clientId, clientSecret);
@@ -34,38 +35,38 @@ export async function createPayPalOrder(
       throw new Error('NEXT_PUBLIC_APP_URL is not set in the environment variables.');
   }
   
-  const client = getPayPalClient();
-  const request = new paypal.orders.OrdersCreateRequest();
-
-  const planDetails = {
-    'Weekly Pass': { value: '7.00', description: 'Weekly Pass Subscription' },
-    'Annual Pro': {
-      value: price || '299.00',
-      description: 'Annual Pro Subscription',
-    },
-  };
-
-  const details = planDetails[plan];
-
-  request.prefer('return=representation');
-  request.requestBody({
-    intent: 'CAPTURE',
-    purchase_units: [
-      {
-        amount: {
-          currency_code: 'USD',
-          value: details.value,
-        },
-        description: details.description,
-      },
-    ],
-    application_context: {
-      return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?payment_success=true&provider=paypal`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription`,
-    },
-  });
-
   try {
+    const client = getPayPalClient();
+    const request = new paypal.orders.OrdersCreateRequest();
+
+    const planDetails = {
+      'Weekly Pass': { value: '7.00', description: 'Weekly Pass Subscription' },
+      'Annual Pro': {
+        value: price || '299.00',
+        description: 'Annual Pro Subscription',
+      },
+    };
+
+    const details = planDetails[plan];
+
+    request.prefer('return=representation');
+    request.requestBody({
+      intent: 'CAPTURE',
+      purchase_units: [
+        {
+          amount: {
+            currency_code: 'USD',
+            value: details.value,
+          },
+          description: details.description,
+        },
+      ],
+      application_context: {
+        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?payment_success=true&provider=paypal`,
+        cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/subscription`,
+      },
+    });
+
     const order: Order = await client.execute(request);
     const approvalLink = order.links.find(
       (link) => link.rel === 'approve'
@@ -75,13 +76,16 @@ export async function createPayPalOrder(
     }
     return { orderID: order.id, approvalUrl: approvalLink.href };
   } catch (error: any) {
+    // Log the detailed error to the server console
     console.error('Error creating PayPal order:', JSON.stringify(error, null, 2));
     
+    // Pass the specific error message to the client
     if (error.statusCode && error.result && error.result.message) {
       throw new Error(`PayPal API Error: ${error.result.message}`);
     }
     
-    throw new Error('Failed to create PayPal order. Check server logs for details.');
+    // Pass our custom, more informative error message
+    throw new Error(error.message || 'Failed to create PayPal order. Check server logs for details.');
   }
 }
 
