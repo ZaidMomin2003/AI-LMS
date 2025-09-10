@@ -1,4 +1,6 @@
 
+'use server';
+
 import admin from 'firebase-admin';
 import { config } from 'dotenv';
 
@@ -11,20 +13,22 @@ const initializeFirebaseAdmin = () => {
     return admin;
   }
 
-  const serviceAccountJson = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+  const serviceAccountBase64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
-  if (!serviceAccountJson) {
+  if (!serviceAccountBase64) {
     // This will be caught by the server and displayed as a clear error.
     throw new Error('Firebase Admin SDK Error: FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.');
   }
 
   try {
-    const serviceAccount = JSON.parse(serviceAccountJson);
+    const decodedServiceAccount = Buffer.from(serviceAccountBase64, 'base64').toString('utf8');
+    const serviceAccount = JSON.parse(decodedServiceAccount);
+    
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
     });
   } catch (error) {
-    console.error("Firebase Admin SDK Error: Could not parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid JSON string.", error);
+    console.error("Firebase Admin SDK Error: Could not parse FIREBASE_SERVICE_ACCOUNT_KEY. Make sure it's a valid Base64 encoded JSON string.", error);
     // Throw a more specific error to help diagnose the problem.
     throw new Error('Firebase Admin SDK Error: FIREBASE_SERVICE_ACCOUNT_KEY is malformed.');
   }
