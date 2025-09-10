@@ -1,9 +1,5 @@
 
 import admin from 'firebase-admin';
-import { config } from 'dotenv';
-
-// Load environment variables from .env file
-config();
 
 // This function now correctly builds the service account object from the single environment variable.
 const getServiceAccount = () => {
