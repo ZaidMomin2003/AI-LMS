@@ -1,4 +1,3 @@
-
 'use server';
 
 import { auth } from '@/lib/firebase';
@@ -10,7 +9,7 @@ import type {
 } from '@paypal/checkout-server-sdk/lib/orders/lib';
 
 const environment = new paypal.core.SandboxEnvironment(
-  process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID!,
+  process.env.PAYPAL_CLIENT_ID!,
   process.env.PAYPAL_CLIENT_SECRET!
 );
 const client = new paypal.core.PayPalHttpClient(environment);
