@@ -5,9 +5,11 @@ import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Check, Loader2 } from 'lucide-react';
+import { Check, Loader2, LogOut } from 'lucide-react';
 import { createPayPalOrder } from '@/app/dashboard/subscription/actions';
 import Image from 'next/image';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 const features = [
     "Unlimited Topic Generations",
@@ -51,6 +53,11 @@ function SubscriptionComponent() {
             });
             setIsLoading(false);
         }
+    };
+
+    const handleLogout = async () => {
+        await signOut(auth);
+        router.push('/login');
     };
     
     return (
@@ -97,6 +104,14 @@ function SubscriptionComponent() {
                         className="mt-4 h-12 w-full rounded-full bg-blue-500 text-lg font-semibold text-white transition-all hover:bg-blue-400"
                     >
                          {isLoading ? <Loader2 className="animate-spin" /> : 'Subscribe with PayPal'}
+                    </Button>
+                     <Button 
+                        onClick={handleLogout}
+                        variant="ghost"
+                        className="mt-2 w-full text-white/60 hover:text-white"
+                    >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
                     </Button>
                     <p className="mt-4 text-center text-xs text-white/50">
                         By subscribing, you agree to our Terms and Privacy Policy. Cancel anytime.
