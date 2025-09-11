@@ -42,7 +42,7 @@ export async function createPayPalOrder(
     const planDetails = {
       'Weekly Pass': { value: '7.00', description: 'Weekly Pass Subscription' },
       'Annual Pro': {
-        value: price || '299.00',
+        value: price || '49.00',
         description: 'Annual Pro Subscription',
       },
     };

@@ -20,7 +20,7 @@ const features = [
 
 function SubscriptionComponent() {
     const [isLoading, setIsLoading] = useState(false);
-    const [price, setPrice] = useState('299.00');
+    const [price, setPrice] = useState('49.00');
     const { toast } = useToast();
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -29,7 +29,7 @@ function SubscriptionComponent() {
 
     useEffect(() => {
         if (hasPromo) {
-            setPrice('249.00');
+            setPrice('39.00'); // Discounted Price
         }
     }, [hasPromo]);
     
@@ -84,7 +84,7 @@ function SubscriptionComponent() {
                         <div className="flex items-center justify-between">
                             <p className="font-semibold">Yearly</p>
                             <div className="flex items-baseline">
-                                {hasPromo && <p className="mr-2 text-lg text-white/70 line-through">$299</p>}
+                                {hasPromo && <p className="mr-2 text-lg text-white/70 line-through">$49</p>}
                                 <p className="text-2xl font-bold">${price}</p>
                             </div>
                         </div>

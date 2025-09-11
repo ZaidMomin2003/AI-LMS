@@ -86,8 +86,8 @@ export function ValueComparison() {
                                 <p className="text-muted-foreground text-sm">The Old Way</p>
 
                                 <div className="my-6">
-                                    <p className="text-5xl font-bold text-primary">$199</p>
-                                    <p className="text-muted-foreground">per student, per year</p>
+                                    <p className="text-5xl font-bold text-primary">$49</p>
+                                    <p className="text-muted-foreground">per year</p>
                                 </div>
                                 <p className="text-sm text-muted-foreground">
                                     With Wisdomis Fun, you get a comprehensive, all-in-one platform for a fraction of the cost.

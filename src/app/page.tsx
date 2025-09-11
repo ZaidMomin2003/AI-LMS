@@ -24,9 +24,9 @@ export default function LandingPage() {
       <main className="flex-grow">
         <Hero />
         <Workflow />
+        <ValueComparison />
         <Testimonials />
         <Features />
-        <ValueComparison />
         <UseCases />
         <FAQ />
         <CTA />

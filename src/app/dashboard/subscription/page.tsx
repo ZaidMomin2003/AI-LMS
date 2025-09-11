@@ -73,7 +73,8 @@ export default function SubscriptionPage() {
     const handleChoosePlan = async (plan: 'Weekly Pass' | 'Annual Pro') => {
         setIsLoading(true);
         try {
-            const { approvalUrl } = await createPayPalOrder(plan);
+            const price = plan === 'Annual Pro' ? '49.00' : '7.00';
+            const { approvalUrl } = await createPayPalOrder(plan, price);
             // Redirect user to PayPal to approve the payment
             window.location.href = approvalUrl;
         } catch (error: any) {
