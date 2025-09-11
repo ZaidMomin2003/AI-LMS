@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
 import { format } from 'date-fns';
+import { useSubscription } from '@/context/SubscriptionContext';
 
 const instituteCodeSchema = z.object({
   institute: z.string().min(1, 'Please select your institute.'),
@@ -60,6 +61,7 @@ export function OnboardingForm() {
   const router = useRouter();
   const { updateProfile } = useProfile();
   const { addExam } = useExam();
+  const { setSubscription } = useSubscription();
   const { toast } = useToast();
 
   const form = useForm<OnboardingData>({
@@ -79,7 +81,7 @@ export function OnboardingForm() {
   
   const validateInstituteCode = () => {
     const { institute, instituteCode } = getValues();
-    if (institute === "Zaid's Personal University" && instituteCode && instituteCode !== 'Zaid2003') {
+    if (institute === "Zaid's Personal University" && instituteCode && instituteCode !== 'Zaid2003' && instituteCode !== '111 222') {
         setError('instituteCode', { type: 'manual', message: 'Invalid institute code.' });
         return false;
     }
@@ -87,23 +89,6 @@ export function OnboardingForm() {
     return true;
   };
 
-
-  const nextStep = async () => {
-    const currentFields = steps[currentStep].fields;
-    const output = await trigger(currentFields as any, { shouldFocus: true });
-    
-    if (!output) return;
-    
-    if (steps[currentStep].id === 'institute') {
-        if (!validateInstituteCode()) return;
-    }
-
-    if (currentStep === steps.length - 2) { // The step before finish
-        await handleSubmit();
-    } else {
-       setCurrentStep(step => step + 1);
-    }
-  };
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -134,8 +119,23 @@ export function OnboardingForm() {
         ]);
         
         const instituteCode = values.instituteCode?.trim();
+        
+        // Check for the special 100% discount code
+        if (instituteCode === '111 222') {
+            await setSubscription({
+                planName: 'Annual Pro',
+                status: 'active',
+                paypalOrderId: 'COMPLIMENTARY_ACCESS'
+            });
+            toast({
+                title: "Welcome, VIP!",
+                description: "Your complimentary Annual Pro access has been granted."
+            });
+            router.push('/dashboard');
+            return; // Exit the function to bypass payment
+        }
+        
         const discounted = instituteCode === 'Zaid2003';
-
         router.push(`/onboarding?step=subscribe&promo=${discounted}`);
 
     } catch (error) {
@@ -149,6 +149,23 @@ export function OnboardingForm() {
   };
   
   const progressValue = (currentStep / (steps.length - 2)) * 100;
+
+  const nextStep = async () => {
+    const currentFields = steps[currentStep].fields;
+    const output = await trigger(currentFields as any, { shouldFocus: true });
+    
+    if (!output) return;
+    
+    if (steps[currentStep].id === 'institute') {
+        if (!validateInstituteCode()) return;
+    }
+
+    if (currentStep === steps.length - 2) { // The step before finish
+        await handleSubmit();
+    } else {
+       setCurrentStep(step => step + 1);
+    }
+  };
 
   return (
     <div className="w-full">
