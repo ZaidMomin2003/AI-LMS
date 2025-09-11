@@ -20,6 +20,9 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
+  SidebarSeparator,
+  SidebarGroup,
+  SidebarGroupLabel,
 } from '@/components/ui/sidebar';
 import {
   BookOpenCheck,
@@ -110,109 +113,70 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
           </SidebarHeader>
           <SidebarContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === '/dashboard'}
-                  tooltip={{ children: 'Dashboard' }}
-                >
-                  <Link href="/dashboard">
-                    <LayoutDashboard />
-                    <span>Dashboard</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith('/dashboard/subjects')}
-                  tooltip={{ children: 'Subjects' }}
-                >
-                  <Link href="/dashboard/subjects">
-                    <Folder />
-                    <span>Subjects</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-               <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith('/dashboard/bookmarks')}
-                  tooltip={{ children: 'Bookmarks' }}
-                >
-                  <Link href="/dashboard/bookmarks">
-                    <Bookmark />
-                    <span>Bookmarks</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith('/dashboard/plan')}
-                  tooltip={{ children: 'Study Plan' }}
-                >
-                  <Link href="/dashboard/plan">
-                    <ClipboardCheck />
-                    <span>Study Plan</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith('/dashboard/roadmap')}
-                >
-                  <Link href="/dashboard/roadmap">
-                    <Map />
-                    <span>Roadmap</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith('/dashboard/pomodoro')}
-                >
-                  <Link href="/dashboard/pomodoro">
-                    <Timer />
-                    <span>Pomodoro</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith('/dashboard/capture')}
-                >
-                  <Link href="/dashboard/capture">
-                    <Camera />
-                    <span>Capture</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith('/dashboard/analytics')}
-                  tooltip={{ children: 'Analytics' }}
-                >
-                  <Link href="/dashboard/analytics">
-                    <BarChart />
-                    <span>Analytics</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
+            <SidebarGroup>
+              <SidebarGroupLabel>Main</SidebarGroupLabel>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname === '/dashboard'} tooltip={{ children: 'Dashboard' }}>
+                    <Link href="/dashboard"><LayoutDashboard /><span>Dashboard</span></Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/subjects')} tooltip={{ children: 'Subjects' }}>
+                    <Link href="/dashboard/subjects"><Folder /><span>Subjects</span></Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/bookmarks')} tooltip={{ children: 'Bookmarks' }}>
+                    <Link href="/dashboard/bookmarks"><Bookmark /><span>Bookmarks</span></Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
+            <SidebarSeparator />
+            <SidebarGroup>
+              <SidebarGroupLabel>Planning</SidebarGroupLabel>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/plan')} tooltip={{ children: 'Study Plan' }}>
+                    <Link href="/dashboard/plan"><ClipboardCheck /><span>Study Plan</span></Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/roadmap')}>
+                    <Link href="/dashboard/roadmap"><Map /><span>Roadmap</span></Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/pomodoro')}>
+                    <Link href="/dashboard/pomodoro"><Timer /><span>Pomodoro</span></Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
+            <SidebarSeparator />
+            <SidebarGroup>
+              <SidebarGroupLabel>AI Tools</SidebarGroupLabel>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/capture')}>
+                    <Link href="/dashboard/capture"><Camera /><span>Capture</span></Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/analytics')} tooltip={{ children: 'Analytics' }}>
+                    <Link href="/dashboard/analytics"><BarChart /><span>Analytics</span></Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
                   <DialogTrigger asChild>
-                      <SidebarMenuButton tooltip={{ children: 'SageMaker AI' }}>
-                          <Sparkles />
-                          <span>SageMaker</span>
-                      </SidebarMenuButton>
+                    <SidebarMenuButton tooltip={{ children: 'SageMaker AI' }}>
+                      <Sparkles /><span>SageMaker</span>
+                    </SidebarMenuButton>
                   </DialogTrigger>
-              </SidebarMenuItem>
-            </SidebarMenu>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroup>
           </SidebarContent>
           <SidebarFooter>
             {exam ? (
