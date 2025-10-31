@@ -10,9 +10,14 @@ interface CreateCheckoutSessionInput {
   uid: string;
 }
 
+interface CreateCheckoutSessionOutput {
+    sessionId: string;
+    sessionUrl: string | null;
+}
+
 export async function createCheckoutSession(
   input: CreateCheckoutSessionInput
-): Promise<{ session: Stripe.Checkout.Session }> {
+): Promise<CreateCheckoutSessionOutput> {
   const { priceId, uid } = input;
   
   if (!uid) {
@@ -36,11 +41,11 @@ export async function createCheckoutSession(
       client_reference_id: uid, // Pass the user's UID to identify them in webhooks
     });
 
-    if (!session.id) {
+    if (!session.id || !session.url) {
         throw new Error('Could not create Stripe checkout session.');
     }
 
-    return { session };
+    return { sessionId: session.id, sessionUrl: session.url };
   } catch (error) {
     console.error('Error creating Stripe checkout session:', error);
     throw new Error('Failed to create checkout session.');

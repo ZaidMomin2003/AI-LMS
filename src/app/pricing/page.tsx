@@ -110,10 +110,10 @@ const PricingContent = () => {
         }
         setIsLoading(priceId);
         try {
-            const { session } = await createCheckoutSession({ priceId, uid: user.uid });
-            if (session.url) {
+            const { sessionUrl } = await createCheckoutSession({ priceId, uid: user.uid });
+            if (sessionUrl) {
                 // Redirect the top-level window to break out of any iframes
-                window.top!.location.href = session.url;
+                window.top!.location.href = sessionUrl;
             } else {
                  throw new Error("Could not create Stripe checkout session.");
             }
