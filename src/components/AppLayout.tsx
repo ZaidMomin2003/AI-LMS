@@ -47,6 +47,7 @@ import {
   Bookmark,
   LifeBuoy,
   MoreHorizontal,
+  Search,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -72,6 +73,7 @@ import { ThemeToggle } from './ThemeToggle';
 import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
 import SageMakerChat from './sagemaker/SageMakerChat';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
 
 function AppLoadingScreen() {
   return (
@@ -166,6 +168,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-3">
               <BookOpenCheck className="w-8 h-8 text-primary" />
               <span className="font-headline text-2xl font-bold">Wisdomis Fun</span>
+            </div>
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input placeholder="Search..." className="pl-10 h-9" />
             </div>
           </SidebarHeader>
           <SidebarContent>
