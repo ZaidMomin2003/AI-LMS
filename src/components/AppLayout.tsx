@@ -306,7 +306,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         <div className="flex-1 truncate">
                             <p className="text-sm font-medium truncate">{user.displayName || user.email?.split('@')[0]}</p>
                         </div>
-                        <ThemeToggle />
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent side="top" align="end" className="w-56 mb-2">
@@ -324,6 +323,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <DropdownMenuItem onSelect={() => router.push('/dashboard/support')} className="cursor-pointer">
                         <LifeBuoy className="mr-2 h-4 w-4" />
                         <span>Support</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="cursor-default">
+                        <div className="flex items-center justify-between w-full">
+                           <span>Theme</span>
+                           <ThemeToggle />
+                        </div>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
