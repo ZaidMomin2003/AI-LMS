@@ -182,6 +182,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/analytics')} tooltip={{ children: 'Analytics' }}>
+                        <Link href="/dashboard/analytics"><BarChart /><span>Analytics</span></Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
 
                 {/* --- Organize Section --- */}
                 <SidebarGroup>
@@ -250,8 +255,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <TooltipProvider><Tooltip>
-                            <TooltipTrigger asChild>
-                                <DialogTrigger asChild disabled={!sageMakerAllowed}>
+                            <TooltipTrigger asChild disabled={!sageMakerAllowed}>
+                                <DialogTrigger asChild>
                                     <SidebarMenuButton tooltip={{ children: 'SageMaker AI' }} className={cn(!sageMakerAllowed && 'text-muted-foreground')}>
                                         <Sparkles /><span>SageMaker</span>
                                         {!sageMakerAllowed && <Lock className="ml-auto h-3 w-3" />}
@@ -262,15 +267,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         </Tooltip></TooltipProvider>
                     </SidebarMenuItem>
                 </SidebarGroup>
-
-                <SidebarSeparator />
-
-                {/* --- Analyze Section --- */}
-                <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/analytics')} tooltip={{ children: 'Analytics' }}>
-                        <Link href="/dashboard/analytics"><BarChart /><span>Analytics</span></Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
