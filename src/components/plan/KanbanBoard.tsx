@@ -28,6 +28,7 @@ interface KanbanBoardProps {
 }
 
 export function KanbanBoard({ tasks, setTasks }: KanbanBoardProps) {
+    const { moveTask } = useTask();
     const columnIds = useMemo(() => columns.map(col => col.id), []);
 
     const sensors = useSensors(
@@ -89,6 +90,7 @@ export function KanbanBoard({ tasks, setTasks }: KanbanBoardProps) {
                             id={col.id}
                             title={col.title}
                             tasks={tasks.filter(task => task.columnId === col.id)}
+                            moveTask={moveTask}
                         />
                     ))}
                 </SortableContext>

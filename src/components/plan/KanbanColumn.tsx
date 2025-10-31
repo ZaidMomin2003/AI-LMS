@@ -11,9 +11,10 @@ interface KanbanColumnProps {
   id: string;
   title: string;
   tasks: KanbanTask[];
+  moveTask: (taskId: string, direction: 'left' | 'right') => void;
 }
 
-export function KanbanColumn({ id, title, tasks }: KanbanColumnProps) {
+export function KanbanColumn({ id, title, tasks, moveTask }: KanbanColumnProps) {
   const { setNodeRef } = useSortable({
     id,
     data: { type: 'Column' },
@@ -37,7 +38,7 @@ export function KanbanColumn({ id, title, tasks }: KanbanColumnProps) {
       <CardContent className="flex-1 p-2 space-y-2 overflow-y-auto">
         <SortableContext items={taskIds}>
           {tasks.map((task) => (
-            <KanbanCard key={task.id} task={task} />
+            <KanbanCard key={task.id} task={task} moveTask={moveTask} />
           ))}
         </SortableContext>
       </CardContent>

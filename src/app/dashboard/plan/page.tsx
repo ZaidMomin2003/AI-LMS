@@ -1,3 +1,4 @@
+
 'use client';
 import { AppLayout } from '@/components/AppLayout';
 import { CreateTaskForm } from '@/components/plan/CreateTaskForm';
@@ -21,7 +22,7 @@ export default function StudyPlanPage() {
                         My Study Plan
                     </h2>
                     <p className="text-muted-foreground">
-                        Organize your syllabus and track your progress. Drag and drop to move tasks.
+                        Organize your syllabus and track your progress. Drag tasks, or click/long-press to move them.
                     </p>
                     <CreateTaskForm onTaskCreate={handleAddTask} />
                 </div>

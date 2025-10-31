@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { KanbanTask, TaskPriority } from '@/types';
@@ -6,11 +7,17 @@ import { useAuth } from './AuthContext';
 import { getUserDoc, updateUserDoc } from '@/services/firestore';
 import { debounce } from 'lodash';
 import { isFirebaseEnabled } from '@/lib/firebase';
+import { useToast } from '@/hooks/use-toast';
+
+type ColumnId = 'todo' | 'in-progress' | 'done';
+const columnOrder: ColumnId[] = ['todo', 'in-progress', 'done'];
+
 
 interface TaskContextType {
     tasks: KanbanTask[];
     setTasks: React.Dispatch<React.SetStateAction<KanbanTask[]>>;
-    addTask: (content: string, priority: TaskPriority, column?: 'todo' | 'in-progress' | 'done', id?: string) => void;
+    addTask: (content: string, priority: TaskPriority, column?: ColumnId, id?: string) => void;
+    moveTask: (taskId: string, direction: 'left' | 'right') => void;
     findTaskById: (id: string) => KanbanTask | undefined;
     loading: boolean;
 }
@@ -28,6 +35,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
     const { user } = useAuth();
     const [tasks, setTasksInternal] = useState<KanbanTask[]>([]);
     const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
     
     useEffect(() => {
         const fetchTasks = async () => {
@@ -58,7 +66,7 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         }
     };
 
-    const addTask = (content: string, priority: TaskPriority, column: 'todo' | 'in-progress' | 'done' = 'todo', id?: string) => {
+    const addTask = (content: string, priority: TaskPriority, column: ColumnId = 'todo', id?: string) => {
         const pointsMap: Record<TaskPriority, number> = { 'Hard': 50, 'Moderate': 30, 'Easy': 15 };
         const newTask: KanbanTask = {
             id: id || `task-${Date.now()}`,
@@ -69,13 +77,32 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
         };
         setTasks(prev => [newTask, ...prev]);
     };
+    
+    const moveTask = (taskId: string, direction: 'left' | 'right') => {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return;
+
+        const currentIndex = columnOrder.indexOf(task.columnId);
+        const nextIndex = direction === 'right' ? currentIndex + 1 : currentIndex - 1;
+
+        if (nextIndex >= 0 && nextIndex < columnOrder.length) {
+            const newColumnId = columnOrder[nextIndex];
+            setTasks(prev => 
+                prev.map(t => t.id === taskId ? { ...t, columnId: newColumnId } : t)
+            );
+            toast({
+                title: 'Task Moved!',
+                description: `Moved to ${newColumnId.replace('-', ' ')}.`
+            });
+        }
+    };
 
     const findTaskById = (id: string) => {
         return tasks.find(task => task.id === id);
     }
 
     return (
-        <TaskContext.Provider value={{ tasks, setTasks, addTask, findTaskById, loading }}>
+        <TaskContext.Provider value={{ tasks, setTasks, addTask, moveTask, findTaskById, loading }}>
             {children}
         </TaskContext.Provider>
     );
