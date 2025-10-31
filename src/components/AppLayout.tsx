@@ -48,6 +48,7 @@ import {
   LifeBuoy,
   MoreHorizontal,
   Search,
+  CheckCircle,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -219,7 +220,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
                 {/* --- Tools Section --- */}
                 <SidebarGroup>
-                    <SidebarGroupLabel>AI Tools</SidebarGroupLabel>
+                    <SidebarGroupLabel>Tools</SidebarGroupLabel>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/about')} tooltip={{ children: 'About' }}>
+                            <Link href="/about"><CheckCircle /><span>About</span></Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <TooltipProvider><Tooltip>
                             <TooltipTrigger asChild>
