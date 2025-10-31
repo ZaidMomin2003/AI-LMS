@@ -296,42 +296,42 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </Suspense>
               </SidebarMenuItem>
             </SidebarMenu>
-            <div className="flex items-center justify-between">
-              <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                      <SidebarMenuButton>
-                          <Avatar className="h-9 w-9">
-                              <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? ''} />
-                              <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
-                          </Avatar>
-                          <span className="truncate">{user.displayName || user.email?.split('@')[0]}</span>
-                      </SidebarMenuButton>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent side="top" align="end" className="w-56 mb-2">
-                      <DropdownMenuLabel className="font-normal">
-                          <div className="flex flex-col space-y-1">
-                              <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
-                              <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
-                          </div>
-                      </DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onSelect={() => router.push('/dashboard/profile')} className="cursor-pointer">
-                          <User className="mr-2 h-4 w-4" />
-                          <span>Profile</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onSelect={() => router.push('/dashboard/support')} className="cursor-pointer">
-                          <LifeBuoy className="mr-2 h-4 w-4" />
-                          <span>Support</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
-                          <LogOut className="mr-2 h-4 w-4" />
-                          <span>Log out</span>
-                      </DropdownMenuItem>
-                  </DropdownMenuContent>
-              </DropdownMenu>
-              <ThemeToggle />
-            </div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="w-full justify-start items-center gap-3 p-2 h-auto text-left">
+                        <Avatar className="h-9 w-9">
+                            <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? ''} />
+                            <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 truncate">
+                            <p className="text-sm font-medium truncate">{user.displayName || user.email?.split('@')[0]}</p>
+                        </div>
+                        <ThemeToggle />
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="top" align="end" className="w-56 mb-2">
+                    <DropdownMenuLabel className="font-normal">
+                        <div className="flex flex-col space-y-1">
+                            <p className="text-sm font-medium leading-none">{user.displayName || 'User'}</p>
+                            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                        </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onSelect={() => router.push('/dashboard/profile')} className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => router.push('/dashboard/support')} className="cursor-pointer">
+                        <LifeBuoy className="mr-2 h-4 w-4" />
+                        <span>Support</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Log out</span>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarFooter>
         </Sidebar>
         <SidebarInset>
