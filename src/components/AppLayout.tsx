@@ -46,6 +46,7 @@ import {
   Sparkles,
   Bookmark,
   LifeBuoy,
+  MoreHorizontal,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -298,13 +299,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </SidebarMenu>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="w-full justify-start items-center gap-3 p-2 h-auto text-left">
-                        <Avatar className="h-9 w-9">
-                            <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? ''} />
-                            <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 truncate">
-                            <p className="text-sm font-medium truncate">{user.displayName || user.email?.split('@')[0]}</p>
+                    <Button variant="ghost" className="w-full justify-start items-center gap-2 p-2 h-auto text-left">
+                        <div className="flex items-center gap-3 w-full">
+                            <Avatar className="h-9 w-9">
+                                <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? ''} />
+                                <AvatarFallback>{getInitials(user.email)}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 truncate">
+                                <p className="text-sm font-medium truncate">{user.displayName || user.email?.split('@')[0]}</p>
+                                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                            </div>
+                            <MoreHorizontal className="w-4 h-4 text-muted-foreground" />
                         </div>
                     </Button>
                 </DropdownMenuTrigger>
@@ -324,7 +329,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         <LifeBuoy className="mr-2 h-4 w-4" />
                         <span>Support</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="cursor-default">
+                    <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="cursor-default focus:bg-transparent">
                         <div className="flex items-center justify-between w-full">
                            <span>Theme</span>
                            <ThemeToggle />
