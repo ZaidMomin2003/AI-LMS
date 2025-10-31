@@ -222,11 +222,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <SidebarGroup>
                     <SidebarGroupLabel>Tools</SidebarGroupLabel>
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={pathname.startsWith('/about')} tooltip={{ children: 'About' }}>
-                            <Link href="/about"><CheckCircle /><span>About</span></Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
                         <TooltipProvider><Tooltip>
                             <TooltipTrigger asChild>
                                 <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/roadmap')}>
