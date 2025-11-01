@@ -28,6 +28,14 @@ if (isFirebaseEnabled) {
     } catch (error) {
         console.error("Firebase initialization error:", error);
     }
+} else {
+    console.log(
+    '================================================================================',
+    '\nFirebase is not configured. Authentication and database features will be disabled.',
+    '\nCreate a file named .env in the project root and add your Firebase config.',
+    '\nSee the README for more details.',
+    '\n================================================================================'
+  );
 }
 
 export { app, auth, googleProvider, db };
