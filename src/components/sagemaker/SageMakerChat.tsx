@@ -9,10 +9,8 @@ import {
   XIcon,
   LoaderIcon,
   Sparkles,
-  Command,
   User,
   Bot,
-  Mic,
   Lock,
   Star,
 } from 'lucide-react';
@@ -31,24 +29,10 @@ import { Skeleton } from '../ui/skeleton';
 
 // --- TYPES AND INTERFACES ---
 
-declare global {
-    interface Window {
-        SpeechRecognition: any;
-        webkitSpeechRecognition: any;
-    }
-}
-
 interface Message {
   role: 'user' | 'assistant';
   content: string;
   image?: string;
-}
-
-interface CommandSuggestion {
-  icon: React.ReactNode;
-  label: string;
-  description: string;
-  prefix: string;
 }
 
 interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -155,7 +139,6 @@ export default function SageMakerChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
   
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageData, setImageData] = useState<string | null>(null);
@@ -165,7 +148,6 @@ export default function SageMakerChat() {
   
   const { textareaRef, adjustHeight } = useAutoResizeTextarea({ minHeight: 24, maxHeight: 200 });
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const recognitionRef = useRef<any>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // --- Effects ---
@@ -179,44 +161,9 @@ export default function SageMakerChat() {
     }
   }, [messages, isTyping]);
   
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        recognition.interimResults = false;
-        recognition.lang = 'en-US';
-
-        recognition.onresult = (event: any) => {
-          const transcript = event.results[0][0].transcript;
-          setInput(transcript);
-        };
-        recognition.onerror = (event: any) => {
-            console.error('Speech recognition error', event.error);
-            toast({ variant: "destructive", title: "Voice Recognition Error", description: `Error: ${event.error}` });
-        };
-        recognition.onend = () => setIsRecording(false);
-        recognitionRef.current = recognition;
-      }
-    }
-  }, [toast]);
 
   // --- Handlers ---
   
-  const handleMicClick = () => {
-    if (isRecording) {
-      recognitionRef.current?.stop();
-    } else {
-      if (recognitionRef.current) {
-        recognitionRef.current.start();
-        setIsRecording(true);
-      } else {
-         toast({ variant: "destructive", title: "Not Supported", description: "Your browser may not support voice recognition." });
-      }
-    }
-  };
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -390,17 +337,14 @@ export default function SageMakerChat() {
                 adjustHeight();
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Ask anything, or use the mic..."
-              className="resize-none w-full border rounded-lg p-3 pr-28 text-sm"
+              placeholder="Ask anything..."
+              className="resize-none w-full border rounded-lg p-3 pr-24 text-sm"
               showRing={false}
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
-                 <Button type="button" variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isTyping || isRecording}>
+                 <Button type="button" variant="ghost" size="icon" onClick={() => fileInputRef.current?.click()} disabled={isTyping}>
                     <Paperclip size={18} />
-                 </Button>
-                 <Button type="button" variant={isRecording ? "destructive" : "ghost"} size="icon" onClick={handleMicClick} disabled={isTyping}>
-                    <Mic size={18} />
                  </Button>
                 <Button type="submit" size="icon" disabled={isTyping || (!input.trim() && !imageData)} onClick={handleSendMessage}>
                   {isTyping ? <LoaderIcon className="h-4 w-4 animate-spin" /> : <SendIcon size={18} />}
