@@ -195,7 +195,7 @@ export default function SageMakerChat() {
       )
   }
 
-  const sageMakerAllowed = subscription?.planName && ['Scholar Subscription', 'Sage Mode'].includes(subscription.planName);
+  const sageMakerAllowed = subscription?.planName && ['Hobby', 'Scholar Subscription', 'Sage Mode'].includes(subscription.planName);
 
   if (!sageMakerAllowed) {
       return (

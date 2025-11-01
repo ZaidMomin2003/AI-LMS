@@ -159,7 +159,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isPomodoroLocked = isHobby && pomodoroHistory.length > 0;
   const isCaptureLocked = isHobby && (profile?.captureCount ?? 0) >= 1;
   
-  const sageMakerAllowed = subscription?.planName && ['Scholar Subscription', 'Sage Mode'].includes(subscription.planName);
+  const sageMakerAllowed = subscription?.planName && ['Hobby', 'Scholar Subscription', 'Sage Mode'].includes(subscription.planName);
 
   return (
      <Dialog open={isSageMakerOpen} onOpenChange={setIsSageMakerOpen}>
