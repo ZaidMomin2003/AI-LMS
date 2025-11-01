@@ -18,7 +18,7 @@ interface NavItem {
 const navItems: NavItem[] = [
     { name: 'Features', href: '/#features' },
     { name: 'Use Cases', href: '/#use-cases' },
-    { name: 'Pricing', href: '/pricing' },
+    { name: 'Pricing', href: '/#pricing' },
     { name: 'Roadmap', href: 'https://scholar.featurebase.app/roadmap', external: true },
     { name: 'FAQ', href: '/#faq' },
     { name: 'Contact', href: '/#contact' },

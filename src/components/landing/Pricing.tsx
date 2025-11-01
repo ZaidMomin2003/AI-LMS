@@ -144,7 +144,6 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
           'before:bg-gradient-to-br before:from-white/7 before:to-transparent',
           'before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100',
           "after:absolute after:inset-0 after:-z-20 after:content-['']",
-          'after:bg-[radial-gradient(circle_at_75%_25%,hsl(var(--primary)/0.05),transparent_70%)]',
           'after:opacity-70',
           'hover:border-border/70 hover:shadow-lg',
            plan.highlight
@@ -187,7 +186,7 @@ PricingCard.displayName = 'PricingCard';
 
 export function Pricing() {
   return (
-    <div className="relative w-full overflow-hidden py-20 sm:py-32">
+    <div id="pricing" className="relative w-full overflow-hidden py-20 sm:py-32">
         <div className="absolute inset-0 -z-10 flex items-center justify-center">
             <h1 className="text-center text-12xl font-bold text-foreground/5 pointer-events-none">
                 Pricing
@@ -196,12 +195,9 @@ export function Pricing() {
 
       <div className="relative container mx-auto px-4">
         <div className="mx-auto max-w-2xl text-center mb-16">
-            <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl font-headline">
-              Choose Your Plan
+            <h2 className="text-8xl font-bold tracking-tight text-foreground sm:text-9xl font-headline">
+              Pricing
             </h2>
-            <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                Start for free, then unlock more power as you grow. Simple, transparent pricing for every learner.
-            </p>
         </div>
         <motion.div
           variants={containerVariants}
