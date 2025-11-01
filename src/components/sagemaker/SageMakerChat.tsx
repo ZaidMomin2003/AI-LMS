@@ -224,7 +224,7 @@ export default function SageMakerChat() {
   }
 
   return (
-    <Card className="w-full h-full flex flex-col shadow-2xl border-none">
+    <Card className="w-full h-full flex flex-col shadow-xl border-border/20">
       <CardHeader className="border-b">
         <CardTitle className="font-headline flex items-center gap-3">
           <Sparkles className="w-8 h-8 text-primary" />

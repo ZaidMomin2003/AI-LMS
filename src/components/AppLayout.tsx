@@ -71,8 +71,6 @@ import { useRoadmap } from '@/context/RoadmapContext';
 import { useProfile } from '@/context/ProfileContext';
 import { Badge } from './ui/badge';
 import { ThemeToggle } from './ThemeToggle';
-import { Dialog, DialogContent, DialogTrigger } from './ui/dialog';
-import SageMakerChat from './sagemaker/SageMakerChat';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
@@ -130,7 +128,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { exam } = useExam();
-  const [isSageMakerOpen, setIsSageMakerOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -162,7 +159,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const sageMakerAllowed = subscription?.planName && ['Hobby', 'Scholar Subscription', 'Sage Mode'].includes(subscription.planName);
 
   return (
-     <Dialog open={isSageMakerOpen} onOpenChange={setIsSageMakerOpen}>
       <SidebarProvider>
         <Sidebar>
           <SidebarHeader>
@@ -264,12 +260,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <SidebarMenuItem>
                         <TooltipProvider><Tooltip>
                             <TooltipTrigger asChild disabled={!sageMakerAllowed}>
-                                <DialogTrigger asChild>
-                                    <SidebarMenuButton tooltip={{ children: 'SageMaker AI' }} className={cn(!sageMakerAllowed && 'text-muted-foreground')}>
+                                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/sagemaker')} tooltip={{ children: 'SageMaker AI' }} className={cn(!sageMakerAllowed && 'text-muted-foreground')}>
+                                    <Link href="/dashboard/sagemaker">
                                         <Sparkles /><span>SageMaker</span>
                                         {!sageMakerAllowed && <Lock className="ml-auto h-3 w-3" />}
-                                    </SidebarMenuButton>
-                                </DialogTrigger>
+                                    </Link>
+                                </SidebarMenuButton>
                             </TooltipTrigger>
                             {!sageMakerAllowed && <TooltipContent side="right" align="center"><p>Upgrade to unlock SageMaker</p></TooltipContent>}
                         </Tooltip></TooltipProvider>
@@ -365,12 +361,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </Link>
                   </Button>
                   {sageMakerAllowed && (
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="icon">
+                    <Button asChild variant="ghost" size="icon">
+                      <Link href="/dashboard/sagemaker">
                         <Sparkles className="h-5 w-5" />
                         <span className="sr-only">Open SageMaker</span>
-                      </Button>
-                    </DialogTrigger>
+                      </Link>
+                    </Button>
                   )}
                   <SidebarTrigger>
                       <PanelLeft className="h-5 w-5" />
@@ -384,10 +380,5 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
             </DndContext>
         </SidebarInset>
-        <DialogContent className="w-[90vw] max-w-3xl h-[85vh] p-0">
-          <SageMakerChat />
-        </DialogContent>
       </SidebarProvider>
-    </Dialog>
-  );
-}
+  
