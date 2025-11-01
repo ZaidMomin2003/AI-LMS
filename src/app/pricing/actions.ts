@@ -1,6 +1,7 @@
 
 'use server';
 
+import 'dotenv/config';
 import { isFirebaseEnabled } from '@/lib/firebase';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
