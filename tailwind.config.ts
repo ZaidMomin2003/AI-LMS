@@ -19,6 +19,9 @@ const config = {
       },
     },
     extend: {
+      fontSize: {
+        '12xl': '12rem',
+      },
       backgroundImage: {
         'grid-pattern': "linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px)",
       },
