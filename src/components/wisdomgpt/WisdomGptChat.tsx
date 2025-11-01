@@ -245,8 +245,9 @@ export default function WisdomGptChat() {
         <div className="max-w-3xl mx-auto px-4 py-6 md:py-10">
           {messages.length === 0 && !isTyping ? (
             <div className="flex flex-col items-center justify-center text-center h-full pt-16">
-              <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-                <Sparkles size={28} />
+              <div className="relative w-32 h-32 mb-6">
+                <div className="absolute inset-0 bg-primary rounded-full blur-2xl animate-pulse" />
+                <Image src="/chatbot.jpg" alt="AI Orb" width={128} height={128} className="relative rounded-full" />
               </div>
               <h2 className="text-2xl font-bold font-headline">
                 How can I help you today?
@@ -367,7 +368,7 @@ export default function WisdomGptChat() {
                         }}
                         onKeyDown={handleKeyDown}
                         placeholder="Message WisdomGPT..."
-                        className="resize-none max-h-[200px] border-0 shadow-none focus-visible:ring-0 py-0"
+                        className="resize-none max-h-[200px] border-0 shadow-none focus-visible:ring-0"
                     />
                     <AnimatePresence>
                         {input.trim() && (
