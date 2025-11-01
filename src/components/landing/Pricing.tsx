@@ -4,9 +4,10 @@
 import * as React from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Check, Star, FileText, BrainCircuit, MessageCircleQuestion, Bot, Map, DollarSign, Sparkles, X } from 'lucide-react';
+import { Check, Sparkles, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Card, CardContent } from '../ui/card';
 
 type PricingPlan = {
   name: string;
@@ -140,10 +141,10 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
           'border-border/50 border',
           'bg-background/20 backdrop-blur-sm',
           'shadow-[inset_0_1px_30px_0_rgba(255,255,255,0.1)]',
-          "before:absolute before:inset-0 before:-z-10 before:content-['']",
+           "before:absolute before:inset-0 before:-z-10 before:content-['']",
           'before:bg-gradient-to-br before:from-white/7 before:to-transparent',
           'before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100',
-          "after:absolute after:inset-0 after:-z-20 after:content-['']",
+           "after:absolute after:inset-0 after:-z-20 after:content-['']",
           'after:opacity-70',
           'hover:border-border/70 hover:shadow-lg',
            plan.highlight
@@ -185,92 +186,97 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
 PricingCard.displayName = 'PricingCard';
 
 
-const comparisonFeatures = [
-    { name: 'AI Note Generation', icon: FileText, wisdomis: true, learnsphere: true, quizwiz: false },
-    { name: 'AI Flashcards', icon: BrainCircuit, wisdomis: true, learnsphere: true, quizwiz: true },
-    { name: 'AI Quizzes', icon: MessageCircleQuestion, wisdomis: true, learnsphere: true, quizwiz: true },
-    { name: 'AI Chat Tutor', icon: Bot, wisdomis: true, learnsphere: true, quizwiz: false },
-    { name: 'AI Roadmap Planner', icon: Map, wisdomis: true, learnsphere: false, quizwiz: false },
-    { name: 'Dedicated Support', icon: Check, wisdomis: true, learnsphere: true, quizwiz: false },
+const oldWayFeatures = [
+    { name: 'AI Note Generation', via: 'Notion AI', cost: 96 },
+    { name: 'AI Flashcard Creation', via: 'Quizlet Plus', cost: 36 },
+    { name: 'AI Quiz Generation', via: 'QuillBot Premium', cost: 100 },
+    { name: 'Personal AI Tutor (SageMaker)', via: 'Chegg Study Pack', cost: 240 },
+    { name: 'AI Roadmap Generation', via: 'Custom Tutoring Plan', cost: 500 },
+    { name: 'Task Management Board', via: 'Trello Premium', cost: 60 },
+    { name: 'Pomodoro Timer', via: 'Focus Keeper Pro', cost: 2 },
+    { name: 'Capture the Answer', via: 'Photomath Plus', cost: 120 },
 ];
 
-const competitors = [
-    { name: 'Wisdomis Fun', price: '₹199/year', logo: Sparkles },
-    { name: 'LearnSphere', price: '$20/month', logo: null },
-    { name: 'QuizWiz AI', price: '$10/month', logo: null },
+const wisdomisWayFeatures = [
+    'AI Note Generation',
+    'AI Flashcard Creation',
+    'AI Quiz Generation',
+    'Personal AI Tutor (SageMaker)',
+    'AI Roadmap Generation',
+    'Task Management Board',
+    'Pomodoro Timer',
+    'Capture the Answer',
 ];
 
-const ComparisonTable = () => (
+const totalOldWayCost = oldWayFeatures.reduce((acc, feature) => acc + feature.cost, 0);
+const wisdomisCost = 49; // Based on the image, seems to be a different price point. Let's use it.
+
+const ValueComparison = () => (
     <section className="py-20 sm:py-32 bg-background">
         <div className="container mx-auto px-4">
-            <div className="mx-auto max-w-2xl text-center mb-16">
+            <div className="mx-auto max-w-4xl text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-headline">
-                    Unbeatable Value
+                    All Your Study Tools in One Place
                 </h2>
                 <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                    Get more features for a fraction of the cost. Wisdomis Fun is designed to be powerful, not pricey.
+                    Getting all these features separately would be a hassle—and expensive. Wisdomis Fun bundles everything you need into one powerful, affordable platform.
                 </p>
             </div>
-            <div className="overflow-x-auto">
-                <div className="min-w-max mx-auto bg-card border rounded-2xl p-6 shadow-lg">
-                    <table className="w-full border-collapse">
-                        <thead>
-                            <tr className="border-b">
-                                <th className="p-4 text-left font-headline text-lg w-1/3">Features</th>
-                                {competitors.map((comp, i) => (
-                                    <th key={comp.name} className={cn("p-4 text-center w-1/4", i === 0 && "rounded-t-lg bg-primary/10")}>
-                                        <div className="flex flex-col items-center gap-1">
-                                            {comp.logo ? <comp.logo className="w-6 h-6 text-primary"/> : <span className="font-bold">{comp.name}</span>}
-                                            {i === 0 && <span className="font-bold">{comp.name}</span>}
-                                        </div>
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {comparisonFeatures.map((feature) => (
-                                <tr key={feature.name} className="border-b last:border-none hover:bg-secondary/50">
-                                    <td className="p-4 flex items-center gap-3">
-                                        <feature.icon className="w-5 h-5 text-muted-foreground" />
-                                        <span className="font-medium">{feature.name}</span>
-                                    </td>
-                                    <td className="p-4 text-center">
-                                        <Check className="w-6 h-6 text-green-500 mx-auto" />
-                                    </td>
-                                    <td className="p-4 text-center">
-                                        {feature.learnsphere ? <Check className="w-6 h-6 text-green-500 mx-auto" /> : <X className="w-6 h-6 text-red-500 mx-auto" />}
-                                    </td>
-                                    <td className="p-4 text-center">
-                                        {feature.quizwiz ? <Check className="w-6 h-6 text-green-500 mx-auto" /> : <X className="w-6 h-6 text-red-500 mx-auto" />}
-                                    </td>
-                                </tr>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                {/* The Old Way */}
+                <Card className="bg-card p-6 rounded-2xl shadow-lg h-full">
+                    <CardContent className="p-0">
+                        <h3 className="font-headline text-xl font-bold">The Old Way: A patchwork of apps</h3>
+                        <p className="text-muted-foreground text-sm mt-1 mb-6">Juggling multiple subscriptions adds up quickly.</p>
+                        <div className="space-y-3">
+                            {oldWayFeatures.map(feature => (
+                                <div key={feature.name} className="flex justify-between items-center bg-muted/50 p-3 rounded-lg">
+                                    <div>
+                                        <p className="font-medium">{feature.name}</p>
+                                        <p className="text-xs text-muted-foreground">via {feature.via}</p>
+                                    </div>
+                                    <p className="font-semibold">${feature.cost}<span className="text-xs text-muted-foreground">/yr</span></p>
+                                </div>
                             ))}
-                            <tr className="border-t-2">
-                                <td className="p-4 font-headline text-lg flex items-center gap-3">
-                                    <DollarSign className="w-5 h-5 text-muted-foreground" />
-                                    Pricing
-                                </td>
-                                <td className="p-4 text-center font-bold text-lg bg-primary/10 rounded-b-lg">
-                                    <div className="flex flex-col">
-                                        <span>₹199</span>
-                                        <span className="text-xs font-normal text-primary">per year</span>
-                                    </div>
-                                </td>
-                                <td className="p-4 text-center font-semibold text-lg text-muted-foreground">
-                                     <div className="flex flex-col">
-                                        <span>$20</span>
-                                        <span className="text-xs font-normal">per month</span>
-                                    </div>
-                                </td>
-                                <td className="p-4 text-center font-semibold text-lg text-muted-foreground">
-                                     <div className="flex flex-col">
-                                        <span>$10</span>
-                                        <span className="text-xs font-normal">per month</span>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* The Wisdomis Fun Way & Cost */}
+                <div className="space-y-8">
+                    <Card className="bg-primary text-primary-foreground p-6 rounded-2xl shadow-2xl shadow-primary/30">
+                        <CardContent className="p-0">
+                            <h3 className="font-headline text-xl font-bold flex items-center gap-2"><Sparkles className="w-5 h-5"/> The Wisdomis Fun Way</h3>
+                            <p className="text-primary-foreground/80 text-sm mt-1 mb-6">Everything included. One simple plan.</p>
+                             <ul className="space-y-3">
+                                {wisdomisWayFeatures.map(feature => (
+                                    <li key={feature} className="flex items-center gap-2">
+                                        <Check className="w-5 h-5" />
+                                        <span className="font-medium">{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </CardContent>
+                    </Card>
+                    <Card className="bg-card p-6 rounded-2xl shadow-lg">
+                        <CardContent className="p-0 text-center">
+                            <h3 className="font-headline text-lg font-bold">Estimated Annual Cost</h3>
+                            <div className="flex justify-center items-baseline gap-8 my-4">
+                                <div>
+                                    <p className="text-4xl font-bold text-red-500 line-through">${totalOldWayCost.toLocaleString()}</p>
+                                    <p className="text-sm text-muted-foreground">The Old Way</p>
+                                </div>
+                                <div>
+                                    <p className="text-5xl font-bold text-primary">${wisdomisCost}</p>
+                                    <p className="text-sm text-muted-foreground">per year</p>
+                                </div>
+                            </div>
+                            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                                With Wisdomis Fun, you get a comprehensive, all-in-one platform for a fraction of the cost.
+                            </p>
+                        </CardContent>
+                    </Card>
                 </div>
             </div>
         </div>
@@ -308,7 +314,7 @@ export function Pricing() {
           ))}
         </motion.div>
       </div>
-      <ComparisonTable />
+      <ValueComparison />
     </div>
   );
 }
