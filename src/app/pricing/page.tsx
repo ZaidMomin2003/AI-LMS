@@ -35,7 +35,7 @@ const allPlans = [
     },
     {
         name: 'Sage Mode',
-        price: '$199',
+        price: '₹199',
         period: '/ year',
         description: 'The ultimate toolkit for dedicated lifelong learners. All features, unlimited.',
         priceId: 'SAGE_MODE_YEARLY',
@@ -167,7 +167,7 @@ const PricingContent = () => {
 
             <div className="container mx-auto px-4">
                 <div className="mx-auto max-w-2xl text-center">
-                    <h2 className="text-8xl font-bold tracking-tight text-foreground sm:text-9xl font-headline">
+                    <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-headline">
                       Pricing
                     </h2>
                     <p className="mt-4 text-lg leading-8 text-muted-foreground">
@@ -245,6 +245,8 @@ export default function PricingPage() {
       </div>
     );
   }
+
+  const plansToShow = allPlans;
 
   if (user) {
     return (

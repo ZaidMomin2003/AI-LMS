@@ -7,12 +7,12 @@ import crypto from 'crypto';
 import { updateUserDoc } from '@/services/firestore';
 import type { UserSubscription } from '@/types';
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-});
-
 export async function createRazorpayOrder(amount: number, uid: string) {
+  const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID!,
+    key_secret: process.env.RAZORPAY_KEY_SECRET!,
+  });
+
   const options = {
     amount: amount * 100, // Amount in paise
     currency: 'INR',
