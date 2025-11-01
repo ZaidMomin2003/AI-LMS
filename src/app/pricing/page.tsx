@@ -27,63 +27,28 @@ const allPlans = [
             { text: '1 AI Roadmap Generation', included: true },
             { text: '1 Pomodoro Session', included: true },
             { text: '1 Capture the Answer', included: true },
-            { text: 'Unlimited Study Plan Board', included: true },
-            { text: 'Exam Day Countdown', included: true },
-            { text: 'SageMaker AI Assistant', included: false },
+            { text: 'Basic Support', included: false },
         ],
         buttonText: 'Start for Free',
         href: '/signup',
     },
     {
-        name: 'Rapid Student',
-        price: '$7',
-        period: '/ week',
-        description: 'Ideal for short-term projects and exam cramming.',
-        priceId: 'price_1RiJCmRsI0LGhGhHY7V3VcWp', 
+        name: 'Sage Mode',
+        price: '$199',
+        period: '/ year',
+        description: 'The ultimate toolkit for dedicated lifelong learners. All features, unlimited.',
+        priceId: 'price_1RiJCeRsI0LGhGhHhZXB4MEg', // This is a placeholder
         features: [
             { text: 'Unlimited Topic Generations', included: true },
             { text: 'Unlimited AI Roadmaps', included: true },
             { text: 'Unlimited Pomodoro Sessions', included: true },
             { text: 'Unlimited Captures', included: true },
-            { text: 'Unlimited Study Plan Board', included: true },
-            { text: 'Exam Day Countdown', included: true },
-            { text: 'SageMaker AI Assistant', included: false },
-        ],
-        buttonText: 'Get Started',
-    },
-    {
-        name: 'Scholar Subscription',
-        price: '$19',
-        period: '/ month',
-        description: 'The complete toolkit for dedicated learners.',
-        priceId: 'price_1RiJCjRsI0LGhGhHmmDzBMCk',
-        features: [
-            { text: 'Unlimited Topic Generations', included: true },
-            { text: 'Unlimited AI Roadmaps', included: true },
-            { text: 'Unlimited Pomodoro Sessions', included: true },
-            { text: 'Unlimited Captures', included: true },
-            { text: 'Unlimited Study Plan Board', included: true },
-            { text: 'Exam Day Countdown', included: true },
             { text: 'SageMaker AI Assistant', included: true },
             { text: 'Priority Support', included: true },
-        ],
-        buttonText: 'Upgrade to Scholar',
-        popular: true,
-    },
-    {
-        name: 'Sage Mode',
-        price: '$169',
-        period: '/ year',
-        description: 'For the committed lifelong learner. Save over 20%!',
-        priceId: 'price_1RiJCeRsI0LGhGhHhZXB4MEg',
-        features: [
-            { text: 'Everything in Scholar Subscription', included: true },
             { text: 'Early access to new features', included: true },
-            { text: 'Save over 20% vs. Monthly', included: true },
-            { text: 'Dedicated Support Channel', included: true },
         ],
         buttonText: 'Go Sage Mode',
-        bestValue: true,
+        highlight: true,
     },
 ];
 
@@ -147,7 +112,7 @@ const PricingContent = () => {
     
     return (
         <section id="pricing" className="relative w-full overflow-hidden py-20 sm:py-32">
-            <div className="absolute inset-0 -z-10 flex items-center justify-center">
+             <div className="absolute inset-0 -z-10 flex items-center justify-center">
                 <h1 className="text-center text-12xl font-bold text-foreground/5 pointer-events-none">
                     Pricing
                 </h1>
@@ -168,21 +133,14 @@ const PricingContent = () => {
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true, amount: 0.2 }}
-                    className={cn("relative z-10 mx-auto mt-16 grid max-w-lg grid-cols-1 items-stretch gap-8", "md:grid-cols-2 lg:max-w-none" )}>
+                    className={cn("relative z-10 mx-auto mt-16 grid max-w-4xl grid-cols-1 items-stretch gap-8 md:grid-cols-2")}>
                     {plans.map((plan) => (
-                        <Card key={plan.name} className={cn("relative flex flex-col", plan.popular ? "border-2 border-primary shadow-lg shadow-primary/20" : "")}>
-                            {plan.popular && (
+                        <Card key={plan.name} className={cn("relative flex flex-col", plan.highlight ? "border-2 border-primary shadow-lg shadow-primary/20" : "")}>
+                            {plan.highlight && (
                                 <div className="absolute top-0 -translate-y-1/2 w-full flex justify-center">
                                     <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
                                         <Star className="w-4 h-4" />
-                                        Most Popular
-                                    </div>
-                                </div>
-                            )}
-                            {plan.bestValue && !plan.popular && (
-                                <div className="absolute top-0 -translate-y-1/2 w-full flex justify-center">
-                                    <div className="bg-accent text-accent-foreground px-4 py-1 rounded-full text-sm font-semibold">
-                                        Best Value
+                                        Unlimited Access
                                     </div>
                                 </div>
                             )}
@@ -210,7 +168,7 @@ const PricingContent = () => {
                                         onClick={() => handleSubscribe(plan.priceId!)}
                                         disabled={isLoading === plan.priceId}
                                         className="w-full"
-                                        variant={plan.popular ? 'default' : 'outline'}
+                                        variant={plan.highlight ? 'default' : 'outline'}
                                     >
                                         {isLoading === plan.priceId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                         {plan.buttonText}
