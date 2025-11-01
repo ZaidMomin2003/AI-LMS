@@ -249,13 +249,13 @@ export default function SageMakerChat() {
                 <Sparkles size={28} />
               </div>
               <h2 className="text-2xl font-bold font-headline">
-                How can I help you today?
+                Ask WisdomGPT Anything
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 w-full">
-                <PromptSuggestionCard text="Explain quantum computing in simple terms" onClick={handleSuggestionClick} />
-                <PromptSuggestionCard text="Write a thank-you email to a hiring manager" onClick={handleSuggestionClick} />
-                <PromptSuggestionCard text="Give me 3 startup ideas in the AI space" onClick={handleSuggestionClick} />
-                <PromptSuggestionCard text="Summarize the plot of 'The Great Gatsby'" onClick={handleSuggestionClick} />
+                <PromptSuggestionCard text="Explain the causes of the American Revolution" onClick={handleSuggestionClick} />
+                <PromptSuggestionCard text="Summarize the key concepts of photosynthesis" onClick={handleSuggestionClick} />
+                <PromptSuggestionCard text="Create a study plan for my upcoming calculus exam" onClick={handleSuggestionClick} />
+                <PromptSuggestionCard text="Give me 5 practice questions for AP Biology" onClick={handleSuggestionClick} />
               </div>
             </div>
           ) : (
@@ -266,7 +266,7 @@ export default function SageMakerChat() {
                         {message.role === 'assistant' ? <Sparkles size={18} /> : <User size={18} />}
                     </div>
                     <div className="flex-1">
-                        <p className="font-semibold text-sm capitalize">{message.role}</p>
+                        <p className="font-semibold text-sm capitalize">{message.role === 'assistant' ? 'WisdomGPT' : 'You'}</p>
                         {message.image && (
                             <div className="my-2">
                                 <Image
@@ -366,8 +366,8 @@ export default function SageMakerChat() {
                             adjustHeight();
                         }}
                         onKeyDown={handleKeyDown}
-                        placeholder="Message SageMaker..."
-                        className="resize-none max-h-[200px] border-0 shadow-none focus-visible:ring-0"
+                        placeholder="Message WisdomGPT..."
+                        className="resize-none max-h-[200px] border-0 shadow-none focus-visible:ring-0 py-0"
                     />
                     <AnimatePresence>
                         {input.trim() && (
@@ -391,7 +391,7 @@ export default function SageMakerChat() {
                 </div>
             </div>
              <p className="text-xs text-center text-muted-foreground mt-2">
-                SageMaker may produce inaccurate information about people, places, or facts.
+                WisdomGPT may produce inaccurate information about people, places, or facts.
             </p>
         </div>
       </div>
