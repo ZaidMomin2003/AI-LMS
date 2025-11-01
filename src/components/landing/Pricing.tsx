@@ -146,7 +146,7 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
           "after:absolute after:inset-0 after:-z-20 after:content-['']",
           'after:opacity-70',
           'hover:border-border/70 hover:shadow-lg',
-          plan.highlight
+           plan.highlight
             ? 'after:bg-[radial-gradient(circle_at_75%_25%,hsl(var(--primary)/0.2),transparent_40%)]'
             : 'after:bg-[radial-gradient(circle_at_75%_25%,hsl(var(--primary)/0.05),transparent_70%)]',
           className
@@ -195,6 +195,11 @@ export function Pricing() {
         </h1>
       </div>
       <div className="relative container">
+        <div className="mx-auto max-w-2xl text-center mb-16">
+            <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl font-headline">
+                Pricing
+            </h2>
+        </div>
         <motion.div
           variants={containerVariants}
           initial="hidden"
