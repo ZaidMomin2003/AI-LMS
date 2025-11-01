@@ -21,13 +21,6 @@ export default function LandingPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    // If the user is logged in, redirect them to the dashboard.
-    if (!loading && user) {
-      router.replace('/dashboard');
-    }
-  }, [user, loading, router]);
-
   // While loading, show a loader.
   if (loading) {
     return (
@@ -38,7 +31,7 @@ export default function LandingPage() {
   }
 
   // If not loading and no user, show the landing page.
-  // If a user is present, the useEffect above will redirect them.
+  // If a user is present, they can still view this page.
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
