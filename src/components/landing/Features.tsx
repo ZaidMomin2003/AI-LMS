@@ -64,13 +64,13 @@ const FlashcardDemo = () => {
                 <div className="absolute w-full h-full backface-hidden">
                     <Card className="h-full flex flex-col justify-between p-6 bg-card/80 shadow-xl border-2 border-accent/20 backdrop-blur-sm">
                         <h4 className="font-headline text-2xl">Humanism</h4>
-                        <p className="text-right text-accent font-semibold">Term</p>
+                        <p className="text-right text-primary font-semibold">Term</p>
                     </Card>
                 </div>
                 <div className="absolute w-full h-full backface-hidden rotate-y-180">
                     <Card className="h-full flex flex-col justify-between p-6 bg-card/80 shadow-xl border-2 border-accent/20 backdrop-blur-sm">
                         <p className="text-sm">An outlook attaching prime importance to human rather than divine or supernatural matters.</p>
-                        <p className="text-right text-accent font-semibold">Definition</p>
+                        <p className="text-right text-primary font-semibold">Definition</p>
                     </Card>
                 </div>
             </div>
@@ -193,10 +193,6 @@ interface BentoItem {
   rowSpan?: number;
 }
 
-interface BentoGridProps {
-  items: BentoItem[];
-}
-
 const bentoItems: BentoItem[] = [
   {
     title: 'AI-Generated Notes',
@@ -265,12 +261,12 @@ const bentoItems: BentoItem[] = [
   },
 ];
 
-export function Features({ items = bentoItems }: BentoGridProps) {
+export function Features() {
   return (
     <section id="features" className="relative overflow-hidden py-20 sm:py-32">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.1),transparent_70%)]" />
         <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.1),transparent_70%)]" />
       </div>
 
        <div className="container mx-auto px-4">
@@ -285,7 +281,7 @@ export function Features({ items = bentoItems }: BentoGridProps) {
         </div>
 
         <div className="relative mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-4 md:grid-cols-3">
-            {items.map((item, index) => (
+            {bentoItems.map((item, index) => (
             <motion.div
                 key={`${item.title}-${index}`}
                 className={cn(
