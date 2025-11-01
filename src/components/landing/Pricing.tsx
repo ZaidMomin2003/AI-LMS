@@ -197,7 +197,7 @@ export function Pricing() {
       </div>
       <div className="relative container">
         <div className="mx-auto max-w-2xl text-center mb-16">
-            <h2 className="text-8xl font-bold tracking-tight text-foreground font-headline">
+            <h2 className="text-9xl font-bold tracking-tight text-foreground font-headline">
                 Pricing
             </h2>
         </div>
