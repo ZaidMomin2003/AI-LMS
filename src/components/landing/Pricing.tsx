@@ -195,20 +195,12 @@ export function Pricing() {
         </h1>
       </div>
       <div className="relative container">
-        <div className="mx-auto max-w-2xl text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-                Choose Your Plan
-            </h2>
-            <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                Start for free, then unlock more power as you grow. Simple, transparent pricing for every learner.
-            </p>
-        </div>
         <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          className="relative z-10 grid max-w-4xl mx-auto gap-8 md:grid-cols-2"
+          className="relative z-10 grid max-w-4xl mx-auto gap-8 md:grid-cols-2 mt-16"
         >
           {pricingPlans.map((plan) => (
             <PricingCard key={plan.name} variants={itemVariants} plan={plan} />
