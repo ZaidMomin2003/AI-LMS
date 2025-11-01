@@ -80,7 +80,7 @@ const PricingContent = () => {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState<string | null>(null);
 
-    const plans = user ? allPlans.filter(p => p.priceId) : allPlans;
+    const plans = allPlans;
 
     const handleSubscribe = async (priceId: string) => {
         if (!user) {
