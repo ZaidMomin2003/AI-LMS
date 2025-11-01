@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GraduationCap, Briefcase, TestTube2, BookOpen, type LucideProps } from 'lucide-react';
 import type { ForwardRefExoticComponent, RefAttributes } from 'react';
@@ -34,38 +35,46 @@ const useCases: {
 
 export function UseCases() {
   return (
-    <section id="use-cases" className="bg-secondary py-20 sm:py-32">
-      <div className="container mx-auto px-4">
-        <div className="mx-auto max-w-2xl lg:text-center">
-          <h2 className="text-base font-semibold leading-7 text-primary">For Everyone</h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-            Adaptable to Any Learning Need
-          </p>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            Whether you're studying for an exam, skilling up for work, or just satisfying your curiosity, Wisdomis Fun is your personal learning assistant.
-          </p>
+    <section id="use-cases" className="relative py-20 sm:py-32">
+       <div
+            className="absolute inset-0 mx-auto h-44 max-w-xs blur-[118px]"
+            style={{
+              background:
+                'linear-gradient(152.92deg, hsl(var(--primary)/.2) 4.54%, hsl(var(--primary)/.26) 34.2%, hsl(var(--primary)/.1) 77.55%)',
+            }}
+      ></div>
+      <div className="mx-auto max-w-screen-xl px-4 md:px-8">
+        <div className="relative mx-auto max-w-2xl sm:text-center">
+          <div className="relative z-10">
+            <h3 className="font-headline mt-4 text-3xl font-normal tracking-tighter sm:text-4xl md:text-5xl">
+              Adaptable to Any Learning Need
+            </h3>
+            <p className="text-muted-foreground mt-3">
+              Whether you're studying for an exam, skilling up for work, or just satisfying your curiosity, Wisdomis Fun is your personal learning assistant.
+            </p>
+          </div>
         </div>
-        <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none md:grid-cols-2">
-          {useCases.map((useCase) => {
-            const IconComponent = useCase.icon;
-            return (
-              <div key={useCase.title} className="group rounded-xl p-px transition-all duration-300 bg-gradient-to-br from-border/50 to-background hover:from-primary hover:to-accent">
-                <Card className="h-full rounded-[11px] bg-background/95">
-                  <CardHeader>
-                    <div className="bg-primary/10 text-primary p-3 rounded-lg w-fit mb-4 transition-colors duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
-                       <IconComponent className="h-8 w-8" />
-                    </div>
-                    <CardTitle className="font-headline">{useCase.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">
-                      {useCase.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            )
-          })}
+        <hr className="bg-foreground/10 mx-auto mt-5 h-px w-1/2" />
+        <div className="relative mt-12">
+          <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-2">
+            {useCases.map((item, idx) => {
+              const IconComponent = item.icon;
+              return (
+               <li
+                key={idx}
+                className="transform-gpu space-y-3 rounded-xl border bg-transparent p-4 [box-shadow:0_-20px_80px_-20px_hsl(var(--primary)/.15)_inset]"
+              >
+                <div className="text-primary w-fit transform-gpu rounded-full border p-4 [box-shadow:0_-20px_80px_-20px_hsl(var(--primary)/.2)_inset] dark:[box-shadow:0_-20px_80px_-20px_hsl(var(--primary)/.05)_inset]">
+                  <IconComponent className="h-6 w-6" />
+                </div>
+                <h4 className="font-headline text-lg font-bold tracking-tighter">
+                  {item.title}
+                </h4>
+                <p className="text-muted-foreground">{item.description}</p>
+              </li>
+              )
+            })}
+          </ul>
         </div>
       </div>
     </section>
