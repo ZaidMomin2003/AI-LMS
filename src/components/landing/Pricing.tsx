@@ -209,7 +209,7 @@ const wisdomisWayFeatures = [
 ];
 
 const totalOldWayCost = oldWayFeatures.reduce((acc, feature) => acc + feature.cost, 0);
-const wisdomisCost = 49; // Based on the image, seems to be a different price point. Let's use it.
+const wisdomisCost = 199;
 
 const ValueComparison = () => (
     <section className="py-20 sm:py-32 bg-background">
