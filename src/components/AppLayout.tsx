@@ -61,7 +61,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useExam } from '@/context/ExamContext';
-import { ExamCountdown } from '../exam/ExamCountdown';
+import { ExamCountdown } from '@/components/exam/ExamCountdown';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { Skeleton } from './ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from './ui/tooltip';
