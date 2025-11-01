@@ -149,7 +149,7 @@ export function Hero() {
                     <div className="h-3 w-3 rounded-full bg-green-500"></div>
                     </div>
                     <div className="bg-background/50 text-muted-foreground mx-auto flex items-center rounded-md px-3 py-1 text-xs">
-                    https://scholar-ai.app/dashboard
+                    wisdomis.fun/dashboard
                     </div>
               </div>
               <div className="relative">
@@ -271,4 +271,5 @@ export function Hero() {
   );
 }
 
+    
     
