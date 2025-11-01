@@ -21,7 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 
-// --- Reusable Demo Components from old Features file ---
+// --- Reusable Demo Components ---
 
 const KeyTerm = ({ term, definition }: { term: string; definition: string }) => (
     <Popover>
@@ -270,6 +270,7 @@ export function Features({ items = bentoItems }: BentoGridProps) {
     <section id="features" className="relative overflow-hidden py-20 sm:py-32">
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.1),transparent_70%)]" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-5" />
       </div>
 
        <div className="container mx-auto px-4">
