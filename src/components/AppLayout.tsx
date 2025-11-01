@@ -156,7 +156,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isPomodoroLocked = isHobby && pomodoroHistory.length > 0;
   const isCaptureLocked = isHobby && (profile?.captureCount ?? 0) >= 1;
   
-  const sageMakerAllowed = subscription?.planName && ['Hobby', 'Scholar Subscription', 'Sage Mode'].includes(subscription.planName);
+  const wisdomGptAllowed = subscription?.planName && ['Hobby', 'Sage Mode'].includes(subscription.planName);
 
   return (
       <SidebarProvider>
@@ -259,15 +259,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <TooltipProvider><Tooltip>
-                            <TooltipTrigger asChild disabled={!sageMakerAllowed}>
-                                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/sagemaker')} tooltip={{ children: 'SageMaker AI' }} className={cn(!sageMakerAllowed && 'text-muted-foreground')}>
-                                    <Link href="/dashboard/sagemaker">
-                                        <Sparkles /><span>SageMaker</span>
-                                        {!sageMakerAllowed && <Lock className="ml-auto h-3 w-3" />}
+                            <TooltipTrigger asChild disabled={!wisdomGptAllowed}>
+                                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/wisdomgpt')} tooltip={{ children: 'WisdomGPT AI' }} className={cn(!wisdomGptAllowed && 'text-muted-foreground')}>
+                                    <Link href="/dashboard/wisdomgpt">
+                                        <Sparkles /><span>WisdomGPT</span>
+                                        {!wisdomGptAllowed && <Lock className="ml-auto h-3 w-3" />}
                                     </Link>
                                 </SidebarMenuButton>
                             </TooltipTrigger>
-                            {!sageMakerAllowed && <TooltipContent side="right" align="center"><p>Upgrade to unlock SageMaker</p></TooltipContent>}
+                            {!wisdomGptAllowed && <TooltipContent side="right" align="center"><p>Upgrade to unlock WisdomGPT</p></TooltipContent>}
                         </Tooltip></TooltipProvider>
                     </SidebarMenuItem>
                 </SidebarGroup>
@@ -360,11 +360,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       <span className="sr-only">Bookmarks</span>
                     </Link>
                   </Button>
-                  {sageMakerAllowed && (
+                  {wisdomGptAllowed && (
                     <Button asChild variant="ghost" size="icon">
-                      <Link href="/dashboard/sagemaker">
+                      <Link href="/dashboard/wisdomgpt">
                         <Sparkles className="h-5 w-5" />
-                        <span className="sr-only">Open SageMaker</span>
+                        <span className="sr-only">Open WisdomGPT</span>
                       </Link>
                     </Button>
                   )}
