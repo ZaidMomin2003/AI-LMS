@@ -13,12 +13,7 @@ import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
 import { createCheckoutSession } from './actions';
 import { useToast } from '@/hooks/use-toast';
-import { loadStripe, type Stripe } from '@stripe/stripe-js';
-
-let stripePromise: Promise<Stripe | null>;
-if (process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
-    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-}
+import { motion, type Variants } from 'framer-motion';
 
 const allPlans = [
     {
@@ -90,7 +85,30 @@ const allPlans = [
         buttonText: 'Go Sage Mode',
         bestValue: true,
     },
-]
+];
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring',
+      damping: 15,
+      stiffness: 150,
+    },
+  },
+};
 
 const PricingContent = () => {
     const { user } = useAuth();
@@ -112,7 +130,6 @@ const PricingContent = () => {
         try {
             const { sessionUrl } = await createCheckoutSession({ priceId, uid: user.uid });
             if (sessionUrl) {
-                // Redirect the top-level window to break out of any iframes
                 window.top!.location.href = sessionUrl;
             } else {
                  throw new Error("Could not create Stripe checkout session.");
@@ -129,18 +146,29 @@ const PricingContent = () => {
     };
     
     return (
-        <section id="pricing" className="py-20 sm:py-32">
+        <section id="pricing" className="relative w-full overflow-hidden py-20 sm:py-32">
+            <div className="absolute inset-0 -z-10 flex items-center justify-center">
+                <h1 className="text-center text-12xl font-bold text-foreground/5 pointer-events-none">
+                    Pricing
+                </h1>
+            </div>
+
             <div className="container mx-auto px-4">
                 <div className="mx-auto max-w-2xl text-center">
-                    <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-                        Choose Your Plan
+                    <h2 className="text-8xl font-bold tracking-tight text-foreground sm:text-9xl font-headline">
+                      Pricing
                     </h2>
                     <p className="mt-4 text-lg leading-8 text-muted-foreground">
                         Start for free, then unlock more power as you grow. Simple, transparent pricing for every learner.
                     </p>
                 </div>
 
-                <div className={cn("mx-auto mt-16 grid max-w-lg grid-cols-1 items-stretch gap-8", user ? 'lg:max-w-none lg:grid-cols-3' : 'lg:max-w-none lg:grid-cols-4' )}>
+                <motion.div 
+                    variants={containerVariants}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.2 }}
+                    className={cn("relative z-10 mx-auto mt-16 grid max-w-lg grid-cols-1 items-stretch gap-8", "md:grid-cols-2 lg:max-w-none" )}>
                     {plans.map((plan) => (
                         <Card key={plan.name} className={cn("relative flex flex-col", plan.popular ? "border-2 border-primary shadow-lg shadow-primary/20" : "")}>
                             {plan.popular && (
@@ -195,7 +223,7 @@ const PricingContent = () => {
                             </CardFooter>
                         </Card>
                     ))}
-                </div>
+                </motion.div>
             </div>
          </section>
     )
