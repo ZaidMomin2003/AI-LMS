@@ -339,7 +339,7 @@ export default function SageMakerChat() {
                 )}
                 </AnimatePresence>
 
-                <div className="flex items-end p-2.5">
+                <div className="flex items-center p-2.5">
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -367,7 +367,7 @@ export default function SageMakerChat() {
                         }}
                         onKeyDown={handleKeyDown}
                         placeholder="Message SageMaker..."
-                        className="resize-none max-h-[200px] border-0 shadow-none focus-visible:ring-0 py-0"
+                        className="resize-none max-h-[200px] border-0 shadow-none focus-visible:ring-0"
                     />
                     <AnimatePresence>
                         {input.trim() && (
