@@ -1,10 +1,6 @@
 
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { Loader2 } from 'lucide-react';
 import { Header } from '@/components/landing/Header';
 import { Hero } from '@/components/landing/Hero';
 import { Features } from '@/components/landing/Features';
@@ -16,22 +12,9 @@ import { CTA } from '@/components/landing/CTA';
 import { WelcomePopup } from '@/components/landing/WelcomePopup';
 import { Workflow } from '@/components/landing/Workflow';
 import { Testimonials } from '@/components/landing/Testimonials';
+import { Pricing } from '@/components/landing/Pricing';
 
 export default function LandingPage() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  // While loading, show a loader.
-  if (loading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // If not loading and no user, show the landing page.
-  // If a user is present, they can still view this page.
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
@@ -41,6 +24,7 @@ export default function LandingPage() {
         <Workflow />
         <Testimonials />
         <Features />
+        <Pricing />
         <UseCases />
         <FAQ />
         <CTA />
