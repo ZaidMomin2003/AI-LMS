@@ -11,9 +11,10 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
-import { createCheckoutSession } from './actions';
+import { createRazorpayOrder, verifyRazorpayPayment } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { motion, type Variants } from 'framer-motion';
+import Script from 'next/script';
 
 const allPlans = [
     {
@@ -37,7 +38,8 @@ const allPlans = [
         price: '$199',
         period: '/ year',
         description: 'The ultimate toolkit for dedicated lifelong learners. All features, unlimited.',
-        priceId: 'price_1RiJCeRsI0LGhGhHhZXB4MEg', // This is a placeholder
+        priceId: 'SAGE_MODE_YEARLY',
+        amount: 199, // For Razorpay
         features: [
             { text: 'Unlimited Topic Generations', included: true },
             { text: 'Unlimited AI Roadmaps', included: true },
@@ -80,9 +82,7 @@ const PricingContent = () => {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState<string | null>(null);
 
-    const plans = allPlans;
-
-    const handleSubscribe = async (priceId: string) => {
+    const handlePayment = async (amount: number) => {
         if (!user) {
             toast({
                 variant: 'destructive',
@@ -91,19 +91,61 @@ const PricingContent = () => {
             });
             return;
         }
-        setIsLoading(priceId);
+
+        setIsLoading('SAGE_MODE_YEARLY');
+
         try {
-            const { sessionUrl } = await createCheckoutSession({ priceId, uid: user.uid });
-            if (sessionUrl) {
-                window.top!.location.href = sessionUrl;
-            } else {
-                 throw new Error("Could not create Stripe checkout session.");
-            }
+            const order = await createRazorpayOrder(amount, user.uid);
+            
+            const options = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                amount: order.amount,
+                currency: order.currency,
+                name: 'Wisdomis Fun',
+                description: 'Sage Mode Yearly Subscription',
+                order_id: order.id,
+                handler: async function (response: any) {
+                    const verificationData = {
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
+                        uid: user.uid,
+                    };
+
+                    const result = await verifyRazorpayPayment(verificationData);
+
+                    if (result.success) {
+                        toast({
+                            title: 'Payment Successful!',
+                            description: 'Welcome to Sage Mode! Your subscription is now active.',
+                        });
+                         // You might want to refresh subscription context or redirect here
+                    } else {
+                        toast({
+                            variant: 'destructive',
+                            title: 'Payment Verification Failed',
+                            description: 'Please contact support.',
+                        });
+                    }
+                },
+                prefill: {
+                    name: user.displayName || 'ScholarAI User',
+                    email: user.email || '',
+                },
+                theme: {
+                    color: '#4B0082',
+                },
+            };
+            
+            // @ts-ignore
+            const rzp = new window.Razorpay(options);
+            rzp.open();
+        
         } catch (error: any) {
             toast({
                 variant: 'destructive',
-                title: 'Subscription Error',
-                description: error.message || 'Could not initiate subscription. Please try again.',
+                title: 'Payment Error',
+                description: error.message || 'Could not initiate payment. Please try again.',
             });
         } finally {
             setIsLoading(null);
@@ -111,6 +153,11 @@ const PricingContent = () => {
     };
     
     return (
+        <>
+        <Script
+            id="razorpay-checkout-js"
+            src="https://checkout.razorpay.com/v1/checkout.js"
+        />
         <section id="pricing" className="relative w-full overflow-hidden py-20 sm:py-32">
              <div className="absolute inset-0 -z-10 flex items-center justify-center">
                 <h1 className="text-center text-12xl font-bold text-foreground/5 pointer-events-none">
@@ -134,7 +181,7 @@ const PricingContent = () => {
                     whileInView="show"
                     viewport={{ once: true, amount: 0.2 }}
                     className={cn("relative z-10 mx-auto mt-16 grid max-w-4xl grid-cols-1 items-stretch gap-8 md:grid-cols-2")}>
-                    {plans.map((plan) => (
+                    {allPlans.map((plan) => (
                         <Card key={plan.name} className={cn("relative flex flex-col", plan.highlight ? "border-2 border-primary shadow-lg shadow-primary/20" : "")}>
                             {plan.highlight && (
                                 <div className="absolute top-0 -translate-y-1/2 w-full flex justify-center">
@@ -165,7 +212,7 @@ const PricingContent = () => {
                             <CardFooter>
                                 {plan.priceId ? (
                                     <Button
-                                        onClick={() => handleSubscribe(plan.priceId!)}
+                                        onClick={() => handlePayment(plan.amount!)}
                                         disabled={isLoading === plan.priceId}
                                         className="w-full"
                                         variant={plan.highlight ? 'default' : 'outline'}
@@ -184,6 +231,7 @@ const PricingContent = () => {
                 </motion.div>
             </div>
          </section>
+         </>
     )
 }
 

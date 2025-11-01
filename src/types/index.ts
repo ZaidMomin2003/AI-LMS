@@ -51,13 +51,13 @@ export interface ExamDetails {
   date: string; // Storing as ISO string
 }
 
-export type SubscriptionPlan = 'Hobby' | 'Rapid Student' | 'Scholar Subscription' | 'Sage Mode';
+export type SubscriptionPlan = 'Hobby' | 'Sage Mode';
 
 export interface UserSubscription {
   planName: SubscriptionPlan;
-  status: 'active' | 'inactive' | 'trialing' | 'canceled' | 'past_due' | 'unpaid';
-  stripeSubscriptionId?: string;
-  stripeCustomerId?: string;
+  status: 'active' | 'inactive';
+  paymentId?: string;
+  orderId?: string;
 }
 
 export interface PomodoroSession {
