@@ -1,12 +1,15 @@
 
 'use client';
 
+import { AppLayout } from '@/components/AppLayout';
 import SageMakerChat from '@/components/sagemaker/SageMakerChat';
 
 export default function SageMakerPage() {
     return (
-        <div className="flex min-h-screen w-full items-center justify-center bg-background">
-            <SageMakerChat />
-        </div>
+        <AppLayout>
+            <div className="flex-1 p-4 h-full">
+                <SageMakerChat />
+            </div>
+        </AppLayout>
     )
 }

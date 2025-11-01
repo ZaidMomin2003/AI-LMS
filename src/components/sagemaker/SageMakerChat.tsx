@@ -4,7 +4,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { cn } from '@/lib/utils';
 import {
-  ImageIcon,
   Paperclip,
   SendIcon,
   XIcon,
@@ -282,17 +281,17 @@ export default function SageMakerChat() {
 
   if (subscriptionLoading) {
       return (
-          <div className="flex h-screen w-full items-center justify-center bg-background">
-               <Skeleton className="w-full max-w-3xl h-[85vh]"/>
-          </div>
+        <div className="flex h-full w-full items-center justify-center bg-background">
+            <Skeleton className="w-full h-full"/>
+        </div>
       )
   }
   
-  const sageMakerAllowed = subscription?.planName && ['Hobby', 'Scholar Subscription', 'Sage Mode'].includes(subscription.planName);
+  const sageMakerAllowed = subscription?.planName && ['Hobby', 'Sage Mode'].includes(subscription.planName);
 
   if (!sageMakerAllowed) {
       return (
-           <div className="flex h-screen w-full items-center justify-center bg-background p-4">
+           <div className="flex h-full w-full items-center justify-center bg-background p-4">
                <Card className="w-full max-w-md text-center shadow-2xl">
                  <CardHeader>
                     <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit">
@@ -312,11 +311,20 @@ export default function SageMakerChat() {
   // --- Render ---
 
   return (
-    <div className="flex h-screen w-full max-w-4xl flex-col">
+    <div className="flex h-full w-full flex-col">
       <div className="relative flex h-full min-h-[50vh] flex-col rounded-xl bg-card p-4 shadow-xl border">
         
         {/* Chat Messages Area */}
         <div ref={chatContainerRef} className="flex-1 space-y-6 overflow-y-auto p-4">
+          {messages.length === 0 && !isTyping && (
+             <div className="flex h-full flex-col items-center justify-center text-center">
+                <div className="bg-primary/10 text-primary mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                    <Sparkles size={32} />
+                </div>
+                <h2 className="text-2xl font-bold font-headline">SageMaker</h2>
+                <p className="text-muted-foreground">Your personal AI study assistant</p>
+            </div>
+          )}
           {messages.map((message, index) => (
             <div key={index} className={cn("flex items-start gap-3", message.role === 'user' ? 'justify-end' : '')}>
               {message.role === 'assistant' && (
