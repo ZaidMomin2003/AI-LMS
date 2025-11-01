@@ -25,7 +25,7 @@ const pricingPlans: PricingPlan[] = [
     description: 'Perfect for trying out the power of AI learning.',
     features: [
       '1 Topic Generation',
-      '1 AI Roadmap',
+      '1 AI Roadmap Generation',
       '1 Pomodoro Session',
       '1 Capture the Answer',
       'Basic Support',
@@ -116,7 +116,7 @@ const PricingFeatures = ({ features, className }: PricingFeaturesProps) => {
       {features.map((feature) => (
         <li key={feature} className="flex items-center">
           <div className="bg-foreground/10 shadow-foreground/50 mr-3 rounded-full p-1 shadow-inner">
-            <Check className="h-4 w-4" />
+            <Check className="h-4 w-4 text-primary" />
           </div>
           <span>{feature}</span>
         </li>
@@ -190,6 +190,9 @@ export function Pricing() {
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="bg-primary/5 absolute -right-[10%] -bottom-[10%] h-[40%] w-[40%] rounded-full blur-3xl" />
         <div className="bg-primary/5 absolute -bottom-[10%] -left-[10%] h-[40%] w-[40%] rounded-full blur-3xl" />
+        <h1 className="text-center text-[7rem] font-bold md:text-[10rem] text-foreground/5 absolute inset-0 flex items-center justify-center -z-10">
+           Pricing
+        </h1>
       </div>
       <div className="relative container">
         <div className="mx-auto max-w-2xl text-center mb-16">
