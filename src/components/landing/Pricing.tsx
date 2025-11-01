@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
+import { Check, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -190,11 +190,16 @@ export function Pricing() {
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <div className="bg-primary/5 absolute -right-[10%] -bottom-[10%] h-[40%] w-[40%] rounded-full blur-3xl" />
         <div className="bg-primary/5 absolute -bottom-[10%] -left-[10%] h-[40%] w-[40%] rounded-full blur-3xl" />
-        <h1 className="text-center text-[7rem] font-bold md:text-[10rem] text-foreground/5 leading-none">
-          Pricing
-        </h1>
       </div>
       <div className="relative container">
+        <div className="mx-auto max-w-2xl text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+                Choose Your Plan
+            </h2>
+            <p className="mt-4 text-lg leading-8 text-muted-foreground">
+                Start for free, then unlock more power as you grow. Simple, transparent pricing for every learner.
+            </p>
+        </div>
         <motion.div
           variants={containerVariants}
           initial="hidden"
