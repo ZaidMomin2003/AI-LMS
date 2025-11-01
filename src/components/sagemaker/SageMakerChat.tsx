@@ -81,7 +81,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <textarea
         className={cn(
-          'border-input bg-transparent flex w-full rounded-md px-3 py-2 text-sm',
+          'border-input bg-transparent flex w-full rounded-md px-3 text-sm',
           'transition-all duration-200 ease-in-out',
           'placeholder:text-muted-foreground',
           'disabled:cursor-not-allowed disabled:opacity-50',
@@ -339,7 +339,7 @@ export default function SageMakerChat() {
                 )}
                 </AnimatePresence>
 
-                <div className="flex items-end p-2">
+                <div className="flex items-end p-2.5">
                     <input
                         type="file"
                         ref={fileInputRef}
@@ -367,7 +367,7 @@ export default function SageMakerChat() {
                         }}
                         onKeyDown={handleKeyDown}
                         placeholder="Message SageMaker..."
-                        className="resize-none max-h-[200px] border-0 shadow-none focus-visible:ring-0"
+                        className="resize-none max-h-[200px] border-0 shadow-none focus-visible:ring-0 py-0"
                     />
                     <AnimatePresence>
                         {input.trim() && (
