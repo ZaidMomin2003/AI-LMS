@@ -6,7 +6,7 @@ import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Star, Loader2, X } from 'lucide-react';
+import { Check, Star, Loader2, X, FileText, BrainCircuit, MessageCircleQuestion, Bot, Map, DollarSign, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
@@ -15,14 +15,16 @@ import { createRazorpayOrder, verifyRazorpayPayment } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
+import type { LucideProps } from 'lucide-react';
 
 const allPlans = [
     {
         name: 'Hobby',
-        price: '$0',
+        price: '₹0',
         period: 'Free Forever',
         description: 'Perfect for trying out the power of AI learning.',
         priceId: null,
+        amount: 0,
         features: [
             { text: '1 Topic Generation', included: true },
             { text: '1 AI Roadmap Generation', included: true },
@@ -168,7 +170,7 @@ const PricingContent = () => {
             <div className="container mx-auto px-4">
                 <div className="mx-auto max-w-2xl text-center">
                     <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-headline">
-                      Pricing
+                      Choose Your Plan
                     </h2>
                     <p className="mt-4 text-lg leading-8 text-muted-foreground">
                         Start for free, then unlock more power as you grow. Simple, transparent pricing for every learner.
@@ -231,9 +233,103 @@ const PricingContent = () => {
                 </motion.div>
             </div>
          </section>
+         <ComparisonTable />
          </>
     )
 }
+
+const comparisonFeatures = [
+    { name: 'AI Note Generation', icon: FileText, wisdomis: true, learnsphere: true, quizwiz: false },
+    { name: 'AI Flashcards', icon: BrainCircuit, wisdomis: true, learnsphere: true, quizwiz: true },
+    { name: 'AI Quizzes', icon: MessageCircleQuestion, wisdomis: true, learnsphere: true, quizwiz: true },
+    { name: 'AI Chat Tutor', icon: Bot, wisdomis: true, learnsphere: true, quizwiz: false },
+    { name: 'AI Roadmap Planner', icon: Map, wisdomis: true, learnsphere: false, quizwiz: false },
+    { name: 'Dedicated Support', icon: Check, wisdomis: true, learnsphere: true, quizwiz: false },
+];
+
+const competitors = [
+    { name: 'Wisdomis Fun', price: '₹199/year', logo: Sparkles },
+    { name: 'LearnSphere', price: '$20/month', logo: null },
+    { name: 'QuizWiz AI', price: '$10/month', logo: null },
+];
+
+const ComparisonTable = () => (
+    <section className="py-20 sm:py-32 bg-background">
+        <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-2xl text-center mb-16">
+                <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-headline">
+                    Unbeatable Value
+                </h2>
+                <p className="mt-4 text-lg leading-8 text-muted-foreground">
+                    Get more features for a fraction of the cost. Wisdomis Fun is designed to be powerful, not pricey.
+                </p>
+            </div>
+            <div className="overflow-x-auto">
+                <div className="min-w-max mx-auto bg-card border rounded-2xl p-6 shadow-lg">
+                    <table className="w-full border-collapse">
+                        <thead>
+                            <tr className="border-b">
+                                <th className="p-4 text-left font-headline text-lg w-1/3">Features</th>
+                                {competitors.map((comp, i) => (
+                                    <th key={comp.name} className={cn("p-4 text-center w-1/4", i === 0 && "rounded-t-lg bg-primary/10")}>
+                                        <div className="flex flex-col items-center gap-1">
+                                            {comp.logo ? <comp.logo className="w-6 h-6 text-primary"/> : <span className="font-bold">{comp.name}</span>}
+                                            {i === 0 && <span className="font-bold">{comp.name}</span>}
+                                        </div>
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {comparisonFeatures.map((feature) => (
+                                <tr key={feature.name} className="border-b last:border-none hover:bg-secondary/50">
+                                    <td className="p-4 flex items-center gap-3">
+                                        <feature.icon className="w-5 h-5 text-muted-foreground" />
+                                        <span className="font-medium">{feature.name}</span>
+                                    </td>
+                                    <td className="p-4 text-center">
+                                        <Check className="w-6 h-6 text-green-500 mx-auto" />
+                                    </td>
+                                    <td className="p-4 text-center">
+                                        {feature.learnsphere ? <Check className="w-6 h-6 text-green-500 mx-auto" /> : <X className="w-6 h-6 text-red-500 mx-auto" />}
+                                    </td>
+                                    <td className="p-4 text-center">
+                                        {feature.quizwiz ? <Check className="w-6 h-6 text-green-500 mx-auto" /> : <X className="w-6 h-6 text-red-500 mx-auto" />}
+                                    </td>
+                                </tr>
+                            ))}
+                            <tr className="border-t-2">
+                                <td className="p-4 font-headline text-lg flex items-center gap-3">
+                                    <DollarSign className="w-5 h-5 text-muted-foreground" />
+                                    Pricing
+                                </td>
+                                <td className="p-4 text-center font-bold text-lg bg-primary/10 rounded-b-lg">
+                                    <div className="flex flex-col">
+                                        <span>₹199</span>
+                                        <span className="text-xs font-normal text-primary">per year</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 text-center font-semibold text-lg text-muted-foreground">
+                                     <div className="flex flex-col">
+                                        <span>$20</span>
+                                        <span className="text-xs font-normal">per month</span>
+                                    </div>
+                                </td>
+                                <td className="p-4 text-center font-semibold text-lg text-muted-foreground">
+                                     <div className="flex flex-col">
+                                        <span>$10</span>
+                                        <span className="text-xs font-normal">per month</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+);
+
 
 export default function PricingPage() {
   const { user, loading } = useAuth();
@@ -245,8 +341,6 @@ export default function PricingPage() {
       </div>
     );
   }
-
-  const plansToShow = allPlans;
 
   if (user) {
     return (
