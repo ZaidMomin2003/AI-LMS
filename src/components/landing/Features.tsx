@@ -13,10 +13,13 @@ import {
   Timer,
   Camera,
   Sparkles,
+  User,
 } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 
 // --- Reusable Demo Components from old Features file ---
 
@@ -316,5 +319,3 @@ export function Features({ items = bentoItems }: BentoGridProps) {
     </section>
   );
 }
-
-    
