@@ -2,7 +2,7 @@
 'use client';
 
 import 'dotenv/config';
-import { useState, forwardRef } from 'react';
+import { useState, forwardRef, useMemo } from 'react';
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,6 +18,7 @@ import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
 import type { LucideProps } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const allPlans = [
     {
@@ -39,11 +40,7 @@ const allPlans = [
     },
     {
         name: 'Sage Mode',
-        price: '$16.58',
-        period: '/month',
         description: 'The ultimate toolkit for dedicated lifelong learners. All features, unlimited.',
-        priceId: 'SAGE_MODE_YEARLY',
-        amount: 199, // For Razorpay
         features: [
             { text: 'Unlimited Topic Generations', included: true },
             { text: 'Unlimited AI Roadmaps', included: true },
@@ -55,6 +52,11 @@ const allPlans = [
         ],
         buttonText: 'Go Sage Mode',
         highlight: true,
+        tiers: [
+            { id: 'SAGE_MODE_YEARLY', name: '1 Year Plan', price: '$16.58', period: '/month', amount: 199, billed: 'Billed annually at $199', originalPrice: '$299/year', discount: 'Save 33%' },
+            { id: 'SAGE_MODE_6_MONTHS', name: '6 Month Plan', price: '$19.83', period: '/month', amount: 119, billed: 'Billed every 6 months' },
+            { id: 'SAGE_MODE_3_MONTHS', name: '3 Month Plan', price: '$23.00', period: '/month', amount: 69, billed: 'Billed every 3 months' },
+        ],
     },
 ];
 
@@ -84,25 +86,39 @@ const itemVariants: Variants = {
 
 // --- PricingCard and related components moved here ---
 
-type PricingPlan = {
+type Tier = {
+  id: string;
   name: string;
   price: string;
   period: string;
+  amount: number;
+  billed: string;
+  originalPrice?: string;
+  discount?: string;
+};
+
+type PricingPlan = {
+  name: string;
   description: string;
   features: { text: string; included: boolean }[];
   buttonText: string;
   href?: string;
   highlight?: boolean;
+  price?: string;
+  period?: string;
+  priceId?: string | null;
+  tiers?: Tier[];
 };
 
 interface PriceDisplayProps {
   price: string;
   period: string;
+  billed?: string;
   isHighlighted?: boolean;
   className?: string;
 }
 
-const PriceDisplay = ({ price, period, isHighlighted, className }: PriceDisplayProps) => {
+const PriceDisplay = ({ price, period, billed, isHighlighted, className }: PriceDisplayProps) => {
   const isFree = price.toLowerCase() === '$0';
   
   return (
@@ -124,9 +140,9 @@ const PriceDisplay = ({ price, period, isHighlighted, className }: PriceDisplayP
           </>
         )}
       </div>
-      {isHighlighted && (
+       {billed && isHighlighted && (
          <div className="flex items-center gap-2">
-            <span className="text-sm text-primary-foreground/80">Billed annually at $199</span>
+            <span className="text-sm text-primary-foreground/80">{billed}</span>
          </div>
       )}
     </div>
@@ -161,12 +177,27 @@ const PricingFeatures = ({ features, isHighlighted, className }: PricingFeatures
 interface PricingCardProps
   extends React.ComponentPropsWithoutRef<typeof motion.div> {
   plan: PricingPlan;
-  onCtaClick: () => void;
+  onCtaClick: (amount: number, priceId: string) => void;
   isLoading: boolean;
 }
 
 const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
   ({ plan, onCtaClick, isLoading, className, ...props }, ref) => {
+    const [selectedTierId, setSelectedTierId] = useState(plan.tiers ? plan.tiers[0].id : null);
+
+    const selectedTier = useMemo(() => {
+        return plan.tiers?.find(t => t.id === selectedTierId);
+    }, [plan.tiers, selectedTierId]);
+
+    const handleCta = () => {
+        if (plan.priceId) {
+            const planDetails = allPlans.find(p => p.priceId === plan.priceId);
+            if (planDetails) onCtaClick(planDetails.amount, plan.priceId);
+        } else if (selectedTier) {
+            onCtaClick(selectedTier.amount, selectedTier.id);
+        }
+    };
+    
     return (
       <motion.div
         ref={ref}
@@ -189,18 +220,34 @@ const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
         {...props}
       >
         <div>
-          <div className="flex items-center justify-between py-2">
+          <div className="flex items-center justify-between py-2 min-h-[40px]">
             <div className={cn("text-sm font-medium", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
               {plan.name}
             </div>
-             {plan.highlight && (
+             {plan.highlight && selectedTier?.originalPrice && (
                 <div className="flex items-center gap-2">
-                    <span className="text-sm text-primary-foreground/80 line-through">$299/year</span>
-                    <span className="ml-auto rounded-full bg-amber-400 px-2 py-0.5 text-xs font-bold text-black">Save 33%</span>
+                    <span className="text-sm text-primary-foreground/80 line-through">{selectedTier.originalPrice}</span>
+                    {selectedTier.discount && <span className="ml-auto rounded-full bg-amber-400 px-2 py-0.5 text-xs font-bold text-black">{selectedTier.discount}</span>}
                 </div>
             )}
           </div>
-          <PriceDisplay price={plan.price} period={plan.period} isHighlighted={plan.highlight} />
+           {plan.tiers && selectedTier ? (
+                <>
+                    <PriceDisplay price={selectedTier.price} period={selectedTier.period} billed={selectedTier.billed} isHighlighted={plan.highlight} />
+                    <Select onValueChange={setSelectedTierId} defaultValue={selectedTierId ?? undefined}>
+                        <SelectTrigger className="w-full my-4 bg-primary-foreground/10 text-primary-foreground border-primary-foreground/30">
+                            <SelectValue placeholder="Select a plan" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {plan.tiers.map(tier => (
+                                <SelectItem key={tier.id} value={tier.id}>{tier.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </>
+            ) : (
+                 <PriceDisplay price={plan.price!} period={plan.period!} isHighlighted={plan.highlight} />
+            )}
           <p className={cn("text-sm mb-6 min-h-[40px]", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
             {plan.description}
           </p>
@@ -212,7 +259,7 @@ const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
               <Link href={plan.href}>{plan.buttonText}</Link>
             </Button>
           ) : (
-             <Button onClick={onCtaClick} className="w-full" variant={plan.highlight ? 'secondary': 'default'} disabled={isLoading}>
+             <Button onClick={handleCta} className="w-full" variant={plan.highlight ? 'secondary': 'default'} disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {plan.buttonText}
             </Button>
@@ -230,7 +277,7 @@ const PricingContent = () => {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState<string | null>(null);
 
-    const handlePayment = async (amount: number) => {
+    const handlePayment = async (amount: number, priceId: string) => {
         if (!user) {
             toast({
                 variant: 'destructive',
@@ -240,7 +287,7 @@ const PricingContent = () => {
             return;
         }
 
-        setIsLoading('SAGE_MODE_YEARLY');
+        setIsLoading(priceId);
 
         try {
             const order = await createRazorpayOrder(amount, user.uid);
@@ -250,7 +297,7 @@ const PricingContent = () => {
                 amount: order.amount,
                 currency: order.currency,
                 name: 'Wisdomis Fun',
-                description: 'Sage Mode Yearly Subscription',
+                description: 'Sage Mode Subscription',
                 order_id: order.id,
                 handler: async function (response: any) {
                     const verificationData = {
@@ -333,18 +380,9 @@ const PricingContent = () => {
                          <PricingCard 
                             key={plan.name} 
                             variants={itemVariants}
-                            plan={{
-                                name: plan.name,
-                                price: plan.price,
-                                period: plan.period,
-                                description: plan.description,
-                                features: plan.features.map(f => ({ text: f.text, included: f.included })),
-                                buttonText: plan.buttonText,
-                                href: plan.href,
-                                highlight: plan.highlight
-                            }}
-                            onCtaClick={() => plan.priceId && handlePayment(plan.amount)}
-                            isLoading={isLoading === plan.priceId}
+                            plan={plan as PricingPlan}
+                            onCtaClick={(amount, priceId) => handlePayment(amount, priceId)}
+                            isLoading={!!isLoading}
                         />
                     ))}
                 </motion.div>
