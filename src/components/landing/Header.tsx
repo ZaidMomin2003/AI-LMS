@@ -1,6 +1,6 @@
 
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronDown, ArrowRight, BookOpenCheck, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
@@ -23,6 +23,81 @@ const navItems: NavItem[] = [
     { name: 'FAQ', href: '/#faq' },
     { name: 'Contact', href: '/#contact' },
 ];
+
+// --- New Scrambling Button Component for Dashboard ---
+const TARGET_TEXT = "Dashboard";
+const CYCLES_PER_LETTER = 2;
+const SHUFFLE_TIME = 50;
+
+const CHARS = "!@#$%^&*():{};|,.<>/?";
+
+const ScrambleDashboardButton = () => {
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [text, setText] = useState(TARGET_TEXT);
+
+  const scramble = () => {
+    let pos = 0;
+    intervalRef.current = setInterval(() => {
+      const scrambled = TARGET_TEXT.split("")
+        .map((char, index) => {
+          if (pos / CYCLES_PER_LETTER > index) {
+            return char;
+          }
+          const randomCharIndex = Math.floor(Math.random() * CHARS.length);
+          const randomChar = CHARS[randomCharIndex];
+          return randomChar;
+        })
+        .join("");
+      setText(scrambled);
+      pos++;
+      if (pos >= TARGET_TEXT.length * CYCLES_PER_LETTER) {
+        stopScramble();
+      }
+    }, SHUFFLE_TIME);
+  };
+
+  const stopScramble = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    setText(TARGET_TEXT);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.025 }}
+      whileTap={{ scale: 0.975 }}
+      onMouseEnter={scramble}
+      onMouseLeave={stopScramble}
+      className="group relative overflow-hidden rounded-md border-[1px] border-primary/50 bg-primary/90 text-primary-foreground transition-colors hover:border-primary"
+    >
+       <Link href="/dashboard" className="relative z-10 flex items-center gap-2 px-4 py-2 font-mono font-medium uppercase">
+         <LayoutDashboard />
+         <span>{text}</span>
+       </Link>
+      <motion.span
+        initial={{ y: "100%" }}
+        animate={{ y: "-100%" }}
+        transition={{
+          repeat: Infinity,
+          repeatType: "mirror",
+          duration: 1,
+          ease: "linear",
+        }}
+        className="duration-300 absolute inset-0 z-0 scale-125 bg-gradient-to-t from-primary/0 from-40% via-primary/100 to-primary/0 to-60% opacity-0 transition-opacity group-hover:opacity-100"
+      />
+    </motion.div>
+  );
+};
+
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -94,16 +169,7 @@ export function Header() {
 
         <div className="flex flex-1 items-center justify-end space-x-2">
            {!loading && (
-            <Button asChild>
-              {user ? (
-                  <Link href="/dashboard">
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
-                    Dashboard
-                  </Link>
-              ) : (
-                  <Link href="/signup">Get Started</Link>
-              )}
-            </Button>
+             user ? <ScrambleDashboardButton /> : <Button asChild><Link href="/signup">Get Started</Link></Button>
           )}
           <ThemeToggle />
            <motion.button
