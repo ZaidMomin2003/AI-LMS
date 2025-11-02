@@ -17,6 +17,7 @@ import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
 import type { LucideProps } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { HappyFacesBanner } from '@/components/pricing/HappyFacesBanner';
 
 const allPlans = [
     {
@@ -309,6 +310,9 @@ const PricingContent = () => {
             </div>
 
             <div className="container mx-auto px-4">
+                 <div className="mb-12">
+                    <HappyFacesBanner />
+                </div>
                 <div className="mx-auto max-w-2xl text-center">
                     <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-headline">
                       Choose Your Plan
