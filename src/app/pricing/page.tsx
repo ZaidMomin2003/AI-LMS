@@ -47,7 +47,7 @@ const allPlans = [
             { text: 'Unlimited AI Roadmaps', included: true },
             { text: 'Unlimited Pomodoro Sessions', included: true },
             { text: 'Unlimited Captures', included: true },
-            { text: 'SageMaker AI Assistant', included: true },
+            { text: 'WisdomGPT AI Assistant', included: true },
             { text: 'Priority Support', included: true },
             { text: 'Early access to new features', included: true },
         ],
@@ -131,7 +131,7 @@ const PricingContent = () => {
                     }
                 },
                 prefill: {
-                    name: user.displayName || 'ScholarAI User',
+                    name: user.displayName || 'Wisdomis Fun User',
                     email: user.email || '',
                 },
                 theme: {
@@ -182,53 +182,9 @@ const PricingContent = () => {
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true, amount: 0.2 }}
-                    className={cn("relative z-10 mx-auto mt-16 grid max-w-4xl grid-cols-1 items-stretch gap-8 md:grid-cols-2")}>
+                    className={cn("relative z-10 mx-auto mt-16 grid max-w-4xl grid-cols-1 items-stretch gap-8 md:grid-cols-2 mb-20")}>
                     {allPlans.map((plan) => (
-                        <Card key={plan.name} className={cn("relative flex flex-col", plan.highlight ? "border-2 border-primary shadow-lg shadow-primary/20" : "")}>
-                            {plan.highlight && (
-                                <div className="absolute top-0 -translate-y-1/2 w-full flex justify-center">
-                                    <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
-                                        <Star className="w-4 h-4" />
-                                        Unlimited Access
-                                    </div>
-                                </div>
-                            )}
-                            <CardHeader className="pt-12">
-                                <CardTitle className="font-headline">{plan.name}</CardTitle>
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-bold tracking-tight">{plan.price}</span>
-                                    {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
-                                </div>
-                                <CardDescription>{plan.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                <ul className="space-y-3">
-                                    {plan.features.map((feature, i) => (
-                                        <li key={i} className={cn("flex items-center gap-2 text-sm", feature.included ? 'text-foreground' : 'text-muted-foreground' )}>
-                                            {feature.included ? <Check className="h-4 w-4 text-primary" /> : <X className="h-4 w-4 text-muted-foreground" />}
-                                            <span>{feature.text}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </CardContent>
-                            <CardFooter>
-                                {plan.priceId ? (
-                                    <Button
-                                        onClick={() => handlePayment(plan.amount!)}
-                                        disabled={isLoading === plan.priceId}
-                                        className="w-full"
-                                        variant={plan.highlight ? 'default' : 'outline'}
-                                    >
-                                        {isLoading === plan.priceId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                        {plan.buttonText}
-                                    </Button>
-                                ) : (
-                                    <Button asChild className="w-full" variant={'outline'}>
-                                        <Link href={plan.href!}>{plan.buttonText}</Link>
-                                    </Button>
-                                )}
-                            </CardFooter>
-                        </Card>
+                        <PricingCard key={plan.name} variants={itemVariants} plan={plan} />
                     ))}
                 </motion.div>
             </div>
