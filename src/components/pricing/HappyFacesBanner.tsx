@@ -134,8 +134,8 @@ export const HappyFacesBanner = () => {
       renderImageBuffer={50}
       rotationRange={25}
     >
-      <section className="grid h-48 w-full place-content-center bg-card rounded-2xl border border-dashed border-primary/50">
-        <p className="flex items-center gap-4 text-5xl font-bold uppercase text-foreground">
+      <section className="grid h-96 w-full place-content-center bg-background rounded-2xl border border-dashed border-primary/50">
+        <p className="flex items-center gap-4 text-3xl font-bold uppercase text-foreground">
           <Smile className="w-12 h-12 text-primary" />
           <span>Join hundreds of happy learners</span>
         </p>
@@ -143,4 +143,3 @@ export const HappyFacesBanner = () => {
     </MouseImageTrail>
   );
 };
-
