@@ -1,6 +1,7 @@
 
 'use client';
 
+import 'dotenv/config';
 import { useState, forwardRef } from 'react';
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
@@ -310,9 +311,6 @@ const PricingContent = () => {
             </div>
 
             <div className="container mx-auto px-4">
-                 <div className="mb-12">
-                    <HappyFacesBanner />
-                </div>
                 <div className="mx-auto max-w-2xl text-center">
                     <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-headline">
                       Choose Your Plan
