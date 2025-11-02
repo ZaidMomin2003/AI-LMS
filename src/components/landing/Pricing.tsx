@@ -38,8 +38,8 @@ const pricingPlans: PricingPlan[] = [
   },
   {
     name: 'Sage Mode',
-    price: '$199',
-    period: '/ year',
+    price: '$16.58',
+    period: '/month',
     description: 'The ultimate toolkit for dedicated lifelong learners.',
     features: [
       'Unlimited Topic Generations',
@@ -110,8 +110,7 @@ const PriceDisplay = ({ price, period, isHighlighted, className }: PriceDisplayP
       </div>
       {isHighlighted && (
          <div className="flex items-center gap-2">
-            <span className="text-sm text-primary-foreground/80 line-through">$299/year</span>
-            <span className="ml-auto rounded-full bg-amber-400 px-2 py-0.5 text-xs font-bold text-black">Save 33%</span>
+            <span className="text-sm text-primary-foreground/80">Billed annually at $199</span>
          </div>
       )}
     </div>
@@ -247,10 +246,16 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
         {...props}
       >
         <div>
-          <div className="py-2">
+          <div className="flex items-center justify-between py-2">
             <div className={cn("text-sm font-medium", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
               {plan.name}
             </div>
+             {plan.highlight && (
+                <div className="flex items-center gap-2">
+                    <span className="text-sm text-primary-foreground/80 line-through">$299/year</span>
+                    <span className="ml-auto rounded-full bg-amber-400 px-2 py-0.5 text-xs font-bold text-black">Save 33%</span>
+                </div>
+            )}
           </div>
           <PriceDisplay price={plan.price} period={plan.period} isHighlighted={plan.highlight} />
           <p className={cn("text-sm mb-6 min-h-[40px]", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
