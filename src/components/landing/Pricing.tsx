@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -43,7 +42,7 @@ const pricingPlans: PricingPlan[] = [
       'Unlimited AI Roadmaps',
       'Unlimited Pomodoro Sessions',
       'Unlimited Captures',
-      'SageMaker AI Assistant',
+      'WisdomGPT AI Assistant',
       'Priority Support',
       'Early access to new features',
     ],
@@ -176,13 +175,50 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
           <PricingFeatures features={plan.features} isHighlighted={plan.highlight} />
         </div>
         <div className="relative">
-          <Button
-            asChild
-            className={cn('w-full', plan.highlight && 'bg-primary-foreground text-primary hover:bg-primary-foreground/90')}
-            variant={plan.highlight ? 'default' : 'secondary'}
-          >
-            <Link href={plan.link}>{plan.cta}</Link>
-          </Button>
+          {plan.highlight ? (
+             <Button asChild className="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-md bg-background px-8 py-2.5 tracking-tighter text-foreground hover:bg-background/95">
+                <Link href={plan.link}>
+                  <span className="absolute h-0 w-0 rounded-full bg-primary/20 transition-all duration-500 ease-out group-hover:h-56 group-hover:w-56"></span>
+                  <span className="absolute bottom-0 left-0 -ml-2 h-full">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="object-stretch h-full w-auto"
+                      viewBox="0 0 487 487"
+                    >
+                      <path
+                        fillOpacity=".1"
+                        fillRule="nonzero"
+                        fill="hsl(var(--primary-foreground))"
+                        d="M0 .3c67 2.1 134.1 4.3 186.3 37 52.2 32.7 89.6 95.8 112.8 150.6 23.2 54.8 32.3 101.4 61.2 149.9 28.9 48.4 77.7 98.8 126.4 149.2H0V.3z"
+                      ></path>
+                    </svg>
+                  </span>
+                  <span className="absolute top-0 right-0 -mr-3 h-full w-12">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-full w-full object-cover"
+                      viewBox="0 0 487 487"
+                    >
+                      <path
+                        fillOpacity=".1"
+                        fillRule="nonzero"
+                        fill="hsl(var(--primary-foreground))"
+                        d="M487 486.7c-66.1-3.6-132.3-7.3-186.3-37s-95.9-85.3-126.2-137.2c-30.4-51.8-49.3-99.9-76.5-151.4C70.9 109.6 35.6 54.8.3 0H487v486.7z"
+                      ></path>
+                    </svg>
+                  </span>
+                  <span className="relative text-base font-semibold">{plan.cta}</span>
+                </Link>
+            </Button>
+          ) : (
+            <Button
+              asChild
+              className='w-full'
+              variant='secondary'
+            >
+              <Link href={plan.link}>{plan.cta}</Link>
+            </Button>
+          )}
         </div>
       </motion.div>
     );
@@ -195,7 +231,7 @@ const oldWayFeatures = [
     { name: 'AI Note Generation', via: 'Notion AI', cost: 96 },
     { name: 'AI Flashcard Creation', via: 'Quizlet Plus', cost: 36 },
     { name: 'AI Quiz Generation', via: 'QuillBot Premium', cost: 100 },
-    { name: 'Personal AI Tutor (SageMaker)', via: 'Chegg Study Pack', cost: 240 },
+    { name: 'Personal AI Tutor (WisdomGPT)', via: 'Chegg Study Pack', cost: 240 },
     { name: 'AI Roadmap Generation', via: 'Custom Tutoring Plan', cost: 500 },
     { name: 'Task Management Board', via: 'Trello Premium', cost: 60 },
     { name: 'Pomodoro Timer', via: 'Focus Keeper Pro', cost: 2 },
@@ -206,7 +242,7 @@ const wisdomisWayFeatures = [
     'AI Note Generation',
     'AI Flashcard Creation',
     'AI Quiz Generation',
-    'Personal AI Tutor (SageMaker)',
+    'Personal AI Tutor (WisdomGPT)',
     'AI Roadmap Generation',
     'Task Management Board',
     'Pomodoro Timer',
@@ -217,7 +253,7 @@ const totalOldWayCost = oldWayFeatures.reduce((acc, feature) => acc + feature.co
 const wisdomisCost = 199;
 
 const ValueComparison = () => (
-    <section className="bg-background pt-20 sm:pt-32">
+    <section className="bg-background pt-20">
         <div className="container mx-auto px-4">
             <div className="mx-auto max-w-4xl text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-headline">
@@ -323,5 +359,7 @@ export function Pricing() {
     </div>
   );
 }
+
+    
 
     
