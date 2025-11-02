@@ -40,8 +40,8 @@ const allPlans = [
     },
     {
         name: 'Sage Mode',
-        price: '$16.58',
-        period: '/ month',
+        price: '$199',
+        period: '/ year',
         description: 'The ultimate toolkit for dedicated lifelong learners. All features, unlimited.',
         priceId: 'SAGE_MODE_YEARLY',
         amount: 199, // For Razorpay
@@ -128,7 +128,6 @@ const PriceDisplay = ({ price, period, isHighlighted, className }: PriceDisplayP
       {isHighlighted && (
          <div className="flex items-center gap-2">
             <span className="text-sm text-primary-foreground/80 line-through">$299/year</span>
-            <span className="text-sm text-primary-foreground/80">billed annually</span>
             <span className="ml-auto rounded-full bg-amber-400 px-2 py-0.5 text-xs font-bold text-black">Save 33%</span>
          </div>
       )}
@@ -335,7 +334,7 @@ const PricingContent = () => {
                                 price: plan.price,
                                 period: plan.period,
                                 description: plan.description,
-                                features: plan.features,
+                                features: plan.features.map(f => ({ text: f.text, included: f.included })),
                                 buttonText: plan.buttonText,
                                 href: plan.href,
                                 highlight: plan.highlight
