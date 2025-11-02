@@ -3,6 +3,7 @@ import { Providers } from "@/components/Providers";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
 export const metadata: Metadata = {
   title: "Wisdomis Fun",
@@ -37,6 +38,7 @@ export default function RootLayout({
         ></link>
       </head>
       <body className="font-body antialiased">
+        <GoogleAnalytics />
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
