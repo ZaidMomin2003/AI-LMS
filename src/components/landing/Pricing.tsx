@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -134,6 +135,80 @@ const PricingFeatures = ({ features, isHighlighted, className }: PricingFeatures
   );
 };
 
+// --- New Animated Button Component ---
+const TARGET_TEXT = "Go Sage Mode";
+const CYCLES_PER_LETTER = 2;
+const SHUFFLE_TIME = 50;
+const CHARS = "!@#$%^&*():{};|,.<>/?";
+
+const ScrambleButton = () => {
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [text, setText] = React.useState(TARGET_TEXT);
+
+  const scramble = () => {
+    let pos = 0;
+    intervalRef.current = setInterval(() => {
+      const scrambled = TARGET_TEXT.split("")
+        .map((char, index) => {
+          if (pos / CYCLES_PER_LETTER > index) {
+            return char;
+          }
+          const randomCharIndex = Math.floor(Math.random() * CHARS.length);
+          const randomChar = CHARS[randomCharIndex];
+          return randomChar;
+        })
+        .join("");
+      setText(scrambled);
+      pos++;
+      if (pos >= TARGET_TEXT.length * CYCLES_PER_LETTER) {
+        stopScramble();
+      }
+    }, SHUFFLE_TIME);
+  };
+
+  const stopScramble = () => {
+    if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+    }
+    setText(TARGET_TEXT);
+  };
+  
+  React.useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
+
+  return (
+    <motion.button
+      whileHover={{ scale: 1.025 }}
+      whileTap={{ scale: 0.975 }}
+      onMouseEnter={scramble}
+      onMouseLeave={stopScramble}
+      className="group relative w-full overflow-hidden rounded-md border-[1px] border-primary-foreground/20 bg-primary-foreground/10 px-4 py-2.5 font-mono font-medium uppercase text-primary-foreground/80 transition-colors hover:text-white"
+    >
+      <div className="relative z-10 flex items-center gap-2">
+        <Sparkles />
+        <span>{text}</span>
+      </div>
+      <motion.span
+        initial={{ y: "100%" }}
+        animate={{ y: "-100%" }}
+        transition={{
+          repeat: Infinity,
+          repeatType: "mirror",
+          duration: 1,
+          ease: "linear",
+        }}
+        className="duration-300 absolute inset-0 z-0 scale-125 bg-gradient-to-t from-primary/0 via-primary/50 to-primary/0 to-60% opacity-0 transition-opacity group-hover:opacity-100"
+      />
+    </motion.button>
+  );
+};
+
+
 interface PricingCardProps
   extends React.ComponentPropsWithoutRef<typeof motion.div> {
   plan: PricingPlan;
@@ -148,7 +223,7 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
           'relative flex flex-col justify-between overflow-hidden rounded-2xl p-6',
           'shadow-[inset_0_1px_30px_0_rgba(255,255,255,0.1)]',
           plan.highlight
-            ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
+            ? 'bg-primary text-primary-foreground shadow-2xl shadow-primary/30'
             : 'border-border/50 border bg-background/20 backdrop-blur-sm',
            !plan.highlight && "before:absolute before:inset-0 before:-z-10 before:content-['']",
           !plan.highlight && 'before:bg-gradient-to-br before:from-white/7 before:to-transparent',
@@ -176,40 +251,9 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
         </div>
         <div className="relative">
           {plan.highlight ? (
-             <Button asChild className="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-md bg-background px-8 py-2.5 tracking-tighter text-foreground hover:bg-background/95">
-                <Link href={plan.link}>
-                  <span className="absolute h-0 w-0 rounded-full bg-primary/20 transition-all duration-500 ease-out group-hover:h-56 group-hover:w-56"></span>
-                  <span className="absolute bottom-0 left-0 -ml-2 h-full">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="object-stretch h-full w-auto"
-                      viewBox="0 0 487 487"
-                    >
-                      <path
-                        fillOpacity=".1"
-                        fillRule="nonzero"
-                        fill="hsl(var(--primary-foreground))"
-                        d="M0 .3c67 2.1 134.1 4.3 186.3 37 52.2 32.7 89.6 95.8 112.8 150.6 23.2 54.8 32.3 101.4 61.2 149.9 28.9 48.4 77.7 98.8 126.4 149.2H0V.3z"
-                      ></path>
-                    </svg>
-                  </span>
-                  <span className="absolute top-0 right-0 -mr-3 h-full w-12">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-full w-full object-cover"
-                      viewBox="0 0 487 487"
-                    >
-                      <path
-                        fillOpacity=".1"
-                        fillRule="nonzero"
-                        fill="hsl(var(--primary-foreground))"
-                        d="M487 486.7c-66.1-3.6-132.3-7.3-186.3-37s-95.9-85.3-126.2-137.2c-30.4-51.8-49.3-99.9-76.5-151.4C70.9 109.6 35.6 54.8.3 0H487v486.7z"
-                      ></path>
-                    </svg>
-                  </span>
-                  <span className="relative text-base font-semibold">{plan.cta}</span>
-                </Link>
-            </Button>
+             <Link href={plan.link}>
+                <ScrambleButton />
+             </Link>
           ) : (
             <Button
               asChild
@@ -253,7 +297,7 @@ const totalOldWayCost = oldWayFeatures.reduce((acc, feature) => acc + feature.co
 const wisdomisCost = 199;
 
 const ValueComparison = () => (
-    <section className="bg-background pt-20">
+    <section className="bg-background">
         <div className="container mx-auto px-4">
             <div className="mx-auto max-w-4xl text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-headline">
@@ -359,7 +403,5 @@ export function Pricing() {
     </div>
   );
 }
-
-    
 
     
