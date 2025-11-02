@@ -38,8 +38,8 @@ const allPlans = [
     },
     {
         name: 'Sage Mode',
-        price: '$199',
-        period: '/ year',
+        price: '$16.58',
+        period: '/ month',
         description: 'The ultimate toolkit for dedicated lifelong learners. All features, unlimited.',
         priceId: 'SAGE_MODE_YEARLY',
         amount: 199, // For Razorpay
@@ -86,6 +86,7 @@ const itemVariants: Variants = {
 type PricingPlan = {
   name: string;
   price: string;
+  period: string;
   description: string;
   features: { text: string; included: boolean }[];
   buttonText: string;
@@ -95,33 +96,39 @@ type PricingPlan = {
 
 interface PriceDisplayProps {
   price: string;
+  period: string;
   isHighlighted?: boolean;
   className?: string;
 }
 
-const PriceDisplay = ({ price, isHighlighted, className }: PriceDisplayProps) => {
+const PriceDisplay = ({ price, period, isHighlighted, className }: PriceDisplayProps) => {
   const isFree = price.toLowerCase() === '$0';
-  const [amount, period] = price.split('/');
-
+  
   return (
-    <div className={cn('relative mb-4', className)}>
+    <div className={cn('relative mb-2', className)}>
       <div
         className={cn(
-          'mt-2 text-5xl font-bold',
+          'mt-2 flex items-baseline gap-1',
            isHighlighted
             ? 'text-primary-foreground'
-            : 'from-foreground bg-gradient-to-r to-transparent bg-clip-text text-transparent'
+            : 'text-foreground'
         )}
       >
         {isFree ? (
-          <span>Free</span>
+            <span className="text-5xl font-bold">Free</span>
         ) : (
           <>
-            <span>{amount}</span>
-            {period && <span className="text-xl">/{period}</span>}
+            <span className="text-5xl font-bold">{price}</span>
+            <span className="text-lg text-muted-foreground">{period}</span>
           </>
         )}
       </div>
+      {isHighlighted && (
+         <div className="flex items-baseline gap-2">
+            <span className="text-sm text-primary-foreground/80 line-through">$299/year</span>
+            <span className="text-sm text-primary-foreground/80">billed annually</span>
+         </div>
+      )}
     </div>
   );
 };
@@ -181,13 +188,20 @@ const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
         whileHover={{ y: -8 }}
         {...props}
       >
+        {plan.highlight && (
+          <div className="absolute top-0 -right-10 z-10">
+            <div className="w-32 h-8 absolute top-6 -right-2 transform rotate-45 bg-amber-400 text-center text-black font-semibold text-sm shadow-md">
+                Save 33%
+            </div>
+          </div>
+        )}
         <div>
           <div className="py-2">
             <div className={cn("text-sm font-medium", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
               {plan.name}
             </div>
           </div>
-          <PriceDisplay price={plan.price} isHighlighted={plan.highlight} />
+          <PriceDisplay price={plan.price} period={plan.period} isHighlighted={plan.highlight} />
           <p className={cn("text-sm mb-6 min-h-[40px]", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
             {plan.description}
           </p>
@@ -323,6 +337,7 @@ const PricingContent = () => {
                             plan={{
                                 name: plan.name,
                                 price: plan.price,
+                                period: plan.period,
                                 description: plan.description,
                                 features: plan.features,
                                 buttonText: plan.buttonText,
@@ -371,3 +386,5 @@ export default function PricingPage() {
     </div>
   );
 }
+
+    
