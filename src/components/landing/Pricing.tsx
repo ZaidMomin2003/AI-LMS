@@ -109,9 +109,10 @@ const PriceDisplay = ({ price, period, isHighlighted, className }: PriceDisplayP
         )}
       </div>
       {isHighlighted && (
-         <div className="flex items-baseline gap-2">
+         <div className="flex items-center gap-2">
             <span className="text-sm text-primary-foreground/80 line-through">$299/year</span>
             <span className="text-sm text-primary-foreground/80">billed annually</span>
+            <span className="ml-auto rounded-full bg-amber-400 px-2 py-0.5 text-xs font-bold text-black">Save 33%</span>
          </div>
       )}
     </div>
@@ -246,13 +247,6 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
         whileHover={{ y: -8 }}
         {...props}
       >
-        {plan.highlight && (
-           <div className="absolute top-0 right-0 h-16 w-16">
-            <div className="absolute transform-gpu rotate-45 bg-amber-400 text-center text-sm font-semibold text-black py-1 right-[-45px] top-[20px] w-[140px] shadow-md">
-                Save 33%
-            </div>
-          </div>
-        )}
         <div>
           <div className="py-2">
             <div className={cn("text-sm font-medium", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
@@ -313,7 +307,7 @@ const totalOldWayCost = oldWayFeatures.reduce((acc, feature) => acc + feature.co
 const wisdomisCost = 199;
 
 const ValueComparison = () => (
-    <section className="bg-background py-20 sm:py-0">
+    <section className="bg-background py-0">
         <div className="container mx-auto px-4">
             <div className="mx-auto max-w-4xl text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-headline">
