@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -78,6 +78,138 @@ const itemVariants: Variants = {
     },
   },
 };
+
+
+// --- PricingCard and related components moved here ---
+
+type PricingPlan = {
+  name: string;
+  price: string;
+  description: string;
+  features: { text: string; included: boolean }[];
+  buttonText: string;
+  href?: string;
+  highlight?: boolean;
+};
+
+interface PriceDisplayProps {
+  price: string;
+  isHighlighted?: boolean;
+  className?: string;
+}
+
+const PriceDisplay = ({ price, isHighlighted, className }: PriceDisplayProps) => {
+  const isFree = price.toLowerCase() === '$0';
+  const [amount, period] = price.split('/');
+
+  return (
+    <div className={cn('relative mb-4', className)}>
+      <div
+        className={cn(
+          'mt-2 text-5xl font-bold',
+           isHighlighted
+            ? 'text-primary-foreground'
+            : 'from-foreground bg-gradient-to-r to-transparent bg-clip-text text-transparent'
+        )}
+      >
+        {isFree ? (
+          <span>Free</span>
+        ) : (
+          <>
+            <span>{amount}</span>
+            {period && <span className="text-xl">/{period}</span>}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+interface PricingFeaturesProps {
+  features: { text: string; included: boolean }[];
+  isHighlighted?: boolean;
+  className?: string;
+}
+
+const PricingFeatures = ({ features, isHighlighted, className }: PricingFeaturesProps) => {
+  return (
+    <ul className={cn('relative mb-8 space-y-3', className)}>
+      {features.map((feature) => (
+        <li key={feature.text} className="flex items-center gap-3">
+          <div className={cn("rounded-full p-0.5", feature.included ? (isHighlighted ? "bg-primary-foreground/20" : "bg-primary/20") : "bg-muted")}>
+            {feature.included ? (
+                <Check className={cn("h-4 w-4", isHighlighted ? "text-primary-foreground" : "text-primary")} />
+            ) : (
+                <X className="h-4 w-4 text-muted-foreground" />
+            )}
+          </div>
+          <span className={cn(!feature.included && "text-muted-foreground line-through")}>{feature.text}</span>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+interface PricingCardProps
+  extends React.ComponentPropsWithoutRef<typeof motion.div> {
+  plan: PricingPlan;
+  onCtaClick: () => void;
+  isLoading: boolean;
+}
+
+const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
+  ({ plan, onCtaClick, isLoading, className, ...props }, ref) => {
+    return (
+      <motion.div
+        ref={ref}
+        className={cn(
+          'relative flex flex-col justify-between overflow-hidden rounded-2xl p-6',
+          'shadow-[inset_0_1px_30px_0_rgba(255,255,255,0.1)]',
+          plan.highlight
+            ? 'bg-primary text-primary-foreground shadow-2xl shadow-primary/30'
+            : 'border-border/50 border bg-background/20 backdrop-blur-sm',
+           !plan.highlight && "before:absolute before:inset-0 before:-z-10 before:content-['']",
+          !plan.highlight && 'before:bg-gradient-to-br before:from-white/7 before:to-transparent',
+          !plan.highlight && 'before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100',
+           !plan.highlight && "after:absolute after:inset-0 after:-z-20 after:content-['']",
+          !plan.highlight && 'after:opacity-70',
+          !plan.highlight && 'hover:border-border/70 hover:shadow-lg',
+           !plan.highlight && 'after:bg-[radial-gradient(circle_at_75%_25%,hsl(var(--primary)/.05),transparent_70%)]',
+          className
+        )}
+        whileHover={{ y: -8 }}
+        {...props}
+      >
+        <div>
+          <div className="py-2">
+            <div className={cn("text-sm font-medium", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
+              {plan.name}
+            </div>
+          </div>
+          <PriceDisplay price={plan.price} isHighlighted={plan.highlight} />
+          <p className={cn("text-sm mb-6 min-h-[40px]", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
+            {plan.description}
+          </p>
+          <PricingFeatures features={plan.features} isHighlighted={plan.highlight} />
+        </div>
+        <div className="relative">
+          {plan.href ? (
+            <Button asChild className="w-full" variant={plan.highlight ? 'secondary' : 'default'}>
+              <Link href={plan.href}>{plan.buttonText}</Link>
+            </Button>
+          ) : (
+             <Button onClick={onCtaClick} className="w-full" variant={plan.highlight ? 'secondary': 'default'} disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {plan.buttonText}
+            </Button>
+          )}
+        </div>
+      </motion.div>
+    );
+  }
+);
+PricingCard.displayName = 'PricingCard';
+
 
 const PricingContent = () => {
     const { user } = useAuth();
@@ -184,7 +316,21 @@ const PricingContent = () => {
                     viewport={{ once: true, amount: 0.2 }}
                     className={cn("relative z-10 mx-auto mt-16 grid max-w-4xl grid-cols-1 items-stretch gap-8 md:grid-cols-2 mb-20")}>
                     {allPlans.map((plan) => (
-                        <PricingCard key={plan.name} variants={itemVariants} plan={plan} />
+                         <PricingCard 
+                            key={plan.name} 
+                            variants={itemVariants}
+                            plan={{
+                                name: plan.name,
+                                price: plan.price,
+                                description: plan.description,
+                                features: plan.features,
+                                buttonText: plan.buttonText,
+                                href: plan.href,
+                                highlight: plan.highlight
+                            }}
+                            onCtaClick={() => plan.priceId && handlePayment(plan.amount)}
+                            isLoading={isLoading === plan.priceId}
+                        />
                     ))}
                 </motion.div>
             </div>
@@ -318,5 +464,3 @@ export default function PricingPage() {
     </div>
   );
 }
-
-    
