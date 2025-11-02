@@ -16,6 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
 import type { LucideProps } from 'lucide-react';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 const allPlans = [
     {
