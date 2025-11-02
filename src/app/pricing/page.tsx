@@ -20,7 +20,7 @@ import type { LucideProps } from 'lucide-react';
 const allPlans = [
     {
         name: 'Hobby',
-        price: '₹0',
+        price: '$0',
         period: 'Free Forever',
         description: 'Perfect for trying out the power of AI learning.',
         priceId: null,
@@ -37,7 +37,7 @@ const allPlans = [
     },
     {
         name: 'Sage Mode',
-        price: '₹199',
+        price: '$199',
         period: '/ year',
         description: 'The ultimate toolkit for dedicated lifelong learners. All features, unlimited.',
         priceId: 'SAGE_MODE_YEARLY',
@@ -248,7 +248,7 @@ const comparisonFeatures = [
 ];
 
 const competitors = [
-    { name: 'Wisdomis Fun', price: '₹199/year', logo: Sparkles },
+    { name: 'Wisdomis Fun', price: '$199/year', logo: Sparkles },
     { name: 'LearnSphere', price: '$20/month', logo: null },
     { name: 'QuizWiz AI', price: '$10/month', logo: null },
 ];
@@ -305,7 +305,7 @@ const ComparisonTable = () => (
                                 </td>
                                 <td className="p-4 text-center font-bold text-lg bg-primary/10 rounded-b-lg">
                                     <div className="flex flex-col">
-                                        <span>₹199</span>
+                                        <span>$199</span>
                                         <span className="text-xs font-normal text-primary">per year</span>
                                     </div>
                                 </td>
@@ -362,3 +362,5 @@ export default function PricingPage() {
     </div>
   );
 }
+
+    

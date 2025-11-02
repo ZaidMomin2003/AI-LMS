@@ -22,7 +22,7 @@ type PricingPlan = {
 const pricingPlans: PricingPlan[] = [
   {
     name: 'Hobby',
-    price: '₹0',
+    price: '$0',
     description: 'Perfect for trying out the power of AI learning.',
     features: [
       '1 Topic Generation',
@@ -36,7 +36,7 @@ const pricingPlans: PricingPlan[] = [
   },
   {
     name: 'Sage Mode',
-    price: '₹199/year',
+    price: '$199/year',
     description: 'The ultimate toolkit for dedicated lifelong learners.',
     features: [
       'Unlimited Topic Generations',
@@ -82,7 +82,7 @@ interface PriceDisplayProps {
 }
 
 const PriceDisplay = ({ price, className }: PriceDisplayProps) => {
-  const isFree = price.toLowerCase() === '₹0';
+  const isFree = price.toLowerCase() === '$0';
   const [amount, period] = price.split('/');
 
   return (
@@ -318,3 +318,5 @@ export function Pricing() {
     </div>
   );
 }
+
+    
