@@ -78,10 +78,11 @@ const itemVariants: Variants = {
 
 interface PriceDisplayProps {
   price: string;
+  isHighlighted?: boolean;
   className?: string;
 }
 
-const PriceDisplay = ({ price, className }: PriceDisplayProps) => {
+const PriceDisplay = ({ price, isHighlighted, className }: PriceDisplayProps) => {
   const isFree = price.toLowerCase() === '$0';
   const [amount, period] = price.split('/');
 
@@ -90,7 +91,9 @@ const PriceDisplay = ({ price, className }: PriceDisplayProps) => {
       <div
         className={cn(
           'mt-2 text-6xl font-bold',
-          'from-foreground bg-gradient-to-r to-transparent bg-clip-text text-transparent'
+           isHighlighted
+            ? 'text-primary-foreground'
+            : 'from-foreground bg-gradient-to-r to-transparent bg-clip-text text-transparent'
         )}
       >
         {isFree ? (
@@ -108,18 +111,24 @@ const PriceDisplay = ({ price, className }: PriceDisplayProps) => {
 
 interface PricingFeaturesProps {
   features: string[];
+  isHighlighted?: boolean;
   className?: string;
 }
 
-const PricingFeatures = ({ features, className }: PricingFeaturesProps) => {
+const PricingFeatures = ({ features, isHighlighted, className }: PricingFeaturesProps) => {
   return (
     <ul className={cn('relative mb-8 space-y-3', className)}>
       {features.map((feature) => (
         <li key={feature} className="flex items-center">
-          <div className="bg-foreground/10 shadow-foreground/50 mr-3 rounded-full p-1 shadow-inner">
-            <Check className="h-4 w-4 text-primary" />
+          <div className={cn(
+              "mr-3 rounded-full p-1 shadow-inner",
+               isHighlighted
+                ? 'bg-primary-foreground/10 shadow-black/20'
+                : 'bg-foreground/10 shadow-foreground/50'
+          )}>
+            <Check className={cn("h-4 w-4", isHighlighted ? "text-primary-foreground" : "text-primary")} />
           </div>
-          <span>{feature}</span>
+          <span className={cn(isHighlighted && 'text-primary-foreground/90')}>{feature}</span>
         </li>
       ))}
     </ul>
@@ -138,18 +147,17 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
         ref={ref}
         className={cn(
           'relative flex flex-col justify-between overflow-hidden rounded-2xl p-6',
-          'border-border/50 border',
-          'bg-background/20 backdrop-blur-sm',
           'shadow-[inset_0_1px_30px_0_rgba(255,255,255,0.1)]',
-           "before:absolute before:inset-0 before:-z-10 before:content-['']",
-          'before:bg-gradient-to-br before:from-white/7 before:to-transparent',
-          'before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100',
-           "after:absolute after:inset-0 after:-z-20 after:content-['']",
-          'after:opacity-70',
-          'hover:border-border/70 hover:shadow-lg',
-           plan.highlight
-            ? 'after:bg-[radial-gradient(circle_at_75%_25%,hsl(var(--primary)/0.2),transparent_40%)]'
-            : 'after:bg-[radial-gradient(circle_at_75%_25%,hsl(var(--primary)/0.05),transparent_70%)]',
+          plan.highlight
+            ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
+            : 'border-border/50 border bg-background/20 backdrop-blur-sm',
+           !plan.highlight && "before:absolute before:inset-0 before:-z-10 before:content-['']",
+          !plan.highlight && 'before:bg-gradient-to-br before:from-white/7 before:to-transparent',
+          !plan.highlight && 'before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100',
+           !plan.highlight && "after:absolute after:inset-0 after:-z-20 after:content-['']",
+          !plan.highlight && 'after:opacity-70',
+          !plan.highlight && 'hover:border-border/70 hover:shadow-lg',
+           !plan.highlight && 'after:bg-[radial-gradient(circle_at_75%_25%,hsl(var(--primary)/.05),transparent_70%)]',
           className
         )}
         whileHover={{ y: -8 }}
@@ -157,23 +165,20 @@ const PricingCard = React.forwardRef<HTMLDivElement, PricingCardProps>(
       >
         <div>
           <div className="py-2">
-            <div className="text-muted-foreground text-sm font-medium">
+            <div className={cn("text-sm font-medium", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
               {plan.name}
             </div>
           </div>
-          <PriceDisplay price={plan.price} />
-          <p className="text-muted-foreground text-sm mb-6 min-h-[40px]">{plan.description}</p>
-          <PricingFeatures features={plan.features} />
+          <PriceDisplay price={plan.price} isHighlighted={plan.highlight} />
+          <p className={cn("text-sm mb-6 min-h-[40px]", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
+            {plan.description}
+          </p>
+          <PricingFeatures features={plan.features} isHighlighted={plan.highlight} />
         </div>
         <div className="relative">
           <Button
             asChild
-            className={cn(
-              'w-full',
-              plan.highlight
-                ? 'after:bg-primary/80 relative after:absolute after:-z-10 after:h-full after:w-full after:blur-xs'
-                : 'bg-secondary text-secondary-foreground'
-            )}
+            className={cn('w-full', plan.highlight && 'bg-primary-foreground text-primary hover:bg-primary-foreground/90')}
             variant={plan.highlight ? 'default' : 'secondary'}
           >
             <Link href={plan.link}>{plan.cta}</Link>
@@ -212,7 +217,7 @@ const totalOldWayCost = oldWayFeatures.reduce((acc, feature) => acc + feature.co
 const wisdomisCost = 199;
 
 const ValueComparison = () => (
-    <section className="bg-background">
+    <section className="bg-background pt-20 sm:pt-32">
         <div className="container mx-auto px-4">
             <div className="mx-auto max-w-4xl text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-headline">
