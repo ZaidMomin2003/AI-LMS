@@ -189,8 +189,8 @@ const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
         {...props}
       >
         {plan.highlight && (
-          <div className="absolute top-0 -right-10 z-10">
-            <div className="w-32 h-8 absolute top-6 -right-2 transform rotate-45 bg-amber-400 text-center text-black font-semibold text-sm shadow-md">
+          <div className="absolute top-0 right-0 h-16 w-16">
+            <div className="absolute transform-gpu rotate-45 bg-amber-400 text-center text-sm font-semibold text-black py-1 right-[-45px] top-[20px] w-[140px] shadow-md">
                 Save 33%
             </div>
           </div>
