@@ -297,7 +297,7 @@ const totalOldWayCost = oldWayFeatures.reduce((acc, feature) => acc + feature.co
 const wisdomisCost = 199;
 
 const ValueComparison = () => (
-    <section className="bg-background">
+    <section className="bg-background pt-20 sm:pt-32">
         <div className="container mx-auto px-4">
             <div className="mx-auto max-w-4xl text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-foreground font-headline">
@@ -392,7 +392,7 @@ export function Pricing() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          className="relative z-10 grid max-w-4xl mx-auto gap-8 md:grid-cols-2 mt-16"
+          className="relative z-10 grid max-w-4xl mx-auto gap-8 md:grid-cols-2 mt-16 mb-20"
         >
           {pricingPlans.map((plan) => (
             <PricingCard key={plan.name} variants={itemVariants} plan={plan} />
