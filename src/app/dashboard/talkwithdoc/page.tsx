@@ -12,9 +12,6 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { useToast } from '@/hooks/use-toast';
 
-// Set up the worker
-pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
-
 export default function TalkWithDocPage() {
     const [pdfFile, setPdfFile] = useState<File | null>(null);
     const [fileUrl, setFileUrl] = useState<string | null>(null);
@@ -24,6 +21,9 @@ export default function TalkWithDocPage() {
     const { toast } = useToast();
 
     useEffect(() => {
+        // Set up the worker when the component mounts on the client
+        pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
+
         return () => {
             // Revoke the object URL when the component unmounts
             if (fileUrl) {
