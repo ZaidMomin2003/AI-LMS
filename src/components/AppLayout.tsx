@@ -49,6 +49,7 @@ import {
   MoreHorizontal,
   Search,
   CheckCircle,
+  FileQuestion,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -217,6 +218,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 {/* --- Tools Section --- */}
                 <SidebarGroup>
                     <SidebarGroupLabel>Tools</SidebarGroupLabel>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/talkwithdoc')}>
+                            <Link href="/dashboard/talkwithdoc">
+                                <FileQuestion />
+                                <span className="flex items-center gap-2">Talk with Doc <Badge variant="destructive" className="text-xs">New!</Badge></span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <TooltipProvider><Tooltip>
                             <TooltipTrigger asChild>
