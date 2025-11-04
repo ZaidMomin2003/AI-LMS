@@ -79,8 +79,8 @@ const ScrambleDashboardButton = () => {
       onMouseLeave={stopScramble}
       className="group relative overflow-hidden rounded-md border-[1px] border-primary/50 bg-primary/90 text-primary-foreground transition-colors hover:border-primary"
     >
-       <Link href="/dashboard" className="relative z-10 flex items-center gap-2 px-4 py-2 font-mono font-medium uppercase">
-         <LayoutDashboard />
+       <Link href="/dashboard" className="relative z-10 flex items-center gap-2 px-3 py-1.5 font-mono text-sm font-medium uppercase">
+         <LayoutDashboard className="h-4 w-4" />
          <span>{text}</span>
        </Link>
       <motion.span
