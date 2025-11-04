@@ -50,6 +50,7 @@ import {
   Search,
   CheckCircle,
   FileQuestion,
+  Workflow,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -157,7 +158,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const isPomodoroLocked = isHobby && pomodoroHistory.length > 0;
   const isCaptureLocked = isHobby && (profile?.captureCount ?? 0) >= 1;
   
-  const wisdomGptAllowed = subscription?.planName && ['Hobby', 'Sage Mode'].includes(subscription.planName);
+  const wisdomGptAllowed = subscription?.planName && ['Sage Mode'].includes(subscription.planName);
 
   return (
       <SidebarProvider>
@@ -192,6 +193,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         <Link href="/dashboard/analytics"><BarChart /><span>Analytics</span></Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
+
+                <SidebarSeparator />
 
                 {/* --- Organize Section --- */}
                 <SidebarGroup>
@@ -237,6 +240,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                                 </SidebarMenuButton>
                             </TooltipTrigger>
                             {isRoadmapLocked && <TooltipContent side="right" align="center"><p>Upgrade for unlimited roadmaps</p></TooltipContent>}
+                        </Tooltip></TooltipProvider>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <TooltipProvider><Tooltip>
+                            <TooltipTrigger asChild>
+                                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/flowchart')}>
+                                    <Link href="/dashboard/flowchart">
+                                        <Workflow /><span>Flowchart</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </TooltipTrigger>
                         </Tooltip></TooltipProvider>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
@@ -392,3 +406,5 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </SidebarProvider>
   );
 }
+
+    
