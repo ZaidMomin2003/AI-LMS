@@ -72,7 +72,7 @@ export default function BusinessPage() {
             </Card>
             <div className="mt-10">
               <Button asChild size="lg">
-                <Link href="mailto:hello@wisdomis.fun?subject=Partnership Application">
+                <Link href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
                   Become a Partner <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -155,7 +155,7 @@ export default function BusinessPage() {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button asChild size="lg">
-                <Link href="mailto:hello@wisdomis.fun?subject=Partnership Application">
+                <Link href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
                   Apply Now <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
