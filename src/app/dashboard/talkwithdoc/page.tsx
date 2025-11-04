@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { LayoutDashboard, UploadCloud, ChevronLeft, ChevronRight, Loader2, ZoomIn, ZoomOut } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { useToast } from '@/hooks/use-toast';
@@ -18,7 +17,7 @@ const Document = dynamic(() => import('react-pdf').then(mod => mod.Document), {
     loading: () => <div className="flex items-center gap-2 text-muted-foreground"><Loader2 className="w-5 h-5 animate-spin" /> <p>Loading PDF viewer...</p></div>,
 });
 const Page = dynamic(() => import('react-pdf').then(mod => mod.Page), { ssr: false });
-
+const pdfjs = dynamic(() => import('react-pdf').then(mod => mod.pdfjs), { ssr: false });
 
 export default function TalkWithDocPage() {
     const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -29,8 +28,9 @@ export default function TalkWithDocPage() {
     const { toast } = useToast();
 
     useEffect(() => {
-        // Set up the worker when the component mounts on the client
-        pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
+        if (pdfjs) {
+            pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
+        }
 
         return () => {
             // Revoke the object URL when the component unmounts
