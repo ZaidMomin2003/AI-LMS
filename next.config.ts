@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
         new CopyPlugin({
             patterns: [
                 {
-                    from: path.join(__dirname, 'node_modules/react-pdf/node_modules/pdfjs-dist/build/pdf.worker.min.mjs'),
+                    from: path.join(__dirname, 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs'),
                     to: path.join(__dirname, 'public'),
                 },
             ],
