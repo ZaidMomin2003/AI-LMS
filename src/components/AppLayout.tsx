@@ -222,14 +222,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <SidebarGroup>
                     <SidebarGroupLabel>Tools</SidebarGroupLabel>
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/talkwithdoc')}>
-                            <Link href="/dashboard/talkwithdoc">
-                                <FileQuestion />
-                                <span className="flex items-center gap-2">Talk with Doc <Badge variant="destructive" className="text-xs">New!</Badge></span>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
                         <TooltipProvider><Tooltip>
                             <TooltipTrigger asChild>
                                 <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/roadmap')}>
@@ -240,17 +232,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                                 </SidebarMenuButton>
                             </TooltipTrigger>
                             {isRoadmapLocked && <TooltipContent side="right" align="center"><p>Upgrade for unlimited roadmaps</p></TooltipContent>}
-                        </Tooltip></TooltipProvider>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <TooltipProvider><Tooltip>
-                            <TooltipTrigger asChild>
-                                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/flowchart')}>
-                                    <Link href="/dashboard/flowchart">
-                                        <Workflow /><span>Flowchart</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </TooltipTrigger>
                         </Tooltip></TooltipProvider>
                     </SidebarMenuItem>
                     <SidebarMenuItem>

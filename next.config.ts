@@ -23,29 +23,14 @@ const nextConfig: NextConfig = {
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
+      },
+       {
+        protocol: 'https',
+        hostname: 'cdn.rareblocks.xyz',
+        port: '',
+        pathname: '/**',
       }
     ],
-  },
-  webpack: (config) => {
-    // Add a rule to handle PDF files
-    config.module.rules.push({
-      test: /\.pdf$/,
-      use: 'raw-loader',
-    });
-    
-    // Copy the pdf.js worker to the public folder
-    config.plugins.push(
-        new (require('copy-webpack-plugin'))({
-            patterns: [
-                {
-                    from: path.join(__dirname, 'node_modules/pdfjs-dist/build/pdf.worker.min.mjs'),
-                    to: 'public/',
-                },
-            ],
-        })
-    );
-
-    return config;
   },
 };
 
