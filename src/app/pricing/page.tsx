@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'dotenv/config';
@@ -423,3 +424,5 @@ export default function PricingPage() {
     </div>
   );
 }
+
+    
