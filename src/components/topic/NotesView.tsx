@@ -70,8 +70,10 @@ export function NotesView({ notes }: NotesViewProps) {
       const range = selection.getRangeAt(0);
       const parentElement = range.startContainer.parentElement;
 
+      // Ensure the selection is within the notes container
       if (notesViewRef.current && parentElement && notesViewRef.current.contains(parentElement)) {
         
+        // Create a virtual element that represents the selection's position
         virtualRef.current = {
           getBoundingClientRect: () => range.getBoundingClientRect(),
         };
@@ -95,22 +97,25 @@ export function NotesView({ notes }: NotesViewProps) {
           setIsLoadingExplanation(false);
         }
       }
-    } else {
-      if (popoverOpen) {
-        setPopoverOpen(false);
-      }
     }
   };
   
   React.useEffect(() => {
-    const handleMouseUp = () => handleTextSelection();
-    const notesRef = notesViewRef.current;
-    notesRef?.addEventListener('mouseup', handleMouseUp);
+    // We only want to close the popover, not open it from here.
+    // Opening is handled in `handleTextSelection`.
+    const handleMouseUp = () => {
+        const selection = window.getSelection();
+        const text = selection?.toString().trim();
+        if (!text) {
+             setPopoverOpen(false);
+        }
+    };
+    document.addEventListener('mouseup', handleMouseUp);
     
     return () => {
-        notesRef?.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('mouseup', handleMouseUp);
     }
-  }, [notesViewRef, fullNoteText, popoverOpen]);
+  }, []);
 
 
   if (!notes) {
@@ -127,9 +132,10 @@ export function NotesView({ notes }: NotesViewProps) {
     <>
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
         <PopoverTrigger asChild>
-            <div ref={virtualRef as any}></div>
+          {/* This div is the virtual trigger for the popover */}
+          <div ref={virtualRef as any} />
         </PopoverTrigger>
-        <div className="cursor-text" ref={notesViewRef}>
+        <div className="cursor-text" onMouseUp={handleTextSelection} ref={notesViewRef}>
             <ScrollArea className="h-[calc(100vh-200px)]">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
                     {/* Left Column */}
@@ -143,6 +149,11 @@ export function NotesView({ notes }: NotesViewProps) {
                             title="Core Concepts" 
                             content={notes.coreConcepts} 
                             icon={FileText}
+                        />
+                         <NoteSection 
+                            title="Example" 
+                            content={notes.exampleWithExplanation} 
+                            icon={Beaker}
                         />
                         <NoteSection 
                             title="Summary" 
@@ -168,17 +179,12 @@ export function NotesView({ notes }: NotesViewProps) {
                             content={notes.keyFormulasOrPoints} 
                             icon={FlaskConical}
                         />
-                        <NoteSection 
-                            title="Example" 
-                            content={notes.exampleWithExplanation} 
-                            icon={Beaker}
-                        />
                     </div>
                 </div>
             </ScrollArea>
         </div>
-        <PopoverContent className="w-80 shadow-2xl" sideOffset={8} anchor={virtualRef.current}>
-            <div className="space-y-2 relative">
+        <PopoverContent className="w-80 shadow-2xl" sideOffset={8}>
+             <div className="space-y-2 relative">
                 <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
                     <X className="w-4 h-4"/>
                 </Button>
@@ -206,3 +212,4 @@ export function NotesView({ notes }: NotesViewProps) {
     </>
   );
 }
+
