@@ -4,10 +4,10 @@
 import type { StudyNotes } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '../ui/scroll-area';
-import { MarkdownRenderer } from '../MarkdownRenderer';
+import { MathRenderer } from '../MathRenderer';
 import { BookOpen, List, FlaskConical, Beaker, Lightbulb, FileText, Sparkles, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Popover, PopoverContent } from '../ui/popover';
 import React, { useRef, useState, useEffect } from 'react';
 import { explainTextAction } from '@/app/topic/[id]/actions';
 import { useToast } from '@/hooks/use-toast';
@@ -40,7 +40,7 @@ const NoteSection = ({
             </CardHeader>
             <CardContent>
                 <div className="prose prose-sm prose-invert max-w-none text-foreground">
-                    <MarkdownRenderer content={content} />
+                    <MathRenderer content={content} />
                 </div>
             </CardContent>
         </Card>
@@ -55,7 +55,7 @@ export function NotesView({ notes }: NotesViewProps) {
   const { toast } = useToast();
   const notesViewRef = useRef<HTMLDivElement>(null);
   
-  const [virtualElement, setVirtualElement] = useState<HTMLElement | null>(null);
+  const [virtualRef, setVirtualRef] = useState<{ getBoundingClientRect: () => DOMRect } | null>(null);
 
   const fullNoteText = React.useMemo(() => {
     if (!notes) return '';
@@ -72,18 +72,10 @@ export function NotesView({ notes }: NotesViewProps) {
 
       if (notesViewRef.current && parentElement && notesViewRef.current.contains(parentElement)) {
         
-        const span = document.createElement('span');
-        span.style.position = 'absolute';
+        setVirtualRef({
+          getBoundingClientRect: () => range.getBoundingClientRect(),
+        });
         
-        const rect = range.getBoundingClientRect();
-        span.style.left = `${rect.left + window.scrollX}px`;
-        span.style.top = `${rect.top + window.scrollY}px`;
-        span.style.width = `${rect.width}px`;
-        span.style.height = `${rect.height}px`;
-
-        document.body.appendChild(span);
-        setVirtualElement(span);
-
         setSelectedText(text);
         setPopoverOpen(true);
         setIsLoadingExplanation(true);
@@ -101,8 +93,6 @@ export function NotesView({ notes }: NotesViewProps) {
           setPopoverOpen(false);
         } finally {
           setIsLoadingExplanation(false);
-          document.body.removeChild(span);
-          setVirtualElement(null);
         }
       }
     } else {
@@ -119,11 +109,6 @@ export function NotesView({ notes }: NotesViewProps) {
     
     return () => {
         notesRef?.removeEventListener('mouseup', handleMouseUp);
-        if (virtualElement) {
-            if (document.body.contains(virtualElement)) {
-                document.body.removeChild(virtualElement);
-            }
-        }
     }
   }, [notesViewRef, fullNoteText, popoverOpen]);
 
@@ -141,9 +126,6 @@ export function NotesView({ notes }: NotesViewProps) {
   return (
     <>
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-        <PopoverTrigger asChild>
-            {virtualElement && <div style={{ position: 'fixed', top: virtualElement.getBoundingClientRect().top, left: virtualElement.getBoundingClientRect().left }}></div>}
-        </PopoverTrigger>
         <div className="cursor-text" ref={notesViewRef}>
             <ScrollArea className="h-[calc(100vh-200px)]">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
@@ -192,7 +174,7 @@ export function NotesView({ notes }: NotesViewProps) {
                 </div>
             </ScrollArea>
         </div>
-        <PopoverContent className="w-80 shadow-2xl" sideOffset={8} anchor={virtualElement ? { x: virtualElement.getBoundingClientRect().left, y: virtualElement.getBoundingClientRect().top } : undefined}>
+        <PopoverContent className="w-80 shadow-2xl" sideOffset={8} anchor={virtualRef}>
             <div className="space-y-2 relative">
                 <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
                     <X className="w-4 h-4"/>
@@ -210,7 +192,7 @@ export function NotesView({ notes }: NotesViewProps) {
                     ) : (
                         <ScrollArea className="h-full max-h-60 pr-4">
                             <div className="prose prose-sm prose-invert max-w-none text-foreground">
-                                <MarkdownRenderer content={explanation} />
+                                <MathRenderer content={explanation} />
                             </div>
                         </ScrollArea>
                     )}

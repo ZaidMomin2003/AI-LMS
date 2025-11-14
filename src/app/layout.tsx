@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Providers } from "@/components/Providers";
 import "./globals.css";
+import 'katex/dist/katex.min.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
 export const metadata: Metadata = {
-  title: "wisdom",
+  title: "Wisdom",
   description: "Your personal AI-powered study assistant.",
   icons: {
     icon: "/favicon.svg",

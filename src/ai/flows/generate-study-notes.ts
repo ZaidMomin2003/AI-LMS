@@ -47,7 +47,7 @@ const prompt = ai.definePrompt({
   - **coreConcepts**: The main content. Use <h2> for the main title, <h3> for sub-headings, and <p> tags.
   - **keyVocabulary**: An HTML <ul> of 5-7 important vocabulary words. Format: '<li><strong>Word:</strong> Brief definition.</li>'.
   - **keyDefinitions**: An HTML <ul> of 3-5 key concepts with full definitions. Format: '<li><strong>Concept:</strong> Detailed explanation.</li>'.
-  - **keyFormulasOrPoints**: An HTML <ul> of key formulas or important bullet points. If there are no formulas, the value should be the string '<p>None</p>'.
+  - **keyFormulasOrPoints**: An HTML <ul> of key formulas or important bullet points. If there are no formulas, the value should be the string '<p>None</p>'. **Crucially, if there are any mathematical formulas or equations, you MUST enclose them in KaTeX delimiters, like this: \`$$E=mc^2$$\`. This is non-negotiable.**
   - **summary**: A concise summary of all notes in one or two <p> tags.
   - **exampleWithExplanation**: A clear example. Use a <h3> for the example title and <p> tags for the content.
   `,
