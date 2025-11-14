@@ -1,3 +1,4 @@
+
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import crypto from "crypto";
@@ -22,25 +23,23 @@ export async function POST(req: Request) {
     
     const payload = JSON.parse(body);
 
-    // We only care about the payment.captured event
     if (payload.event === 'payment.captured') {
         const paymentEntity = payload.payload.payment.entity;
         const orderId = paymentEntity.order_id;
 
-        // Fetch the order from Razorpay to get the notes
         const razorpay = new Razorpay({
             key_id: process.env.RAZORPAY_KEY_ID!,
             key_secret: process.env.RAZORPAY_KEY_SECRET!,
         });
 
         const order = await razorpay.orders.fetch(orderId);
-        const { uid, priceId } = order.notes as { uid: string, priceId: string };
-
-        if (!uid || !priceId) {
+        
+        if (!order.notes || !order.notes.uid || !order.notes.priceId) {
             console.error("Webhook Error: Missing uid or priceId in order notes for order:", orderId);
-            // We return 200 so Razorpay doesn't keep retrying, but log the error.
             return NextResponse.json({ status: "error", message: "Missing user ID or price ID in order notes." });
         }
+        
+        const { uid, priceId } = order.notes as { uid: string, priceId: string };
 
         const planDurations: Record<string, number> = {
             SAGE_MODE_YEARLY: 365,
@@ -73,7 +72,6 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error in Razorpay webhook:", error);
     const err = error as Error;
-    // Return a 200 to prevent Razorpay from retrying, but log the server error.
-    return NextResponse.json({ status: "server_error", message: err.message });
+    return NextResponse.json({ status: "server_error", message: err.message }, { status: 500 });
   }
 }
