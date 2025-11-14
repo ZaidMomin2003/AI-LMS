@@ -41,10 +41,11 @@ interface PaymentVerificationData {
     razorpay_payment_id: string;
     razorpay_signature: string;
     uid: string;
+    priceId: string; // The specific tier ID, e.g., 'SAGE_MODE_YEARLY'
 }
 
 export async function verifyRazorpayPayment(data: PaymentVerificationData) {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, uid } = data;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, uid, priceId } = data;
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
 
@@ -57,11 +58,24 @@ export async function verifyRazorpayPayment(data: PaymentVerificationData) {
 
     if (isAuthentic && isFirebaseEnabled) {
         // Payment is authentic, update user's subscription in Firestore
+        const now = new Date();
+        let expiryDate = new Date(now);
+
+        if (priceId === 'SAGE_MODE_YEARLY') {
+            expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+        } else if (priceId === 'SAGE_MODE_6_MONTHS') {
+            expiryDate.setMonth(expiryDate.getMonth() + 6);
+        } else if (priceId === 'SAGE_MODE_3_MONTHS') {
+            expiryDate.setMonth(expiryDate.getMonth() + 3);
+        }
+
         const subscriptionData: UserSubscription = {
             planName: 'Sage Mode',
             status: 'active',
+            priceId: priceId,
             paymentId: razorpay_payment_id,
             orderId: razorpay_order_id,
+            expiresAt: expiryDate.toISOString(),
         };
         await updateUserDoc(uid, { subscription: subscriptionData });
         return { success: true, message: "Payment verified successfully." };

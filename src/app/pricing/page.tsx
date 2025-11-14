@@ -305,6 +305,7 @@ const PricingContent = () => {
                         razorpay_payment_id: response.razorpay_payment_id,
                         razorpay_signature: response.razorpay_signature,
                         uid: user.uid,
+                        priceId: priceId,
                     };
 
                     const result = await verifyRazorpayPayment(verificationData);
@@ -314,7 +315,7 @@ const PricingContent = () => {
                             title: 'Payment Successful!',
                             description: 'Welcome to Sage Mode! Your subscription is now active.',
                         });
-                         // You might want to refresh subscription context or redirect here
+                         // The onSnapshot listener in SubscriptionContext will handle the UI update.
                     } else {
                         toast({
                             variant: 'destructive',
