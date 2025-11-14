@@ -52,8 +52,13 @@ export async function createRazorpayOrder(amount: number, uid: string, priceId: 
 export async function verifyRazorpayPayment(data: VerificationData) {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, uid, priceId } = data;
 
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+        console.error('Razorpay secret key is not configured.');
+        return { success: false, message: "Server configuration error." };
+    }
+
     const expectedSignature = crypto
-        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
         .update(razorpay_order_id + "|" + razorpay_payment_id)
         .digest("hex");
     

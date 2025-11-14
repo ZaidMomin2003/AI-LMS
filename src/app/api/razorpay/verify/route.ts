@@ -6,7 +6,7 @@ import { updateUserDoc } from "@/services/firestore";
 import type { UserSubscription } from "@/types";
 
 export async function POST(req: Request) {
-  const secret = process.env.RAZORPAY_WEBHOOK_SECRET!;
+  const secret = process.env.RAZORPAY_KEY_SECRET!;
   
   try {
     const body = await req.text();
@@ -22,6 +22,7 @@ export async function POST(req: Request) {
     
     const payload = JSON.parse(body);
 
+    // We only care about the payment.captured event
     if (payload.event === 'payment.captured') {
         const paymentEntity = payload.payload.payment.entity;
         const orderId = paymentEntity.order_id;
@@ -36,7 +37,9 @@ export async function POST(req: Request) {
         const { uid, priceId } = order.notes as { uid: string, priceId: string };
 
         if (!uid || !priceId) {
-            throw new Error("Missing user ID or price ID in order notes.");
+            console.error("Webhook Error: Missing uid or priceId in order notes for order:", orderId);
+            // We return 200 so Razorpay doesn't keep retrying, but log the error.
+            return NextResponse.json({ status: "error", message: "Missing user ID or price ID in order notes." });
         }
 
         const planDurations: Record<string, number> = {
@@ -47,7 +50,8 @@ export async function POST(req: Request) {
 
         const durationInDays = planDurations[priceId];
         if (!durationInDays) {
-            throw new Error(`Invalid priceId: ${priceId}`);
+             console.error("Webhook Error: Invalid priceId in order notes for order:", orderId);
+            return NextResponse.json({ status: "error", message: `Invalid priceId: ${priceId}` });
         }
 
         const expiresAt = new Date();
@@ -69,6 +73,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error in Razorpay webhook:", error);
     const err = error as Error;
-    return NextResponse.json({ status: "error", message: err.message }, { status: 500 });
+    // Return a 200 to prevent Razorpay from retrying, but log the server error.
+    return NextResponse.json({ status: "server_error", message: err.message });
   }
 }
