@@ -53,13 +53,13 @@ export default function BusinessPage() {
             <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
               <div className="relative z-10 text-center lg:text-left">
                 <p className="text-base font-semibold uppercase tracking-wider text-primary">
-                  A Social media for learners
+                  Become a Wisdom Partner
                 </p>
-                <h1 className="font-headline mt-6 text-4xl font-bold text-foreground sm:text-6xl xl:text-7xl">
-                  Connect & learn from the experts
+                <h1 className="font-headline mt-4 text-4xl font-bold text-foreground lg:mt-8 sm:text-6xl xl:text-7xl">
+                  Connect & Grow With Us
                 </h1>
-                <p className="mt-8 text-lg text-muted-foreground sm:text-xl">
-                  Grow your career fast with the right mentor.
+                <p className="mt-4 text-base text-muted-foreground lg:mt-8 sm:text-xl">
+                  Share the future of learning and earn commissions.
                 </p>
                 <Button asChild size="lg" className="mt-10">
                   <a href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
@@ -107,8 +107,8 @@ export default function BusinessPage() {
 
                 {/* Stat Card */}
                 <div className="absolute top-1/3 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 transform animate-float rounded-2xl bg-foreground p-4 text-background shadow-2xl [animation-delay:-0.5s] lg:p-6">
-                  <p className="text-xs lg:text-sm">Active Professionals</p>
-                  <p className="text-2xl font-bold lg:text-4xl">13,422</p>
+                  <p className="text-xs lg:text-sm">Partner Commission</p>
+                  <p className="text-2xl font-bold lg:text-4xl">$39</p>
                 </div>
                 
                 {/* Abstract Shapes */}
