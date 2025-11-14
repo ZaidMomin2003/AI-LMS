@@ -1,6 +1,7 @@
 
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import Razorpay from "razorpay";
 import { updateUserDoc } from "@/services/firestore";
 import type { UserSubscription } from "@/types";
 
@@ -12,18 +13,10 @@ export async function POST(req: Request) {
   const razorpay_payment_id = params.get("razorpay_payment_id");
   const razorpay_signature = params.get("razorpay_signature");
 
-  // To retrieve notes, we need to fetch the order from Razorpay API
-  // This step is skipped here for brevity but would be needed in production
-  // to get uid and priceId if not passed back.
-  // For this fix, we will redirect the user with query params.
-  
   if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       return NextResponse.redirect(new URL('/pricing?error=invalid_payment', req.url));
   }
 
-  // This is a temporary solution. In production, you'd fetch order notes.
-  // For now, we assume the success page will handle the final update.
-  // The verification happens, and we redirect to a success page.
   const expectedSignature = crypto
     .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
     .update(razorpay_order_id + "|" + razorpay_payment_id)
@@ -33,9 +26,49 @@ export async function POST(req: Request) {
     return NextResponse.redirect(new URL('/pricing?error=verification_failed', req.url));
   }
 
-  // Since we cannot reliably get notes (uid, priceId) here without another API call,
-  // we redirect to the dashboard, where the onSnapshot listener will pick up the change
-  // triggered by the *backup* handler on the client.
-  // A more robust solution involves a webhook.
-  return NextResponse.redirect(new URL('/dashboard?payment=success', req.url));
+  try {
+    const razorpay = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID!,
+        key_secret: process.env.RAZORPAY_KEY_SECRET!,
+    });
+    
+    // Fetch the order to get the notes
+    const order = await razorpay.orders.fetch(razorpay_order_id);
+    const { uid, priceId } = order.notes as { uid: string, priceId: string };
+
+    if (!uid || !priceId) {
+        throw new Error("Missing user ID or price ID in order notes.");
+    }
+
+    const planDurations: Record<string, number> = {
+        SAGE_MODE_YEARLY: 365,
+        SAGE_MODE_6_MONTHS: 180,
+        SAGE_MODE_3_MONTHS: 90,
+    };
+
+    const durationInDays = planDurations[priceId];
+    if (!durationInDays) {
+        throw new Error(`Invalid priceId: ${priceId}`);
+    }
+
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + durationInDays);
+
+    const subscriptionData: UserSubscription = {
+        planName: "Sage Mode",
+        status: "active",
+        priceId,
+        paymentId: razorpay_payment_id,
+        orderId: razorpay_order_id,
+        expiresAt: expiresAt.toISOString(),
+    };
+
+    await updateUserDoc(uid, { subscription: subscriptionData });
+    
+    return NextResponse.redirect(new URL('/dashboard?payment_success=true', req.url));
+
+  } catch (error) {
+    console.error("Error during Razorpay verification and DB update:", error);
+    return NextResponse.redirect(new URL('/pricing?error=update_failed', req.url));
+  }
 }

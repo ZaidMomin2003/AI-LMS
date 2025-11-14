@@ -1,4 +1,3 @@
-
 'use client';
 
 import 'dotenv/config';
@@ -12,7 +11,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
-import { createRazorpayOrder, verifyRazorpayPayment } from './actions';
+import { createRazorpayOrder } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
@@ -301,24 +300,12 @@ const PricingContent = () => {
                 order_id: order.id,
                 callback_url: "/api/razorpay/verify",
                 handler: async function (response: any) {
-                    // This handler is a fallback for client-side confirmation.
-                    // The main verification is via the robust server-side callback_url.
-                    const verificationData = {
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_signature: response.razorpay_signature,
-                        uid: user.uid,
-                        priceId: priceId,
-                    };
-                    
-                    const result = await verifyRazorpayPayment(verificationData);
-
-                    if (result.success) {
-                         toast({
-                            title: 'Payment Successful!',
-                            description: 'Welcome to Sage Mode! Your subscription is updating.',
-                        });
-                    }
+                    // This handler is a fallback, but the main verification is server-side.
+                    // We can use this to give the user immediate feedback.
+                    toast({
+                        title: 'Payment Processing...',
+                        description: 'Your payment is being verified. Your plan will update shortly.',
+                    });
                 },
                 prefill: {
                     name: user.displayName || 'wisdom User',
