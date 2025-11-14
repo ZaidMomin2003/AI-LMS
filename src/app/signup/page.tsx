@@ -22,7 +22,7 @@ const testimonials = [
       handle: "University Freshman"
     },
     {
-        quote: "I was skeptical about AI for studying, but wisdom proved me wrong. It's like having a personal tutor available 24/7.",
+        quote: "I was skeptical about AI for studying, but Wisdom proved me wrong. It's like having a personal tutor available 24/7.",
         name: "David Smith",
         handle: "Medical Student"
     },
@@ -53,11 +53,14 @@ export default function SignUpPage() {
       </div>
       <div className="flex items-center justify-center p-6 sm:p-12 relative">
           <div className="absolute top-8 left-8 z-10">
-              <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-headline text-foreground">
-                  <div className="w-8 h-8 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
+              <Link href="/" className="flex items-center gap-3 text-lg font-semibold font-headline text-foreground">
+                  <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
                     <BookOpenCheck className="h-5 w-5" />
                   </div>
-                  <span>wisdom</span>
+                  <div className="flex flex-col">
+                    <span className="font-bold font-headline text-xl -mb-1">Wisdom</span>
+                    <span className="text-xs text-muted-foreground">AI Studybuddy</span>
+                </div>
               </Link>
           </div>
         <div className="mx-auto grid w-full max-w-sm gap-6">

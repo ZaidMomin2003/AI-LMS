@@ -174,10 +174,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
+              <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
                 <BookOpenCheck className="w-5 h-5" />
               </div>
-              <span className="font-headline text-2xl font-bold">wisdom</span>
+              <div className="flex flex-col">
+                  <span className="font-bold font-headline text-xl -mb-1">Wisdom</span>
+                  <span className="text-xs text-muted-foreground">AI Studybuddy</span>
+              </div>
             </div>
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -364,7 +367,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <div className="w-8 h-8 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
                         <BookOpenCheck className="w-5 h-5" />
                     </div>
-                    <span className="font-headline text-lg font-bold">wisdom</span>
+                    <span className="font-headline text-lg font-bold">Wisdom</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button asChild variant="ghost" size="icon">

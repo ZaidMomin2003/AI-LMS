@@ -38,11 +38,14 @@ export default function OnboardingPage() {
         return (
             <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4">
                 <div className="absolute top-8 left-8">
-                    <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-headline">
-                         <div className="w-8 h-8 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
+                    <Link href="/" className="flex items-center gap-3">
+                         <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
                             <BookOpenCheck className="h-5 w-5" />
                         </div>
-                        <span>wisdom</span>
+                        <div className="flex flex-col">
+                            <span className="font-bold font-headline text-xl -mb-1">Wisdom</span>
+                            <span className="text-xs text-muted-foreground">AI Studybuddy</span>
+                        </div>
                     </Link>
                 </div>
                 <div className="w-full max-w-2xl">
