@@ -7,11 +7,12 @@ import { ScrollArea } from '../ui/scroll-area';
 import { MathRenderer } from '../MathRenderer';
 import { BookOpen, List, FlaskConical, Beaker, Lightbulb, FileText, Sparkles, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import React, from 'react';
+import { Popover, PopoverContent } from '../ui/popover';
+import React, { useCallback, useEffect } from 'react';
 import { explainTextAction } from '@/app/topic/[id]/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '../ui/button';
+import { PopoverAnchor } from '@radix-ui/react-popover';
 
 interface NotesViewProps {
   notes: StudyNotes;
@@ -54,69 +55,72 @@ export function NotesView({ notes }: NotesViewProps) {
   const [isLoadingExplanation, setIsLoadingExplanation] = React.useState(false);
   const { toast } = useToast();
   const notesViewRef = React.useRef<HTMLDivElement>(null);
-  
   const virtualRef = React.useRef<{ getBoundingClientRect: () => DOMRect } | null>(null);
+  const debounceTimer = React.useRef<NodeJS.Timeout | null>(null);
 
   const fullNoteText = React.useMemo(() => {
     if (!notes) return '';
     return Object.values(notes).join('\n');
   }, [notes]);
-
-  const handleTextSelection = async () => {
+  
+  const handleTextSelection = useCallback(() => {
     const selection = window.getSelection();
     const text = selection?.toString().trim();
 
     if (text && text.length > 2 && text.length < 300 && selection?.rangeCount) {
-      const range = selection.getRangeAt(0);
-      const parentElement = range.startContainer.parentElement;
+        const range = selection.getRangeAt(0);
+        const parentElement = range.startContainer.parentElement;
 
-      // Ensure the selection is within the notes container
-      if (notesViewRef.current && parentElement && notesViewRef.current.contains(parentElement)) {
-        
-        // Create a virtual element that represents the selection's position
-        virtualRef.current = {
-          getBoundingClientRect: () => range.getBoundingClientRect(),
-        };
-        
-        setSelectedText(text);
-        setPopoverOpen(true);
-        setIsLoadingExplanation(true);
-        setExplanation('');
+        if (notesViewRef.current && parentElement && notesViewRef.current.contains(parentElement)) {
+            virtualRef.current = {
+                getBoundingClientRect: () => range.getBoundingClientRect(),
+            };
+            
+            setSelectedText(text);
+            setPopoverOpen(true);
+            setIsLoadingExplanation(true);
+            setExplanation('');
 
-        try {
-          const result = await explainTextAction({ selectedText: text, contextText: fullNoteText });
-          setExplanation(result.explanation);
-        } catch (error) {
-          toast({
-            variant: 'destructive',
-            title: 'Explanation Failed',
-            description: 'Could not get an explanation for the selected text.',
-          });
-          setPopoverOpen(false);
-        } finally {
-          setIsLoadingExplanation(false);
+            explainTextAction({ selectedText: text, contextText: fullNoteText })
+                .then(result => {
+                    setExplanation(result.explanation);
+                })
+                .catch(error => {
+                    toast({
+                        variant: 'destructive',
+                        title: 'Explanation Failed',
+                        description: 'Could not get an explanation for the selected text.',
+                    });
+                    setPopoverOpen(false);
+                })
+                .finally(() => {
+                    setIsLoadingExplanation(false);
+                });
         }
-      }
+    } else {
+        setPopoverOpen(false);
     }
-  };
+  }, [fullNoteText, toast]);
   
-  React.useEffect(() => {
-    // We only want to close the popover, not open it from here.
-    // Opening is handled in `handleTextSelection`.
-    const handleMouseUp = () => {
-        const selection = window.getSelection();
-        const text = selection?.toString().trim();
-        if (!text) {
-             setPopoverOpen(false);
+  useEffect(() => {
+    const debouncedSelectionHandler = () => {
+        if (debounceTimer.current) {
+            clearTimeout(debounceTimer.current);
         }
+        debounceTimer.current = setTimeout(() => {
+            handleTextSelection();
+        }, 500); // Wait 500ms after the last selection change
     };
-    document.addEventListener('mouseup', handleMouseUp);
+
+    document.addEventListener('selectionchange', debouncedSelectionHandler);
     
     return () => {
-        document.removeEventListener('mouseup', handleMouseUp);
+        document.removeEventListener('selectionchange', debouncedSelectionHandler);
+        if (debounceTimer.current) {
+            clearTimeout(debounceTimer.current);
+        }
     }
-  }, []);
-
+  }, [handleTextSelection]);
 
   if (!notes) {
     return (
@@ -131,11 +135,10 @@ export function NotesView({ notes }: NotesViewProps) {
   return (
     <>
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-        <PopoverTrigger asChild>
-          {/* This div is the virtual trigger for the popover */}
+        <PopoverAnchor asChild>
           <div ref={virtualRef as any} />
-        </PopoverTrigger>
-        <div className="cursor-text" onMouseUp={handleTextSelection} ref={notesViewRef}>
+        </PopoverAnchor>
+        <div className="cursor-text" ref={notesViewRef}>
             <ScrollArea className="h-[calc(100vh-200px)]">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
                     {/* Left Column */}
@@ -145,15 +148,15 @@ export function NotesView({ notes }: NotesViewProps) {
                             content={notes.introduction} 
                             icon={BookOpen}
                         />
-                        <NoteSection 
-                            title="Core Concepts" 
-                            content={notes.coreConcepts} 
-                            icon={FileText}
-                        />
                          <NoteSection 
                             title="Example" 
                             content={notes.exampleWithExplanation} 
                             icon={Beaker}
+                        />
+                        <NoteSection 
+                            title="Core Concepts" 
+                            content={notes.coreConcepts} 
+                            icon={FileText}
                         />
                         <NoteSection 
                             title="Summary" 
@@ -212,4 +215,3 @@ export function NotesView({ notes }: NotesViewProps) {
     </>
   );
 }
-
