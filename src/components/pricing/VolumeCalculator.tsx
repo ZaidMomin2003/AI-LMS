@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -50,13 +51,13 @@ export function VolumeCalculator() {
                         <CardDescription className="text-center">Select the number of licenses to see your discount.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-8">
-                        <div className="flex justify-center p-1 bg-muted rounded-lg">
+                        <div className="flex flex-wrap justify-center p-1 bg-muted rounded-lg gap-1">
                             {userTiers.map(tier => (
                                 <Button 
                                     key={tier}
                                     variant={users === tier ? 'default' : 'ghost'}
                                     onClick={() => setUsers(tier)}
-                                    className="flex-1 transition-all"
+                                    className="flex-1 min-w-[120px] basis-1/4 sm:basis-auto transition-all"
                                 >
                                     {tier} Users
                                 </Button>
