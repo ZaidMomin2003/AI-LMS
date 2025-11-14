@@ -23,7 +23,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 const allPlans = [
     {
         name: 'Hobby',
-        price: '$0',
+        price: '₹0',
         period: 'Free Forever',
         description: 'Perfect for trying out the power of AI learning.',
         priceId: null,
@@ -54,9 +54,9 @@ const allPlans = [
         buttonText: 'Go Sage Mode',
         highlight: true,
         tiers: [
-            { id: 'SAGE_MODE_YEARLY', name: '1 Year Plan', price: '$16.58', period: '/month', amount: 199, billed: 'Billed annually at $199', originalPrice: '$299/year', discount: 'Save 33%' },
-            { id: 'SAGE_MODE_6_MONTHS', name: '6 Month Plan', price: '$19.83', period: '/month', amount: 119, billed: 'Billed every 6 months' },
-            { id: 'SAGE_MODE_3_MONTHS', name: '3 Month Plan', price: '$23.00', period: '/month', amount: 69, billed: 'Billed every 3 months' },
+            { id: 'SAGE_MODE_YEARLY', name: '1 Year Plan', price: '₹16,500', period: '/year', amount: 16500, billed: 'Billed annually' },
+            { id: 'SAGE_MODE_6_MONTHS', name: '6 Month Plan', price: '₹9,900', period: '/6-mo', amount: 9900, billed: 'Billed every 6 months' },
+            { id: 'SAGE_MODE_3_MONTHS', name: '3 Month Plan', price: '₹5,700', period: '/3-mo', amount: 5700, billed: 'Billed every 3 months' },
         ],
     },
 ];
@@ -120,7 +120,7 @@ interface PriceDisplayProps {
 }
 
 const PriceDisplay = ({ price, period, billed, isHighlighted, className }: PriceDisplayProps) => {
-  const isFree = price.toLowerCase() === '$0';
+  const isFree = price.toLowerCase() === '₹0';
   
   return (
     <div className={cn('relative mb-2', className)}>
@@ -331,23 +331,6 @@ const PricingContent = () => {
                 },
                 theme: {
                     color: '#4B0082',
-                },
-                config: {
-                    display: {
-                        blocks: {
-                            banks: {
-                                name: 'Pay using UPI & Bank Transfer',
-                                instruments: [
-                                    { method: 'upi' },
-                                    { method: 'netbanking' },
-                                ],
-                            },
-                        },
-                        sequence: ['block.banks'],
-                        preferences: {
-                            show_default_blocks: true,
-                        },
-                    },
                 },
             };
             

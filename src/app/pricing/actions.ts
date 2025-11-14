@@ -16,7 +16,7 @@ export async function createRazorpayOrder(amount: number, uid: string) {
 
   const options = {
     amount: amount * 100, // Amount in the smallest currency unit (e.g., cents for USD)
-    currency: 'USD',
+    currency: 'INR',
     receipt: `receipt_order_${new Date().getTime()}`,
     notes: {
         uid: uid,
