@@ -92,13 +92,13 @@ function SidebarSubscriptionButton() {
     if (subscription?.planName === 'Hobby') {
         return (
             <Link href="/pricing" className="block p-2">
-                <div className="group relative rounded-lg p-4 bg-gradient-to-br from-primary/80 to-primary text-primary-foreground overflow-hidden">
-                    <h4 className="font-bold text-base font-headline">Upgrade to Pro</h4>
-                    <p className="text-xs text-primary-foreground/80">Unlock all features</p>
-                    <div className="absolute top-1 right-1 bg-primary-foreground/20 text-primary-foreground rounded-full p-1.5 transform transition-transform group-hover:rotate-45">
+                <div className="group relative rounded-lg p-4 bg-gradient-to-br from-secondary to-card text-foreground overflow-hidden border border-dashed border-primary/50 hover:border-primary/80 transition-all">
+                    <h4 className="font-bold text-base font-headline">Free Plan</h4>
+                    <p className="text-xs text-muted-foreground">Upgrade to unlock all features</p>
+                    <div className="absolute top-1 right-1 bg-primary/20 text-primary rounded-full p-1.5 transform transition-transform group-hover:rotate-45">
                         <ArrowRight className="w-3 h-3" />
                     </div>
-                    <Zap className="absolute -bottom-4 -right-2 w-16 h-16 text-primary-foreground/10" />
+                    <Zap className="absolute -bottom-4 -right-2 w-16 h-16 text-primary/10" />
                 </div>
             </Link>
         );
