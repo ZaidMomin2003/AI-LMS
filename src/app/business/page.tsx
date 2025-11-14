@@ -9,10 +9,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { ArrowRight, Check, DollarSign, Gift, Zap } from 'lucide-react';
+import { ArrowRight, Gift, Check, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { Features } from '@/components/landing/Features';
 import Image from 'next/image';
+import placeholderImages from '@/lib/placeholder-images.json';
 
 const faqs = [
   {
@@ -43,30 +44,86 @@ export default function BusinessPage() {
       <Header />
       <main className="flex-grow">
         {/* --- Hero Section --- */}
-        <section className="bg-secondary/50 py-10 sm:py-16 lg:py-24">
-         <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-             <div className="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
-                 <div>
-                     <p className="text-base font-semibold tracking-wider text-primary uppercase">Become a Wisdom Partner</p>
-                     <h1 className="mt-4 text-4xl font-bold text-foreground lg:mt-8 sm:text-6xl xl:text-8xl font-headline">Connect & Grow With Us</h1>
-                     <p className="mt-4 text-base text-muted-foreground lg:mt-8 sm:text-xl">Share the future of learning and earn commissions.</p>
+        <section className="relative overflow-hidden bg-secondary/30 py-20 lg:py-32">
+          <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+              <div className="relative z-10 text-center lg:text-left">
+                <p className="text-base font-semibold uppercase tracking-wider text-primary">
+                  A Social media for learners
+                </p>
+                <h1 className="font-headline mt-6 text-4xl font-bold text-foreground sm:text-6xl xl:text-7xl">
+                  Connect & learn from the experts
+                </h1>
+                <p className="mt-8 text-lg text-muted-foreground sm:text-xl">
+                  Grow your career fast with the right mentor.
+                </p>
+                <Button asChild size="lg" className="mt-10">
+                  <a href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
+                    Become a Partner <ArrowRight className="ml-2" />
+                  </a>
+                </Button>
+              </div>
 
-                      <a href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer" title="" className="inline-flex items-center px-6 py-4 mt-8 font-semibold text-primary-foreground transition-all duration-200 bg-primary rounded-full lg:mt-16 hover:bg-primary/90 focus:bg-primary/90" role="button">
-                         Become a Partner
-                         <ArrowRight className="w-6 h-6 ml-8 -mr-2" />
-                     </a>
+              <div className="relative h-96 lg:h-[500px]">
+                {/* Person 1 */}
+                <div className="absolute top-0 left-1/4 z-10 h-32 w-32 animate-float rounded-full bg-yellow-400 p-2 shadow-lg lg:h-40 lg:w-40">
+                  <Image
+                    data-ai-hint={placeholderImages.businessHero.person1.hint}
+                    src={placeholderImages.businessHero.person1.src}
+                    alt="Happy professional"
+                    width={160}
+                    height={160}
+                    className="h-full w-full rounded-full object-cover"
+                  />
+                </div>
 
-                     <p className="mt-5 text-muted-foreground">Already a partner? <a href="/login" title="" className="text-foreground transition-all duration-200 hover:underline">Log in</a></p>
-                 </div>
+                {/* Person 2 */}
+                <div className="absolute top-10 right-0 z-20 h-28 w-28 animate-float rounded-2xl bg-purple-500 p-2 shadow-lg [animation-delay:-1s] lg:h-36 lg:w-36">
+                  <Image
+                    data-ai-hint={placeholderImages.businessHero.person2.hint}
+                    src={placeholderImages.businessHero.person2.src}
+                    alt="Smiling expert"
+                    width={144}
+                    height={144}
+                    className="h-full w-full rounded-xl object-cover"
+                  />
+                </div>
 
-                 <div>
-                     <Image data-ai-hint="office laptop" className="w-full" width={600} height={600} src="https://picsum.photos/seed/business-hero/600/600" alt="Team working on laptops" />
-                 </div>
-             </div>
-         </div>
-     </section>
+                {/* Person 3 */}
+                <div className="absolute bottom-0 left-0 z-20 h-36 w-36 animate-float rounded-2xl bg-blue-500 p-2 shadow-lg [animation-delay:-2s] lg:h-48 lg:w-48">
+                  <Image
+                    data-ai-hint={placeholderImages.businessHero.person3.hint}
+                    src={placeholderImages.businessHero.person3.src}
+                    alt="Confident learner"
+                    width={192}
+                    height={192}
+                    className="h-full w-full rounded-xl object-cover"
+                  />
+                </div>
 
-        {/* --- Features Section --- */}
+                {/* Stat Card */}
+                <div className="absolute top-1/3 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 transform animate-float rounded-2xl bg-foreground p-4 text-background shadow-2xl [animation-delay:-0.5s] lg:p-6">
+                  <p className="text-xs lg:text-sm">Active Professionals</p>
+                  <p className="text-2xl font-bold lg:text-4xl">13,422</p>
+                </div>
+                
+                {/* Abstract Shapes */}
+                <div className="absolute top-1/2 right-1/4 h-20 w-20 animate-float rounded-2xl bg-yellow-300 [animation-delay:-2.5s] lg:h-24 lg:w-24"></div>
+                <div className="absolute bottom-10 right-1/2 h-10 w-10 animate-float rounded-full bg-red-500 [animation-delay:-1.5s]"></div>
+                <div className="absolute top-5 left-5 h-5 w-5 animate-float rounded-full border-2 border-foreground [animation-delay:-3s]"></div>
+                
+                {/* Star SVG */}
+                <div className="absolute bottom-1/4 right-1/4 z-10 w-16 h-16 animate-float text-foreground [animation-delay:-0.8s]">
+                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50 0L61.2257 38.7743L100 50L61.2257 61.2257L50 100L38.7743 61.2257L0 50L38.7743 38.7743L50 0Z" stroke="currentColor" strokeWidth="3"/>
+                    </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
         <Features />
 
         {/* --- FAQ Section --- */}
@@ -110,9 +167,9 @@ export default function BusinessPage() {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button asChild size="lg">
-                <Link href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
+                <a href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
                   Apply Now <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
+                </a>
               </Button>
             </div>
           </div>

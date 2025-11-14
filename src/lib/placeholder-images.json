@@ -1,0 +1,16 @@
+{
+  "businessHero": {
+    "person1": {
+      "src": "https://picsum.photos/seed/person-male/160/160",
+      "hint": "professional man"
+    },
+    "person2": {
+      "src": "https://picsum.photos/seed/person-female-1/144/144",
+      "hint": "professional woman"
+    },
+    "person3": {
+      "src": "https://picsum.photos/seed/person-female-2/192/192",
+      "hint": "smiling woman"
+    }
+  }
+}
