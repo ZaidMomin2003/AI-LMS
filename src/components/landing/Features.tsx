@@ -222,7 +222,7 @@ const bentoItems: BentoItem[] = [
     description: "Highlight any term to get a simple, contextual explanation.",
     icon: <Sparkles className="text-primary h-4 w-4" />,
     demo: <ExplainDemo />,
-    colSpan: 1,
+    colSpan: 2,
     rowSpan: 1,
   },
   {
@@ -230,7 +230,7 @@ const bentoItems: BentoItem[] = [
     description: 'Your personal AI tutor, ready to answer any question.',
     icon: <Bot className="text-primary h-4 w-4" />,
     demo: <SageMakerDemo />,
-    colSpan: 2,
+    colSpan: 1,
     rowSpan: 1,
   },
   {
