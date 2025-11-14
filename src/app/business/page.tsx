@@ -4,19 +4,18 @@
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { ArrowRight, Gift, Check, Zap } from 'lucide-react';
-import Link from 'next/link';
+import { ArrowRight, Gift } from 'lucide-react';
 import { Features } from '@/components/landing/Features';
 import Image from 'next/image';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { VolumeCalculator } from '@/components/pricing/VolumeCalculator';
+import { GradientBars } from '@/components/ui/gradient-bars';
 
 const faqs = [
   {
@@ -48,7 +47,7 @@ export default function BusinessPage() {
       <main className="flex-grow">
         {/* --- Hero Section --- */}
         <section className="relative overflow-hidden bg-secondary/30 py-20 lg:py-32">
-          <div className="absolute inset-0 bg-grid-pattern opacity-5" />
+          <GradientBars />
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
               <div className="relative z-10 text-center lg:text-left">
