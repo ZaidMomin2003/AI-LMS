@@ -74,20 +74,6 @@ export function Footer() {
               The ultimate AI-powered toolkit for students and learners. Master any subject, instantly.
             </p>
             <div className="flex items-center gap-2">
-              <div className="flex gap-2">
-                {socialLinks.map(({ icon: Icon, label, href }) => (
-                  <Button
-                    key={label}
-                    size="icon"
-                    variant="outline"
-                    asChild
-                  >
-                    <Link href={href}>
-                      <Icon className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                ))}
-              </div>
               <ThemeToggle />
             </div>
             <form
