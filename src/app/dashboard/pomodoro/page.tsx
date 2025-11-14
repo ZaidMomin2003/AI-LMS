@@ -12,7 +12,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { usePomodoro } from '@/context/PomodoroContext';
-import { Lock, Star, Play, Pause, RotateCcw, Timer as TimerIcon } from 'lucide-react';
+import { Lock, Star, Play, Pause, RotateCcw, Timer as TimerIcon, Expand, Minimize } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -74,10 +74,36 @@ export default function PomodoroPage() {
   const [isActive, setIsActive] = useState(false);
   const [mode, setMode] = useState<TimerMode>('Work');
   const [currentSession, setCurrentSession] = useState(1);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timerContainerRef = useRef<HTMLDivElement>(null);
+
 
   const totalTime = (mode === 'Work' ? (timerConfig?.duration ?? 25) : REST_MINUTES) * 60;
   const progress = ((totalTime - timeLeft) / totalTime) * 100;
+
+   // --- Fullscreen Logic ---
+  const enterFullscreen = () => {
+    if (timerContainerRef.current) {
+        timerContainerRef.current.requestFullscreen();
+    }
+  };
+
+  const exitFullscreen = () => {
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
 
   useEffect(() => {
     if (isActive) {
@@ -144,6 +170,25 @@ export default function PomodoroPage() {
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
+  
+  const renderTimerContent = () => (
+      <>
+        <h2 className="text-xl md:text-2xl font-semibold mt-6">{timerConfig!.topic}</h2>
+        <p className="text-muted-foreground">Session {currentSession} of {timerConfig!.totalSessions}</p>
+        
+        <div className="flex items-center gap-4 mt-8">
+          <Button onClick={() => setIsActive(!isActive)} size="lg" className="w-32">
+            {isActive ? <><Pause className="mr-2" />Pause</> : <><Play className="mr-2" />Resume</>}
+          </Button>
+          <Button onClick={resetTimer} size="lg" variant="outline" className="w-32">
+            <RotateCcw className="mr-2"/>End
+          </Button>
+           <Button onClick={enterFullscreen} size="lg" variant="outline" className="w-32">
+            <Expand className="mr-2"/>Fullscreen
+          </Button>
+        </div>
+      </>
+  );
 
   return (
     <AppLayout>
@@ -231,31 +276,38 @@ export default function PomodoroPage() {
             )}
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center text-center p-4">
-            <div className="relative flex items-center justify-center">
-                <CircularProgress progress={progress} />
-                <div className="absolute flex flex-col items-center justify-center">
-                    <p className="text-7xl md:text-8xl font-bold font-mono text-foreground">
-                    {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-                    </p>
-                    <p className={cn("text-lg font-semibold tracking-widest uppercase", mode === 'Work' ? 'text-primary' : 'text-green-400')}>{mode}</p>
-                </div>
-            </div>
-            
-            <h2 className="text-xl md:text-2xl font-semibold mt-6">{timerConfig.topic}</h2>
-            <p className="text-muted-foreground">Session {currentSession} of {timerConfig.totalSessions}</p>
-            
-            <div className="flex items-center gap-4 mt-8">
-              <Button onClick={() => setIsActive(!isActive)} size="lg" className="w-32">
-                {isActive ? <><Pause className="mr-2" />Pause</> : <><Play className="mr-2" />Resume</>}
-              </Button>
-              <Button onClick={resetTimer} size="lg" variant="outline" className="w-32">
-                <RotateCcw className="mr-2"/>End
-              </Button>
-            </div>
+          <div ref={timerContainerRef} className="flex flex-col items-center justify-center text-center p-4 bg-background">
+              {isFullscreen ? (
+                  <div className="flex flex-col items-center justify-center h-full w-full">
+                      <p className="text-9xl xl:text-[200px] font-bold font-mono text-foreground">
+                          {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                      </p>
+                      <p className={cn("text-2xl font-semibold tracking-widest uppercase", mode === 'Work' ? 'text-primary' : 'text-green-400')}>{mode}</p>
+                      <h2 className="text-3xl font-semibold mt-8">{timerConfig.topic}</h2>
+                      <p className="text-lg text-muted-foreground">Session {currentSession} of {timerConfig.totalSessions}</p>
+                      <Button onClick={exitFullscreen} size="lg" variant="outline" className="mt-12">
+                          <Minimize className="mr-2"/>Exit Fullscreen
+                      </Button>
+                  </div>
+              ) : (
+                <>
+                  <div className="relative flex items-center justify-center">
+                      <CircularProgress progress={progress} />
+                      <div className="absolute flex flex-col items-center justify-center">
+                          <p className="text-7xl md:text-8xl font-bold font-mono text-foreground">
+                          {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                          </p>
+                          <p className={cn("text-lg font-semibold tracking-widest uppercase", mode === 'Work' ? 'text-primary' : 'text-green-400')}>{mode}</p>
+                      </div>
+                  </div>
+                  {renderTimerContent()}
+                </>
+              )}
           </div>
         )}
       </div>
     </AppLayout>
   );
 }
+
+    
