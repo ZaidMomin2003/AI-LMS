@@ -12,6 +12,7 @@ import {
 import { ArrowRight, Check, DollarSign, Gift, Zap } from 'lucide-react';
 import Link from 'next/link';
 import { Features } from '@/components/landing/Features';
+import Image from 'next/image';
 
 const faqs = [
   {
@@ -42,35 +43,28 @@ export default function BusinessPage() {
       <Header />
       <main className="flex-grow">
         {/* --- Hero Section --- */}
-        <section className="relative overflow-hidden bg-secondary/50 py-20 md:py-32">
-          <div className="absolute inset-0 z-0 opacity-20 bg-grid-pattern"></div>
-          <div className="absolute inset-0 z-10 bg-gradient-to-b from-secondary/30 via-secondary/70 to-secondary/50"></div>
-          <div className="container relative z-20 mx-auto px-4 text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl font-headline">
-              Partner with Wisdom
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-              Join our mission to make learning smarter, not harder. Earn by
-              sharing the most advanced AI-powered study toolkit with your
-              audience.
-            </p>
-            <Card className="mx-auto mt-10 inline-flex flex-col items-center gap-4 rounded-2xl bg-card/80 p-8 shadow-2xl backdrop-blur-sm">
-              <div className="flex items-baseline font-bold text-primary">
-                <span className="text-7xl font-headline">$39</span>
-              </div>
-              <p className="text-lg font-medium text-muted-foreground">
-                Commission Per Successful Referral
-              </p>
-            </Card>
-            <div className="mt-10">
-              <Button asChild size="lg">
-                <Link href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
-                  Become a Partner <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+        <section className="bg-secondary/50 py-10 sm:py-16 lg:py-24">
+         <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+             <div class="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
+                 <div>
+                     <p class="text-base font-semibold tracking-wider text-primary uppercase">Become a Wisdom Partner</p>
+                     <h1 class="mt-4 text-4xl font-bold text-foreground lg:mt-8 sm:text-6xl xl:text-8xl font-headline">Connect & Grow With Us</h1>
+                     <p class="mt-4 text-base text-muted-foreground lg:mt-8 sm:text-xl">Share the future of learning and earn commissions.</p>
+
+                      <a href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer" title="" class="inline-flex items-center px-6 py-4 mt-8 font-semibold text-primary-foreground transition-all duration-200 bg-primary rounded-full lg:mt-16 hover:bg-primary/90 focus:bg-primary/90" role="button">
+                         Become a Partner
+                         <ArrowRight className="w-6 h-6 ml-8 -mr-2" />
+                     </a>
+
+                     <p class="mt-5 text-muted-foreground">Already a partner? <a href="/login" title="" class="text-foreground transition-all duration-200 hover:underline">Log in</a></p>
+                 </div>
+
+                 <div>
+                     <Image data-ai-hint="office laptop" class="w-full" width={600} height={600} src="https://picsum.photos/seed/business-hero/600/600" alt="Team working on laptops" />
+                 </div>
+             </div>
+         </div>
+     </section>
 
         {/* --- Features Section --- */}
         <Features />
