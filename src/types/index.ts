@@ -19,9 +19,11 @@ export interface QuizQuestion {
 export interface StudyNotes {
   introduction: string;
   coreConcepts: string;
-  examples: string;
-  keyFormulas: string;
-  keyTerms: string;
+  keyVocabulary: string;
+  keyDefinitions: string;
+  keyFormulasOrPoints: string;
+  summary: string;
+  exampleWithExplanation: string;
 }
 
 export interface Topic {
@@ -67,5 +69,3 @@ export interface PomodoroSession {
   sessions: number;
   completedAt: string;
 }
-
-    
