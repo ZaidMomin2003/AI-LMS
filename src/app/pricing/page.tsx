@@ -332,6 +332,23 @@ const PricingContent = () => {
                 theme: {
                     color: '#4B0082',
                 },
+                config: {
+                    display: {
+                        blocks: {
+                            banks: {
+                                name: 'Pay using UPI & Bank Transfer',
+                                instruments: [
+                                    { method: 'upi' },
+                                    { method: 'netbanking' },
+                                ],
+                            },
+                        },
+                        sequence: ['block.banks'],
+                        preferences: {
+                            show_default_blocks: true,
+                        },
+                    },
+                },
             };
             
             // @ts-ignore
@@ -425,5 +442,7 @@ export default function PricingPage() {
     </div>
   );
 }
+
+    
 
     
