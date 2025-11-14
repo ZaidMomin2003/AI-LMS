@@ -12,7 +12,6 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
-import { createRazorpayOrder } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
@@ -175,25 +174,15 @@ const PricingFeatures = ({ features, isHighlighted, className }: PricingFeatures
 interface PricingCardProps
   extends React.ComponentPropsWithoutRef<typeof motion.div> {
   plan: PricingPlan;
-  onCtaClick: (amount: number, priceId: string) => void;
-  isLoading: string | null;
 }
 
 const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
-  ({ plan, onCtaClick, isLoading, className, ...props }, ref) => {
+  ({ plan, className, ...props }, ref) => {
     const [selectedTierId, setSelectedTierId] = useState(plan.tiers ? plan.tiers[0].id : null);
 
     const selectedTier = useMemo(() => {
         return plan.tiers?.find(t => t.id === selectedTierId);
     }, [plan.tiers, selectedTierId]);
-
-    const handleCta = () => {
-        if (selectedTier) {
-            onCtaClick(selectedTier.amount, selectedTier.id);
-        }
-    };
-    
-    const isCardLoading = isLoading === (selectedTier?.id || plan.priceId);
 
     return (
       <motion.div
@@ -256,9 +245,8 @@ const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
               <Link href={plan.href}>{plan.buttonText}</Link>
             </Button>
           ) : (
-             <Button onClick={handleCta} className="w-full" variant={plan.highlight ? 'secondary': 'default'} disabled={isCardLoading}>
-                {isCardLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {plan.buttonText}
+             <Button asChild className="w-full" variant={plan.highlight ? 'secondary': 'default'}>
+                <Link href="/#contact">{plan.buttonText}</Link>
             </Button>
           )}
         </div>
@@ -270,90 +258,8 @@ PricingCard.displayName = 'PricingCard';
 
 
 const PricingContent = () => {
-    const { user } = useAuth();
-    const { toast } = useToast();
-    const [isLoading, setIsLoading] = useState<string | null>(null);
-
-    const handlePayment = async (amount: number, priceId: string) => {
-        if (!user) {
-            toast({
-                variant: 'destructive',
-                title: 'Authentication Error',
-                description: 'You must be logged in to subscribe.',
-            });
-            return;
-        }
-
-        setIsLoading(priceId);
-
-        try {
-            const order = await createRazorpayOrder(amount, user.uid, priceId);
-            
-            const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                amount: order.amount,
-                currency: order.currency,
-                name: 'wisdom',
-                description: 'Sage Mode Subscription',
-                order_id: order.id,
-                handler: async function (response: any) {
-                    const verificationData = {
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_signature: response.razorpay_signature,
-                        uid: user.uid,
-                        priceId: priceId,
-                    };
-                    
-                    const result = await fetch("/api/razorpay/verify", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(verificationData),
-                    }).then(res => res.json());
-
-                    if (result.success) {
-                         toast({
-                            title: 'Payment Successful!',
-                            description: 'Sage Mode Activated. Your plan is now active.',
-                        });
-                    } else {
-                         toast({
-                            variant: 'destructive',
-                            title: 'Verification Failed',
-                            description: result.message || 'Could not verify your payment. Please contact support.',
-                        });
-                    }
-                },
-                prefill: {
-                    name: user.displayName || 'wisdom User',
-                    email: user.email || '',
-                },
-                theme: {
-                    color: '#4B0082',
-                },
-            };
-            
-            // @ts-ignore
-            const rzp = new window.Razorpay(options);
-            rzp.open();
-        
-        } catch (error: any) {
-            toast({
-                variant: 'destructive',
-                title: 'Payment Error',
-                description: error.message || 'Could not initiate payment. Please try again.',
-            });
-        } finally {
-            setIsLoading(null);
-        }
-    };
-    
     return (
         <>
-        <Script
-            id="razorpay-checkout-js"
-            src="https://checkout.razorpay.com/v1/checkout.js"
-        />
         <section id="pricing" className="relative w-full overflow-hidden py-20 sm:py-32">
              <div className="absolute inset-0 -z-10 flex items-center justify-center">
                 <h1 className="text-center text-9xl md:text-[200px] font-bold text-foreground/5 pointer-events-none">
@@ -382,8 +288,6 @@ const PricingContent = () => {
                             key={plan.name} 
                             variants={itemVariants}
                             plan={plan as PricingPlan}
-                            onCtaClick={(amount, priceId) => handlePayment(amount, priceId)}
-                            isLoading={isLoading}
                         />
                     ))}
                 </motion.div>
@@ -424,5 +328,3 @@ export default function PricingPage() {
     </div>
   );
 }
-
-    
