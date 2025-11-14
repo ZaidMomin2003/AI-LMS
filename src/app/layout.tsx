@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
 export const metadata: Metadata = {
-  title: "Wisdomis Fun",
+  title: "wisdom",
   description: "Your personal AI-powered study assistant.",
   icons: {
     icon: "/favicon.svg",

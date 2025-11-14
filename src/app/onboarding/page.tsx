@@ -40,7 +40,7 @@ export default function OnboardingPage() {
                 <div className="absolute top-8 left-8">
                     <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-headline">
                         <BookOpenCheck className="h-6 w-6 text-primary" />
-                        <span>Wisdomis Fun</span>
+                        <span>wisdom</span>
                     </Link>
                 </div>
                 <div className="w-full max-w-2xl">

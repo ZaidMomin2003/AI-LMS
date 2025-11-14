@@ -55,7 +55,7 @@ export default function BusinessPage() {
           <div className="absolute inset-0 z-10 bg-gradient-to-b from-secondary/30 via-secondary/70 to-secondary/50"></div>
           <div className="container relative z-20 mx-auto px-4 text-center">
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl font-headline">
-              Partner with Wisdomis Fun
+              Partner with wisdom
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
               Join our mission to make learning smarter, not harder. Earn by
@@ -91,7 +91,7 @@ export default function BusinessPage() {
                 A Product Your Audience Will Love
               </p>
               <p className="mt-6 text-lg leading-8 text-muted-foreground">
-                Wisdomis Fun is packed with cutting-edge features that solve
+                wisdom is packed with cutting-edge features that solve
                 real problems for students and learners, making it a valuable
                 recommendation.
               </p>

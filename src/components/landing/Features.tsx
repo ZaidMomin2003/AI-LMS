@@ -276,7 +276,7 @@ export function Features() {
             A Toolkit for Total Understanding
           </p>
           <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            Wisdomis Fun deconstructs any topic into the core components you need to truly learn it, not just memorize it.
+            wisdom deconstructs any topic into the core components you need to truly learn it, not just memorize it.
           </p>
         </div>
 

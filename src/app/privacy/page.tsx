@@ -19,7 +19,7 @@ export default function PrivacyPage() {
                         <p className="text-muted-foreground mt-2">Last updated: {lastUpdated}</p>
                     </div>
                     <div className="prose prose-invert max-w-none bg-card p-8 md:p-12 rounded-2xl border border-border/50 shadow-lg">
-                        <p>Wisdomis Fun ("us", "we", or "our") operates the https://wisdomis.fun website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
+                        <p>wisdom ("us", "we", or "our") operates the https://wisdomis.fun website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
 
                         <h2>1. Information Collection and Use</h2>
                         <p>We collect several different types of information for various purposes to provide and improve our Service to you.</p>
@@ -32,7 +32,7 @@ export default function PrivacyPage() {
                         </ul>
 
                         <h2>2. Use of Data</h2>
-                        <p>Wisdomis Fun uses the collected data for various purposes:</p>
+                        <p>wisdom uses the collected data for various purposes:</p>
                         <ul>
                             <li>To provide and maintain the Service</li>
                             <li>To notify you about changes to our Service</li>

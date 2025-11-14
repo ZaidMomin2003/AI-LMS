@@ -50,7 +50,7 @@ export function UseCases() {
               Adaptable to Any Learning Need
             </h3>
             <p className="text-muted-foreground mt-3">
-              Whether you're studying for an exam, skilling up for work, or just satisfying your curiosity, Wisdomis Fun is your personal learning assistant.
+              Whether you're studying for an exam, skilling up for work, or just satisfying your curiosity, wisdom is your personal learning assistant.
             </p>
           </div>
         </div>

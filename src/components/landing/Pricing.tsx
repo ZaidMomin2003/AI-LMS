@@ -318,7 +318,7 @@ const ValueComparison = () => (
                     All Your Study Tools in One Place
                 </h2>
                 <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                    Getting all these features separately would be a hassle—and expensive. Wisdomis Fun bundles everything you need into one powerful, affordable platform.
+                    Getting all these features separately would be a hassle—and expensive. wisdom bundles everything you need into one powerful, affordable platform.
                 </p>
             </div>
             
@@ -342,11 +342,11 @@ const ValueComparison = () => (
                     </CardContent>
                 </Card>
 
-                {/* The Wisdomis Fun Way & Cost */}
+                {/* The wisdom Way & Cost */}
                 <div className="space-y-8">
                     <Card className="bg-primary text-primary-foreground p-6 rounded-2xl shadow-2xl shadow-primary/30">
                         <CardContent className="p-0">
-                            <h3 className="font-headline text-xl font-bold flex items-center gap-2"><Sparkles className="w-5 h-5"/> The Wisdomis Fun Way</h3>
+                            <h3 className="font-headline text-xl font-bold flex items-center gap-2"><Sparkles className="w-5 h-5"/> The wisdom Way</h3>
                             <p className="text-primary-foreground/80 text-sm mt-1 mb-6">Everything included. One simple plan.</p>
                              <ul className="space-y-3">
                                 {wisdomisWayFeatures.map(feature => (
@@ -372,7 +372,7 @@ const ValueComparison = () => (
                                 </div>
                             </div>
                             <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                                With Wisdomis Fun, you get a comprehensive, all-in-one platform for a fraction of the cost.
+                                With wisdom, you get a comprehensive, all-in-one platform for a fraction of the cost.
                             </p>
                         </CardContent>
                     </Card>

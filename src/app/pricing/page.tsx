@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
-import { createRazorpayOrder } from './actions';
+import { createRazorpayOrder, verifyRazorpayPayment } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
@@ -296,44 +296,32 @@ const PricingContent = () => {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
                 amount: order.amount,
                 currency: order.currency,
-                name: 'Wisdomis Fun',
+                name: 'wisdom',
                 description: 'Sage Mode Subscription',
                 order_id: order.id,
                 callback_url: "/api/razorpay/verify",
                 handler: async function (response: any) {
-                    // This handler is a fallback. The main verification is via callback_url.
-                    // But we can use it to optimistically update the UI.
-                    const now = new Date();
-                    let expiryDate = new Date(now);
-
-                    if (priceId === 'SAGE_MODE_YEARLY') {
-                        expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-                    } else if (priceId === 'SAGE_MODE_6_MONTHS') {
-                        expiryDate.setMonth(expiryDate.getMonth() + 6);
-                    } else if (priceId === 'SAGE_MODE_3_MONTHS') {
-                        expiryDate.setMonth(expiryDate.getMonth() + 3);
-                    }
-
-                    const subscriptionData: UserSubscription = {
-                        planName: 'Sage Mode',
-                        status: 'active',
+                    // This handler is a fallback for client-side confirmation.
+                    // The main verification is via the robust server-side callback_url.
+                    const verificationData = {
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
+                        uid: user.uid,
                         priceId: priceId,
-                        paymentId: response.razorpay_payment_id,
-                        orderId: response.razorpay_order_id,
-                        expiresAt: expiryDate.toISOString(),
                     };
-
-                    if (isFirebaseEnabled) {
-                        await updateUserDoc(user.uid, { subscription: subscriptionData });
-                    }
                     
-                    toast({
-                        title: 'Payment Successful!',
-                        description: 'Welcome to Sage Mode! Your subscription is now active.',
-                    });
+                    const result = await verifyRazorpayPayment(verificationData);
+
+                    if (result.success) {
+                         toast({
+                            title: 'Payment Successful!',
+                            description: 'Welcome to Sage Mode! Your subscription is updating.',
+                        });
+                    }
                 },
                 prefill: {
-                    name: user.displayName || 'Wisdomis Fun User',
+                    name: user.displayName || 'wisdom User',
                     email: user.email || '',
                 },
                 theme: {

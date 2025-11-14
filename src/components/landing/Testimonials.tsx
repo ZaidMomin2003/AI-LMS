@@ -10,7 +10,7 @@ import { Quote } from 'lucide-react';
 
 const originalTestimonials = [
   {
-    quote: "My AP Bio notes were a mess. One click and Wisdomis Fun organized everything into notes and flashcards. I actually understand cellular respiration now!",
+    quote: "My AP Bio notes were a mess. One click and wisdom organized everything into notes and flashcards. I actually understand cellular respiration now!",
     name: 'Maya R.',
     handle: 'High School Junior',
   },
@@ -116,7 +116,7 @@ interface TestimonialProps {
 export function Testimonials({
   testimonials = adaptedTestimonials,
   title = 'Loved by Learners Worldwide',
-  subtitle = 'See how students and professionals are transforming their study habits and acing their goals with Wisdomis Fun.',
+  subtitle = 'See how students and professionals are transforming their study habits and acing their goals with wisdom.',
   autoplaySpeed = 3000,
   className,
 }: TestimonialProps) {

@@ -20,7 +20,7 @@ export function CTA() {
 
             <div className="relative z-10">
                 <h1 className="mb-3 text-3xl font-bold text-primary-foreground sm:text-4xl md:mb-4 md:text-5xl font-headline">
-                    Get Started with Wisdomis Fun Today
+                    Get Started with wisdom Today
                 </h1>
                 <p className="mb-6 max-w-md text-base text-primary-foreground/90 sm:text-lg md:mb-8">
                     Join the first 100 users and get 50% off your first subscription. Plus, every new account gets a free trial on us.

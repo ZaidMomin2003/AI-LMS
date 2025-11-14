@@ -45,7 +45,7 @@ export default function AdminLoginPage() {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
              <BookOpenCheck className="h-8 w-8 text-primary" />
-             <span className="text-2xl font-bold font-headline">Wisdomis Fun</span>
+             <span className="text-2xl font-bold font-headline">wisdom</span>
           </div>
           <CardTitle className="text-2xl font-headline">Admin Portal</CardTitle>
           <CardDescription>Enter your admin credentials to access the dashboard.</CardDescription>

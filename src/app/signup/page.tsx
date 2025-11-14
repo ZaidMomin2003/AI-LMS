@@ -22,7 +22,7 @@ const testimonials = [
       handle: "University Freshman"
     },
     {
-        quote: "I was skeptical about AI for studying, but Wisdomis Fun proved me wrong. It's like having a personal tutor available 24/7.",
+        quote: "I was skeptical about AI for studying, but wisdom proved me wrong. It's like having a personal tutor available 24/7.",
         name: "David Smith",
         handle: "Medical Student"
     },
@@ -55,7 +55,7 @@ export default function SignUpPage() {
           <div className="absolute top-8 left-8 z-10">
               <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-headline text-foreground">
                   <BookOpenCheck className="h-6 w-6 text-primary" />
-                  <span>Wisdomis Fun</span>
+                  <span>wisdom</span>
               </Link>
           </div>
         <div className="mx-auto grid w-full max-w-sm gap-6">

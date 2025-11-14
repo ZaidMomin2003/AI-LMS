@@ -7,15 +7,15 @@ import {
 
 const faqs = [
   {
-    question: "What is Wisdomis Fun?",
-    answer: "Wisdomis Fun is an AI-powered learning platform designed to accelerate your study process. It automatically generates comprehensive study notes, interactive flashcards, and quizzes on any topic you provide.",
+    question: "What is wisdom?",
+    answer: "wisdom is an AI-powered learning platform designed to accelerate your study process. It automatically generates comprehensive study notes, interactive flashcards, and quizzes on any topic you provide.",
   },
   {
-    question: "Who is Wisdomis Fun for?",
+    question: "Who is wisdom for?",
     answer: "It's for anyone who wants to learn more effectively. This includes students, professionals brushing up on new skills, lifelong learners, and anyone curious about a new subject.",
   },
   {
-    question: "Is Wisdomis Fun free to use?",
+    question: "Is wisdom free to use?",
     answer: "Yes, we offer a free plan for you to try our services before committing to a paid subscription. The free plan allows you to generate materials for one topic.",
   },
   {
