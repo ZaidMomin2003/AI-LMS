@@ -1,4 +1,6 @@
 
+'use client';
+
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Button } from '@/components/ui/button';
@@ -14,6 +16,7 @@ import Link from 'next/link';
 import { Features } from '@/components/landing/Features';
 import Image from 'next/image';
 import placeholderImages from '@/lib/placeholder-images.json';
+import { VolumeCalculator } from '@/components/pricing/VolumeCalculator';
 
 const faqs = [
   {
@@ -125,6 +128,9 @@ export default function BusinessPage() {
         </section>
         
         <Features />
+
+        {/* --- Volume Discount Calculator --- */}
+        <VolumeCalculator />
 
         {/* --- FAQ Section --- */}
         <section className="bg-secondary/50 py-20 sm:py-24">
