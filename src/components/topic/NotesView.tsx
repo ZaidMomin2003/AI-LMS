@@ -5,12 +5,13 @@ import type { StudyNotes } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '../ui/scroll-area';
 import { MarkdownRenderer } from '../MarkdownRenderer';
-import { BookOpen, List, FlaskConical, Beaker, Lightbulb, FileText, Sparkles, Loader2 } from 'lucide-react';
+import { BookOpen, List, FlaskConical, Beaker, Lightbulb, FileText, Sparkles, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import React, { useRef, useState, useEffect } from 'react';
 import { explainTextAction } from '@/app/topic/[id]/actions';
 import { useToast } from '@/hooks/use-toast';
+import { Button } from '../ui/button';
 
 interface NotesViewProps {
   notes: StudyNotes;
@@ -51,10 +52,10 @@ export function NotesView({ notes }: NotesViewProps) {
   const [selectedText, setSelectedText] = useState('');
   const [explanation, setExplanation] = useState('');
   const [isLoadingExplanation, setIsLoadingExplanation] = useState(false);
-  const [popoverTarget, setPopoverTarget] = useState<EventTarget | null>(null);
+  const [popoverTarget, setPopoverTarget] = useState<HTMLElement | null>(null);
   const { toast } = useToast();
   const notesViewRef = useRef<HTMLDivElement>(null);
-
+  const virtualRef = useRef<HTMLDivElement>(null);
 
   const fullNoteText = React.useMemo(() => {
     if (!notes) return '';
@@ -63,24 +64,24 @@ export function NotesView({ notes }: NotesViewProps) {
   }, [notes]);
 
   const handleTextSelection = async () => {
-    if (!notesViewRef.current) return;
+    if (!notesViewRef.current || !virtualRef.current) return;
 
     const selection = window.getSelection();
     const text = selection?.toString().trim();
 
     if (text && text.length > 2 && text.length < 300) {
-       // Check if the selection happened inside our component
       if (selection.anchorNode && notesViewRef.current.contains(selection.anchorNode.parentElement)) {
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
         
-        // Create a virtual element for the Popover to target
-        const virtualEl = {
-            getBoundingClientRect: () => rect,
-        };
+        // Position the virtual element to act as the Popover anchor
+        virtualRef.current.style.position = 'fixed';
+        virtualRef.current.style.top = `${rect.top}px`;
+        virtualRef.current.style.left = `${rect.left}px`;
+        virtualRef.current.style.width = `${rect.width}px`;
+        virtualRef.current.style.height = `${rect.height}px`;
 
-        // @ts-ignore
-        setPopoverTarget(virtualEl);
+        setPopoverTarget(virtualRef.current);
         setSelectedText(text);
         setPopoverOpen(true);
         setIsLoadingExplanation(true);
@@ -109,16 +110,12 @@ export function NotesView({ notes }: NotesViewProps) {
   
   useEffect(() => {
     const currentRef = notesViewRef.current;
-    if (currentRef) {
-        currentRef.addEventListener('mouseup', handleTextSelection);
-        currentRef.addEventListener('touchend', handleTextSelection);
-    }
+    document.addEventListener('mouseup', handleTextSelection);
+    document.addEventListener('touchend', handleTextSelection);
     
     return () => {
-        if (currentRef) {
-            currentRef.removeEventListener('mouseup', handleTextSelection);
-            currentRef.removeEventListener('touchend', handleTextSelection);
-        }
+        document.removeEventListener('mouseup', handleTextSelection);
+        document.removeEventListener('touchend', handleTextSelection);
     }
   }, [notesViewRef, fullNoteText]);
 
@@ -134,85 +131,85 @@ export function NotesView({ notes }: NotesViewProps) {
   }
 
   return (
-    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger asChild>
-        {/* The entire notes area is now the trigger context, but the popover is controlled manually */}
-        <div className="cursor-text" ref={notesViewRef}>
-            <ScrollArea className="h-[calc(100vh-200px)]">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
-                    {/* Left Column */}
-                    <div className="lg:col-span-2 space-y-4">
-                        <NoteSection 
-                            title="Introduction" 
-                            content={notes.introduction} 
-                            icon={BookOpen}
-                        />
-                        <NoteSection 
-                            title="Core Concepts" 
-                            content={notes.coreConcepts} 
-                            icon={FileText}
-                        />
-                        <NoteSection 
-                            title="Summary" 
-                            content={notes.summary} 
-                            icon={Lightbulb}
-                        />
-                    </div>
-                    
-                    {/* Right Column */}
-                    <div className="lg:col-span-1 space-y-4">
-                        <NoteSection 
-                            title="Key Vocabulary" 
-                            content={notes.keyVocabulary} 
-                            icon={List}
-                        />
-                        <NoteSection 
-                            title="Key Definitions" 
-                            content={notes.keyDefinitions} 
-                            icon={List}
-                        />
-                        <NoteSection 
-                            title="Formulas & Points" 
-                            content={notes.keyFormulasOrPoints} 
-                            icon={FlaskConical}
-                        />
-                        <NoteSection 
-                            title="Example" 
-                            content={notes.exampleWithExplanation} 
-                            icon={Beaker}
-                        />
-                    </div>
-                </div>
-            </ScrollArea>
-        </div>
-      </PopoverTrigger>
-      <PopoverContent className="w-80 shadow-2xl" align="start"
-        // This is the key part for dynamic positioning.
-        // Radix UI's Popover will automatically place it relative to the target.
-        // @ts-ignore
-        sideOffset={8} collisionPadding={8}
-      >
-        <div className="space-y-2">
-          <h4 className="font-medium leading-none flex items-center gap-2 font-headline">
-            <Sparkles className="w-5 h-5 text-primary"/>
-            Explanation
-          </h4>
-          <p className="text-sm text-muted-foreground italic">For: "{selectedText}"</p>
-          <div className="pt-2">
-            {isLoadingExplanation ? (
-                <div className="flex items-center justify-center h-20">
-                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                </div>
-            ) : (
-                <ScrollArea className="max-h-60 pr-4">
-                    <div className="prose prose-sm prose-invert max-w-none text-foreground">
-                        <MarkdownRenderer content={explanation} />
-                    </div>
-                </ScrollArea>
-            )}
+    <>
+      <div ref={virtualRef} style={{ pointerEvents: 'none' }}></div>
+      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <PopoverTrigger asChild>
+          <div className="cursor-text" ref={notesViewRef}>
+              <ScrollArea className="h-[calc(100vh-200px)]">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
+                      {/* Left Column */}
+                      <div className="lg:col-span-2 space-y-4">
+                          <NoteSection 
+                              title="Introduction" 
+                              content={notes.introduction} 
+                              icon={BookOpen}
+                          />
+                          <NoteSection 
+                              title="Core Concepts" 
+                              content={notes.coreConcepts} 
+                              icon={FileText}
+                          />
+                          <NoteSection 
+                              title="Summary" 
+                              content={notes.summary} 
+                              icon={Lightbulb}
+                          />
+                      </div>
+                      
+                      {/* Right Column */}
+                      <div className="lg:col-span-1 space-y-4">
+                          <NoteSection 
+                              title="Key Vocabulary" 
+                              content={notes.keyVocabulary} 
+                              icon={List}
+                          />
+                          <NoteSection 
+                              title="Key Definitions" 
+                              content={notes.keyDefinitions} 
+                              icon={List}
+                          />
+                          <NoteSection 
+                              title="Formulas & Points" 
+                              content={notes.keyFormulasOrPoints} 
+                              icon={FlaskConical}
+                          />
+                          <NoteSection 
+                              title="Example" 
+                              content={notes.exampleWithExplanation} 
+                              icon={Beaker}
+                          />
+                      </div>
+                  </div>
+              </ScrollArea>
           </div>
-        </div>
-      </PopoverContent>
-    </Popover>
+        </PopoverTrigger>
+        <PopoverContent className="w-80 shadow-2xl" side="right" align="start" sideOffset={8}>
+            <div className="space-y-2 relative">
+                <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
+                    <X className="w-4 h-4"/>
+                </Button>
+                <h4 className="font-medium leading-none flex items-center gap-2 font-headline">
+                    <Sparkles className="w-5 h-5 text-primary"/>
+                    Explanation
+                </h4>
+                <p className="text-sm text-muted-foreground italic truncate">For: "{selectedText}"</p>
+                <div className="pt-2">
+                    {isLoadingExplanation ? (
+                        <div className="flex items-center justify-center h-20">
+                            <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                        </div>
+                    ) : (
+                        <ScrollArea className="h-full max-h-60 pr-4">
+                            <div className="prose prose-sm prose-invert max-w-none text-foreground">
+                                <MarkdownRenderer content={explanation} />
+                            </div>
+                        </ScrollArea>
+                    )}
+                </div>
+            </div>
+        </PopoverContent>
+      </Popover>
+    </>
   );
 }
