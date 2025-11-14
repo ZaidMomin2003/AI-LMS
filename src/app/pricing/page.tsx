@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { upgradeSubscriptionAction } from './actions';
+import { upgradeSubscriptionAction, downgradeToHobbyAction } from './actions';
 import { useSubscription } from '@/context/SubscriptionContext';
 
 
@@ -178,10 +178,13 @@ interface PricingCardProps
   plan: PricingPlan;
   onCtaClick: (priceId: string) => void;
   isLoading: string | null;
+  onDowngradeClick?: () => void;
+  isDowngradeLoading?: boolean;
+  showDowngrade?: boolean;
 }
 
 const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
-  ({ plan, onCtaClick, isLoading, className, ...props }, ref) => {
+  ({ plan, onCtaClick, isLoading, onDowngradeClick, isDowngradeLoading, showDowngrade, className, ...props }, ref) => {
     const [selectedTierId, setSelectedTierId] = useState(plan.tiers ? plan.tiers[0].id : null);
 
     const selectedTier = useMemo(() => {
@@ -252,7 +255,12 @@ const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
           <PricingFeatures features={plan.features} isHighlighted={plan.highlight} />
         </div>
         <div className="relative">
-          {plan.href ? (
+          {showDowngrade ? (
+              <Button onClick={onDowngradeClick} className="w-full" variant="outline" disabled={isDowngradeLoading}>
+                  {isDowngradeLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Switch to Free Trial
+              </Button>
+          ) : plan.href ? (
             <Button asChild className="w-full" variant={plan.highlight ? 'secondary' : 'default'}>
               <Link href={plan.href}>{plan.buttonText}</Link>
             </Button>
@@ -272,9 +280,10 @@ PricingCard.displayName = 'PricingCard';
 
 const PricingContent = () => {
     const { user } = useAuth();
-    const { setSubscription } = useSubscription();
+    const { subscription, setSubscription } = useSubscription();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState<string | null>(null);
+    const [isDowngradeLoading, setIsDowngradeLoading] = useState(false);
 
     const handleMockUpgrade = async (priceId: string) => {
         if (!user) {
@@ -331,6 +340,28 @@ const PricingContent = () => {
         }
     };
     
+    const handleDowngrade = async () => {
+        if (!user) return;
+        
+        setIsDowngradeLoading(true);
+        try {
+            const result = await downgradeToHobbyAction(user.uid);
+            if (result.success) {
+                setSubscription({ planName: 'Hobby', status: 'active' });
+                toast({
+                    title: 'Plan Changed',
+                    description: "You've been switched to the Hobby plan.",
+                });
+            } else {
+                toast({ variant: 'destructive', title: 'Update Failed' });
+            }
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'An error occurred' });
+        } finally {
+            setIsDowngradeLoading(false);
+        }
+    };
+    
     return (
         <>
         <Script
@@ -367,6 +398,9 @@ const PricingContent = () => {
                             plan={plan as PricingPlan}
                             onCtaClick={handleMockUpgrade}
                             isLoading={isLoading}
+                            onDowngradeClick={handleDowngrade}
+                            isDowngradeLoading={isDowngradeLoading}
+                            showDowngrade={plan.name === 'Hobby' && subscription?.planName === 'Sage Mode'}
                         />
                     ))}
                 </motion.div>

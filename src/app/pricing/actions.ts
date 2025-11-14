@@ -6,9 +6,6 @@ import { updateUserDoc } from '@/services/firestore';
 import type { UserSubscription } from '@/types';
 import { isFirebaseEnabled } from '@/lib/firebase';
 
-// This file is intentionally left empty as the Razorpay integration has been removed.
-// This file can be used for other pricing-related server actions in the future.
-
 export async function upgradeSubscriptionAction(uid: string, priceId: string): Promise<{ success: boolean }> {
     if (!uid || !isFirebaseEnabled) {
         return { success: false };
@@ -40,6 +37,25 @@ export async function upgradeSubscriptionAction(uid: string, priceId: string): P
         return { success: true };
     } catch (error) {
         console.error("Error upgrading subscription:", error);
+        return { success: false };
+    }
+}
+
+export async function downgradeToHobbyAction(uid: string): Promise<{ success: boolean }> {
+    if (!uid || !isFirebaseEnabled) {
+        return { success: false };
+    }
+    
+    const hobbySubscription: UserSubscription = {
+        planName: 'Hobby',
+        status: 'active',
+    };
+
+    try {
+        await updateUserDoc(uid, { subscription: hobbySubscription });
+        return { success: true };
+    } catch (error) {
+        console.error("Error downgrading to Hobby plan:", error);
         return { success: false };
     }
 }
