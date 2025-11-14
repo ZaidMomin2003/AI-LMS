@@ -7,8 +7,8 @@ import { ScrollArea } from '../ui/scroll-area';
 import { MathRenderer } from '../MathRenderer';
 import { BookOpen, List, FlaskConical, Beaker, Lightbulb, FileText, Sparkles, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverContent } from '../ui/popover';
-import React, { useRef, useState, useEffect } from 'react';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import React, from 'react';
 import { explainTextAction } from '@/app/topic/[id]/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '../ui/button';
@@ -48,14 +48,14 @@ const NoteSection = ({
 }
 
 export function NotesView({ notes }: NotesViewProps) {
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  const [selectedText, setSelectedText] = useState('');
-  const [explanation, setExplanation] = useState('');
-  const [isLoadingExplanation, setIsLoadingExplanation] = useState(false);
+  const [popoverOpen, setPopoverOpen] = React.useState(false);
+  const [selectedText, setSelectedText] = React.useState('');
+  const [explanation, setExplanation] = React.useState('');
+  const [isLoadingExplanation, setIsLoadingExplanation] = React.useState(false);
   const { toast } = useToast();
-  const notesViewRef = useRef<HTMLDivElement>(null);
+  const notesViewRef = React.useRef<HTMLDivElement>(null);
   
-  const [virtualRef, setVirtualRef] = useState<{ getBoundingClientRect: () => DOMRect } | null>(null);
+  const virtualRef = React.useRef<{ getBoundingClientRect: () => DOMRect } | null>(null);
 
   const fullNoteText = React.useMemo(() => {
     if (!notes) return '';
@@ -72,9 +72,9 @@ export function NotesView({ notes }: NotesViewProps) {
 
       if (notesViewRef.current && parentElement && notesViewRef.current.contains(parentElement)) {
         
-        setVirtualRef({
+        virtualRef.current = {
           getBoundingClientRect: () => range.getBoundingClientRect(),
-        });
+        };
         
         setSelectedText(text);
         setPopoverOpen(true);
@@ -102,7 +102,7 @@ export function NotesView({ notes }: NotesViewProps) {
     }
   };
   
-  useEffect(() => {
+  React.useEffect(() => {
     const handleMouseUp = () => handleTextSelection();
     const notesRef = notesViewRef.current;
     notesRef?.addEventListener('mouseup', handleMouseUp);
@@ -126,6 +126,9 @@ export function NotesView({ notes }: NotesViewProps) {
   return (
     <>
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <PopoverTrigger asChild>
+            <div ref={virtualRef as any}></div>
+        </PopoverTrigger>
         <div className="cursor-text" ref={notesViewRef}>
             <ScrollArea className="h-[calc(100vh-200px)]">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
@@ -174,7 +177,7 @@ export function NotesView({ notes }: NotesViewProps) {
                 </div>
             </ScrollArea>
         </div>
-        <PopoverContent className="w-80 shadow-2xl" sideOffset={8} anchor={virtualRef}>
+        <PopoverContent className="w-80 shadow-2xl" sideOffset={8} anchor={virtualRef.current}>
             <div className="space-y-2 relative">
                 <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
                     <X className="w-4 h-4"/>

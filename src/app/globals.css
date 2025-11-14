@@ -75,4 +75,21 @@
   .react-pdf__Page__canvas {
       margin: 0 auto;
   }
+  .prose {
+    h2 {
+        @apply text-3xl font-bold font-headline mb-4;
+    }
+    h3 {
+        @apply text-2xl font-bold font-headline mb-3;
+    }
+    p, ul {
+        @apply mb-4;
+    }
+    li {
+        @apply my-2;
+    }
+    strong {
+        @apply text-foreground;
+    }
+  }
 }
