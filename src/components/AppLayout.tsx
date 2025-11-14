@@ -28,7 +28,6 @@ import {
   BookOpenCheck,
   LayoutDashboard,
   LogOut,
-  Loader2,
   Zap,
   BarChart,
   Bot,
@@ -51,6 +50,7 @@ import {
   CheckCircle,
   FileQuestion,
   Workflow,
+  ArrowRight,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -90,17 +90,16 @@ function SidebarSubscriptionButton() {
 
     if (subscription?.planName === 'Hobby') {
         return (
-            <SidebarMenuButton
-                asChild
-                isActive={pathname === '/pricing'}
-                tooltip={{ children: 'Upgrade Now' }}
-                className="border-2 border-dashed border-primary/50 bg-transparent hover:bg-primary/10 hover:border-primary/80 text-primary shadow-lg shadow-primary/20 animate-pulse"
-            >
-                <Link href="/pricing">
-                    <Zap />
-                    <span>Upgrade Now</span>
-                </Link>
-            </SidebarMenuButton>
+            <Link href="/pricing" className="block p-2">
+                <div className="group relative rounded-lg p-4 bg-gradient-to-br from-primary/80 to-primary text-primary-foreground overflow-hidden">
+                    <h4 className="font-bold text-base font-headline">Upgrade to Pro</h4>
+                    <p className="text-xs text-primary-foreground/80">Unlock all features</p>
+                    <div className="absolute top-1 right-1 bg-primary-foreground/20 text-primary-foreground rounded-full p-1.5 transform transition-transform group-hover:rotate-45">
+                        <ArrowRight className="w-3 h-3" />
+                    </div>
+                    <Zap className="absolute -bottom-4 -right-2 w-16 h-16 text-primary-foreground/10" />
+                </div>
+            </Link>
         );
     }
 
@@ -166,7 +165,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarHeader>
             <div className="flex items-center gap-3">
               <BookOpenCheck className="w-8 h-8 text-primary" />
-              <span className="font-headline text-2xl font-bold">Wisdomis Fun</span>
+              <span className="font-headline text-2xl font-bold">ScholarAI</span>
             </div>
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -297,13 +296,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </SidebarMenuItem>
               </SidebarMenu>
             )}
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <Suspense fallback={<Skeleton className="h-8 w-full" />}>
-                  <SidebarSubscriptionButton />
-                </Suspense>
-              </SidebarMenuItem>
-            </SidebarMenu>
+             <Suspense fallback={<Skeleton className="h-10 w-full" />}>
+                <SidebarSubscriptionButton />
+             </Suspense>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="w-full justify-start items-center gap-2 p-2 h-auto text-left">
@@ -355,7 +350,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 min-w-0 md:hidden">
                 <div className="flex items-center gap-2">
                     <BookOpenCheck className="w-6 h-6 text-primary" />
-                    <span className="font-headline text-lg font-bold">Wisdomis Fun</span>
+                    <span className="font-headline text-lg font-bold">ScholarAI</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button asChild variant="ghost" size="icon">
