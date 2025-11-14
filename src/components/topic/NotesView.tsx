@@ -55,7 +55,10 @@ export function NotesView({ notes }: NotesViewProps) {
   const { toast } = useToast();
   const notesViewRef = useRef<HTMLDivElement>(null);
   
-  const [virtualRef, setVirtualRef] = useState<{ getBoundingClientRect: () => DOMRect } | null>(null);
+  const [popoverCoords, setPopoverCoords] = useState({ top: 0, left: 0 });
+  const [virtualElement, setVirtualElement] = useState({
+      getBoundingClientRect: () => new DOMRect(0, 0, 0, 0),
+  });
 
   const fullNoteText = React.useMemo(() => {
     if (!notes) return '';
@@ -73,9 +76,7 @@ export function NotesView({ notes }: NotesViewProps) {
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
         
-        setVirtualRef({
-          getBoundingClientRect: () => rect,
-        });
+        setVirtualElement({ getBoundingClientRect: () => rect });
 
         setSelectedText(text);
         setPopoverOpen(true);
@@ -104,12 +105,11 @@ export function NotesView({ notes }: NotesViewProps) {
   };
   
   useEffect(() => {
-    document.addEventListener('mouseup', handleTextSelection);
-    document.addEventListener('touchend', handleTextSelection);
+    const handleMouseUp = () => handleTextSelection();
+    document.addEventListener('mouseup', handleMouseUp);
     
     return () => {
-        document.removeEventListener('mouseup', handleTextSelection);
-        document.removeEventListener('touchend', handleTextSelection);
+        document.removeEventListener('mouseup', handleMouseUp);
     }
   }, [notesViewRef, fullNoteText]);
 
@@ -128,7 +128,7 @@ export function NotesView({ notes }: NotesViewProps) {
     <>
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
         <PopoverTrigger asChild>
-            <div ref={virtualRef ? (r) => setVirtualRef({ getBoundingClientRect: () => r?.getBoundingClientRect() || new DOMRect() }) : null}></div>
+            <div style={{ position: 'fixed', top: virtualElement.getBoundingClientRect().top, left: virtualElement.getBoundingClientRect().left }}/>
         </PopoverTrigger>
         <div className="cursor-text" ref={notesViewRef}>
             <ScrollArea className="h-[calc(100vh-200px)]">
