@@ -1,10 +1,10 @@
-
 'use client';
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Slider } from '@/components/ui/slider';
 import { DollarSign, Users, TrendingDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '../ui/button';
 
 const StatCard = ({ icon, title, value, className }: { icon: React.ReactNode, title: string, value: string, className?: string }) => (
     <Card className={className}>
@@ -18,15 +18,16 @@ const StatCard = ({ icon, title, value, className }: { icon: React.ReactNode, ti
     </Card>
 );
 
+const userTiers = [10, 100, 500, 1000, 1500, 2000];
 
 export function VolumeCalculator() {
     const [users, setUsers] = useState(100);
-    const minPrice = 159;
+    const minPrice = 149; // New lower price at max tier
     const maxPrice = 199;
-    const minUsers = 1;
-    const maxUsers = 1000;
+    const minUsers = userTiers[0];
+    const maxUsers = userTiers[userTiers.length - 1];
 
-    // Linear interpolation for price
+    // Adjusted linear interpolation for price
     const pricePerUser = maxPrice - ((maxPrice - minPrice) * (users - minUsers)) / (maxUsers - minUsers);
     const totalCost = pricePerUser * users;
     const savings = (maxPrice * users) - totalCost;
@@ -39,27 +40,29 @@ export function VolumeCalculator() {
                         Scale Your Earnings with Volume Discounts
                     </h2>
                     <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                        The more licenses you sell, the lower the price per user. Use the calculator below to see the potential.
+                        The more licenses you sell, the lower the price per user. Select a tier to see your potential earnings.
                     </p>
                 </div>
 
                 <Card className="shadow-lg">
                     <CardHeader>
                         <CardTitle className="font-headline text-center">Discount Calculator</CardTitle>
-                        <CardDescription className="text-center">Slide to adjust the number of licenses.</CardDescription>
+                        <CardDescription className="text-center">Select the number of licenses to see your discount.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-8">
-                        <div className="text-center">
-                            <span className="text-4xl font-bold">{users}</span>
-                            <span className="text-lg text-muted-foreground ml-2">Users</span>
+                        <div className="flex justify-center p-1 bg-muted rounded-lg">
+                            {userTiers.map(tier => (
+                                <Button 
+                                    key={tier}
+                                    variant={users === tier ? 'default' : 'ghost'}
+                                    onClick={() => setUsers(tier)}
+                                    className="flex-1 transition-all"
+                                >
+                                    {tier} Users
+                                </Button>
+                            ))}
                         </div>
-                        <Slider
-                            value={[users]}
-                            onValueChange={(value) => setUsers(value[0])}
-                            max={1000}
-                            min={1}
-                            step={1}
-                        />
+                        
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <StatCard 
                                 icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
