@@ -2,7 +2,7 @@
 'use server';
 
 import 'dotenv/config';
-import { isFirebaseEnabled } from '@/lib/firebase';
+import { db, isFirebaseEnabled } from '@/lib/firebase';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 import { updateUserDoc } from '@/services/firestore';
@@ -15,7 +15,7 @@ export async function createRazorpayOrder(amount: number, uid: string) {
   });
 
   const options = {
-    amount: amount * 100, // Amount in the smallest currency unit (e.g., cents for USD)
+    amount: amount * 100, // Amount in the smallest currency unit (e.g., paise for INR)
     currency: 'INR',
     receipt: `receipt_order_${new Date().getTime()}`,
     notes: {
@@ -68,10 +68,10 @@ export async function verifyRazorpayPayment(data: PaymentVerificationData) {
         } else if (priceId === 'SAGE_MODE_3_MONTHS') {
             expiryDate.setMonth(expiryDate.getMonth() + 3);
         } else {
-            // Default or unknown plan, maybe give a month? Or handle as an error.
-            // For now, let's default to a safe value or handle appropriately.
-            // Setting a short expiry for safety.
-            expiryDate.setMonth(expiryDate.getMonth() + 1);
+            // Default or unknown plan. For safety, let's not grant a long subscription.
+            // This case should ideally not be hit with a proper frontend.
+            // Setting a 1-day expiry for safety/debugging.
+            expiryDate.setDate(expiryDate.getDate() + 1);
         }
 
 
@@ -89,5 +89,3 @@ export async function verifyRazorpayPayment(data: PaymentVerificationData) {
 
     return { success: false, message: "Payment verification failed." };
 }
-
-    
