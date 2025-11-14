@@ -11,15 +11,7 @@ import {
 } from '@/components/ui/accordion';
 import { ArrowRight, Check, DollarSign, Gift, Zap } from 'lucide-react';
 import Link from 'next/link';
-
-const features = [
-  'AI-Generated Notes, Flashcards & Quizzes',
-  'Personal AI Tutor Chat (WisdomGPT)',
-  'AI-Powered Study Roadmaps',
-  'Kanban-Style Study Planner',
-  'Pomodoro Timers & Exam Countdowns',
-  'And much more...',
-];
+import { Features } from '@/components/landing/Features';
 
 const faqs = [
   {
@@ -81,38 +73,7 @@ export default function BusinessPage() {
         </section>
 
         {/* --- Features Section --- */}
-        <section className="py-20 sm:py-24">
-          <div className="container mx-auto px-4">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-base font-semibold leading-7 text-primary">
-                An Easy Sell
-              </h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-                A Product Your Audience Will Love
-              </p>
-              <p className="mt-6 text-lg leading-8 text-muted-foreground">
-                Wisdom is packed with cutting-edge features that solve
-                real problems for students and learners, making it a valuable
-                recommendation.
-              </p>
-            </div>
-            <div className="mx-auto mt-16 max-w-lg">
-              <ul className="space-y-4">
-                {features.map((feature, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center gap-3 rounded-lg border bg-secondary/30 p-4"
-                  >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                      <Check className="h-5 w-5" />
-                    </div>
-                    <span className="font-medium">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </section>
+        <Features />
 
         {/* --- FAQ Section --- */}
         <section className="bg-secondary/50 py-20 sm:py-24">
