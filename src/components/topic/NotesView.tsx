@@ -52,19 +52,18 @@ export function NotesView({ notes }: NotesViewProps) {
   const [selectedText, setSelectedText] = useState('');
   const [explanation, setExplanation] = useState('');
   const [isLoadingExplanation, setIsLoadingExplanation] = useState(false);
-  const [popoverTarget, setPopoverTarget] = useState<HTMLElement | null>(null);
   const { toast } = useToast();
   const notesViewRef = useRef<HTMLDivElement>(null);
-  const virtualRef = useRef<HTMLDivElement>(null);
+  
+  const [virtualRef, setVirtualRef] = useState<{ getBoundingClientRect: () => DOMRect } | null>(null);
 
   const fullNoteText = React.useMemo(() => {
     if (!notes) return '';
-    // Simple concatenation; a more sophisticated version could strip HTML for the context.
     return Object.values(notes).join('\n');
   }, [notes]);
 
   const handleTextSelection = async () => {
-    if (!notesViewRef.current || !virtualRef.current) return;
+    if (!notesViewRef.current) return;
 
     const selection = window.getSelection();
     const text = selection?.toString().trim();
@@ -74,14 +73,10 @@ export function NotesView({ notes }: NotesViewProps) {
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
         
-        // Position the virtual element to act as the Popover anchor
-        virtualRef.current.style.position = 'fixed';
-        virtualRef.current.style.top = `${rect.top}px`;
-        virtualRef.current.style.left = `${rect.left}px`;
-        virtualRef.current.style.width = `${rect.width}px`;
-        virtualRef.current.style.height = `${rect.height}px`;
+        setVirtualRef({
+          getBoundingClientRect: () => rect,
+        });
 
-        setPopoverTarget(virtualRef.current);
         setSelectedText(text);
         setPopoverOpen(true);
         setIsLoadingExplanation(true);
@@ -109,7 +104,6 @@ export function NotesView({ notes }: NotesViewProps) {
   };
   
   useEffect(() => {
-    const currentRef = notesViewRef.current;
     document.addEventListener('mouseup', handleTextSelection);
     document.addEventListener('touchend', handleTextSelection);
     
@@ -132,59 +126,59 @@ export function NotesView({ notes }: NotesViewProps) {
 
   return (
     <>
-      <div ref={virtualRef} style={{ pointerEvents: 'none' }}></div>
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
         <PopoverTrigger asChild>
-          <div className="cursor-text" ref={notesViewRef}>
-              <ScrollArea className="h-[calc(100vh-200px)]">
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
-                      {/* Left Column */}
-                      <div className="lg:col-span-2 space-y-4">
-                          <NoteSection 
-                              title="Introduction" 
-                              content={notes.introduction} 
-                              icon={BookOpen}
-                          />
-                          <NoteSection 
-                              title="Core Concepts" 
-                              content={notes.coreConcepts} 
-                              icon={FileText}
-                          />
-                          <NoteSection 
-                              title="Summary" 
-                              content={notes.summary} 
-                              icon={Lightbulb}
-                          />
-                      </div>
-                      
-                      {/* Right Column */}
-                      <div className="lg:col-span-1 space-y-4">
-                          <NoteSection 
-                              title="Key Vocabulary" 
-                              content={notes.keyVocabulary} 
-                              icon={List}
-                          />
-                          <NoteSection 
-                              title="Key Definitions" 
-                              content={notes.keyDefinitions} 
-                              icon={List}
-                          />
-                          <NoteSection 
-                              title="Formulas & Points" 
-                              content={notes.keyFormulasOrPoints} 
-                              icon={FlaskConical}
-                          />
-                          <NoteSection 
-                              title="Example" 
-                              content={notes.exampleWithExplanation} 
-                              icon={Beaker}
-                          />
-                      </div>
-                  </div>
-              </ScrollArea>
-          </div>
+            <div ref={virtualRef ? (r) => setVirtualRef({ getBoundingClientRect: () => r?.getBoundingClientRect() || new DOMRect() }) : null}></div>
         </PopoverTrigger>
-        <PopoverContent className="w-80 shadow-2xl" side="right" align="start" sideOffset={8}>
+        <div className="cursor-text" ref={notesViewRef}>
+            <ScrollArea className="h-[calc(100vh-200px)]">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
+                    {/* Left Column */}
+                    <div className="lg:col-span-2 space-y-4">
+                        <NoteSection 
+                            title="Introduction" 
+                            content={notes.introduction} 
+                            icon={BookOpen}
+                        />
+                        <NoteSection 
+                            title="Core Concepts" 
+                            content={notes.coreConcepts} 
+                            icon={FileText}
+                        />
+                        <NoteSection 
+                            title="Summary" 
+                            content={notes.summary} 
+                            icon={Lightbulb}
+                        />
+                    </div>
+                    
+                    {/* Right Column */}
+                    <div className="lg:col-span-1 space-y-4">
+                        <NoteSection 
+                            title="Key Vocabulary" 
+                            content={notes.keyVocabulary} 
+                            icon={List}
+                        />
+                        <NoteSection 
+                            title="Key Definitions" 
+                            content={notes.keyDefinitions} 
+                            icon={List}
+                        />
+                        <NoteSection 
+                            title="Formulas & Points" 
+                            content={notes.keyFormulasOrPoints} 
+                            icon={FlaskConical}
+                        />
+                        <NoteSection 
+                            title="Example" 
+                            content={notes.exampleWithExplanation} 
+                            icon={Beaker}
+                        />
+                    </div>
+                </div>
+            </ScrollArea>
+        </div>
+        <PopoverContent className="w-80 shadow-2xl" sideOffset={8}>
             <div className="space-y-2 relative">
                 <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
                     <X className="w-4 h-4"/>
