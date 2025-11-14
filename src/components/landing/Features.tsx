@@ -14,6 +14,7 @@ import {
   Camera,
   Sparkles,
   User,
+  Lightbulb,
 } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
@@ -54,6 +55,20 @@ const NotesDemo = () => (
             <p className="font-mono">* Rebirth of art & science</p>
             <p className="font-mono">* Focus on <KeyTerm term="Humanism" definition="An intellectual movement that emphasized human potential and achievements." /></p>
         </CardContent>
+    </Card>
+);
+
+const ExplainDemo = () => (
+    <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full flex flex-col justify-center items-center">
+        <p className="text-sm text-muted-foreground text-center">
+            The process, known as <span className="bg-primary/20 text-primary rounded px-1">photosynthesis</span>, is crucial for life.
+        </p>
+        <div className="mt-4 w-full max-w-xs">
+            <Card className="p-3 bg-secondary text-xs">
+                <p className="font-bold flex items-center gap-1.5"><Lightbulb className="w-3 h-3 text-amber-400" />Explanation:</p>
+                <p className="text-muted-foreground">The way plants use sunlight to create their own food from water and CO2.</p>
+            </Card>
+        </div>
     </Card>
 );
 
@@ -196,9 +211,25 @@ interface BentoItem {
 const bentoItems: BentoItem[] = [
   {
     title: 'AI-Generated Notes',
-    description: 'From dense text to structured, scannable notes with interactive key terms.',
+    description: 'From dense text to structured, scannable notes.',
     icon: <FileText className="text-primary h-4 w-4" />,
     demo: <NotesDemo />,
+    colSpan: 1,
+    rowSpan: 1,
+  },
+  {
+    title: 'Instant Explanations',
+    description: "Highlight any term to get a simple, contextual explanation.",
+    icon: <Sparkles className="text-primary h-4 w-4" />,
+    demo: <ExplainDemo />,
+    colSpan: 1,
+    rowSpan: 1,
+  },
+  {
+    title: 'SageMaker AI Assistant',
+    description: 'Your personal AI tutor, ready to answer any question.',
+    icon: <Bot className="text-primary h-4 w-4" />,
+    demo: <SageMakerDemo />,
     colSpan: 2,
     rowSpan: 1,
   },
@@ -210,14 +241,6 @@ const bentoItems: BentoItem[] = [
     colSpan: 1,
     rowSpan: 1,
   },
-    {
-    title: 'SageMaker AI Assistant',
-    description: 'Your personal AI tutor, ready to answer any question.',
-    icon: <Bot className="text-primary h-4 w-4" />,
-    demo: <SageMakerDemo />,
-    colSpan: 2,
-    rowSpan: 1,
-  },
   {
     title: 'Challenging Quizzes',
     description: 'Test your understanding with custom quizzes.',
@@ -225,14 +248,6 @@ const bentoItems: BentoItem[] = [
     demo: <QuizDemo />,
     colSpan: 1,
     rowSpan: 2,
-  },
-    {
-    title: 'Capture the Answer',
-    description: 'Snap a picture of a problem to get an instant solution.',
-    icon: <Camera className="text-primary h-4 w-4" />,
-    demo: <CaptureDemo />,
-    colSpan: 1,
-    rowSpan: 1,
   },
   {
     title: 'Personalized Roadmap',
@@ -242,7 +257,14 @@ const bentoItems: BentoItem[] = [
     colSpan: 1,
     rowSpan: 1,
   },
-
+  {
+    title: 'Capture the Answer',
+    description: 'Snap a picture of a problem to get an instant solution.',
+    icon: <Camera className="text-primary h-4 w-4" />,
+    demo: <CaptureDemo />,
+    colSpan: 1,
+    rowSpan: 1,
+  },
   {
     title: 'Visual Study Board',
     description: 'Organize your tasks on a Kanban-style board.',
