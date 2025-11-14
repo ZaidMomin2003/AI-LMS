@@ -1,6 +1,7 @@
 
 import { BookOpenCheck } from "lucide-react";
 import Link from 'next/link';
+import { ThemeToggle } from "../ThemeToggle";
 
 export function Footer() {
   return (
@@ -28,6 +29,7 @@ export function Footer() {
 
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <span>Made with ❤️ by Arshad</span>
+          <ThemeToggle />
         </div>
       </div>
     </footer>

@@ -176,7 +176,6 @@ export function Header() {
            {!loading && (
              user ? <ScrambleDashboardButton /> : <Button asChild><Link href="/signup">Get Started</Link></Button>
           )}
-          <ThemeToggle />
            <motion.button
             className="hover:bg-muted rounded-lg p-2 transition-colors duration-200 md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
