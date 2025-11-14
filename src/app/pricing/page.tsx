@@ -1,3 +1,4 @@
+
 'use client';
 
 import 'dotenv/config';
@@ -299,9 +300,8 @@ const PricingContent = () => {
                 description: 'Sage Mode Subscription',
                 order_id: order.id,
                 callback_url: "/api/razorpay/verify",
-                handler: async function (response: any) {
+                handler: function (response: any) {
                     // This handler is a fallback, but the main verification is server-side.
-                    // We can use this to give the user immediate feedback.
                     toast({
                         title: 'Payment Processing...',
                         description: 'Your payment is being verified. Your plan will update shortly.',
