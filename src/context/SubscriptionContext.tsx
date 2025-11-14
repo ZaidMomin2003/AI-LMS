@@ -4,7 +4,7 @@
 import type { UserSubscription } from '@/types';
 import React, from 'react';
 import { useAuth } from './AuthContext';
-import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import { updateUserDoc } from '@/services/firestore';
 import { isFirebaseEnabled, db } from '@/lib/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 
@@ -38,7 +38,14 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
       if (docSnap.exists()) {
         const userData = docSnap.data();
         if (userData.subscription) {
-          setSubscriptionState(userData.subscription);
+          // Check if subscription has expired
+          if (userData.subscription.expiresAt && new Date(userData.subscription.expiresAt) < new Date()) {
+            const defaultSub: UserSubscription = { planName: 'Hobby', status: 'active' };
+            await updateUserDoc(user.uid, { subscription: defaultSub });
+            setSubscriptionState(defaultSub);
+          } else {
+            setSubscriptionState(userData.subscription);
+          }
         } else {
           // If subscription field doesn't exist, create it with Hobby plan
           const defaultSub: UserSubscription = { planName: 'Hobby', status: 'active' };
