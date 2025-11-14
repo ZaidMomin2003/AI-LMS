@@ -45,23 +45,23 @@ export function WelcomePopup() {
             </div>
 
             <DialogHeader className="space-y-2">
-                <DialogTitle className="text-2xl font-headline font-bold">Welcome to ScholarAI! 🎉</DialogTitle>
+                <DialogTitle className="text-2xl font-headline font-bold">Welcome to Wisdom! 🎉</DialogTitle>
                 <DialogDescription className="text-lg text-muted-foreground">
-                    Get <span className="text-primary font-bold">50% OFF</span> all plans for a limited time!
+                    Start Your <span className="text-primary font-bold">Free Trial</span> Today
                 </DialogDescription>
             </DialogHeader>
 
             <p className="text-muted-foreground">
-                Start your journey to smarter learning today and lock in your special discount.
+                Join thousands of learners and see how AI can transform your studies.
             </p>
 
             <Button asChild size="lg" className="w-full" onClick={handleSignUpClick}>
                  <Link href="/signup">
-                    Claim My Discount <ArrowRight className="ml-2" />
+                    Start My Free Trial <ArrowRight className="ml-2" />
                 </Link>
             </Button>
             
-            <p className="text-xs text-muted-foreground">This is a one-time offer!</p>
+            <p className="text-xs text-muted-foreground">No credit card required.</p>
         </div>
       </DialogContent>
     </Dialog>
