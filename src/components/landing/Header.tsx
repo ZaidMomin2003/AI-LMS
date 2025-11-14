@@ -148,7 +148,9 @@ export function Header() {
       <div className="container flex h-14 max-w-screen-2xl items-center">
         <div className="mr-4 flex items-center">
              <Link href="/" className="mr-6 flex items-center space-x-2">
-                <BookOpenCheck className="h-6 w-6 text-primary" />
+                <div className="w-8 h-8 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
+                    <BookOpenCheck className="h-5 w-5" />
+                </div>
                 <span className="font-bold font-headline">wisdom</span>
             </Link>
         </div>

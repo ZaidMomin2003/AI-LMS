@@ -7,7 +7,9 @@ export function Footer() {
     <footer className="border-t py-8">
       <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center space-y-6 md:space-y-0">
         <div className="flex items-center gap-2">
-          <BookOpenCheck className="h-5 w-5 text-primary" />
+           <div className="w-7 h-7 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
+              <BookOpenCheck className="h-4 w-4" />
+           </div>
           <p className="text-sm font-semibold">wisdom</p>
         </div>
         

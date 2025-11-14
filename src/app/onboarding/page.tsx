@@ -39,7 +39,9 @@ export default function OnboardingPage() {
             <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4">
                 <div className="absolute top-8 left-8">
                     <Link href="/" className="flex items-center gap-2 text-lg font-semibold font-headline">
-                        <BookOpenCheck className="h-6 w-6 text-primary" />
+                         <div className="w-8 h-8 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
+                            <BookOpenCheck className="h-5 w-5" />
+                        </div>
                         <span>wisdom</span>
                     </Link>
                 </div>
