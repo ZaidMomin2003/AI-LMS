@@ -87,14 +87,19 @@ function AppLoadingScreen() {
 
 function SidebarSubscriptionButton() {
     const { subscription } = useSubscription();
-    const pathname = usePathname();
+
+    const planDetails: Record<string, string> = {
+        SAGE_MODE_YEARLY: '1 Year Plan',
+        SAGE_MODE_6_MONTHS: '6 Month Plan',
+        SAGE_MODE_3_MONTHS: '3 Month Plan',
+    };
 
     if (subscription?.planName === 'Hobby') {
         return (
             <Link href="/pricing" className="block p-2">
                 <div className="group relative rounded-lg p-4 bg-gradient-to-br from-secondary to-card text-foreground overflow-hidden border border-dashed border-primary/50 hover:border-primary/80 transition-all">
                     <h4 className="font-bold text-base font-headline">Free Plan</h4>
-                    <p className="text-xs text-muted-foreground">Upgrade to unlock all features</p>
+                    <p className="text-xs text-muted-foreground">Upgrade to Pro</p>
                     <div className="absolute top-1 right-1 bg-primary/20 text-primary rounded-full p-1.5 transform transition-transform group-hover:rotate-45">
                         <ArrowRight className="w-3 h-3" />
                     </div>
@@ -103,19 +108,23 @@ function SidebarSubscriptionButton() {
             </Link>
         );
     }
+    
+    const currentPlanText = subscription?.priceId ? planDetails[subscription.priceId] : 'Premium';
 
     return (
-        <SidebarMenuButton
-            asChild
-            isActive={pathname === '/pricing'}
-            tooltip={{ children: 'Manage Your Plan' }}
-            className="cursor-pointer border-0 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-        >
-            <Link href="/pricing">
-                <Gem />
-                <span>{subscription?.planName}</span>
-            </Link>
-        </SidebarMenuButton>
+        <Link href="/pricing" className="block p-2">
+            <div className="group relative rounded-lg p-4 bg-gradient-to-br from-primary/80 to-primary text-primary-foreground overflow-hidden">
+                <h4 className="font-bold text-base font-headline flex items-center gap-2">
+                    <Gem className="w-5 h-5" />
+                    Sage Mode
+                </h4>
+                <p className="text-xs text-primary-foreground/80">{currentPlanText}</p>
+                 <div className="absolute top-1 right-1 bg-primary-foreground/20 text-primary-foreground rounded-full p-1.5">
+                    <CheckCircle className="w-3 h-3" />
+                </div>
+                <Sparkles className="absolute -bottom-4 -right-2 w-16 h-16 text-primary-foreground/10" />
+            </div>
+        </Link>
     );
 }
 
