@@ -39,7 +39,7 @@ const NoteSection = ({
                 <CardTitle className="font-headline text-xl">{title}</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="prose prose-sm prose-invert max-w-none text-muted-foreground">
+                <div className="prose prose-sm prose-invert max-w-none text-foreground">
                     <MarkdownRenderer content={content} />
                 </div>
             </CardContent>
@@ -55,10 +55,7 @@ export function NotesView({ notes }: NotesViewProps) {
   const { toast } = useToast();
   const notesViewRef = useRef<HTMLDivElement>(null);
   
-  const [popoverCoords, setPopoverCoords] = useState({ top: 0, left: 0 });
-  const [virtualElement, setVirtualElement] = useState({
-      getBoundingClientRect: () => new DOMRect(0, 0, 0, 0),
-  });
+  const [virtualElement, setVirtualElement] = useState<HTMLElement | null>(null);
 
   const fullNoteText = React.useMemo(() => {
     if (!notes) return '';
@@ -66,17 +63,26 @@ export function NotesView({ notes }: NotesViewProps) {
   }, [notes]);
 
   const handleTextSelection = async () => {
-    if (!notesViewRef.current) return;
-
     const selection = window.getSelection();
     const text = selection?.toString().trim();
 
-    if (text && text.length > 2 && text.length < 300) {
-      if (selection.anchorNode && notesViewRef.current.contains(selection.anchorNode.parentElement)) {
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
+    if (text && text.length > 2 && text.length < 300 && selection?.rangeCount) {
+      const range = selection.getRangeAt(0);
+      const parentElement = range.startContainer.parentElement;
+
+      if (notesViewRef.current && parentElement && notesViewRef.current.contains(parentElement)) {
         
-        setVirtualElement({ getBoundingClientRect: () => rect });
+        const span = document.createElement('span');
+        span.style.position = 'absolute';
+        
+        const rect = range.getBoundingClientRect();
+        span.style.left = `${rect.left + window.scrollX}px`;
+        span.style.top = `${rect.top + window.scrollY}px`;
+        span.style.width = `${rect.width}px`;
+        span.style.height = `${rect.height}px`;
+
+        document.body.appendChild(span);
+        setVirtualElement(span);
 
         setSelectedText(text);
         setPopoverOpen(true);
@@ -95,6 +101,8 @@ export function NotesView({ notes }: NotesViewProps) {
           setPopoverOpen(false);
         } finally {
           setIsLoadingExplanation(false);
+          document.body.removeChild(span);
+          setVirtualElement(null);
         }
       }
     } else {
@@ -106,12 +114,18 @@ export function NotesView({ notes }: NotesViewProps) {
   
   useEffect(() => {
     const handleMouseUp = () => handleTextSelection();
-    document.addEventListener('mouseup', handleMouseUp);
+    const notesRef = notesViewRef.current;
+    notesRef?.addEventListener('mouseup', handleMouseUp);
     
     return () => {
-        document.removeEventListener('mouseup', handleMouseUp);
+        notesRef?.removeEventListener('mouseup', handleMouseUp);
+        if (virtualElement) {
+            if (document.body.contains(virtualElement)) {
+                document.body.removeChild(virtualElement);
+            }
+        }
     }
-  }, [notesViewRef, fullNoteText]);
+  }, [notesViewRef, fullNoteText, popoverOpen]);
 
 
   if (!notes) {
@@ -128,7 +142,7 @@ export function NotesView({ notes }: NotesViewProps) {
     <>
       <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
         <PopoverTrigger asChild>
-            <div style={{ position: 'fixed', top: virtualElement.getBoundingClientRect().top, left: virtualElement.getBoundingClientRect().left }}/>
+            {virtualElement && <div style={{ position: 'fixed', top: virtualElement.getBoundingClientRect().top, left: virtualElement.getBoundingClientRect().left }}></div>}
         </PopoverTrigger>
         <div className="cursor-text" ref={notesViewRef}>
             <ScrollArea className="h-[calc(100vh-200px)]">
@@ -178,7 +192,7 @@ export function NotesView({ notes }: NotesViewProps) {
                 </div>
             </ScrollArea>
         </div>
-        <PopoverContent className="w-80 shadow-2xl" sideOffset={8}>
+        <PopoverContent className="w-80 shadow-2xl" sideOffset={8} anchor={virtualElement ? { x: virtualElement.getBoundingClientRect().left, y: virtualElement.getBoundingClientRect().top } : undefined}>
             <div className="space-y-2 relative">
                 <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
                     <X className="w-4 h-4"/>
