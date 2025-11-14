@@ -51,6 +51,7 @@ import {
   FileQuestion,
   Workflow,
   ArrowRight,
+  Loader2,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -61,7 +62,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from './ui/dropdown-menu';
 import { useExam } from '@/context/ExamContext';
 import { ExamCountdown } from '@/components/exam/ExamCountdown';
 import { useSubscription } from '@/context/SubscriptionContext';
