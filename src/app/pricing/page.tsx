@@ -1,25 +1,21 @@
-
 'use client';
 
 import 'dotenv/config';
 import { useState, forwardRef, useMemo } from 'react';
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Check, Star, Loader2, X, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
-import { createRazorpayOrder, verifyRazorpayPayment } from './actions';
+import { createRazorpayOrder } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { db, isFirebaseEnabled } from '@/lib/firebase';
-import { updateUserDoc } from '@/services/firestore';
-import type { UserSubscription } from '@/types';
 
 
 const allPlans = [
@@ -308,12 +304,16 @@ const PricingContent = () => {
                         priceId: priceId,
                     };
                     
-                    const result = await verifyRazorpayPayment(verificationData);
+                    const result = await fetch("/api/razorpay/verify", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(verificationData),
+                    }).then(res => res.json());
 
                     if (result.success) {
                          toast({
                             title: 'Payment Successful!',
-                            description: 'Welcome to Sage Mode! Your subscription is now active.',
+                            description: 'Sage Mode Activated. Your plan is now active.',
                         });
                     } else {
                          toast({

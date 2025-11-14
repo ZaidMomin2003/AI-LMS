@@ -1,77 +1,72 @@
 
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
 import crypto from "crypto";
-import Razorpay from "razorpay";
 import { updateUserDoc } from "@/services/firestore";
+import { isFirebaseEnabled } from "@/lib/firebase";
 import type { UserSubscription } from "@/types";
 
 export async function POST(req: Request) {
-  const secret = process.env.RAZORPAY_KEY_SECRET!;
-  
+  const body = await req.json();
+
+  const {
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+    uid,
+    priceId,
+  } = body;
+
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !uid || !priceId) {
+      return NextResponse.json({ success: false, message: "Missing required payment information." }, { status: 400 });
+  }
+
+  const expectedSignature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+    .update(razorpay_order_id + "|" + razorpay_payment_id)
+    .digest("hex");
+
+  if (expectedSignature !== razorpay_signature) {
+    return NextResponse.json({ success: false, message: "Invalid signature." }, { status: 400 });
+  }
+
+  if (!isFirebaseEnabled) {
+    return NextResponse.json({
+      success: false,
+      message: "Firebase not enabled.",
+    }, { status: 500 });
+  }
+
+  const planDurations: Record<string, number> = {
+    SAGE_MODE_YEARLY: 365,
+    SAGE_MODE_6_MONTHS: 180,
+    SAGE_MODE_3_MONTHS: 90,
+  };
+
+  const durationInDays = planDurations[priceId];
+  if (!durationInDays) {
+    return NextResponse.json({ success: false, message: "Invalid priceId." }, { status: 400 });
+  }
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + durationInDays);
+
+  const subscriptionData: UserSubscription = {
+    planName: "Sage Mode",
+    status: "active",
+    priceId,
+    paymentId: razorpay_payment_id,
+    orderId: razorpay_order_id,
+    expiresAt: expiresAt.toISOString(),
+  };
+
   try {
-    const body = await req.text();
-    const signature = headers().get("x-razorpay-signature");
-
-    const shasum = crypto.createHmac("sha256", secret);
-    shasum.update(body);
-    const digest = shasum.digest("hex");
-
-    if (digest !== signature) {
-      return NextResponse.json({ status: "error", message: "Invalid signature" }, { status: 400 });
-    }
-    
-    const payload = JSON.parse(body);
-
-    if (payload.event === 'payment.captured') {
-        const paymentEntity = payload.payload.payment.entity;
-        const orderId = paymentEntity.order_id;
-
-        const razorpay = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID!,
-            key_secret: process.env.RAZORPAY_KEY_SECRET!,
-        });
-
-        const order = await razorpay.orders.fetch(orderId);
-        
-        if (!order.notes || !order.notes.uid || !order.notes.priceId) {
-            console.error("Webhook Error: Missing uid or priceId in order notes for order:", orderId);
-            return NextResponse.json({ status: "error", message: "Missing user ID or price ID in order notes." });
-        }
-        
-        const { uid, priceId } = order.notes as { uid: string, priceId: string };
-
-        const planDurations: Record<string, number> = {
-            SAGE_MODE_YEARLY: 365,
-            SAGE_MODE_6_MONTHS: 180,
-            SAGE_MODE_3_MONTHS: 90,
-        };
-
-        const durationInDays = planDurations[priceId];
-        if (!durationInDays) {
-             console.error("Webhook Error: Invalid priceId in order notes for order:", orderId);
-            return NextResponse.json({ status: "error", message: `Invalid priceId: ${priceId}` });
-        }
-
-        const expiresAt = new Date();
-        expiresAt.setDate(expiresAt.getDate() + durationInDays);
-
-        const subscriptionData: UserSubscription = {
-            planName: "Sage Mode",
-            status: "active",
-            priceId,
-            paymentId: paymentEntity.id,
-            orderId: orderId,
-            expiresAt: expiresAt.toISOString(),
-        };
-
-        await updateUserDoc(uid, { subscription: subscriptionData });
-    }
-
-    return NextResponse.json({ status: "ok" });
-  } catch (error) {
-    console.error("Error in Razorpay webhook:", error);
-    const err = error as Error;
-    return NextResponse.json({ status: "server_error", message: err.message }, { status: 500 });
+    await updateUserDoc(uid, { subscription: subscriptionData });
+    return NextResponse.json({ success: true, message: "Subscription updated successfully." });
+  } catch (err) {
+    console.error("Error updating Firestore:", err);
+    return NextResponse.json({
+      success: false,
+      message: "Failed to update subscription in the database.",
+    }, { status: 500 });
   }
 }
