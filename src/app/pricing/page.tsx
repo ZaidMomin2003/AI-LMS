@@ -7,18 +7,20 @@ import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, Star, Loader2, X, FileText, BrainCircuit, MessageCircleQuestion, Bot, Map, DollarSign, Sparkles } from 'lucide-react';
+import { Check, Star, Loader2, X, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { AppLayout } from '@/components/AppLayout';
-import { createRazorpayOrder, verifyRazorpayPayment } from './actions';
+import { createRazorpayOrder } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
-import type { LucideProps } from 'lucide-react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { db, isFirebaseEnabled } from '@/lib/firebase';
+import { updateUserDoc } from '@/services/firestore';
+import type { UserSubscription } from '@/types';
+
 
 const allPlans = [
     {
@@ -84,8 +86,6 @@ const itemVariants: Variants = {
   },
 };
 
-
-// --- PricingCard and related components moved here ---
 
 type Tier = {
   id: string;
@@ -179,7 +179,7 @@ interface PricingCardProps
   extends React.ComponentPropsWithoutRef<typeof motion.div> {
   plan: PricingPlan;
   onCtaClick: (amount: number, priceId: string) => void;
-  isLoading: boolean;
+  isLoading: string | null;
 }
 
 const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
@@ -191,14 +191,13 @@ const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
     }, [plan.tiers, selectedTierId]);
 
     const handleCta = () => {
-        if (plan.priceId) {
-            const planDetails = allPlans.find(p => p.priceId === plan.priceId);
-            if (planDetails) onCtaClick(planDetails.amount, plan.priceId);
-        } else if (selectedTier) {
+        if (selectedTier) {
             onCtaClick(selectedTier.amount, selectedTier.id);
         }
     };
     
+    const isCardLoading = isLoading === (selectedTier?.id || plan.priceId);
+
     return (
       <motion.div
         ref={ref}
@@ -260,8 +259,8 @@ const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
               <Link href={plan.href}>{plan.buttonText}</Link>
             </Button>
           ) : (
-             <Button onClick={handleCta} className="w-full" variant={plan.highlight ? 'secondary': 'default'} disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+             <Button onClick={handleCta} className="w-full" variant={plan.highlight ? 'secondary': 'default'} disabled={isCardLoading}>
+                {isCardLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {plan.buttonText}
             </Button>
           )}
@@ -291,7 +290,7 @@ const PricingContent = () => {
         setIsLoading(priceId);
 
         try {
-            const order = await createRazorpayOrder(amount, user.uid);
+            const order = await createRazorpayOrder(amount, user.uid, priceId);
             
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -300,30 +299,38 @@ const PricingContent = () => {
                 name: 'Wisdomis Fun',
                 description: 'Sage Mode Subscription',
                 order_id: order.id,
+                callback_url: "/api/razorpay/verify",
                 handler: async function (response: any) {
-                    const verificationData = {
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_signature: response.razorpay_signature,
-                        uid: user.uid,
+                    // This handler is a fallback. The main verification is via callback_url.
+                    // But we can use it to optimistically update the UI.
+                    const now = new Date();
+                    let expiryDate = new Date(now);
+
+                    if (priceId === 'SAGE_MODE_YEARLY') {
+                        expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+                    } else if (priceId === 'SAGE_MODE_6_MONTHS') {
+                        expiryDate.setMonth(expiryDate.getMonth() + 6);
+                    } else if (priceId === 'SAGE_MODE_3_MONTHS') {
+                        expiryDate.setMonth(expiryDate.getMonth() + 3);
+                    }
+
+                    const subscriptionData: UserSubscription = {
+                        planName: 'Sage Mode',
+                        status: 'active',
                         priceId: priceId,
+                        paymentId: response.razorpay_payment_id,
+                        orderId: response.razorpay_order_id,
+                        expiresAt: expiryDate.toISOString(),
                     };
 
-                    const result = await verifyRazorpayPayment(verificationData);
-
-                    if (result.success) {
-                        toast({
-                            title: 'Payment Successful!',
-                            description: 'Welcome to Sage Mode! Your subscription is now active.',
-                        });
-                         // The onSnapshot listener in SubscriptionContext will handle the UI update.
-                    } else {
-                        toast({
-                            variant: 'destructive',
-                            title: 'Payment Verification Failed',
-                            description: 'Please contact support.',
-                        });
+                    if (isFirebaseEnabled) {
+                        await updateUserDoc(user.uid, { subscription: subscriptionData });
                     }
+                    
+                    toast({
+                        title: 'Payment Successful!',
+                        description: 'Welcome to Sage Mode! Your subscription is now active.',
+                    });
                 },
                 prefill: {
                     name: user.displayName || 'Wisdomis Fun User',
@@ -384,7 +391,7 @@ const PricingContent = () => {
                             variants={itemVariants}
                             plan={plan as PricingPlan}
                             onCtaClick={(amount, priceId) => handlePayment(amount, priceId)}
-                            isLoading={!!isLoading}
+                            isLoading={isLoading}
                         />
                     ))}
                 </motion.div>
