@@ -67,7 +67,13 @@ export async function verifyRazorpayPayment(data: PaymentVerificationData) {
             expiryDate.setMonth(expiryDate.getMonth() + 6);
         } else if (priceId === 'SAGE_MODE_3_MONTHS') {
             expiryDate.setMonth(expiryDate.getMonth() + 3);
+        } else {
+            // Default or unknown plan, maybe give a month? Or handle as an error.
+            // For now, let's default to a safe value or handle appropriately.
+            // Setting a short expiry for safety.
+            expiryDate.setMonth(expiryDate.getMonth() + 1);
         }
+
 
         const subscriptionData: UserSubscription = {
             planName: 'Sage Mode',
@@ -83,3 +89,5 @@ export async function verifyRazorpayPayment(data: PaymentVerificationData) {
 
     return { success: false, message: "Payment verification failed." };
 }
+
+    

@@ -33,7 +33,8 @@ const allPlans = [
             { text: '1 AI Roadmap Generation', included: true },
             { text: '1 Pomodoro Session', included: true },
             { text: '1 Capture the Answer', included: true },
-            { text: 'Basic Support', included: false },
+            { text: 'WisdomGPT AI Assistant', included: false },
+            { text: 'Priority Support', included: false },
         ],
         buttonText: 'Start for Free',
         href: '/signup',
@@ -140,9 +141,9 @@ const PriceDisplay = ({ price, period, billed, isHighlighted, className }: Price
           </>
         )}
       </div>
-       {billed && isHighlighted && (
+       {billed && (
          <div className="flex items-center gap-2">
-            <span className="text-sm text-primary-foreground/80">{billed}</span>
+            <span className={cn("text-sm", isHighlighted ? "text-primary-foreground/80" : "text-muted-foreground")}>{billed}</span>
          </div>
       )}
     </div>
@@ -167,7 +168,7 @@ const PricingFeatures = ({ features, isHighlighted, className }: PricingFeatures
                 <X className="h-4 w-4 text-muted-foreground" />
             )}
           </div>
-          <span className={cn(!feature.included && "text-muted-foreground line-through")}>{feature.text}</span>
+          <span className={cn(!feature.included && "text-muted-foreground line-through", isHighlighted && 'text-primary-foreground/90')}>{feature.text}</span>
         </li>
       ))}
     </ul>
@@ -221,7 +222,7 @@ const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
       >
         <div>
           <div className="flex items-center justify-between py-2 min-h-[40px]">
-            <div className={cn("text-sm font-medium", plan.highlight ? 'text-primary-foreground/80' : 'text-muted-foreground')}>
+            <div className={cn("text-lg font-bold font-headline", plan.highlight ? 'text-primary-foreground' : 'text-foreground')}>
               {plan.name}
             </div>
              {plan.highlight && selectedTier?.originalPrice && (
@@ -356,7 +357,7 @@ const PricingContent = () => {
         />
         <section id="pricing" className="relative w-full overflow-hidden py-20 sm:py-32">
              <div className="absolute inset-0 -z-10 flex items-center justify-center">
-                <h1 className="text-center text-12xl font-bold text-foreground/5 pointer-events-none">
+                <h1 className="text-center text-9xl md:text-[200px] font-bold text-foreground/5 pointer-events-none">
                     Pricing
                 </h1>
             </div>

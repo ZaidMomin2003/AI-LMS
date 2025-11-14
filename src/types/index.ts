@@ -67,3 +67,5 @@ export interface PomodoroSession {
   sessions: number;
   completedAt: string;
 }
+
+    
