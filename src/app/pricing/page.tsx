@@ -16,6 +16,8 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { upgradeSubscriptionAction } from './actions';
+import { useSubscription } from '@/context/SubscriptionContext';
 
 
 const allPlans = [
@@ -174,15 +176,25 @@ const PricingFeatures = ({ features, isHighlighted, className }: PricingFeatures
 interface PricingCardProps
   extends React.ComponentPropsWithoutRef<typeof motion.div> {
   plan: PricingPlan;
+  onCtaClick: (priceId: string) => void;
+  isLoading: string | null;
 }
 
 const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
-  ({ plan, className, ...props }, ref) => {
+  ({ plan, onCtaClick, isLoading, className, ...props }, ref) => {
     const [selectedTierId, setSelectedTierId] = useState(plan.tiers ? plan.tiers[0].id : null);
 
     const selectedTier = useMemo(() => {
         return plan.tiers?.find(t => t.id === selectedTierId);
     }, [plan.tiers, selectedTierId]);
+
+    const handleCta = () => {
+        if (selectedTier) {
+            onCtaClick(selectedTier.id);
+        }
+    };
+
+    const isCardLoading = isLoading === selectedTier?.id;
 
     return (
       <motion.div
@@ -245,8 +257,9 @@ const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
               <Link href={plan.href}>{plan.buttonText}</Link>
             </Button>
           ) : (
-             <Button asChild className="w-full" variant={plan.highlight ? 'secondary': 'default'}>
-                <Link href="/#contact">{plan.buttonText}</Link>
+             <Button onClick={handleCta} className="w-full" variant={plan.highlight ? 'secondary': 'default'} disabled={isCardLoading}>
+                {isCardLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {plan.buttonText}
             </Button>
           )}
         </div>
@@ -258,8 +271,72 @@ PricingCard.displayName = 'PricingCard';
 
 
 const PricingContent = () => {
+    const { user } = useAuth();
+    const { setSubscription } = useSubscription();
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState<string | null>(null);
+
+    const handleMockUpgrade = async (priceId: string) => {
+        if (!user) {
+            toast({
+                variant: 'destructive',
+                title: 'Authentication Error',
+                description: 'You must be logged in to upgrade your plan.',
+            });
+            return;
+        }
+
+        setIsLoading(priceId);
+
+        try {
+            const result = await upgradeSubscriptionAction(user.uid, priceId);
+            if (result.success) {
+                // Manually set subscription to trigger context update
+                const planDurations: Record<string, number> = {
+                    SAGE_MODE_YEARLY: 365,
+                    SAGE_MODE_6_MONTHS: 180,
+                    SAGE_MODE_3_MONTHS: 90,
+                };
+                const durationInDays = planDurations[priceId];
+                const expiresAt = new Date();
+                expiresAt.setDate(expiresAt.getDate() + durationInDays);
+
+                setSubscription({
+                    planName: "Sage Mode",
+                    status: "active",
+                    priceId,
+                    expiresAt: expiresAt.toISOString(),
+                });
+                
+                toast({
+                    title: 'Upgrade Successful!',
+                    description: "Welcome to Sage Mode! Your plan is now active.",
+                });
+            } else {
+                 toast({
+                    variant: 'destructive',
+                    title: 'Upgrade Failed',
+                    description: 'Could not upgrade your plan. Please try again.',
+                });
+            }
+        
+        } catch (error: any) {
+            toast({
+                variant: 'destructive',
+                title: 'An error occurred',
+                description: error.message || 'Something went wrong.',
+            });
+        } finally {
+            setIsLoading(null);
+        }
+    };
+    
     return (
         <>
+        <Script
+            id="razorpay-checkout-js"
+            src="https://checkout.razorpay.com/v1/checkout.js"
+        />
         <section id="pricing" className="relative w-full overflow-hidden py-20 sm:py-32">
              <div className="absolute inset-0 -z-10 flex items-center justify-center">
                 <h1 className="text-center text-9xl md:text-[200px] font-bold text-foreground/5 pointer-events-none">
@@ -288,6 +365,8 @@ const PricingContent = () => {
                             key={plan.name} 
                             variants={itemVariants}
                             plan={plan as PricingPlan}
+                            onCtaClick={handleMockUpgrade}
+                            isLoading={isLoading}
                         />
                     ))}
                 </motion.div>
