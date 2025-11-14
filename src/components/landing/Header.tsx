@@ -173,9 +173,11 @@ export function Header() {
         </nav>
 
         <div className="flex flex-1 items-center justify-end space-x-2">
-           {!loading && (
-             user ? <ScrambleDashboardButton /> : <Button asChild><Link href="/signup">Get Started</Link></Button>
-          )}
+           <div className="hidden md:flex">
+             {!loading && (
+               user ? <ScrambleDashboardButton /> : <Button asChild><Link href="/signup">Get Started</Link></Button>
+             )}
+           </div>
            <motion.button
             className="hover:bg-muted rounded-lg p-2 transition-colors duration-200 md:hidden"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -200,6 +202,23 @@ export function Header() {
               transition={{ duration: 0.3, ease: 'easeInOut' }}
             >
               <div className="border-t border-border/40 bg-background/95 mt-0 space-y-2 py-4 px-4 shadow-xl">
+                {!loading && (
+                    <div className="px-4 py-3">
+                        {user ? (
+                            <Button asChild className="w-full">
+                                <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                                    <LayoutDashboard className="mr-2 h-4 w-4" /> Go to Dashboard
+                                </Link>
+                            </Button>
+                        ) : (
+                            <Button asChild className="w-full">
+                                <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                                    Get Started
+                                </Link>
+                            </Button>
+                        )}
+                    </div>
+                )}
                 {navItems.map((item) => (
                   <Link
                     key={item.name}
