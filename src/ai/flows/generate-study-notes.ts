@@ -19,11 +19,11 @@ const GenerateStudyNotesInputSchema = z.object({
 export type GenerateStudyNotesInput = z.infer<typeof GenerateStudyNotesInputSchema>;
 
 const GenerateStudyNotesOutputSchema = z.object({
-  introduction: z.string().describe('A brief introduction to the topic.'),
-  coreConcepts: z.string().describe("A detailed explanation of the topic's core concepts in Markdown format."),
-  examples: z.string().describe("2-3 practical examples in Markdown format."),
-  keyFormulas: z.string().describe("Key formulas and their explanations in Markdown format. If not applicable, state 'None'."),
-  keyTerms: z.string().describe("A list of the most important key terms and their definitions in 'Term: Definition' markdown format."),
+  introduction: z.string().describe('A brief introduction to the topic, formatted as HTML.'),
+  coreConcepts: z.string().describe("A detailed explanation of the topic's core concepts, formatted as HTML with headings, lists, and bold tags."),
+  examples: z.string().describe("2-3 practical examples, formatted as HTML."),
+  keyFormulas: z.string().describe("Key formulas and their explanations, formatted as HTML. If not applicable, state 'None'."),
+  keyTerms: z.string().describe("A list of the most important key terms and their definitions, formatted as an HTML unordered list."),
 });
 
 export async function generateStudyNotes(input: GenerateStudyNotesInput): Promise<StudyNotes> {
@@ -34,18 +34,19 @@ const prompt = ai.definePrompt({
   name: 'generateStudyNotesPrompt',
   input: {schema: GenerateStudyNotesInputSchema},
   output: {schema: GenerateStudyNotesOutputSchema},
-  prompt: `You are an expert educator AI that creates high-quality, detailed, and structured study materials for any topic.
+  prompt: `You are an expert educator AI that creates high-quality, detailed, and structured study materials formatted in HTML.
 
   Your task is to generate a comprehensive set of study notes for the topic: **{{{topic}}}**.
 
-  The output MUST be a valid JSON object matching the requested schema.
+  The output MUST be a valid JSON object matching the requested schema. All string values in the JSON must be valid HTML.
 
-  **Instructions for the notes:**
-  - **introduction**: Start with a concise introduction.
-  - **coreConcepts**: Provide a detailed explanation of the core concepts. Use Markdown for formatting (headings, lists, bold text). Whenever you mention one of the key terms defined below, you MUST embed its definition directly into the text using the format [[Term|Definition]]. Be generous and use this format frequently to create a rich, interactive experience.
-  - **examples**: Include 2-3 clear, practical examples. Use Markdown. Also use the [[Term|Definition]] format in this section where appropriate.
-  - **keyFormulas**: If applicable, list key formulas and their explanations. Use Markdown. If there are no formulas, the value should be 'None'.
-  - **keyTerms**: Identify and define 8-12 of the most important key terms. Format this as a list using Markdown, like '* Term: Definition'.
+  **Instructions for the HTML notes:**
+  - **Overall:** Use semantic HTML tags. Use <h2> for section titles, <p> for paragraphs, <ul> and <li> for lists, <strong> for important keywords, and <em> for emphasis. Do NOT include <html> or <body> tags.
+  - **introduction**: Start with a concise introduction in a <p> tag.
+  - **coreConcepts**: Provide a detailed explanation of the core concepts. Use <h3> for sub-headings and structure content logically.
+  - **examples**: Include 2-3 clear, practical examples. Use <h3> for each example title and <p> for the explanation.
+  - **keyFormulas**: If applicable, list key formulas. For each formula, use a <p> tag with the formula name in a <strong> tag, followed by the explanation. If there are no formulas, the value should be the string 'None'.
+  - **keyTerms**: Identify and define 8-12 of the most important key terms. Format this as an HTML unordered list (<ul>), with each term and definition inside a list item (<li>), like '<li><strong>Term:</strong> Definition</li>'.
   `,
 });
 
