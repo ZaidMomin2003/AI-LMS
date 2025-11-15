@@ -1,95 +1,113 @@
-import { SignUpForm } from '@/components/auth/SignUpForm';
-import { BookOpenCheck } from 'lucide-react';
-import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/card';
 
-const TestimonialCard = ({ quote, name, handle }: { quote: string; name: string; handle: string }) => (
-    <Card className="bg-card/50 p-6 rounded-xl shadow-lg border border-border/20 backdrop-blur-sm">
-        <CardContent className="p-0">
-            <p className="text-foreground/80 mb-4">&ldquo;{quote}&rdquo;</p>
-            <footer className="font-semibold">
-                <p className="text-foreground">{name}</p>
-                <p className="text-muted-foreground text-sm font-normal">{handle}</p>
-            </footer>
-        </CardContent>
-    </Card>
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider, isFirebaseEnabled } from '@/lib/firebase';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { BookOpenCheck, CheckCircle } from 'lucide-react';
+
+const GoogleIcon = () => (
+    <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12s5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.06,4.71c2.04-3.46,5.72-6,9.63-6c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C42.022,35.244,44,30.036,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path>
+    </svg>
 );
 
-const testimonials = [
-    {
-      quote: "Getting started was the best decision for my grades. The instant study aids made learning feel less like a chore and more like an adventure.",
-      name: "Emily Rodriguez",
-      handle: "University Freshman"
-    },
-    {
-        quote: "I was skeptical about AI for studying, but Wisdom proved me wrong. It's like having a personal tutor available 24/7.",
-        name: "David Smith",
-        handle: "Medical Student"
-    },
-    {
-        quote: "The roadmap and study plan features are incredible for staying organized. I finally feel in control of my syllabus.",
-        name: "Aisha Khan",
-        handle: "Computer Science Major"
-    },
-    {
-        quote: "It's not just for students. I use it to learn new hobbies and skills in my free time. Highly recommended!",
-        name: "Tom Bradley",
-        handle: "Creative Director"
-    }
-  ];
+const features = [
+    "AI-Generated Notes",
+    "Interactive Flashcards",
+    "Personalized Quizzes",
+    "AI Study Roadmaps"
+];
 
 export default function SignUpPage() {
-  return (
-    <div className="w-full min-h-screen grid grid-cols-1 lg:grid-cols-2">
-      <div className="hidden lg:flex flex-col items-center justify-center bg-muted p-8 overflow-hidden relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-muted via-background/50 to-muted -z-0" />
-          <div className="relative w-full max-w-md h-full max-h-[80vh] [mask-image:linear-gradient(to_bottom,transparent_0%,#000_10%,#000_90%,transparent_100%)] z-10">
-              <div className="animate-marquee-y [animation-direction:reverse] space-y-4">
-                  {[...testimonials, ...testimonials].map((t, i) => (
-                      <TestimonialCard key={i} {...t} />
-                  ))}
-              </div>
-          </div>
-      </div>
-      <div className="flex items-center justify-center p-6 sm:p-12 relative">
-          <div className="absolute top-8 left-8 z-10">
-              <Link href="/" className="flex items-center gap-3 text-lg font-semibold font-headline text-foreground">
-                  <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
-                    <BookOpenCheck className="h-5 w-5" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold font-headline text-xl -mb-1">Wisdom</span>
-                    <span className="text-xs text-muted-foreground">AI Studybuddy</span>
+    const router = useRouter();
+    const { toast } = useToast();
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+    async function handleGoogleSignIn() {
+        if (!isFirebaseEnabled || !auth || !googleProvider) return;
+        setIsGoogleLoading(true);
+        try {
+            await signInWithPopup(auth, googleProvider);
+            router.push('/onboarding');
+        } catch (error: any) {
+            toast({
+                variant: 'destructive',
+                title: 'Sign-Up Failed',
+                description: error.message || "An unexpected error occurred.",
+            });
+        } finally {
+            setIsGoogleLoading(false);
+        }
+    }
+
+    return (
+        <div className="flex min-h-screen items-center justify-center bg-background p-4">
+            <div className="w-full max-w-sm">
+                <Card className="bg-card/50 border-border/20 shadow-2xl">
+                    <CardHeader className="text-center">
+                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
+                           <BookOpenCheck className="h-8 w-8" />
+                        </div>
+                        <CardTitle className="text-3xl font-headline">Get Started</CardTitle>
+                        <CardDescription>Create your account and start your AI-powered learning journey.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <Button 
+                            className="w-full h-12 text-base" 
+                            onClick={handleGoogleSignIn} 
+                            disabled={isGoogleLoading}
+                        >
+                          {isGoogleLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <GoogleIcon />}
+                          Sign up with Google
+                        </Button>
+                        <div className="relative">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t border-border/30" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-card px-2 text-muted-foreground">
+                                    Quick & Easy
+                                </span>
+                            </div>
+                        </div>
+                        <div className="space-y-3">
+                           <p className="text-sm font-medium text-foreground">What you get:</p>
+                           <ul className="space-y-2">
+                               {features.map(feature => (
+                                   <li key={feature} className="flex items-center text-sm text-muted-foreground">
+                                       <CheckCircle className="mr-2 h-4 w-4 text-primary" />
+                                       {feature}
+                                   </li>
+                               ))}
+                           </ul>
+                        </div>
+                        <div className="text-center text-sm">
+                          Already have an account?{" "}
+                          <Link href="/login" className="font-semibold text-primary underline-offset-4 hover:underline">
+                            Sign in
+                          </Link>
+                        </div>
+                    </CardContent>
+                </Card>
+                <div className="mt-4 px-4 text-center text-xs text-muted-foreground">
+                    By signing up, you agree to our{' '}
+                    <Link href="/terms" className="underline hover:text-primary">
+                        Terms
+                    </Link>{' '}
+                    and{' '}
+                    <Link href="/privacy" className="underline hover:text-primary">
+                        Privacy Policy
+                    </Link>
+                    .
                 </div>
-              </Link>
-          </div>
-        <div className="mx-auto grid w-full max-w-sm gap-6">
-          <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold font-headline">Create an Account</h1>
-            <p className="text-balance text-muted-foreground">
-              Enter your details to start your AI learning journey.
-            </p>
-          </div>
-          <SignUpForm />
-           <div className="mt-4 text-center text-sm text-muted-foreground">
-            By signing up, you agree to our{' '}
-            <Link href="/terms" className="underline hover:text-primary">
-                Terms
-            </Link>{' '}
-            and{' '}
-            <Link href="/privacy" className="underline hover:text-primary">
-                Privacy Policy
-            </Link>
-            .
-          </div>
-          <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
-            <Link href="/login" className="underline font-semibold text-primary">
-              Login
-            </Link>
-          </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
