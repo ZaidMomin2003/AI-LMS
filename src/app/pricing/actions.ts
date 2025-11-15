@@ -2,43 +2,43 @@
 'use server';
 
 import 'dotenv/config';
+import Razorpay from 'razorpay';
 import { updateUserDoc } from '@/services/firestore';
 import type { UserSubscription } from '@/types';
 import { isFirebaseEnabled } from '@/lib/firebase';
 
-export async function upgradeSubscriptionAction(uid: string, priceId: string): Promise<{ success: boolean }> {
-    if (!uid || !isFirebaseEnabled) {
-        return { success: false };
-    }
+export async function createRazorpayOrder(amount: number, uid: string, priceId: string) {
+  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    throw new Error('Razorpay keys are not configured on the server.');
+  }
 
-    const planDurations: Record<string, number> = {
-        SAGE_MODE_YEARLY: 365,
-        SAGE_MODE_6_MONTHS: 180,
-        SAGE_MODE_3_MONTHS: 90,
-    };
-    
-    const durationInDays = planDurations[priceId];
-    if (!durationInDays) {
-        return { success: false };
-    }
+  const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
 
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + durationInDays);
-
-    const subscriptionData: UserSubscription = {
-        planName: "Sage Mode",
-        status: "active",
+  const options = {
+    amount: amount * 100, // Amount in the smallest currency unit (paise)
+    currency: 'INR',
+    receipt: `receipt_order_${new Date().getTime()}`,
+    notes: {
+        // important notes for server-to-server verification
+        uid: uid,
         priceId: priceId,
-        expiresAt: expiresAt.toISOString(),
-    };
-
-    try {
-        await updateUserDoc(uid, { subscription: subscriptionData });
-        return { success: true };
-    } catch (error) {
-        console.error("Error upgrading subscription:", error);
-        return { success: false };
     }
+  };
+
+  try {
+    const order = await razorpay.orders.create(options);
+    return {
+        id: order.id,
+        currency: order.currency,
+        amount: order.amount
+    };
+  } catch (error) {
+    console.error('Error creating Razorpay order:', error);
+    throw new Error('Could not create Razorpay order.');
+  }
 }
 
 export async function downgradeToHobbyAction(uid: string): Promise<{ success: boolean }> {
@@ -59,4 +59,3 @@ export async function downgradeToHobbyAction(uid: string): Promise<{ success: bo
         return { success: false };
     }
 }
-    

@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, type Variants } from 'framer-motion';
 import Script from 'next/script';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { upgradeSubscriptionAction, downgradeToHobbyAction } from './actions';
+import { createRazorpayOrder, downgradeToHobbyAction } from './actions';
 import { useSubscription } from '@/context/SubscriptionContext';
 
 
@@ -176,7 +176,7 @@ const PricingFeatures = ({ features, isHighlighted, className }: PricingFeatures
 interface PricingCardProps
   extends React.ComponentPropsWithoutRef<typeof motion.div> {
   plan: PricingPlan;
-  onCtaClick: (priceId: string) => void;
+  onCtaClick: (amount: number, priceId: string) => void;
   isLoading: string | null;
   onDowngradeClick?: () => void;
   isDowngradeLoading?: boolean;
@@ -193,7 +193,7 @@ const PricingCard = forwardRef<HTMLDivElement, PricingCardProps>(
 
     const handleCta = () => {
         if (selectedTier) {
-            onCtaClick(selectedTier.id);
+            onCtaClick(selectedTier.amount, selectedTier.id);
         }
     };
 
@@ -280,17 +280,17 @@ PricingCard.displayName = 'PricingCard';
 
 const PricingContent = () => {
     const { user } = useAuth();
-    const { subscription, setSubscription } = useSubscription();
+    const { subscription } = useSubscription();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState<string | null>(null);
     const [isDowngradeLoading, setIsDowngradeLoading] = useState(false);
 
-    const handleMockUpgrade = async (priceId: string) => {
+    const handlePayment = async (amount: number, priceId: string) => {
         if (!user) {
             toast({
                 variant: 'destructive',
                 title: 'Authentication Error',
-                description: 'You must be logged in to upgrade your plan.',
+                description: 'You must be logged in to subscribe.',
             });
             return;
         }
@@ -298,42 +298,61 @@ const PricingContent = () => {
         setIsLoading(priceId);
 
         try {
-            const result = await upgradeSubscriptionAction(user.uid, priceId);
-            if (result.success) {
-                // Manually set subscription to trigger context update
-                const planDurations: Record<string, number> = {
-                    SAGE_MODE_YEARLY: 365,
-                    SAGE_MODE_6_MONTHS: 180,
-                    SAGE_MODE_3_MONTHS: 90,
-                };
-                const durationInDays = planDurations[priceId];
-                const expiresAt = new Date();
-                expiresAt.setDate(expiresAt.getDate() + durationInDays);
+            const order = await createRazorpayOrder(amount, user.uid, priceId);
+            
+            const options = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+                amount: order.amount,
+                currency: order.currency,
+                name: 'wisdom',
+                description: 'Sage Mode Subscription',
+                order_id: order.id,
+                handler: async function (response: any) {
+                    const verificationData = {
+                        razorpay_order_id: response.razorpay_order_id,
+                        razorpay_payment_id: response.razorpay_payment_id,
+                        razorpay_signature: response.razorpay_signature,
+                        uid: user.uid,
+                        priceId: priceId,
+                    };
 
-                setSubscription({
-                    planName: "Sage Mode",
-                    status: "active",
-                    priceId,
-                    expiresAt: expiresAt.toISOString(),
-                });
-                
-                toast({
-                    title: 'Upgrade Successful!',
-                    description: "Welcome to Sage Mode! Your plan is now active.",
-                });
-            } else {
-                 toast({
-                    variant: 'destructive',
-                    title: 'Upgrade Failed',
-                    description: 'Could not upgrade your plan. Please try again.',
-                });
-            }
+                    const result = await fetch('/api/razorpay/verify', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(verificationData),
+                    }).then(res => res.json());
+
+                    if (result.success) {
+                        toast({
+                            title: 'Payment Successful!',
+                            description: 'Welcome to Sage Mode! Your subscription is now active.',
+                        });
+                    } else {
+                        toast({
+                            variant: 'destructive',
+                            title: 'Verification Failed',
+                            description: result.message || 'Could not verify your payment. Please contact support.',
+                        });
+                    }
+                },
+                prefill: {
+                    name: user.displayName || 'wisdom User',
+                    email: user.email || '',
+                },
+                theme: {
+                    color: '#4B0082',
+                },
+            };
+            
+            // @ts-ignore
+            const rzp = new window.Razorpay(options);
+            rzp.open();
         
         } catch (error: any) {
             toast({
                 variant: 'destructive',
-                title: 'An error occurred',
-                description: error.message || 'Something went wrong.',
+                title: 'Payment Error',
+                description: error.message || 'Could not initiate payment. Please try again.',
             });
         } finally {
             setIsLoading(null);
@@ -347,7 +366,6 @@ const PricingContent = () => {
         try {
             const result = await downgradeToHobbyAction(user.uid);
             if (result.success) {
-                setSubscription({ planName: 'Hobby', status: 'active' });
                 toast({
                     title: 'Plan Changed',
                     description: "You've been switched to the Hobby plan.",
@@ -396,7 +414,7 @@ const PricingContent = () => {
                             key={plan.name} 
                             variants={itemVariants}
                             plan={plan as PricingPlan}
-                            onCtaClick={handleMockUpgrade}
+                            onCtaClick={(amount, priceId) => handlePayment(amount, priceId)}
                             isLoading={isLoading}
                             onDowngradeClick={handleDowngrade}
                             isDowngradeLoading={isDowngradeLoading}
