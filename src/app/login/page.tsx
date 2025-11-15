@@ -10,7 +10,10 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpenCheck, CheckCircle } from 'lucide-react';
+import { BookOpenCheck, CheckCircle, Quote } from 'lucide-react';
+import Image from 'next/image';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 
 const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
@@ -48,64 +51,84 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-background p-4">
-            <div className="w-full max-w-sm">
-                <Card className="bg-card/50 border-border/20 shadow-2xl">
-                    <CardHeader className="text-center">
-                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
-                           <BookOpenCheck className="h-8 w-8" />
+        <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
+            <div className="hidden bg-secondary lg:flex items-center justify-center p-12">
+                <div className="max-w-md w-full">
+                    <Quote className="h-10 w-10 text-primary" />
+                    <blockquote className="mt-4 text-2xl font-semibold text-foreground">
+                        "The roadmap feature planned my entire finals week. I knew exactly what to study each day and didn't have to stress about it. Total game-changer."
+                    </blockquote>
+                    <div className="mt-8 flex items-center gap-4">
+                        <Avatar>
+                            <AvatarImage src="https://picsum.photos/seed/student-testimonials/100/100" alt="@jess" />
+                            <AvatarFallback>JS</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <p className="font-semibold">Jessica Smith</p>
+                            <p className="text-sm text-muted-foreground">AP Student, Class of '24</p>
                         </div>
-                        <CardTitle className="text-3xl font-headline">Welcome Back</CardTitle>
-                        <CardDescription>Sign in to continue your learning journey.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <Button 
-                            className="w-full h-12 text-base" 
-                            onClick={handleGoogleSignIn} 
-                            disabled={isGoogleLoading}
-                        >
-                          {isGoogleLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <GoogleIcon />}
-                          Sign in with Google
-                        </Button>
-                        <div className="relative">
-                            <div className="absolute inset-0 flex items-center">
-                                <span className="w-full border-t border-border/30" />
+                    </div>
+                </div>
+            </div>
+            <div className="flex min-h-screen items-center justify-center p-4">
+                <div className="w-full max-w-sm">
+                    <Card className="border-0 shadow-none sm:border sm:shadow-lg">
+                        <CardHeader className="text-center">
+                            <Link href="/" className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg">
+                               <BookOpenCheck className="h-8 w-8" />
+                            </Link>
+                            <CardTitle className="text-3xl font-headline">Welcome Back</CardTitle>
+                            <CardDescription>Sign in to continue your learning journey.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <Button 
+                                className="w-full h-12 text-base" 
+                                onClick={handleGoogleSignIn} 
+                                disabled={isGoogleLoading}
+                            >
+                              {isGoogleLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <GoogleIcon />}
+                              Sign in with Google
+                            </Button>
+                            <div className="relative">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t" />
+                                </div>
+                                <div className="relative flex justify-center text-xs uppercase">
+                                    <span className="bg-background px-2 text-muted-foreground">
+                                        Quick & Easy
+                                    </span>
+                                </div>
                             </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                                <span className="bg-card px-2 text-muted-foreground">
-                                    Quick & Easy
-                                </span>
+                            <div className="space-y-3">
+                               <p className="text-sm font-medium text-foreground">What you get:</p>
+                               <ul className="space-y-2">
+                                   {features.map(feature => (
+                                       <li key={feature} className="flex items-center text-sm text-muted-foreground">
+                                           <CheckCircle className="mr-2 h-4 w-4 text-primary" />
+                                           {feature}
+                                       </li>
+                                   ))}
+                               </ul>
                             </div>
-                        </div>
-                        <div className="space-y-3">
-                           <p className="text-sm font-medium text-foreground">What you get:</p>
-                           <ul className="space-y-2">
-                               {features.map(feature => (
-                                   <li key={feature} className="flex items-center text-sm text-muted-foreground">
-                                       <CheckCircle className="mr-2 h-4 w-4 text-primary" />
-                                       {feature}
-                                   </li>
-                               ))}
-                           </ul>
-                        </div>
-                        <div className="text-center text-sm">
-                          Don't have an account?{" "}
-                          <Link href="/signup" className="font-semibold text-primary underline-offset-4 hover:underline">
-                            Sign up
-                          </Link>
-                        </div>
-                    </CardContent>
-                </Card>
-                <div className="mt-4 px-4 text-center text-xs text-muted-foreground">
-                    By signing in, you agree to our{' '}
-                    <Link href="/terms" className="underline hover:text-primary">
-                        Terms
-                    </Link>{' '}
-                    and{' '}
-                    <Link href="/privacy" className="underline hover:text-primary">
-                        Privacy Policy
-                    </Link>
-                    .
+                            <div className="text-center text-sm">
+                              Don't have an account?{" "}
+                              <Link href="/signup" className="font-semibold text-primary underline-offset-4 hover:underline">
+                                Sign up
+                              </Link>
+                            </div>
+                        </CardContent>
+                    </Card>
+                    <div className="mt-4 px-4 text-center text-xs text-muted-foreground">
+                        By signing in, you agree to our{' '}
+                        <Link href="/terms" className="underline hover:text-primary">
+                            Terms
+                        </Link>{' '}
+                        and{' '}
+                        <Link href="/privacy" className="underline hover:text-primary">
+                            Privacy Policy
+                        </Link>
+                        .
+                    </div>
                 </div>
             </div>
         </div>
