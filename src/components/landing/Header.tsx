@@ -146,7 +146,7 @@ export function Header() {
     >
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
         {/* Left: Logo */}
-        <div className="flex-1 flex items-center">
+        <div className="flex items-center">
              <Link href="/" className="flex items-center space-x-3">
                 <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
                     <BookOpenCheck className="h-5 w-5" />
@@ -178,7 +178,7 @@ export function Header() {
         </nav>
 
         {/* Right: Actions */}
-        <div className="flex flex-1 items-center justify-end space-x-2">
+        <div className="flex items-center justify-end space-x-2">
            <div className="hidden md:flex">
              {!loading && (
                user ? <ScrambleDashboardButton /> : <Button asChild><Link href="/signup">Get Started</Link></Button>
