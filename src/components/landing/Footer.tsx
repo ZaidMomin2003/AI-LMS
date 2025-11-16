@@ -19,8 +19,7 @@ import { ThemeToggle } from '../ThemeToggle';
 const footerNav = {
     company: [
       { name: 'About', href: '/developer' },
-      { name: 'Partners', href: '/business' },
-      { name: 'Schools', href: '/collab' },
+      { name: 'Institution', href: '/business' },
       { name: 'Contact', href: '/#contact' },
     ],
     features: [
