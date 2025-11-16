@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PartyPopper, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const includedFeatures = [
   'AI-Generated Notes',
@@ -16,6 +17,7 @@ const includedFeatures = [
 
 export function WelcomePopup() {
   const [isOpen, setIsOpen] = useState(false);
+  const [featureIndex, setFeatureIndex] = useState(0);
 
   useEffect(() => {
     const popupShown = sessionStorage.getItem('welcomePopupShown');
@@ -28,6 +30,16 @@ export function WelcomePopup() {
       return () => clearTimeout(timer);
     }
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      const featureTimer = setInterval(() => {
+        setFeatureIndex((prevIndex) => (prevIndex + 1) % includedFeatures.length);
+      }, 2000); // Change feature every 2 seconds
+
+      return () => clearInterval(featureTimer);
+    }
+  }, [isOpen]);
 
   const handleClose = () => {
     sessionStorage.setItem('welcomePopupShown', 'true');
@@ -59,14 +71,22 @@ export function WelcomePopup() {
                 </DialogDescription>
             </DialogHeader>
 
-            <ul className="space-y-2 text-left text-sm text-muted-foreground w-fit mx-auto">
-                {includedFeatures.map(feature => (
-                    <li key={feature} className="flex items-center gap-3">
-                        <CheckCircle className="w-5 h-5 text-green-500" />
-                        <span>{feature}</span>
-                    </li>
-                ))}
-            </ul>
+            <div className="h-16 flex flex-col items-center justify-center">
+                 <AnimatePresence mode="wait">
+                    <motion.div
+                        key={featureIndex}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ duration: 0.5 }}
+                        className="flex items-center gap-3 text-sm text-muted-foreground"
+                    >
+                         <CheckCircle className="w-5 h-5 text-green-500" />
+                         <span className="font-medium">{includedFeatures[featureIndex]}</span>
+                    </motion.div>
+                </AnimatePresence>
+            </div>
+
 
             <Button asChild size="lg" className="w-full" onClick={handleSignUpClick}>
                  <Link href="/signup">
