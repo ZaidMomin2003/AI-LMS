@@ -136,111 +136,116 @@ export function Header() {
 
 
   return (
-    <motion.header
-      className="fixed top-0 right-0 left-0 z-50 transition-all duration-300"
-      variants={headerVariants}
-      initial="initial"
-      animate={'animate'}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
-      style={headerStyle}
-    >
-      <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
-        {/* Left: Logo */}
-        <div className="flex items-center">
-             <Link href="/" className="flex items-center space-x-3">
-                <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
-                    <BookOpenCheck className="h-5 w-5" />
-                </div>
-                <div className="hidden sm:flex flex-col">
-                    <span className="font-bold font-headline text-lg -mb-1">Wisdom</span>
-                    <span className="text-xs text-muted-foreground">AI Studybuddy</span>
-                </div>
-            </Link>
+    <div className="fixed top-0 left-0 right-0 z-50">
+        <div className="bg-blue-600 text-white text-center text-sm py-1 font-semibold">
+            AWS is funding us
         </div>
+        <motion.header
+        className="relative transition-all duration-300"
+        variants={headerVariants}
+        initial="initial"
+        animate={'animate'}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        style={headerStyle}
+        >
+        <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
+            {/* Left: Logo */}
+            <div className="flex items-center">
+                <Link href="/" className="flex items-center space-x-3">
+                    <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
+                        <BookOpenCheck className="h-5 w-5" />
+                    </div>
+                    <div className="hidden sm:flex flex-col">
+                        <span className="font-bold font-headline text-lg -mb-1">Wisdom</span>
+                        <span className="text-xs text-muted-foreground">AI Studybuddy</span>
+                    </div>
+                </Link>
+            </div>
 
-        {/* Center: Navigation */}
-        <nav className="hidden items-center justify-center md:flex">
-            <div className="flex items-center space-x-2 rounded-full border bg-background/70 px-3 py-1.5 shadow-sm">
-                {navItems.map((item) => (
+            {/* Center: Navigation */}
+            <nav className="hidden items-center justify-center md:flex">
+                <div className="flex items-center space-x-2 rounded-full border bg-background/70 px-3 py-1.5 shadow-sm">
+                    {navItems.map((item) => (
+                        <Link
+                            key={item.name}
+                            href={item.href}
+                            target={item.external ? '_blank' : undefined}
+                            rel={item.external ? 'noopener noreferrer' : undefined}
+                            className={cn(
+                                "rounded-full px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
+                            )}
+                        >
+                            {item.name}
+                        </Link>
+                    ))}
+                </div>
+            </nav>
+
+            {/* Right: Actions */}
+            <div className="flex items-center justify-end space-x-2">
+            <div className="hidden md:flex">
+                {!loading && (
+                user ? <ScrambleDashboardButton /> : <Button asChild><Link href="/signup">Get Started</Link></Button>
+                )}
+            </div>
+            <motion.button
+                className="hover:bg-muted rounded-lg p-2 transition-colors duration-200 md:hidden"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                whileTap={{ scale: 0.95 }}
+            >
+                {isMobileMenuOpen ? (
+                <X className="h-6 w-6" />
+                ) : (
+                <Menu className="h-6 w-6" />
+                )}
+            </motion.button>
+            </div>
+        </div>
+        <AnimatePresence>
+            {isMobileMenuOpen && (
+                <motion.div
+                className="overflow-hidden md:hidden"
+                variants={mobileMenuVariants}
+                initial="closed"
+                animate="open"
+                exit="closed"
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                >
+                <div className="border-t border-border/40 bg-background/95 mt-0 space-y-2 py-4 px-4 shadow-xl">
+                    {!loading && (
+                        <div className="px-4 py-3">
+                            {user ? (
+                                <Button asChild className="w-full">
+                                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                                        <LayoutDashboard className="mr-2 h-4 w-4" /> Go to Dashboard
+                                    </Link>
+                                </Button>
+                            ) : (
+                                <Button asChild className="w-full">
+                                    <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                                        Get Started
+                                    </Link>
+                                </Button>
+                            )}
+                        </div>
+                    )}
+                    {navItems.map((item) => (
                     <Link
                         key={item.name}
                         href={item.href}
                         target={item.external ? '_blank' : undefined}
                         rel={item.external ? 'noopener noreferrer' : undefined}
-                        className={cn(
-                            "rounded-full px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
-                        )}
+                        className="text-foreground hover:bg-muted block px-4 py-3 font-medium transition-colors duration-200"
+                        onClick={() => setIsMobileMenuOpen(false)}
                     >
                         {item.name}
                     </Link>
-                ))}
-            </div>
-        </nav>
-
-        {/* Right: Actions */}
-        <div className="flex items-center justify-end space-x-2">
-           <div className="hidden md:flex">
-             {!loading && (
-               user ? <ScrambleDashboardButton /> : <Button asChild><Link href="/signup">Get Started</Link></Button>
-             )}
-           </div>
-           <motion.button
-            className="hover:bg-muted rounded-lg p-2 transition-colors duration-200 md:hidden"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            whileTap={{ scale: 0.95 }}
-          >
-            {isMobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
+                    ))}
+                </div>
+                </motion.div>
             )}
-          </motion.button>
-        </div>
-      </div>
-      <AnimatePresence>
-          {isMobileMenuOpen && (
-            <motion.div
-              className="overflow-hidden md:hidden"
-              variants={mobileMenuVariants}
-              initial="closed"
-              animate="open"
-              exit="closed"
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-            >
-              <div className="border-t border-border/40 bg-background/95 mt-0 space-y-2 py-4 px-4 shadow-xl">
-                {!loading && (
-                    <div className="px-4 py-3">
-                        {user ? (
-                            <Button asChild className="w-full">
-                                <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
-                                    <LayoutDashboard className="mr-2 h-4 w-4" /> Go to Dashboard
-                                </Link>
-                            </Button>
-                        ) : (
-                            <Button asChild className="w-full">
-                                <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                                    Get Started
-                                </Link>
-                            </Button>
-                        )}
-                    </div>
-                )}
-                {navItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    target={item.external ? '_blank' : undefined}
-                    rel={item.external ? 'noopener noreferrer' : undefined}
-                    className="text-foreground hover:bg-muted block px-4 py-3 font-medium transition-colors duration-200"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-    </motion.header>
+            </AnimatePresence>
+        </motion.header>
+    </div>
   );
 }
