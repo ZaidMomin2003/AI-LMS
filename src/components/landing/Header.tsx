@@ -146,7 +146,7 @@ export function Header() {
     >
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
         {/* Left: Logo */}
-        <div className="flex items-center">
+        <div className="flex-1 flex items-center">
              <Link href="/" className="flex items-center space-x-3">
                 <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
                     <BookOpenCheck className="h-5 w-5" />
