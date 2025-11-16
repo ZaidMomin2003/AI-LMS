@@ -6,8 +6,8 @@ import { Menu, X, ChevronDown, ArrowRight, BookOpenCheck, LayoutDashboard } from
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
 import { useAuth } from '@/context/AuthContext';
-import { ThemeToggle } from '../ThemeToggle';
 import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
 
 interface NavItem {
   name: string;
@@ -24,11 +24,9 @@ const navItems: NavItem[] = [
     { name: 'Contact', href: '/#contact' },
 ];
 
-// --- New Scrambling Button Component for Dashboard ---
 const TARGET_TEXT = "Dashboard";
 const CYCLES_PER_LETTER = 2;
 const SHUFFLE_TIME = 50;
-
 const CHARS = "!@#$%^&*():{};|,.<>/?";
 
 const ScrambleDashboardButton = () => {
@@ -121,6 +119,7 @@ export function Header() {
   
   const headerStyle = {
     backdropFilter: isScrolled ? 'blur(16px)' : 'none',
+    WebkitBackdropFilter: isScrolled ? 'blur(16px)' : 'none',
     backgroundColor: isScrolled
         ? theme === 'dark'
         ? 'hsl(var(--background) / 0.6)'
@@ -145,33 +144,40 @@ export function Header() {
       transition={{ duration: 0.3, ease: 'easeInOut' }}
       style={headerStyle}
     >
-      <div className="container flex h-14 max-w-screen-2xl items-center">
-        <div className="mr-4 flex items-center">
-             <Link href="/" className="mr-6 flex items-center space-x-3">
+      <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
+        {/* Left: Logo */}
+        <div className="flex items-center">
+             <Link href="/" className="flex items-center space-x-3">
                 <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
                     <BookOpenCheck className="h-5 w-5" />
                 </div>
-                <div className="flex flex-col">
+                <div className="hidden sm:flex flex-col">
                     <span className="font-bold font-headline text-lg -mb-1">Wisdom</span>
                     <span className="text-xs text-muted-foreground">AI Studybuddy</span>
                 </div>
             </Link>
         </div>
 
-        <nav className="hidden items-center space-x-6 text-sm md:flex">
-            {navItems.map((item) => (
-                <Link
-                    key={item.name}
-                    href={item.href}
-                    target={item.external ? '_blank' : undefined}
-                    rel={item.external ? 'noopener noreferrer' : undefined}
-                    className="text-foreground/60 transition-colors hover:text-foreground/80"
-                >
-                    {item.name}
-                </Link>
-            ))}
+        {/* Center: Navigation */}
+        <nav className="hidden items-center justify-center md:flex">
+            <div className="flex items-center space-x-2 rounded-full border bg-background/70 px-3 py-1.5 shadow-sm">
+                {navItems.map((item) => (
+                    <Link
+                        key={item.name}
+                        href={item.href}
+                        target={item.external ? '_blank' : undefined}
+                        rel={item.external ? 'noopener noreferrer' : undefined}
+                        className={cn(
+                            "rounded-full px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
+                        )}
+                    >
+                        {item.name}
+                    </Link>
+                ))}
+            </div>
         </nav>
 
+        {/* Right: Actions */}
         <div className="flex flex-1 items-center justify-end space-x-2">
            <div className="hidden md:flex">
              {!loading && (
