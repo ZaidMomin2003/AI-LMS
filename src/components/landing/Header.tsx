@@ -19,7 +19,7 @@ const navItems: NavItem[] = [
     { name: 'Features', href: '/#features' },
     { name: 'Use Cases', href: '/#use-cases' },
     { name: 'Pricing', href: '/#pricing' },
-    { name: 'Institution', href: '/business'},
+    { name: 'Institution', href: '/institution' },
     { name: 'FAQ', href: '/#faq' },
     { name: 'Contact', href: '/#contact' },
 ];
@@ -137,8 +137,8 @@ export function Header() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
-        <div className="bg-blue-600 text-white text-center text-sm py-1 font-semibold">
-            AWS is funding us
+        <div className="bg-blue-600 text-white text-center text-sm py-1">
+            We're thrilled to be backed by AWS Startups! 🎉
         </div>
         <motion.header
         className="relative transition-all duration-300"
