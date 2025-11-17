@@ -5,7 +5,7 @@ import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Camera, Image as ImageIcon, Upload, Loader2, Sparkles, AlertTriangle, Lock, Star } from 'lucide-react';
+import { Camera, Image as ImageIcon, Upload, Loader2, Sparkles, AlertTriangle } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -14,13 +14,10 @@ import { captureAnswerAction } from './actions';
 import type { CaptureTheAnswerOutput } from '@/ai/flows/capture-the-answer-flow';
 import { Separator } from '@/components/ui/separator';
 import { MarkdownRenderer } from '@/components/MarkdownRenderer';
-import { useSubscription } from '@/context/SubscriptionContext';
 import { useProfile } from '@/context/ProfileContext';
-import { Skeleton } from '@/components/ui/skeleton';
-import Link from 'next/link';
 
 export default function CapturePage() {
-  const [mode, setMode] = useState<'idle' | 'capture' | 'preview' | 'locked'>('idle');
+  const [mode, setMode] = useState<'idle' | 'capture' | 'preview'>('idle');
   const [imageData, setImageData] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<CaptureTheAnswerOutput | null>(null);
@@ -28,16 +25,7 @@ export default function CapturePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
-  const { subscription, loading: subscriptionLoading } = useSubscription();
-  const { profile, updateProfile, loading: profileLoading } = useProfile();
-
-  const isLocked = subscription?.planName === 'Hobby' && (profile?.captureCount ?? 0) >= 1;
-
-  useEffect(() => {
-    if (!subscriptionLoading && !profileLoading && isLocked) {
-      setMode('locked');
-    }
-  }, [subscriptionLoading, profileLoading, isLocked]);
+  const { updateProfile } = useProfile();
 
   useEffect(() => {
     return () => {
@@ -104,10 +92,7 @@ export default function CapturePage() {
       const response = await captureAnswerAction({ imageDataUri: imageData });
       setResult(response);
       // Increment capture count
-      if (profile) {
-          const newCount = (profile.captureCount || 0) + 1;
-          await updateProfile({ ...profile, captureCount: newCount });
-      }
+      await updateProfile({ captureCount: -1 }); // Using -1 as a sentinel for increment
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -120,10 +105,6 @@ export default function CapturePage() {
   };
   
   const reset = () => {
-    if (isLocked) {
-        setMode('locked');
-        return;
-    }
     setMode('idle');
     setImageData(null);
     setResult(null);
@@ -133,37 +114,7 @@ export default function CapturePage() {
 
 
   const renderContent = () => {
-    if (subscriptionLoading || profileLoading) {
-      return (
-        <div className="flex justify-center items-center h-64">
-          <Loader2 className="w-8 h-8 animate-spin" />
-        </div>
-      );
-    }
-    
     switch(mode) {
-        case 'locked':
-            return (
-              <Card className="w-full max-w-md text-center shadow-2xl mx-auto">
-                <CardHeader>
-                  <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit">
-                      <Lock className="w-8 h-8" />
-                  </div>
-                  <CardTitle className="font-headline pt-4 text-2xl">Capture Limit Reached</CardTitle>
-                  <p className="text-muted-foreground pt-2">
-                      You've used your one free "Capture the Answer" usage. Upgrade your plan to use this feature without limits.
-                  </p>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild size="lg">
-                      <Link href="/pricing">
-                          <Star className="mr-2 h-5 w-5" />
-                          Upgrade to Pro
-                      </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            )
         case 'idle':
             return (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

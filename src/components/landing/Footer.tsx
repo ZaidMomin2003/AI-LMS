@@ -31,7 +31,6 @@ const footerNav = {
     legal: [
       { name: 'Privacy', href: '/privacy' },
       { name: 'Terms', href: '/terms' },
-      { name: 'Refunds', href: '/refund-policy' },
     ],
   };
 

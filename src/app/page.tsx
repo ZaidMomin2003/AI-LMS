@@ -12,7 +12,6 @@ import { CTA } from '@/components/landing/CTA';
 import { WelcomePopup } from '@/components/landing/WelcomePopup';
 import { Workflow } from '@/components/landing/Workflow';
 import { Testimonials } from '@/components/landing/Testimonials';
-import { Pricing } from '@/components/landing/Pricing';
 
 export default function LandingPage() {
   return (
@@ -24,7 +23,6 @@ export default function LandingPage() {
         <Workflow />
         <Testimonials />
         <Features />
-        <Pricing />
         <UseCases />
         <FAQ />
         <CTA />

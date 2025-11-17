@@ -65,7 +65,6 @@ import {
 } from './ui/dropdown-menu';
 import { useExam } from '@/context/ExamContext';
 import { ExamCountdown } from '@/components/exam/ExamCountdown';
-import { useSubscription } from '@/context/SubscriptionContext';
 import { Skeleton } from './ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from './ui/tooltip';
 import { usePomodoro } from '@/context/PomodoroContext';
@@ -86,39 +85,14 @@ function AppLoadingScreen() {
 }
 
 function SidebarSubscriptionButton() {
-    const { subscription } = useSubscription();
-
-    const planDetails: Record<string, string> = {
-        SAGE_MODE_YEARLY: '1 Year Plan',
-        SAGE_MODE_6_MONTHS: '6 Month Plan',
-        SAGE_MODE_3_MONTHS: '3 Month Plan',
-    };
-
-    if (subscription?.planName === 'Hobby') {
-        return (
-            <Link href="/pricing" className="block p-2">
-                <div className="group relative rounded-lg p-4 bg-gradient-to-br from-secondary to-card text-foreground overflow-hidden border border-dashed border-primary/50 hover:border-primary/80 transition-all">
-                    <h4 className="font-bold text-base font-headline">Free Plan</h4>
-                    <p className="text-xs text-muted-foreground">Upgrade to Pro</p>
-                    <div className="absolute top-1 right-1 bg-primary/20 text-primary rounded-full p-1.5 transform transition-transform group-hover:rotate-45">
-                        <ArrowRight className="w-3 h-3" />
-                    </div>
-                    <Zap className="absolute -bottom-4 -right-2 w-16 h-16 text-primary/10" />
-                </div>
-            </Link>
-        );
-    }
-    
-    const currentPlanText = subscription?.priceId ? planDetails[subscription.priceId] : 'Premium';
-
     return (
         <Link href="/pricing" className="block p-2">
             <div className="group relative rounded-lg p-4 bg-gradient-to-br from-primary/80 to-primary text-primary-foreground overflow-hidden">
                 <h4 className="font-bold text-base font-headline flex items-center gap-2">
                     <Gem className="w-5 h-5" />
-                    Sage Mode
+                    Free Plan
                 </h4>
-                <p className="text-xs text-primary-foreground/80">{currentPlanText}</p>
+                <p className="text-xs text-primary-foreground/80">All features unlocked!</p>
                  <div className="absolute top-1 right-1 bg-primary-foreground/20 text-primary-foreground rounded-full p-1.5">
                     <CheckCircle className="w-3 h-3" />
                 </div>
@@ -130,11 +104,6 @@ function SidebarSubscriptionButton() {
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
-  const { subscription, loading: subscriptionLoading } = useSubscription();
-  const { pomodoroHistory, loading: pomodoroLoading } = usePomodoro();
-  const { topics, dataLoading: topicsLoading } = useTopic();
-  const { roadmap, loading: roadmapLoading } = useRoadmap();
-  const { profile, loading: profileLoading } = useProfile();
   
   const router = useRouter();
   const pathname = usePathname();
@@ -146,7 +115,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user, authLoading, router]);
 
-  const appIsLoading = authLoading || !user || subscriptionLoading || pomodoroLoading || topicsLoading || roadmapLoading || profileLoading;
+  const appIsLoading = authLoading || !user;
 
   if (appIsLoading) {
     return <AppLoadingScreen />;
@@ -161,13 +130,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     if (!email) return 'U';
     return email[0].toUpperCase();
   }
-
-  const isHobby = subscription?.planName === 'Hobby';
-  const isRoadmapLocked = isHobby && !!roadmap;
-  const isPomodoroLocked = isHobby && pomodoroHistory.length > 0;
-  const isCaptureLocked = isHobby && (profile?.captureCount ?? 0) >= 1;
-  
-  const wisdomGptAllowed = subscription?.planName && ['Sage Mode'].includes(subscription.planName);
 
   return (
       <SidebarProvider>
@@ -236,57 +198,33 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <SidebarGroup>
                     <SidebarGroupLabel>Tools</SidebarGroupLabel>
                     <SidebarMenuItem>
-                        <TooltipProvider><Tooltip>
-                            <TooltipTrigger asChild>
-                                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/roadmap')}>
-                                    <Link href="/dashboard/roadmap" className={cn(isRoadmapLocked && 'text-muted-foreground')}>
-                                        <Map /><span>Roadmap</span>
-                                        {isRoadmapLocked && <Lock className="ml-auto h-3 w-3" />}
-                                    </Link>
-                                </SidebarMenuButton>
-                            </TooltipTrigger>
-                            {isRoadmapLocked && <TooltipContent side="right" align="center"><p>Upgrade for unlimited roadmaps</p></TooltipContent>}
-                        </Tooltip></TooltipProvider>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/roadmap')}>
+                            <Link href="/dashboard/roadmap">
+                                <Map /><span>Roadmap</span>
+                            </Link>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <TooltipProvider><Tooltip>
-                            <TooltipTrigger asChild>
-                                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/pomodoro')}>
-                                    <Link href="/dashboard/pomodoro" className={cn(isPomodoroLocked && 'text-muted-foreground')}>
-                                        <Timer /><span>Pomodoro</span>
-                                        {isPomodoroLocked && <Lock className="ml-auto h-3 w-3" />}
-                                    </Link>
-                                </SidebarMenuButton>
-                            </TooltipTrigger>
-                            {isPomodoroLocked && <TooltipContent side="right" align="center"><p>Upgrade for unlimited sessions</p></TooltipContent>}
-                        </Tooltip></TooltipProvider>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/pomodoro')}>
+                            <Link href="/dashboard/pomodoro">
+                                <Timer /><span>Pomodoro</span>
+                            </Link>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <TooltipProvider><Tooltip>
-                            <TooltipTrigger asChild>
-                                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/capture')}>
-                                    <Link href="/dashboard/capture" className={cn(isCaptureLocked && 'text-muted-foreground')}>
-                                        <Camera />
-                                        <span className="flex items-center gap-2">Capture <Badge variant="secondary" className="text-xs">Beta</Badge></span>
-                                        {isCaptureLocked && <Lock className="ml-auto h-3 w-3" />}
-                                    </Link>
-                                </SidebarMenuButton>
-                            </TooltipTrigger>
-                            {isCaptureLocked && <TooltipContent side="right" align="center"><p>Upgrade for unlimited captures</p></TooltipContent>}
-                        </Tooltip></TooltipProvider>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/capture')}>
+                            <Link href="/dashboard/capture">
+                                <Camera />
+                                <span className="flex items-center gap-2">Capture <Badge variant="secondary" className="text-xs">Beta</Badge></span>
+                            </Link>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <TooltipProvider><Tooltip>
-                            <TooltipTrigger asChild disabled={!wisdomGptAllowed}>
-                                <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/wisdomgpt')} tooltip={{ children: 'WisdomGPT AI' }} className={cn(!wisdomGptAllowed && 'text-muted-foreground')}>
-                                    <Link href="/dashboard/wisdomgpt">
-                                        <Sparkles /><span>WisdomGPT</span>
-                                        {!wisdomGptAllowed && <Lock className="ml-auto h-3 w-3" />}
-                                    </Link>
-                                </SidebarMenuButton>
-                            </TooltipTrigger>
-                            {!wisdomGptAllowed && <TooltipContent side="right" align="center"><p>Upgrade to unlock WisdomGPT</p></TooltipContent>}
-                        </Tooltip></TooltipProvider>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/wisdomgpt')} tooltip={{ children: 'WisdomGPT AI' }}>
+                            <Link href="/dashboard/wisdomgpt">
+                                <Sparkles /><span>WisdomGPT</span>
+                            </Link>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarGroup>
             </SidebarMenu>
@@ -376,14 +314,12 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                       <span className="sr-only">Bookmarks</span>
                     </Link>
                   </Button>
-                  {wisdomGptAllowed && (
                     <Button asChild variant="ghost" size="icon">
                       <Link href="/dashboard/wisdomgpt">
                         <Sparkles className="h-5 w-5" />
                         <span className="sr-only">Open WisdomGPT</span>
                       </Link>
                     </Button>
-                  )}
                   <SidebarTrigger>
                       <PanelLeft className="h-5 w-5" />
                       <span className="sr-only">Toggle Menu</span>
@@ -399,5 +335,3 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </SidebarProvider>
   );
 }
-
-    

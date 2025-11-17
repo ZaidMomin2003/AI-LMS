@@ -16,17 +16,13 @@ import { formatDistanceToNow } from 'date-fns';
 import { TodayStudyTask } from '../dashboard/TodayStudyTask';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '../ui/badge';
-import { useSubscription } from '@/context/SubscriptionContext';
 import { Card, CardContent } from '../ui/card';
 
 
 export function ChatMain() {
   const { user } = useAuth();
   const { topics } = useTopic();
-  const { subscription } = useSubscription();
   const isMobile = useIsMobile();
-  
-  const isTopicGenerationLocked = subscription?.planName === 'Hobby' && topics.length > 0;
   
   return (
     <div className="h-full flex flex-col bg-card border rounded-lg relative overflow-hidden">
@@ -104,29 +100,7 @@ export function ChatMain() {
 
         <div className="p-4 relative z-10 space-y-4">
              <DashboardStats />
-             {isTopicGenerationLocked ? (
-                <Card className="text-center p-4 bg-secondary">
-                  <CardContent className="p-2 space-y-3">
-                    <div className="mx-auto bg-primary/10 text-primary p-2 rounded-full w-fit">
-                      <Lock className="w-5 h-5" />
-                    </div>
-                    <div className="space-y-1">
-                      <h3 className="font-semibold font-headline">Free Topic Limit Reached</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Create unlimited notes with a Pro plan. Upgrade now to continue your learning journey.
-                      </p>
-                    </div>
-                    <Button asChild size="sm">
-                        <Link href="/pricing">
-                            <Star className="mr-2 h-4 w-4" />
-                            Upgrade Now
-                        </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-             ) : (
-                <TopicForm variant="chat" />
-             )}
+             <TopicForm variant="chat" />
         </div>
     </div>
   );

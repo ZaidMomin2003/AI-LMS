@@ -53,17 +53,6 @@ export interface ExamDetails {
   date: string; // Storing as ISO string
 }
 
-export type SubscriptionPlan = 'Hobby' | 'Sage Mode';
-
-export interface UserSubscription {
-  planName: SubscriptionPlan;
-  status: 'active' | 'inactive';
-  priceId?: string;
-  paymentId?: string;
-  orderId?: string;
-  expiresAt?: string;
-}
-
 export interface PomodoroSession {
   topic: string;
   sessions: number;

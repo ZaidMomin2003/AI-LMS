@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { getUserDoc, updateUserDoc } from '@/services/firestore';
 import { isFirebaseEnabled } from '@/lib/firebase';
@@ -16,7 +16,7 @@ export interface ProfileData {
 
 interface ProfileContextType {
   profile: ProfileData | null;
-  updateProfile: (data: ProfileData) => Promise<void>;
+  updateProfile: (data: Partial<ProfileData>) => Promise<void>;
   loading: boolean;
 }
 
@@ -33,7 +33,6 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
         setLoading(true);
         try {
             const userData = await getUserDoc(user.uid);
-            // Ensure captureCount is initialized if not present
             const profileData = userData?.profile || {};
             if (typeof profileData.captureCount !== 'number') {
                 profileData.captureCount = 0;
@@ -53,12 +52,22 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     fetchProfile();
   }, [user]);
 
-  const updateProfile = async (data: ProfileData) => {
+  const updateProfile = useCallback(async (data: Partial<ProfileData>) => {
     if (!user || !isFirebaseEnabled) return;
-    const newProfile = { ...profile, ...data };
-    setProfile(newProfile); // Optimistic update
-    await updateUserDoc(user.uid, { profile: newProfile });
-  };
+
+    setProfile(prevProfile => {
+        const newProfile = { ...prevProfile, ...data };
+
+        // Special handling for captureCount increment
+        if (data.captureCount === -1) {
+            newProfile.captureCount = (prevProfile?.captureCount || 0) + 1;
+        }
+
+        updateUserDoc(user.uid, { profile: newProfile });
+        return newProfile;
+    });
+}, [user]);
+
 
   return (
     <ProfileContext.Provider value={{ profile, updateProfile, loading }}>

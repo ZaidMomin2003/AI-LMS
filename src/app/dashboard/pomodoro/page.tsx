@@ -10,10 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useSubscription } from '@/context/SubscriptionContext';
 import { usePomodoro } from '@/context/PomodoroContext';
-import { Lock, Star, Play, Pause, RotateCcw, Timer as TimerIcon, Expand, Minimize } from 'lucide-react';
-import Link from 'next/link';
+import { Play, Pause, RotateCcw, Timer as TimerIcon, Expand, Minimize } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -65,8 +63,7 @@ const CircularProgress = ({ progress, size = 280 }: { progress: number; size?: n
 
 
 export default function PomodoroPage() {
-  const { subscription } = useSubscription();
-  const { pomodoroHistory, addCompletedPomodoro } = usePomodoro();
+  const { addCompletedPomodoro } = usePomodoro();
   const { toast } = useToast();
 
   const [timerConfig, setTimerConfig] = useState<{ topic: string; totalSessions: number; duration: number } | null>(null);
@@ -160,8 +157,6 @@ export default function PomodoroPage() {
     setIsActive(true);
   };
 
-  const isLocked = subscription?.planName === 'Hobby' && pomodoroHistory.length > 0;
-
   const resetTimer = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
     setTimerConfig(null);
@@ -199,81 +194,61 @@ export default function PomodoroPage() {
               <h2 className="text-3xl font-headline font-bold tracking-tight">Pomodoro Timer</h2>
               <p className="text-muted-foreground">Focus your work sessions and take scheduled breaks.</p>
             </div>
-            {isLocked ? (
-              <Card className="text-center">
-                <CardHeader>
-                  <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit">
-                    <Lock className="w-6 h-6" />
-                  </div>
-                  <CardTitle className="font-headline pt-2">Pomodoro Limit Reached</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <p className="text-muted-foreground">You've used your one free Pomodoro session.</p>
-                  <p className="text-muted-foreground">Upgrade to a premium plan for unlimited focus time!</p>
-                </CardContent>
-                <div className="p-6 pt-0">
-                  <Button asChild>
-                    <Link href="/pricing"><Star className="mr-2 h-4 w-4" />Upgrade Your Plan</Link>
-                  </Button>
-                </div>
-              </Card>
-            ) : (
-              <Card>
-                <CardHeader>
-                  <CardTitle>New Session</CardTitle>
-                  <CardDescription>What do you want to focus on?</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-lg">
+            <Card>
+              <CardHeader>
+                <CardTitle>New Session</CardTitle>
+                <CardDescription>What do you want to focus on?</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-lg">
+                    <FormField
+                      control={form.control}
+                      name="topic"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Task / Topic</FormLabel>
+                          <FormControl>
+                            <Input placeholder="e.g., Chapter 5 Reading" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField
-                        control={form.control}
-                        name="topic"
-                        render={({ field }) => (
+                          control={form.control}
+                          name="duration"
+                          render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Task / Topic</FormLabel>
-                            <FormControl>
-                              <Input placeholder="e.g., Chapter 5 Reading" {...field} />
-                            </FormControl>
-                            <FormMessage />
+                              <FormLabel>Session Duration (minutes)</FormLabel>
+                              <FormControl>
+                              <Input type="number" min="10" max="60" {...field} />
+                              </FormControl>
+                              <FormMessage />
                           </FormItem>
-                        )}
+                          )}
                       />
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <FormField
-                            control={form.control}
-                            name="duration"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Session Duration (minutes)</FormLabel>
-                                <FormControl>
-                                <Input type="number" min="10" max="60" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="sessions"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Number of Sessions</FormLabel>
-                                <FormControl>
-                                <Input type="number" min="1" max="8" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                      </div>
-                       <FormDescription>One session is one block of focused work followed by a 5-minute break.</FormDescription>
-                      <Button type="submit"><TimerIcon className="mr-2 h-4 w-4" />Start Focusing</Button>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            )}
+                      <FormField
+                          control={form.control}
+                          name="sessions"
+                          render={({ field }) => (
+                          <FormItem>
+                              <FormLabel>Number of Sessions</FormLabel>
+                              <FormControl>
+                              <Input type="number" min="1" max="8" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                          </FormItem>
+                          )}
+                      />
+                    </div>
+                     <FormDescription>One session is one block of focused work followed by a 5-minute break.</FormDescription>
+                    <Button type="submit"><TimerIcon className="mr-2 h-4 w-4" />Start Focusing</Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
           </>
         ) : (
           <div ref={timerContainerRef} className="flex flex-col items-center justify-center text-center p-4 bg-background">
@@ -309,5 +284,3 @@ export default function PomodoroPage() {
     </AppLayout>
   );
 }
-
-    
