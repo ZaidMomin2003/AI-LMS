@@ -23,7 +23,7 @@ const footerNav = {
       { name: 'Contact', href: '/#contact' },
     ],
     features: [
-      { name: 'AI Notes', href: '/#features' },
+      { name: 'Stories', href: '/stories' },
       { name: 'SageMaker', href: '/#features' },
       { name: 'Roadmaps', href: '/#features' },
       { name: 'Quizzes', href: '/#features' },

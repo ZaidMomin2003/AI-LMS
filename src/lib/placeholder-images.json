@@ -12,5 +12,39 @@
       "src": "https://picsum.photos/seed/person-female-2/192/192",
       "hint": "smiling woman"
     }
+  },
+  "stories": {
+    "story1": {
+      "src": "https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=800&auto=format&fit=crop",
+      "hint": "student studying"
+    },
+    "story2": {
+      "src": "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop",
+      "hint": "parent helping child"
+    },
+    "story3": {
+      "src": "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=800&auto=format&fit=crop",
+      "hint": "focused student"
+    },
+    "story4": {
+      "src": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop",
+      "hint": "adult learning"
+    },
+    "story5": {
+      "src": "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?q=80&w=800&auto=format&fit=crop",
+      "hint": "students test"
+    },
+    "story6": {
+      "src": "https://images.unsplash.com/photo-1588072432836-e10032774350?q=80&w=800&auto=format&fit=crop",
+      "hint": "kids learning"
+    },
+    "story7": {
+      "src": "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=800&auto=format&fit=crop",
+      "hint": "reading book"
+    },
+    "story8": {
+      "src": "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=800&auto=format&fit=crop",
+      "hint": "coding computer"
+    }
   }
 }
