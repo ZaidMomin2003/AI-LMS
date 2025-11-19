@@ -2,12 +2,12 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { getUserDoc } from '@/services/firestore';
 import { isFirebaseEnabled } from '@/lib/firebase';
 import { useTopic } from './TopicContext';
 import { useRoadmap } from './RoadmapContext';
 import { usePomodoro } from './PomodoroContext';
 import { useProfile } from './ProfileContext';
+import { getUserDoc } from '@/app/dashboard/pricing/actions';
 
 interface Subscription {
   plan: string;

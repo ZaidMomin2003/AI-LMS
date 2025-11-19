@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import { Progress } from '../ui/progress';
 import { RefreshCw } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import { getUserDoc, updateUserDoc } from '@/app/topic/actions';
 
 interface QuizViewProps {
   quiz: QuizQuestion[];

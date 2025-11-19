@@ -1,10 +1,9 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { getUserDoc, updateUserDoc } from '@/services/firestore';
 import { isFirebaseEnabled } from '@/lib/firebase';
+import { getUserDoc, updateUserDoc } from '@/app/dashboard/profile/actions';
 
 export interface ProfileData {
   phoneNumber?: string;

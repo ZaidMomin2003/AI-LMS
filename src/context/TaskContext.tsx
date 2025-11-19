@@ -4,10 +4,10 @@
 import type { KanbanTask, TaskPriority } from '@/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { getUserDoc, updateUserDoc } from '@/services/firestore';
 import { debounce } from 'lodash';
 import { isFirebaseEnabled } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
+import { getUserDoc, updateUserDoc } from '@/app/dashboard/plan/actions';
 
 type ColumnId = 'todo' | 'in-progress' | 'done';
 const columnOrder: ColumnId[] = ['todo', 'in-progress', 'done'];

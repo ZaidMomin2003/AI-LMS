@@ -2,7 +2,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
-import { updateUserDoc } from '@/services/firestore';
 import { getAdminDB } from '@/lib/firebase-admin';
 
 async function getUserIdFromOrderId(orderId: string): Promise<string | null> {
@@ -19,6 +18,19 @@ async function getUserIdFromOrderId(orderId: string): Promise<string | null> {
     }
     return null;
 }
+
+async function updateUserSubscription(uid: string, data: object): Promise<boolean> {
+    const db = getAdminDB();
+    if (!uid || !db) return false;
+    try {
+        const userDocRef = db.collection('users').doc(uid);
+        await userDocRef.set({ subscription: data }, { merge: true });
+        return true;
+    } catch (error) {
+        console.error("Error updating user subscription: ", error);
+        return false;
+    }
+};
 
 export async function POST(req: NextRequest) {
   try {
@@ -52,12 +64,10 @@ export async function POST(req: NextRequest) {
         const expiryDate = new Date();
         expiryDate.setMonth(expiryDate.getMonth() + planDuration);
 
-        await updateUserDoc(userId, {
-            subscription: {
-                plan: `${planDuration}-month`,
-                status: 'active',
-                expiryDate: expiryDate.toISOString(),
-            }
+        await updateUserSubscription(userId, {
+            plan: `${planDuration}-month`,
+            status: 'active',
+            expiryDate: expiryDate.toISOString(),
         });
 
         // Redirect to a success page

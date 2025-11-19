@@ -6,7 +6,7 @@ import { useTopic } from '@/context/TopicContext';
 import { BookCopy, Brain, MessageCircleQuestion } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { getUserDoc } from '@/services/firestore';
+import { getUserDoc } from '@/app/dashboard/exam/actions';
 import { cn } from '@/lib/utils';
 
 interface QuizStats {

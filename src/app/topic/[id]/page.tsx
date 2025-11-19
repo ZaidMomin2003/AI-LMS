@@ -1,4 +1,3 @@
-
 'use client';
 
 import { AppLayout } from '@/components/AppLayout';
@@ -15,6 +14,7 @@ import { useEffect, useState } from 'react';
 import type { Topic } from '@/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { explainTextAction } from './actions';
 
 export default function TopicPage() {
   const params = useParams();
@@ -87,7 +87,7 @@ export default function TopicPage() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="notes" className="space-y-4">
-            <NotesView notes={topic.notes} />
+            <NotesView notes={topic.notes} explainTextAction={explainTextAction}/>
           </TabsContent>
           <TabsContent value="flashcards" className="space-y-4">
             <FlashcardsView flashcards={topic.flashcards} />

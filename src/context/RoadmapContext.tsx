@@ -4,7 +4,7 @@
 import type { GenerateRoadmapOutput } from '@/ai/flows/generate-roadmap-flow';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import { getUserDoc, updateUserDoc } from '@/app/dashboard/roadmap/actions';
 import { isFirebaseEnabled } from '@/lib/firebase';
 
 interface RoadmapContextType {

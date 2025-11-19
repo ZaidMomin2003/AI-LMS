@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { StudyNotes } from '@/types';
@@ -9,13 +8,14 @@ import { BookOpen, List, FlaskConical, Beaker, Lightbulb, FileText, Sparkles, Lo
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent } from '../ui/popover';
 import React, { useCallback, useEffect } from 'react';
-import { explainTextAction } from '@/app/topic/[id]/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '../ui/button';
 import { PopoverAnchor } from '@radix-ui/react-popover';
+import type { ExplainTextInput, ExplainTextOutput } from '@/ai/flows/explain-text-flow';
 
 interface NotesViewProps {
   notes: StudyNotes;
+  explainTextAction: (input: ExplainTextInput) => Promise<ExplainTextOutput>;
 }
 
 const NoteSection = ({ 
@@ -48,7 +48,7 @@ const NoteSection = ({
     )
 }
 
-export function NotesView({ notes }: NotesViewProps) {
+export function NotesView({ notes, explainTextAction }: NotesViewProps) {
   const [popoverOpen, setPopoverOpen] = React.useState(false);
   const [selectedText, setSelectedText] = React.useState('');
   const [explanation, setExplanation] = React.useState('');
@@ -100,7 +100,7 @@ export function NotesView({ notes }: NotesViewProps) {
     } else {
         setPopoverOpen(false);
     }
-  }, [fullNoteText, toast]);
+  }, [fullNoteText, toast, explainTextAction]);
   
   useEffect(() => {
     const debouncedSelectionHandler = () => {
