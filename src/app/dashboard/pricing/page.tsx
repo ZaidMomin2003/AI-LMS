@@ -211,9 +211,9 @@ const PricingContent = () => {
                                     <Button
                                         className="w-full"
                                         onClick={() => handlePayment(plan, index)}
-                                        disabled={subLoading || isLoading === index || (subscription?.status === 'active' && subscription.plan?.startsWith(plan.durationMonths.toString()))}
+                                        disabled={subLoading || isLoading === index || (subscription?.status === 'active' && !!subscription.plan && subscription.plan.startsWith(plan.durationMonths.toString()))}
                                     >
-                                        {isLoading === index ? 'Processing...' : (subscription?.status === 'active' && subscription.plan?.startsWith(plan.durationMonths.toString())) ? 'Current Plan' : 'Choose Plan'}
+                                        {isLoading === index ? 'Processing...' : (subscription?.status === 'active' && !!subscription.plan && subscription.plan.startsWith(plan.durationMonths.toString())) ? 'Current Plan' : 'Choose Plan'}
                                     </Button>
                                 )}
                             </CardFooter>

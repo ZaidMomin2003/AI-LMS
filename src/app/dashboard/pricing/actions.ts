@@ -21,7 +21,7 @@ export async function createOrder({ amount, userId }: CreateOrderOptions) {
 
     const options = {
         amount: amount * 100, // Amount in the smallest currency unit (e.g., cents for USD)
-        currency: 'USD', // Set currency to USD
+        currency: 'USD', // Strictly use USD
         receipt: `receipt_user_${userId}_${Date.now()}`,
     };
 
