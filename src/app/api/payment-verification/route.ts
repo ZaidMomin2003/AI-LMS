@@ -3,17 +3,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { updateUserDoc } from '@/services/firestore';
-import { initializeFirebase } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { getAdminDB } from '@/lib/firebase-admin';
 
 async function getUserIdFromOrderId(orderId: string): Promise<string | null> {
-    const { db, isFirebaseEnabled } = initializeFirebase();
-    if (!isFirebaseEnabled || !db) return null;
-    const orderDocRef = doc(db, 'orders', orderId);
+    const db = getAdminDB();
+    if (!db) return null;
+    const orderDocRef = db.collection('orders').doc(orderId);
     try {
-        const orderDoc = await getDoc(orderDocRef);
-        if (orderDoc.exists()) {
-            return orderDoc.data().userId;
+        const orderDoc = await orderDocRef.get();
+        if (orderDoc.exists) {
+            return orderDoc.data()?.userId;
         }
     } catch (error) {
         console.error(`Error fetching order ${orderId}:`, error);

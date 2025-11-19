@@ -1,8 +1,6 @@
-
 'use server';
 
-import { initializeFirebase } from '@/lib/firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { getAdminDB } from '@/lib/firebase-admin';
 
 export interface Submission {
   id: string;
@@ -13,19 +11,16 @@ export interface Submission {
 }
 
 export async function fetchSubmissions(): Promise<Submission[]> {
-  const { db, isFirebaseEnabled } = initializeFirebase();
-  if (!isFirebaseEnabled || !db) {
-    console.warn('Firebase not configured, returning empty submissions.');
+  const db = getAdminDB();
+  if (!db) {
+    console.warn('Firebase Admin DB not configured, returning empty submissions.');
     return [];
   }
 
   try {
-    const submissionsRef = collection(db, 'submissions');
-    // NOTE: This query requires a composite index on 'createdAt' in descending order.
-    // If you see a permission error in the console, Firebase will provide a link
-    // to create this index automatically.
-    const q = query(submissionsRef, orderBy('createdAt', 'desc'));
-    const querySnapshot = await getDocs(q);
+    const submissionsRef = db.collection('submissions');
+    const q = submissionsRef.orderBy('createdAt', 'desc');
+    const querySnapshot = await q.get();
 
     const submissions = querySnapshot.docs.map((doc) => {
       const data = doc.data();

@@ -1,8 +1,8 @@
-
 'use server';
 
-import { initializeFirebase } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { getAdminDB } from '@/lib/firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
+
 
 interface SupportRequestData {
   name: string;
@@ -12,17 +12,17 @@ interface SupportRequestData {
 }
 
 export async function submitSupportRequest(data: SupportRequestData): Promise<void> {
-  const { db, isFirebaseEnabled } = initializeFirebase();
-  if (!isFirebaseEnabled || !db) {
-    console.error('Firebase is not configured. Support request cannot be saved.');
+  const db = getAdminDB();
+  if (!db) {
+    console.error('Firebase Admin DB is not configured. Support request cannot be saved.');
     // Simulate success to avoid breaking user flow if backend is not ready
     return;
   }
 
   try {
-    await addDoc(collection(db, 'supportRequests'), {
+    await db.collection('supportRequests').add({
       ...data,
-      createdAt: serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
       status: 'new', // Default status
     });
   } catch (error) {

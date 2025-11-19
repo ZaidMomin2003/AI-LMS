@@ -1,8 +1,6 @@
-
 'use server';
 
-import { initializeFirebase } from '@/lib/firebase';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { getAdminDB } from '@/lib/firebase-admin';
 
 export interface SupportRequest {
   id: string;
@@ -15,16 +13,16 @@ export interface SupportRequest {
 }
 
 export async function fetchSupportRequests(): Promise<SupportRequest[]> {
-  const { db, isFirebaseEnabled } = initializeFirebase();
-  if (!isFirebaseEnabled || !db) {
-    console.warn('Firebase not configured, returning empty support requests.');
+  const db = getAdminDB();
+  if (!db) {
+    console.warn('Firebase Admin DB not configured, returning empty support requests.');
     return [];
   }
 
   try {
-    const requestsRef = collection(db, 'supportRequests');
-    const q = query(requestsRef, orderBy('createdAt', 'desc'));
-    const querySnapshot = await getDocs(q);
+    const requestsRef = db.collection('supportRequests');
+    const q = requestsRef.orderBy('createdAt', 'desc');
+    const querySnapshot = await q.get();
 
     const requests = querySnapshot.docs.map((doc) => {
       const data = doc.data();

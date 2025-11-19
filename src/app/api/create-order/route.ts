@@ -2,8 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
-import { initializeFirebase } from '@/lib/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { getAdminDB } from '@/lib/firebase-admin';
 
 export async function POST(req: NextRequest) {
     // 1. Explicitly check for environment variables
@@ -35,10 +34,10 @@ export async function POST(req: NextRequest) {
 
         const order = await razorpay.orders.create(options);
         
-        const { db, isFirebaseEnabled } = initializeFirebase();
-        if (isFirebaseEnabled && db) {
-            const orderDocRef = doc(db, 'orders', order.id);
-            await setDoc(orderDocRef, { 
+        const db = getAdminDB();
+        if (db) {
+            const orderDocRef = db.collection('orders').doc(order.id);
+            await orderDocRef.set({ 
                 userId, 
                 amount: order.amount,
                 currency: order.currency,

@@ -1,8 +1,7 @@
-
 'use server';
 
-import { initializeFirebase } from '@/lib/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { getAdminDB } from '@/lib/firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 interface SubmissionData {
   name: string;
@@ -11,19 +10,18 @@ interface SubmissionData {
 }
 
 export async function saveContactSubmission(data: SubmissionData): Promise<void> {
-  const { db, isFirebaseEnabled } = initializeFirebase();
-  if (!isFirebaseEnabled || !db) {
-    console.error('Firebase is not configured. Submission cannot be saved.');
-    // In a real app, you might want to send this to a different logging service
-    // or fallback to a different contact method.
-    // For this demo, we'll simulate a success to avoid breaking the user flow.
+  const db = getAdminDB();
+  if (!db) {
+    console.error('Firebase Admin DB is not configured. Submission cannot be saved.');
+    // To avoid breaking user flow if backend is not ready, we can simulate success.
+    // In a production app, you might want a more robust fallback.
     return;
   }
 
   try {
-    await addDoc(collection(db, 'submissions'), {
+    await db.collection('submissions').add({
       ...data,
-      createdAt: serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
     });
   } catch (error) {
     console.error('Error saving contact submission to Firestore:', error);
