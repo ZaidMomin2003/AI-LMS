@@ -8,6 +8,7 @@ import { doc, setDoc } from 'firebase/firestore';
 
 export async function POST(req: NextRequest) {
     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+        console.error('Razorpay credentials are not configured in environment variables.');
         return NextResponse.json({ error: 'Razorpay credentials are not configured.' }, { status: 500 });
     }
 
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
         });
 
         const options = {
-            amount: amount * 100, // Amount in the smallest currency unit
+            amount: amount * 100, // Amount in the smallest currency unit (cents for USD)
             currency: 'USD',
             receipt: `receipt_user_${userId}_${Date.now()}`,
         };
@@ -36,6 +37,7 @@ export async function POST(req: NextRequest) {
             await setDoc(orderDocRef, { 
                 userId, 
                 amount: order.amount,
+                currency: order.currency,
                 createdAt: new Date().toISOString()
             });
         }
@@ -48,6 +50,8 @@ export async function POST(req: NextRequest) {
 
     } catch (error) {
         console.error('Error creating Razorpay order:', error);
-        return NextResponse.json({ error: 'Could not create a payment order.' }, { status: 500 });
+        // Provide a more specific error message if available
+        const errorMessage = (error instanceof Error) ? error.message : 'Could not create a payment order.';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
