@@ -20,8 +20,8 @@ export async function createOrder({ amount, userId }: CreateOrderOptions) {
     });
 
     const options = {
-        amount: amount * 100, // Amount in paise
-        currency: 'INR', // Explicitly set to INR for UPI/EMI support
+        amount: amount * 100, // Amount in the smallest currency unit (e.g., cents for USD)
+        currency: 'USD', // Set currency to USD
         receipt: `receipt_user_${userId}_${Date.now()}`,
     };
 
