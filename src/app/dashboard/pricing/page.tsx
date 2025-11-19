@@ -1,4 +1,3 @@
-
 'use client';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
