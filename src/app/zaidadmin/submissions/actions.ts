@@ -1,7 +1,7 @@
 
 'use server';
 
-import { db, isFirebaseEnabled } from '@/lib/firebase';
+import { initializeFirebase, isFirebaseEnabled } from '@/lib/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 export interface Submission {
@@ -13,6 +13,7 @@ export interface Submission {
 }
 
 export async function fetchSubmissions(): Promise<Submission[]> {
+  const { db } = initializeFirebase();
   if (!isFirebaseEnabled || !db) {
     console.warn('Firebase not configured, returning empty submissions.');
     return [];
