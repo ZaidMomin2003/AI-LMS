@@ -8,6 +8,7 @@ import { signOut } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
 import { DndContext, type DragEndEvent } from '@dnd-kit/core';
+import { useSubscription } from '@/context/SubscriptionContext';
 
 import {
   SidebarProvider,
@@ -85,16 +86,20 @@ function AppLoadingScreen() {
 }
 
 function SidebarSubscriptionButton() {
+    const { subscription } = useSubscription();
+
     return (
-        <Link href="/pricing" className="block p-2">
+        <Link href="/dashboard/pricing" className="block p-2">
             <div className="group relative rounded-lg p-4 bg-gradient-to-br from-primary/80 to-primary text-primary-foreground overflow-hidden">
                 <h4 className="font-bold text-base font-headline flex items-center gap-2">
                     <Gem className="w-5 h-5" />
-                    Free Plan
+                    {subscription?.status === 'active' ? 'Pro Plan' : 'Upgrade to Pro'}
                 </h4>
-                <p className="text-xs text-primary-foreground/80">All features unlocked!</p>
+                <p className="text-xs text-primary-foreground/80">
+                     {subscription?.status === 'active' ? 'Unlimited access' : 'Unlock all features'}
+                </p>
                  <div className="absolute top-1 right-1 bg-primary-foreground/20 text-primary-foreground rounded-full p-1.5">
-                    <CheckCircle className="w-3 h-3" />
+                    {subscription?.status === 'active' ? <CheckCircle className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
                 </div>
                 <Sparkles className="absolute -bottom-4 -right-2 w-16 h-16 text-primary-foreground/10" />
             </div>
@@ -104,6 +109,7 @@ function SidebarSubscriptionButton() {
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
+  const { loading: subLoading } = useSubscription();
   
   const router = useRouter();
   const pathname = usePathname();
@@ -115,7 +121,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [user, authLoading, router]);
 
-  const appIsLoading = authLoading || !user;
+  const appIsLoading = authLoading || subLoading || !user;
 
   if (appIsLoading) {
     return <AppLoadingScreen />;

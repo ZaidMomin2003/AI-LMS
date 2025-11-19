@@ -14,6 +14,7 @@ import { Checkbox } from "../ui/checkbox";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { useSubscription } from "@/context/SubscriptionContext";
 
 export function TodayStudyTask() {
     const { roadmap } = useRoadmap();
@@ -21,6 +22,9 @@ export function TodayStudyTask() {
     const { toast } = useToast();
     const isMobile = useIsMobile();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const { canUseFeature } = useSubscription();
+    
+    const canUseRoadmap = canUseFeature('roadmap');
 
     const todaysTask = useMemo(() => {
         if (!roadmap || !roadmap.plan) return null;
@@ -97,7 +101,9 @@ export function TodayStudyTask() {
             <Info className="w-6 h-6 text-muted-foreground mx-auto"/>
             <p className="text-sm text-muted-foreground">No plan for today.</p>
             <Button variant="link" asChild className="text-xs p-0 h-auto">
-                <Link href="/dashboard/roadmap">Create a roadmap</Link>
+                <Link href="/dashboard/roadmap">
+                    {canUseRoadmap ? 'Create a roadmap' : 'Upgrade to create a roadmap'}
+                </Link>
             </Button>
         </div>
     );

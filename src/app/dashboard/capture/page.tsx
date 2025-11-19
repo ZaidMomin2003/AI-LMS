@@ -5,7 +5,7 @@ import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Camera, Image as ImageIcon, Upload, Loader2, Sparkles, AlertTriangle } from 'lucide-react';
+import { Camera, Image as ImageIcon, Upload, Loader2, Sparkles, AlertTriangle, Gem, Lock } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -15,6 +15,8 @@ import type { CaptureTheAnswerOutput } from '@/ai/flows/capture-the-answer-flow'
 import { Separator } from '@/components/ui/separator';
 import { MarkdownRenderer } from '@/components/MarkdownRenderer';
 import { useProfile } from '@/context/ProfileContext';
+import { useSubscription } from '@/context/SubscriptionContext';
+import Link from 'next/link';
 
 export default function CapturePage() {
   const [mode, setMode] = useState<'idle' | 'capture' | 'preview'>('idle');
@@ -26,6 +28,9 @@ export default function CapturePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const { updateProfile } = useProfile();
+  const { canUseFeature } = useSubscription();
+
+  const canUseCapture = canUseFeature('capture');
 
   useEffect(() => {
     return () => {
@@ -38,6 +43,10 @@ export default function CapturePage() {
   }, []);
 
   const getCameraPermission = async () => {
+    if (!canUseCapture) {
+        showUpgradeToast();
+        return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       setHasCameraPermission(true);
@@ -57,6 +66,10 @@ export default function CapturePage() {
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!canUseCapture) {
+        showUpgradeToast();
+        return;
+    }
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -82,6 +95,14 @@ export default function CapturePage() {
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach(track => track.stop());
     }
+  };
+
+  const showUpgradeToast = () => {
+      toast({
+          variant: "destructive",
+          title: "Free Limit Reached",
+          description: "Please upgrade to use the Capture feature again.",
+      });
   };
 
   const handleGetAnswer = async () => {
@@ -114,6 +135,28 @@ export default function CapturePage() {
 
 
   const renderContent = () => {
+    if (!canUseCapture && mode === 'idle') {
+      return (
+        <Card className="max-w-md w-full text-center mx-auto">
+            <CardHeader>
+                <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                    <Lock className="w-6 h-6" />
+                </div>
+                <CardTitle className="font-headline">Capture is a Pro Feature</CardTitle>
+                <CardDescription>You've used your free capture. Upgrade to get unlimited access.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Button asChild>
+                    <Link href="/dashboard/pricing">
+                        <Gem className="mr-2 h-4 w-4" />
+                        Upgrade to Pro
+                    </Link>
+                </Button>
+            </CardContent>
+        </Card>
+      );
+    }
+    
     switch(mode) {
         case 'idle':
             return (

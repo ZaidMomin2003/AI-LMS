@@ -19,7 +19,7 @@ import { useTopic } from '@/context/TopicContext';
 import { useRouter } from 'next/navigation';
 import { createTopicAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, Send, Folder } from 'lucide-react';
+import { Loader2, PlusCircle, Send, Folder, Gem, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useSubject } from '@/context/SubjectContext';
 import {
@@ -33,6 +33,7 @@ import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '../ui/separator';
+import { useSubscription } from '@/context/SubscriptionContext';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: 'Topic must be at least 3 characters.' }).max(100),
@@ -43,11 +44,28 @@ interface TopicFormProps {
     variant?: 'dashboard' | 'chat';
 }
 
+const UpgradePrompt = () => (
+    <div className="relative rounded-lg border bg-secondary p-4 text-center">
+        <div className="absolute -top-3 -right-3 bg-primary text-primary-foreground p-2 rounded-full shadow-lg">
+            <Lock className="w-4 h-4" />
+        </div>
+        <p className="text-sm font-semibold">You've used your free topic generation.</p>
+        <p className="text-xs text-muted-foreground mb-3">Upgrade to Pro for unlimited access.</p>
+        <Button size="sm" asChild>
+            <Link href="/dashboard/pricing"><Gem className="mr-2 h-4 w-4" /> Upgrade</Link>
+        </Button>
+    </div>
+);
+
+
 export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
-  const { addTopic, loading, setLoading } = useTopic();
+  const { topics, addTopic, loading, setLoading } = useTopic();
   const { subjects: subjectList } = useSubject();
+  const { canUseFeature } = useSubscription();
   const router = useRouter();
   const { toast } = useToast();
+
+  const canGenerateTopic = canUseFeature('topic');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -57,6 +75,15 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!canGenerateTopic) {
+        toast({
+            variant: "destructive",
+            title: "Free Limit Reached",
+            description: "Please upgrade to a Pro plan to generate more topics.",
+        });
+        return;
+    }
+    
     setLoading(true);
     try {
       const newTopicData = await createTopicAction(values.title, values.subject);
@@ -96,6 +123,10 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
             </AlertDescription>
         </Alert>
     )
+  }
+
+  if (!canGenerateTopic) {
+      return <UpgradePrompt />;
   }
 
   const subjectSelectContent = (

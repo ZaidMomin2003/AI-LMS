@@ -9,22 +9,25 @@ import { TaskProvider } from '@/context/TaskContext';
 import { TopicProvider } from '@/context/TopicContext';
 import { PomodoroProvider } from '@/context/PomodoroContext';
 import { SubjectProvider } from '@/context/SubjectContext';
+import { SubscriptionProvider } from '@/context/SubscriptionContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
       <ProfileProvider>
-          <SubjectProvider>
-            <TopicProvider>
-              <TaskProvider>
-                <RoadmapProvider>
-                  <PomodoroProvider>
-                    <ExamProvider>{children}</ExamProvider>
-                  </PomodoroProvider>
-                </RoadmapProvider>
-              </TaskProvider>
-            </TopicProvider>
-          </SubjectProvider>
+        <SubjectProvider>
+          <TopicProvider>
+            <TaskProvider>
+              <RoadmapProvider>
+                <PomodoroProvider>
+                  <ExamProvider>
+                    <SubscriptionProvider>{children}</SubscriptionProvider>
+                  </ExamProvider>
+                </PomodoroProvider>
+              </RoadmapProvider>
+            </TaskProvider>
+          </TopicProvider>
+        </SubjectProvider>
       </ProfileProvider>
     </AuthProvider>
   );

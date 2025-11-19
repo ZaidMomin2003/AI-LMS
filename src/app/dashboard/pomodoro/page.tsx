@@ -11,9 +11,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { usePomodoro } from '@/context/PomodoroContext';
-import { Play, Pause, RotateCcw, Timer as TimerIcon, Expand, Minimize } from 'lucide-react';
+import { Play, Pause, RotateCcw, Timer as TimerIcon, Expand, Minimize, Lock, Gem } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useSubscription } from '@/context/SubscriptionContext';
+import Link from 'next/link';
 
 const REST_MINUTES = 5;
 
@@ -64,6 +66,7 @@ const CircularProgress = ({ progress, size = 280 }: { progress: number; size?: n
 
 export default function PomodoroPage() {
   const { addCompletedPomodoro } = usePomodoro();
+  const { canUseFeature } = useSubscription();
   const { toast } = useToast();
 
   const [timerConfig, setTimerConfig] = useState<{ topic: string; totalSessions: number; duration: number } | null>(null);
@@ -74,6 +77,8 @@ export default function PomodoroPage() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerContainerRef = useRef<HTMLDivElement>(null);
+  
+  const canUsePomodoro = canUseFeature('pomodoro');
 
 
   const totalTime = (mode === 'Work' ? (timerConfig?.duration ?? 25) : REST_MINUTES) * 60;
@@ -123,16 +128,16 @@ export default function PomodoroPage() {
       if (!timerConfig) return; // Guard clause to prevent crash
       
       if (mode === 'Work') {
+        addCompletedPomodoro({ 
+            topic: timerConfig.topic,
+            sessions: 1
+        });
         if (currentSession < timerConfig.totalSessions) {
           setMode('Rest');
           setTimeLeft(REST_MINUTES * 60);
           toast({ title: 'Time for a break! ☕️', description: 'Rest for 5 minutes.' });
         } else {
           toast({ title: 'Congratulations! 🎉', description: 'You have completed all your sessions.' });
-          addCompletedPomodoro({ 
-            topic: timerConfig.topic,
-            sessions: timerConfig.totalSessions
-          });
           setTimerConfig(null);
         }
       } else { // mode === 'Rest'
@@ -150,6 +155,14 @@ export default function PomodoroPage() {
   });
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
+    if (!canUsePomodoro) {
+        toast({
+            variant: "destructive",
+            title: "Free Limit Reached",
+            description: "Please upgrade to Pro to start more Pomodoro sessions.",
+        });
+        return;
+    }
     setTimerConfig({ topic: data.topic, totalSessions: data.sessions, duration: data.duration });
     setTimeLeft(data.duration * 60);
     setMode('Work');
@@ -184,6 +197,64 @@ export default function PomodoroPage() {
         </div>
       </>
   );
+  
+  const renderForm = () => (
+    <Card>
+        <CardHeader>
+        <CardTitle>New Session</CardTitle>
+        <CardDescription>What do you want to focus on?</CardDescription>
+        </CardHeader>
+        <CardContent>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-lg">
+            <FormField
+                control={form.control}
+                name="topic"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Task / Topic</FormLabel>
+                    <FormControl>
+                    <Input placeholder="e.g., Chapter 5 Reading" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                    control={form.control}
+                    name="duration"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Session Duration (minutes)</FormLabel>
+                        <FormControl>
+                        <Input type="number" min="10" max="60" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="sessions"
+                    render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Number of Sessions</FormLabel>
+                        <FormControl>
+                        <Input type="number" min="1" max="8" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+            </div>
+                <FormDescription>One session is one block of focused work followed by a 5-minute break.</FormDescription>
+            <Button type="submit"><TimerIcon className="mr-2 h-4 w-4" />Start Focusing</Button>
+            </form>
+        </Form>
+        </CardContent>
+    </Card>
+  )
 
   return (
     <AppLayout>
@@ -194,61 +265,25 @@ export default function PomodoroPage() {
               <h2 className="text-3xl font-headline font-bold tracking-tight">Pomodoro Timer</h2>
               <p className="text-muted-foreground">Focus your work sessions and take scheduled breaks.</p>
             </div>
-            <Card>
-              <CardHeader>
-                <CardTitle>New Session</CardTitle>
-                <CardDescription>What do you want to focus on?</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-lg">
-                    <FormField
-                      control={form.control}
-                      name="topic"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Task / Topic</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g., Chapter 5 Reading" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <FormField
-                          control={form.control}
-                          name="duration"
-                          render={({ field }) => (
-                          <FormItem>
-                              <FormLabel>Session Duration (minutes)</FormLabel>
-                              <FormControl>
-                              <Input type="number" min="10" max="60" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                          </FormItem>
-                          )}
-                      />
-                      <FormField
-                          control={form.control}
-                          name="sessions"
-                          render={({ field }) => (
-                          <FormItem>
-                              <FormLabel>Number of Sessions</FormLabel>
-                              <FormControl>
-                              <Input type="number" min="1" max="8" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                          </FormItem>
-                          )}
-                      />
-                    </div>
-                     <FormDescription>One session is one block of focused work followed by a 5-minute break.</FormDescription>
-                    <Button type="submit"><TimerIcon className="mr-2 h-4 w-4" />Start Focusing</Button>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
+            {canUsePomodoro ? renderForm() : (
+                 <Card className="max-w-md w-full text-center mx-auto">
+                    <CardHeader>
+                        <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                            <Lock className="w-6 h-6" />
+                        </div>
+                        <CardTitle className="font-headline">Limit Reached</CardTitle>
+                        <CardDescription>You've used your free Pomodoro session. Upgrade for unlimited focus time.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Button asChild>
+                            <Link href="/dashboard/pricing">
+                                <Gem className="mr-2 h-4 w-4" />
+                                Upgrade to Pro
+                            </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
           </>
         ) : (
           <div ref={timerContainerRef} className="flex flex-col items-center justify-center text-center p-4 bg-background">
