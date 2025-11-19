@@ -6,7 +6,7 @@ import { doc, setDoc } from 'firebase/firestore';
 
 interface CreateOrderOptions {
     amount: number;
-    currency: 'INR';
+    currency: 'INR' | 'USD';
     userId: string;
 }
 

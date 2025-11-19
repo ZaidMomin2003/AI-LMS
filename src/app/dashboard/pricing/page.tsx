@@ -103,9 +103,10 @@ const PricingContent = () => {
         setIsLoading(planIndex);
 
         try {
+            const currency = (process.env.NEXT_PUBLIC_RAZORPAY_CURRENCY || 'INR') as 'INR' | 'USD';
             const order = await createOrder({
                 amount: plan.price,
-                currency: 'INR',
+                currency: currency,
                 userId: user.uid,
             });
             
@@ -152,6 +153,8 @@ const PricingContent = () => {
         }
     };
 
+    const currencySymbol = process.env.NEXT_PUBLIC_RAZORPAY_CURRENCY === 'USD' ? '$' : '₹';
+
     return (
         <AppLayout>
             <Script id="razorpay-checkout-js" src="https://checkout.razorpay.com/v1/checkout.js" />
@@ -178,7 +181,7 @@ const PricingContent = () => {
                                    {plan.isFree ? (
                                         <span className="text-4xl font-bold text-foreground">Free</span>
                                    ) : (
-                                        <span className="text-4xl font-bold text-foreground">${plan.price}</span>
+                                        <span className="text-4xl font-bold text-foreground">{currencySymbol}{plan.price}</span>
                                    )}
                                     <span className="text-muted-foreground text-sm mt-1">{plan.priceDescription}</span>
                                 </CardDescription>
@@ -192,7 +195,7 @@ const PricingContent = () => {
                                             ) : (
                                                 feature.isStar ? <Star className="w-5 h-5 text-yellow-500 fill-current" /> : <Check className="w-5 h-5 text-primary" />
                                             )}
-                                            <span className={cn(plan.isFree && !feature.pro && 'text-muted-foreground/50')}>{feature.name}</span>
+                                            <span className={cn(plan.isFree && feature.pro && 'text-muted-foreground/50')}>{feature.name}</span>
                                         </li>
                                     ))}
                                     {plan.isFree && plan.features.map(f => (
@@ -210,7 +213,7 @@ const PricingContent = () => {
                                     <Button
                                         className="w-full"
                                         onClick={() => handlePayment(plan, index)}
-                                        disabled={subLoading || isLoading === index || subscription?.status === 'active' && subscription.plan?.startsWith(plan.durationMonths.toString())}
+                                        disabled={subLoading || isLoading === index || (subscription?.status === 'active' && subscription.plan?.startsWith(plan.durationMonths.toString()))}
                                     >
                                         {isLoading === index ? 'Processing...' : (subscription?.status === 'active' && subscription.plan?.startsWith(plan.durationMonths.toString())) ? 'Current Plan' : 'Choose Plan'}
                                     </Button>
