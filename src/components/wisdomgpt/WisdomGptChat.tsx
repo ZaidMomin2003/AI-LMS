@@ -261,30 +261,44 @@ export default function WisdomGptChat() {
             </div>
           ) : (
              <div className="space-y-8">
-                {messages.map((message, index) => (
-                <div key={index} className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center">
-                        {message.role === 'assistant' ? <Sparkles size={18} /> : <User size={18} />}
-                    </div>
-                    <div className="flex-1">
-                        <p className="font-semibold text-sm capitalize">{message.role === 'assistant' ? 'WisdomGPT' : 'You'}</p>
-                        {message.image && (
-                            <div className="my-2">
-                                <Image
-                                src={message.image}
-                                alt="User upload"
-                                width={200}
-                                height={200}
-                                className="rounded-lg border"
-                                />
+                {messages.map((message, index) => {
+                    const isUser = message.role === 'user';
+                    return (
+                        <div key={index} className={cn("flex items-start gap-4", isUser && "justify-end")}>
+                            {!isUser && (
+                                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center">
+                                    <Sparkles size={18} />
+                                </div>
+                            )}
+                            <div className={cn("flex-1 max-w-[80%]", isUser && "text-right")}>
+                                <div className={cn(
+                                    "p-3 rounded-2xl inline-block",
+                                    isUser ? "bg-primary text-primary-foreground rounded-br-none" : "bg-secondary rounded-bl-none"
+                                )}>
+                                    {message.image && (
+                                        <div className="my-2">
+                                            <Image
+                                            src={message.image}
+                                            alt="User upload"
+                                            width={200}
+                                            height={200}
+                                            className="rounded-lg border"
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="prose prose-sm prose-invert max-w-none text-current">
+                                        <MarkdownRenderer content={message.content} />
+                                    </div>
+                                </div>
                             </div>
-                        )}
-                        <div className="prose prose-sm prose-invert max-w-none text-foreground/90">
-                           <MarkdownRenderer content={message.content} />
+                             {isUser && (
+                                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                                    <User size={18} />
+                                </div>
+                            )}
                         </div>
-                    </div>
-                </div>
-                ))}
+                    );
+                })}
              </div>
           )}
 

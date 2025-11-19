@@ -246,10 +246,10 @@ export default function SageMakerChat() {
           {messages.length === 0 && !isTyping ? (
             <div className="flex flex-col items-center justify-center text-center h-full pt-16">
               <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-                <Sparkles size={28} />
+                <Bot size={28} />
               </div>
               <h2 className="text-2xl font-bold font-headline">
-                Ask WisdomGPT Anything
+                Ask SageMaker Anything
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 w-full">
                 <PromptSuggestionCard text="Explain the causes of the American Revolution" onClick={handleSuggestionClick} />
@@ -260,30 +260,44 @@ export default function SageMakerChat() {
             </div>
           ) : (
              <div className="space-y-8">
-                {messages.map((message, index) => (
-                <div key={index} className="flex items-start gap-4">
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center">
-                        {message.role === 'assistant' ? <Sparkles size={18} /> : <User size={18} />}
-                    </div>
-                    <div className="flex-1">
-                        <p className="font-semibold text-sm capitalize">{message.role === 'assistant' ? 'WisdomGPT' : 'You'}</p>
-                        {message.image && (
-                            <div className="my-2">
-                                <Image
-                                src={message.image}
-                                alt="User upload"
-                                width={200}
-                                height={200}
-                                className="rounded-lg border"
-                                />
-                            </div>
-                        )}
-                        <div className="prose prose-sm prose-invert max-w-none text-foreground/90">
-                           <MarkdownRenderer content={message.content} />
+                {messages.map((message, index) => {
+                  const isUser = message.role === 'user';
+                  return (
+                    <div key={index} className={cn("flex items-start gap-4", isUser && "justify-end")}>
+                      {!isUser && (
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center">
+                            <Bot size={18} />
                         </div>
+                      )}
+                      <div className={cn("flex-1 max-w-[80%]", isUser && "text-right")}>
+                          <div className={cn(
+                              "p-3 rounded-2xl inline-block",
+                              isUser ? "bg-primary text-primary-foreground rounded-br-none" : "bg-secondary rounded-bl-none"
+                          )}>
+                              {message.image && (
+                                  <div className="my-2">
+                                      <Image
+                                      src={message.image}
+                                      alt="User upload"
+                                      width={200}
+                                      height={200}
+                                      className="rounded-lg border"
+                                      />
+                                  </div>
+                              )}
+                              <div className="prose prose-sm prose-invert max-w-none text-current">
+                                  <MarkdownRenderer content={message.content} />
+                              </div>
+                          </div>
+                      </div>
+                      {isUser && (
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                            <User size={18} />
+                        </div>
+                      )}
                     </div>
-                </div>
-                ))}
+                  );
+                })}
              </div>
           )}
 
@@ -296,7 +310,7 @@ export default function SageMakerChat() {
                 className="flex items-start gap-4 mt-8"
               >
                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center">
-                    <Sparkles size={18} />
+                    <Bot size={18} />
                 </div>
                 <div className="flex-1 mt-3">
                    <TypingDots />
@@ -366,7 +380,7 @@ export default function SageMakerChat() {
                             adjustHeight();
                         }}
                         onKeyDown={handleKeyDown}
-                        placeholder="Message WisdomGPT..."
+                        placeholder="Message SageMaker..."
                         className="resize-none max-h-[200px] border-0 shadow-none focus-visible:ring-0 py-0"
                     />
                     <AnimatePresence>
@@ -391,7 +405,7 @@ export default function SageMakerChat() {
                 </div>
             </div>
              <p className="text-xs text-center text-muted-foreground mt-2">
-                WisdomGPT may produce inaccurate information about people, places, or facts.
+                SageMaker may produce inaccurate information about people, places, or facts.
             </p>
         </div>
       </div>
