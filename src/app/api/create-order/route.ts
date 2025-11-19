@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import { isFirebaseEnabled, db } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
+import { randomUUID } from 'crypto';
 
 export async function POST(req: NextRequest) {
     // 1. Explicitly check for environment variables
@@ -25,10 +26,13 @@ export async function POST(req: NextRequest) {
             key_secret: process.env.RAZORPAY_KEY_SECRET,
         });
 
+        // Generate a shorter, unique receipt ID
+        const receiptId = `rcpt_${randomUUID().slice(0, 20)}`;
+
         const options = {
-            amount: amount * 100, // Amount in the smallest currency unit (cents for USD)
+            amount: amount * 100, // Amount in the smallest currency unit
             currency: 'USD',
-            receipt: `receipt_user_${userId}_${Date.now()}`,
+            receipt: receiptId,
         };
 
         const order = await razorpay.orders.create(options);
@@ -39,6 +43,7 @@ export async function POST(req: NextRequest) {
                 userId, 
                 amount: order.amount,
                 currency: order.currency,
+                receipt: order.receipt,
                 createdAt: new Date().toISOString()
             });
         }
@@ -50,11 +55,10 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error) {
-        console.error('Error creating Razorpay order:', error);
+        console.error('[RAZORPAY_CREATE_ORDER_ERROR]', error);
         
         let errorMessage = 'An unknown error occurred while creating the payment order.';
         
-        // This structure is specific to how the Razorpay Node.js library returns errors.
         if (typeof error === 'object' && error !== null && 'error' in error) {
             const razorpayError = (error as any).error;
             if (razorpayError && typeof razorpayError === 'object' && 'description' in razorpayError) {
