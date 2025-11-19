@@ -3,7 +3,7 @@
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Gem } from 'lucide-react';
+import { Check, Gem, Lock, Star, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { useToast } from '@/hooks/use-toast';
@@ -11,19 +11,64 @@ import Script from 'next/script';
 import { useState, Suspense, useEffect } from 'react';
 import { createOrder } from './actions';
 import { useSearchParams } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 interface Plan {
     name: string;
     price: number;
+    priceDescription: string;
     durationMonths: number;
     features: string[];
     isPopular?: boolean;
+    isFree?: boolean;
 }
 
+const allFeatures = [
+    { name: 'Unlimited Topic Generations', pro: true },
+    { name: 'Unlimited Study Roadmaps', pro: true },
+    { name: 'Unlimited Pomodoro Timers', pro: true },
+    { name: 'Unlimited Capture Tool', pro: true },
+    { name: 'WisdomGPT AI Assistant', pro: true, isStar: true },
+    { name: 'Priority Email Support', pro: true },
+];
+
+
 const plans: Plan[] = [
-    { name: 'Apprentice', price: 69, durationMonths: 3, features: ['3 Months Access', 'Unlimited Generations', 'WisdomGPT Access', 'Priority Support'] },
-    { name: 'Scholar', price: 119, durationMonths: 6, features: ['6 Months Access', 'Unlimited Generations', 'WisdomGPT Access', 'Priority Support'], isPopular: true },
-    { name: 'Sage', price: 199, durationMonths: 12, features: ['12 Months Access', 'Unlimited Generations', 'WisdomGPT Access', 'Priority Support'] },
+    { 
+        name: 'Free', 
+        price: 0, 
+        priceDescription: 'to get started',
+        durationMonths: 0,
+        isFree: true,
+        features: [
+            '1 Topic Generation',
+            '1 Study Roadmap',
+            '1 Pomodoro Session',
+            '1 Capture Use',
+        ]
+    },
+    { 
+        name: 'Apprentice', 
+        price: 69, 
+        priceDescription: 'for 3 months',
+        durationMonths: 3, 
+        features: allFeatures.map(f => f.name)
+    },
+    { 
+        name: 'Scholar', 
+        price: 119, 
+        priceDescription: 'for 6 months',
+        durationMonths: 6, 
+        features: allFeatures.map(f => f.name),
+        isPopular: true 
+    },
+    { 
+        name: 'Sage', 
+        price: 199, 
+        priceDescription: 'for 12 months',
+        durationMonths: 12, 
+        features: allFeatures.map(f => f.name)
+    },
 ];
 
 const PricingContent = () => {
@@ -78,12 +123,10 @@ const PricingContent = () => {
                     data.append('razorpay_signature', response.razorpay_signature);
                     data.append('plan_duration', plan.durationMonths.toString());
                     
-                    // POST to our own API route for server-side verification
                     fetch('/api/payment-verification', {
                         method: 'POST',
                         body: data,
                     }).then(res => {
-                        // The server will redirect, so we don't need to do much client side
                         if(res.ok) {
                            window.location.href = res.url;
                         } else {
@@ -96,7 +139,7 @@ const PricingContent = () => {
                     email: user.email || '',
                 },
                 theme: {
-                    color: '#3b82f6', // blue-500
+                    color: '#3b82f6', 
                 },
             };
 
@@ -119,34 +162,59 @@ const PricingContent = () => {
                         Choose a plan that fits your study schedule and get unlimited access to all AI-powered tools.
                     </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto pt-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto pt-8 items-start">
                     {plans.map((plan, index) => (
-                        <Card key={plan.name} className={plan.isPopular ? 'border-primary ring-2 ring-primary shadow-lg' : ''}>
-                            <CardHeader>
-                                <CardTitle className="font-headline text-xl">{plan.name}</CardTitle>
-                                <CardDescription>
-                                    <span className="text-4xl font-bold text-foreground">${plan.price}</span>
-                                    <span className="text-muted-foreground"> / {plan.durationMonths} months</span>
+                        <Card key={plan.name} className={cn(
+                            "flex flex-col h-full",
+                            plan.isPopular ? 'border-primary ring-2 ring-primary shadow-2xl shadow-primary/20' : '',
+                            plan.isFree ? 'md:col-span-2 lg:col-span-1' : 'md:col-span-1'
+                        )}>
+                             {plan.isPopular && (
+                                <div className="bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-1 text-center rounded-t-lg">Most Popular</div>
+                            )}
+                            <CardHeader className="text-center">
+                                <CardTitle className="font-headline text-2xl">{plan.name}</CardTitle>
+                                <CardDescription className="flex flex-col">
+                                   {plan.isFree ? (
+                                        <span className="text-4xl font-bold text-foreground">Free</span>
+                                   ) : (
+                                        <span className="text-4xl font-bold text-foreground">${plan.price}</span>
+                                   )}
+                                    <span className="text-muted-foreground text-sm mt-1">{plan.priceDescription}</span>
                                 </CardDescription>
                             </CardHeader>
-                            <CardContent className="space-y-4">
-                                <ul className="space-y-2">
-                                    {plan.features.map(feature => (
-                                        <li key={feature} className="flex items-center gap-2">
-                                            <Check className="w-4 h-4 text-primary" />
-                                            <span className="text-sm text-muted-foreground">{feature}</span>
+                            <CardContent className="space-y-4 flex-1">
+                                <ul className="space-y-3">
+                                    {allFeatures.map(feature => (
+                                        <li key={feature.name} className="flex items-center gap-3 text-sm">
+                                            {plan.isFree ? (
+                                                feature.pro ? <X className="w-5 h-5 text-muted-foreground/50" /> : <Check className="w-5 h-5 text-primary" />
+                                            ) : (
+                                                feature.isStar ? <Star className="w-5 h-5 text-yellow-500 fill-current" /> : <Check className="w-5 h-5 text-primary" />
+                                            )}
+                                            <span className={cn(plan.isFree && !feature.pro && 'text-muted-foreground/50')}>{feature.name}</span>
+                                        </li>
+                                    ))}
+                                    {plan.isFree && plan.features.map(f => (
+                                        <li key={f} className="flex items-center gap-3 text-sm">
+                                            <Check className="w-5 h-5 text-primary" />
+                                            <span>{f}</span>
                                         </li>
                                     ))}
                                 </ul>
                             </CardContent>
                             <CardFooter>
-                                <Button
-                                    className="w-full"
-                                    onClick={() => handlePayment(plan, index)}
-                                    disabled={subLoading || isLoading === index || (subscription?.status === 'active' && subscription.plan?.startsWith(plan.durationMonths.toString()))}
-                                >
-                                    {isLoading === index ? 'Processing...' : (subscription?.status === 'active' && subscription.plan?.startsWith(plan.durationMonths.toString())) ? 'Current Plan' : 'Choose Plan'}
-                                </Button>
+                                {plan.isFree ? (
+                                     <Button className="w-full" variant="outline" disabled>Your Current Plan</Button>
+                                ) : (
+                                    <Button
+                                        className="w-full"
+                                        onClick={() => handlePayment(plan, index)}
+                                        disabled={subLoading || isLoading === index || subscription?.status === 'active' && subscription.plan?.startsWith(plan.durationMonths.toString())}
+                                    >
+                                        {isLoading === index ? 'Processing...' : (subscription?.status === 'active' && subscription.plan?.startsWith(plan.durationMonths.toString())) ? 'Current Plan' : 'Choose Plan'}
+                                    </Button>
+                                )}
                             </CardFooter>
                         </Card>
                     ))}
