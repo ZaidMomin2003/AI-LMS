@@ -64,20 +64,20 @@ const PricingContent = () => {
                 body: JSON.stringify({ amount: sagePlan.price, userId: user.uid }),
             });
 
-            if (!orderResponse.ok) {
-                const errorData = await orderResponse.json();
-                throw new Error(errorData.error || 'Could not create a payment order.');
-            }
+            const orderData = await orderResponse.json();
 
-            const order = await orderResponse.json();
+            if (!orderResponse.ok) {
+                // This will now display the specific error from the server
+                throw new Error(orderData.error || 'Could not create a payment order.');
+            }
             
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                amount: order.amount,
-                currency: order.currency,
+                amount: orderData.amount,
+                currency: orderData.currency,
                 name: 'Wisdom Pro',
                 description: `Subscription for ${sagePlan.name} plan`,
-                order_id: order.id,
+                order_id: orderData.id,
                 handler: function (response: any) {
                     const data = new URLSearchParams();
                     data.append('razorpay_payment_id', response.razorpay_payment_id);

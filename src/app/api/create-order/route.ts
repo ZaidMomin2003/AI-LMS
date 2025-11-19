@@ -50,16 +50,18 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error) {
-        // 2. Log the specific error from Razorpay
         console.error('Error creating Razorpay order:', error);
         
-        let errorMessage = 'Could not create a payment order.';
-        // Check if the error object has more details from Razorpay
-        if (error instanceof Error && 'error' in error && typeof (error as any).error === 'object') {
-             const razorpayError = (error as any).error;
-             if (razorpayError.description) {
+        let errorMessage = 'An unknown error occurred while creating the payment order.';
+        
+        // This structure is specific to how the Razorpay Node.js library returns errors.
+        if (typeof error === 'object' && error !== null && 'error' in error) {
+            const razorpayError = (error as any).error;
+            if (razorpayError && typeof razorpayError === 'object' && 'description' in razorpayError) {
                 errorMessage = `Razorpay Error: ${razorpayError.description}`;
-             }
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
         } else if (error instanceof Error) {
             errorMessage = error.message;
         }
