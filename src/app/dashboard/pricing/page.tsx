@@ -9,7 +9,6 @@ import { useSubscription } from '@/context/SubscriptionContext';
 import { useToast } from '@/hooks/use-toast';
 import Script from 'next/script';
 import { useState, Suspense, useEffect } from 'react';
-import { createOrder } from './actions';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -103,10 +102,18 @@ const PricingContent = () => {
         setIsLoading(planIndex);
 
         try {
-            const order = await createOrder({
-                amount: plan.price,
-                userId: user.uid,
+            const orderResponse = await fetch('/api/create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: plan.price, userId: user.uid }),
             });
+
+            if (!orderResponse.ok) {
+                const errorData = await orderResponse.json();
+                throw new Error(errorData.error || 'Could not create a payment order.');
+            }
+
+            const order = await orderResponse.json();
             
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
@@ -211,9 +218,9 @@ const PricingContent = () => {
                                     <Button
                                         className="w-full"
                                         onClick={() => handlePayment(plan, index)}
-                                        disabled={subLoading || isLoading === index || (subscription?.status === 'active' && !!subscription.plan && subscription.plan.startsWith(plan.durationMonths.toString()))}
+                                        disabled={subLoading || isLoading === index || (subscription?.status === 'active' && !!subscription?.plan && subscription.plan.startsWith(plan.durationMonths.toString()))}
                                     >
-                                        {isLoading === index ? 'Processing...' : (subscription?.status === 'active' && !!subscription.plan && subscription.plan.startsWith(plan.durationMonths.toString())) ? 'Current Plan' : 'Choose Plan'}
+                                        {isLoading === index ? 'Processing...' : (subscription?.status === 'active' && !!subscription?.plan && subscription.plan.startsWith(plan.durationMonths.toString())) ? 'Current Plan' : 'Choose Plan'}
                                     </Button>
                                 )}
                             </CardFooter>
