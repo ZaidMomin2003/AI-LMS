@@ -103,7 +103,7 @@ const PricingContent = () => {
         setIsLoading(planIndex);
 
         try {
-            const currency = (process.env.NEXT_PUBLIC_RAZORPAY_CURRENCY || 'INR') as 'INR' | 'USD';
+            const currency = (process.env.NEXT_PUBLIC_RAZORPAY_CURRENCY || 'USD') as 'INR' | 'USD';
             const order = await createOrder({
                 amount: plan.price,
                 currency: currency,
@@ -153,7 +153,7 @@ const PricingContent = () => {
         }
     };
 
-    const currencySymbol = process.env.NEXT_PUBLIC_RAZORPAY_CURRENCY === 'USD' ? '$' : '₹';
+    const currencySymbol = process.env.NEXT_PUBLIC_RAZORPAY_CURRENCY === 'INR' ? '₹' : '$';
 
     return (
         <AppLayout>
