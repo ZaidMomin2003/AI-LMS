@@ -1,6 +1,7 @@
 
+
 import { doc, getDoc, setDoc, type FirestoreError } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { initializeFirebase } from '@/lib/firebase';
 
 /**
  * Updates a user's document in the 'users' collection.
@@ -9,6 +10,7 @@ import { db } from '@/lib/firebase';
  * @param data An object containing the data to save.
  */
 export const updateUserDoc = async (uid: string, data: object): Promise<boolean> => {
+  const { db } = initializeFirebase();
   if (!uid || !db) return false;
   try {
     const userDocRef = doc(db, 'users', uid);
@@ -32,6 +34,7 @@ export const updateUserDoc = async (uid: string, data: object): Promise<boolean>
  * @returns The user's document data, or null if it doesn't exist or an error occurs.
  */
 export const getUserDoc = async (uid: string) => {
+  const { db } = initializeFirebase();
   if (!uid || !db) return null;
   try {
     const userDocRef = doc(db, 'users', uid);

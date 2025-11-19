@@ -1,8 +1,10 @@
-import { initializeApp, getApps, getApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
+'use client';
+
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
 
-const firebaseConfig: FirebaseOptions = {
+const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -11,31 +13,39 @@ const firebaseConfig: FirebaseOptions = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-let app: FirebaseApp | null = null;
-let auth: Auth | null = null;
-let googleProvider: GoogleAuthProvider | null = null;
-let db: Firestore | null = null;
-
-// This flag will be used to check if Firebase is configured.
 export const isFirebaseEnabled = !!firebaseConfig.apiKey;
 
-if (isFirebaseEnabled) {
+let app: FirebaseApp;
+let auth: Auth;
+let db: Firestore;
+let googleProvider: GoogleAuthProvider;
+
+export function initializeFirebase() {
+  if (isFirebaseEnabled && !getApps().length) {
     try {
-        app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-        auth = getAuth(app);
-        googleProvider = new GoogleAuthProvider();
-        db = getFirestore(app);
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+      googleProvider = new GoogleAuthProvider();
     } catch (error) {
-        console.error("Firebase initialization error:", error);
+      console.error("Firebase initialization error:", error);
     }
-} else {
-    console.log(
-    '================================================================================',
-    '\nFirebase is not configured. Authentication and database features will be disabled.',
-    '\nCreate a file named .env in the project root and add your Firebase config.',
-    '\nSee the README for more details.',
-    '\n================================================================================'
-  );
+  } else if (isFirebaseEnabled) {
+    app = getApp();
+    auth = getAuth(app);
+    db = getFirestore(app);
+    googleProvider = new GoogleAuthProvider();
+  } else {
+     console.log(
+      '================================================================================',
+      '\nFirebase is not configured. Authentication and database features will be disabled.',
+      '\nCreate a file named .env in the project root and add your Firebase config.',
+      '\nSee the README for more details.',
+      '\n================================================================================'
+    );
+  }
+  return { app, auth, db, googleProvider };
 }
 
-export { app, auth, googleProvider, db };
+// Export the initialized instances for direct use in other files
+export { app, auth, db, googleProvider };
