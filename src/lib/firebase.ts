@@ -16,27 +16,8 @@ const firebaseConfig = {
 
 export const isFirebaseEnabled = !!firebaseConfig.apiKey;
 
-let app: FirebaseApp;
-let auth: Auth;
-let db: Firestore;
-let googleProvider: GoogleAuthProvider;
-
-export function initializeFirebase() {
-  if (isFirebaseEnabled && !getApps().length) {
-    try {
-      app = initializeApp(firebaseConfig);
-      auth = getAuth(app);
-      db = getFirestore(app);
-      googleProvider = new GoogleAuthProvider();
-    } catch (error) {
-      console.error("Firebase initialization error:", error);
-    }
-  } else if (isFirebaseEnabled) {
-    app = getApp();
-    auth = getAuth(app);
-    db = getFirestore(app);
-    googleProvider = new GoogleAuthProvider();
-  } else {
+function initializeFirebase() {
+  if (!isFirebaseEnabled) {
      console.log(
       '================================================================================',
       '\nFirebase is not configured. Authentication and database features will be disabled.',
@@ -44,6 +25,15 @@ export function initializeFirebase() {
       '\nSee the README for more details.',
       '\n================================================================================'
     );
+    return { app: null, auth: null, db: null, googleProvider: null };
   }
+
+  const app: FirebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+  const auth: Auth = getAuth(app);
+  const db: Firestore = getFirestore(app);
+  const googleProvider: GoogleAuthProvider = new GoogleAuthProvider();
+
   return { app, auth, db, googleProvider };
 }
+
+export const { app, auth, db, googleProvider } = initializeFirebase();

@@ -3,7 +3,7 @@
 
 import { useRouter } from 'next/navigation';
 import { signInWithPopup } from 'firebase/auth';
-import { initializeFirebase, isFirebaseEnabled } from '@/lib/firebase';
+import { auth, googleProvider, isFirebaseEnabled } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
@@ -33,7 +33,6 @@ export default function SignUpPage() {
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
     async function handleGoogleSignIn() {
-        const { auth, googleProvider } = initializeFirebase();
         if (!isFirebaseEnabled || !auth || !googleProvider) {
             toast({
                 variant: 'destructive',
