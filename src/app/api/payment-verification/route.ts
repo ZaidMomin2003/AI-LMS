@@ -1,4 +1,3 @@
-
 'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -23,12 +22,11 @@ async function getUserIdFromOrderId(orderId: string): Promise<string | null> {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.text();
-    const data = new URLSearchParams(body);
-    const razorpay_order_id = data.get('razorpay_order_id');
-    const razorpay_payment_id = data.get('razorpay_payment_id');
-    const razorpay_signature = data.get('razorpay_signature');
-    const planDuration = parseInt(data.get('plan_duration') || '0', 10);
+    const formData = await req.formData();
+    const razorpay_order_id = formData.get('razorpay_order_id') as string;
+    const razorpay_payment_id = formData.get('razorpay_payment_id') as string;
+    const razorpay_signature = formData.get('razorpay_signature') as string;
+    const planDuration = parseInt(formData.get('plan_duration') as string || '0', 10);
     
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !planDuration) {
       return NextResponse.json({ error: 'Missing payment details' }, { status: 400 });

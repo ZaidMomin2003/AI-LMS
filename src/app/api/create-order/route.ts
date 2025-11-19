@@ -1,11 +1,9 @@
-
 'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import { isFirebaseEnabled, db } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
-import { randomUUID } from 'crypto';
 
 export async function POST(req: NextRequest) {
     // 1. Explicitly check for environment variables
@@ -27,7 +25,7 @@ export async function POST(req: NextRequest) {
         });
 
         // Generate a shorter, unique receipt ID
-        const receiptId = `rcpt_${randomUUID().slice(0, 20)}`;
+        const receiptId = `rcpt_${Date.now()}_${userId.slice(0, 8)}`;
 
         const options = {
             amount: amount * 100, // Amount in the smallest currency unit

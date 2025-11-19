@@ -1,4 +1,3 @@
-
 'use client';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -85,16 +84,20 @@ const PricingContent = () => {
                     data.append('razorpay_signature', response.razorpay_signature);
                     data.append('plan_duration', sagePlan.durationMonths.toString());
                     
-                    fetch('/api/payment-verification', {
-                        method: 'POST',
-                        body: data,
-                    }).then(res => {
-                        if(res.ok) {
-                           window.location.href = res.url;
-                        } else {
-                            toast({ variant: "destructive", title: "Verification Failed" });
-                        }
-                    });
+                    // Use a form submission to redirect, which works better with server-side redirects
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/api/payment-verification';
+
+                    for (const key of data.keys()) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = data.get(key)!;
+                        form.appendChild(input);
+                    }
+                    document.body.appendChild(form);
+                    form.submit();
                 },
                 prefill: {
                     name: user.displayName || 'New User',
