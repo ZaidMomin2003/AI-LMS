@@ -6,11 +6,10 @@ import { doc, setDoc } from 'firebase/firestore';
 
 interface CreateOrderOptions {
     amount: number;
-    currency: 'INR' | 'USD';
     userId: string;
 }
 
-export async function createOrder({ amount, currency, userId }: CreateOrderOptions) {
+export async function createOrder({ amount, userId }: CreateOrderOptions) {
     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
         throw new Error('Razorpay credentials are not configured.');
     }
@@ -22,7 +21,7 @@ export async function createOrder({ amount, currency, userId }: CreateOrderOptio
 
     const options = {
         amount: amount * 100, // Amount in paise
-        currency,
+        currency: 'INR', // Explicitly set to INR for UPI/EMI support
         receipt: `receipt_user_${userId}_${Date.now()}`,
     };
 
