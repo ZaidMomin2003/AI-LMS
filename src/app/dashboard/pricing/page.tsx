@@ -1,3 +1,4 @@
+
 'use client';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,6 @@ interface Plan {
     price: number;
     priceDescription: string;
     durationMonths: number;
-    features: string[];
 }
 
 const sagePlan: Plan = {
@@ -24,14 +24,6 @@ const sagePlan: Plan = {
     price: 199, 
     priceDescription: 'for 12 months of access',
     durationMonths: 12, 
-    features: [
-        'Unlimited Topic Generations',
-        'Unlimited Study Roadmaps',
-        'Unlimited Pomodoro Timers',
-        'Unlimited Capture Tool',
-        'WisdomGPT AI Assistant',
-        'Priority Email Support',
-    ]
 };
 
 const PricingContent = () => {
@@ -124,6 +116,15 @@ const PricingContent = () => {
 
     const currencySymbol = '$';
 
+    const sageFeatures = [
+        'Unlimited Topic Generations',
+        'Unlimited Study Roadmaps',
+        'Unlimited Pomodoro Timers',
+        'Unlimited Capture Tool',
+        'WisdomGPT AI Assistant',
+        'Priority Email Support',
+    ];
+
     return (
         <AppLayout>
             <Script id="razorpay-checkout-js" src="https://checkout.razorpay.com/v1/checkout.js" />
@@ -145,7 +146,7 @@ const PricingContent = () => {
                         </CardHeader>
                         <CardContent className="space-y-4 flex-1">
                             <ul className="space-y-3">
-                                {sagePlan.features.map(feature => (
+                                {sageFeatures.map(feature => (
                                     <li key={feature} className="flex items-center gap-3 text-sm">
                                         <Check className="w-5 h-5 text-primary" />
                                         <span>{feature}</span>

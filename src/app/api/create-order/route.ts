@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     // 1. Explicitly check for environment variables
     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
         console.error('Razorpay credentials are not configured in environment variables.');
-        return NextResponse.json({ error: 'Razorpay credentials are not configured on the server.' }, { status: 500 });
+        return NextResponse.json({ error: 'Payment gateway is not configured on the server.' }, { status: 500 });
     }
 
     try {
