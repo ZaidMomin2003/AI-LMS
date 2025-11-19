@@ -6,7 +6,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PartyPopper, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
-import { AnimatePresence, motion } from 'framer-motion';
 
 const includedFeatures = [
   'AI-Generated Notes',
@@ -17,7 +16,6 @@ const includedFeatures = [
 
 export function WelcomePopup() {
   const [isOpen, setIsOpen] = useState(false);
-  const [featureIndex, setFeatureIndex] = useState(0);
 
   useEffect(() => {
     const popupShown = sessionStorage.getItem('welcomePopupShown');
@@ -30,16 +28,6 @@ export function WelcomePopup() {
       return () => clearTimeout(timer);
     }
   }, []);
-
-  useEffect(() => {
-    if (isOpen) {
-      const featureTimer = setInterval(() => {
-        setFeatureIndex((prevIndex) => (prevIndex + 1) % includedFeatures.length);
-      }, 2000); // Change feature every 2 seconds
-
-      return () => clearInterval(featureTimer);
-    }
-  }, [isOpen]);
 
   const handleClose = () => {
     sessionStorage.setItem('welcomePopupShown', 'true');
@@ -56,41 +44,33 @@ export function WelcomePopup() {
             handleClose();
         }
     }}>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden border-primary shadow-2xl shadow-primary/20">
-        <div className="p-8 relative bg-card text-center space-y-4">
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-accent to-primary" />
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden border-primary/20 shadow-2xl shadow-primary/20">
+        <div className="relative p-8 bg-card text-center space-y-6">
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-primary to-accent" />
             
-            <div className="mx-auto w-fit bg-primary/10 text-primary p-4 rounded-full">
-                <PartyPopper className="w-10 h-10" />
+            <div className="mx-auto w-fit bg-primary/10 text-primary p-3 rounded-full">
+                <PartyPopper className="w-8 h-8" />
             </div>
 
             <DialogHeader className="space-y-2">
                 <DialogTitle className="text-2xl font-headline font-bold">Unlock Your Study Superpowers</DialogTitle>
-                <DialogDescription className="text-lg text-muted-foreground">
-                    Start your <span className="text-primary font-bold">Free Trial</span> and master any subject, instantly.
+                <DialogDescription className="text-muted-foreground">
+                    Start your <span className="font-semibold text-primary">Free Trial</span> and get instant access to our full suite of AI tools.
                 </DialogDescription>
             </DialogHeader>
 
-            <div className="h-16 flex flex-col items-center justify-center">
-                 <AnimatePresence mode="wait">
-                    <motion.div
-                        key={featureIndex}
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.5 }}
-                        className="flex items-center gap-3 text-sm text-muted-foreground"
-                    >
-                         <CheckCircle className="w-5 h-5 text-green-500" />
-                         <span className="font-medium">{includedFeatures[featureIndex]}</span>
-                    </motion.div>
-                </AnimatePresence>
+            <div className="text-left space-y-2 py-2">
+                 {includedFeatures.map((feature) => (
+                    <div key={feature} className="flex items-center gap-3 text-sm">
+                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        <span className="text-muted-foreground">{feature}</span>
+                    </div>
+                ))}
             </div>
-
 
             <Button asChild size="lg" className="w-full" onClick={handleSignUpClick}>
                  <Link href="/signup">
-                    Claim Your Free Trial <ArrowRight className="ml-2" />
+                    Claim Your Free Trial <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
             </Button>
             
