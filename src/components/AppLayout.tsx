@@ -5,7 +5,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { initializeFirebase } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
 import { DndContext, type DragEndEvent } from '@dnd-kit/core';
 import { useSubscription } from '@/context/SubscriptionContext';
@@ -128,7 +128,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   const handleLogout = async () => {
-    await signOut(auth);
+    const { auth } = initializeFirebase();
+    if (auth) {
+      await signOut(auth);
+    }
     router.push('/login');
   };
 
