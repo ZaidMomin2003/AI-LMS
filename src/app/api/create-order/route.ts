@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
-import { isFirebaseEnabled, db } from '@/lib/firebase';
+import { initializeFirebase } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
 export async function POST(req: NextRequest) {
@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
 
         const order = await razorpay.orders.create(options);
         
+        const { db, isFirebaseEnabled } = initializeFirebase();
         if (isFirebaseEnabled && db) {
             const orderDocRef = doc(db, 'orders', order.id);
             await setDoc(orderDocRef, { 

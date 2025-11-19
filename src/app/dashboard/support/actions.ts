@@ -1,7 +1,7 @@
 
 'use server';
 
-import { initializeFirebase, isFirebaseEnabled } from '@/lib/firebase';
+import { initializeFirebase } from '@/lib/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 interface SupportRequestData {
@@ -12,7 +12,7 @@ interface SupportRequestData {
 }
 
 export async function submitSupportRequest(data: SupportRequestData): Promise<void> {
-  const { db } = initializeFirebase();
+  const { db, isFirebaseEnabled } = initializeFirebase();
   if (!isFirebaseEnabled || !db) {
     console.error('Firebase is not configured. Support request cannot be saved.');
     // Simulate success to avoid breaking user flow if backend is not ready

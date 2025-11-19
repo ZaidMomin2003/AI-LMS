@@ -1,7 +1,7 @@
 
 'use server';
 
-import { initializeFirebase, isFirebaseEnabled } from '@/lib/firebase';
+import { initializeFirebase } from '@/lib/firebase';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 
 export interface SupportRequest {
@@ -15,7 +15,7 @@ export interface SupportRequest {
 }
 
 export async function fetchSupportRequests(): Promise<SupportRequest[]> {
-  const { db } = initializeFirebase();
+  const { db, isFirebaseEnabled } = initializeFirebase();
   if (!isFirebaseEnabled || !db) {
     console.warn('Firebase not configured, returning empty support requests.');
     return [];

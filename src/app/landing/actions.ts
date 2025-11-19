@@ -1,7 +1,7 @@
 
 'use server';
 
-import { initializeFirebase, isFirebaseEnabled } from '@/lib/firebase';
+import { initializeFirebase } from '@/lib/firebase';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 interface SubmissionData {
@@ -11,7 +11,7 @@ interface SubmissionData {
 }
 
 export async function saveContactSubmission(data: SubmissionData): Promise<void> {
-  const { db } = initializeFirebase();
+  const { db, isFirebaseEnabled } = initializeFirebase();
   if (!isFirebaseEnabled || !db) {
     console.error('Firebase is not configured. Submission cannot be saved.');
     // In a real app, you might want to send this to a different logging service

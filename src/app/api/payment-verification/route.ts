@@ -3,10 +3,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { updateUserDoc } from '@/services/firestore';
-import { isFirebaseEnabled, db } from '@/lib/firebase';
+import { initializeFirebase } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
 async function getUserIdFromOrderId(orderId: string): Promise<string | null> {
+    const { db, isFirebaseEnabled } = initializeFirebase();
     if (!isFirebaseEnabled || !db) return null;
     const orderDocRef = doc(db, 'orders', orderId);
     try {
