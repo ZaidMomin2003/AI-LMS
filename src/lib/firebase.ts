@@ -1,4 +1,3 @@
-
 'use client';
 
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
@@ -36,4 +35,5 @@ function initializeFirebase() {
   return { app, auth, db, googleProvider };
 }
 
+export { initializeFirebase };
 export const { app, auth, db, googleProvider } = initializeFirebase();

@@ -16,9 +16,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { auth } = initializeFirebase();
-    if (!isFirebaseEnabled || !auth) {
+    if (!isFirebaseEnabled) {
         console.warn("Firebase is not configured. Authentication will be disabled.");
+        setLoading(false);
+        return;
+    }
+    
+    const { auth } = initializeFirebase();
+    if (!auth) {
         setLoading(false);
         return;
     }
