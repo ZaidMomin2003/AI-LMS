@@ -44,6 +44,13 @@ const nextConfig: NextConfig = {
       }
     ],
   },
+  webpack: (config, { isServer }) => {
+    // This is to fix the "Module not found: Can't resolve 'child_process'" error
+    // See: https://github.com/googleapis/google-auth-library-nodejs/issues/1435
+    config.externals.push('child_process');
+    
+    return config;
+  }
 };
 
 export default nextConfig;
