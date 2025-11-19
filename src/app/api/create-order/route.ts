@@ -7,9 +7,10 @@ import { isFirebaseEnabled, db } from '@/lib/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
 export async function POST(req: NextRequest) {
+    // 1. Explicitly check for environment variables
     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
         console.error('Razorpay credentials are not configured in environment variables.');
-        return NextResponse.json({ error: 'Razorpay credentials are not configured.' }, { status: 500 });
+        return NextResponse.json({ error: 'Razorpay credentials are not configured on the server.' }, { status: 500 });
     }
 
     try {
@@ -49,9 +50,20 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error) {
+        // 2. Log the specific error from Razorpay
         console.error('Error creating Razorpay order:', error);
-        // Provide a more specific error message if available
-        const errorMessage = (error instanceof Error) ? error.message : 'Could not create a payment order.';
+        
+        let errorMessage = 'Could not create a payment order.';
+        // Check if the error object has more details from Razorpay
+        if (error instanceof Error && 'error' in error && typeof (error as any).error === 'object') {
+             const razorpayError = (error as any).error;
+             if (razorpayError.description) {
+                errorMessage = `Razorpay Error: ${razorpayError.description}`;
+             }
+        } else if (error instanceof Error) {
+            errorMessage = error.message;
+        }
+
         return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
