@@ -1,11 +1,10 @@
-
 'use client';
 
 import type { ExamDetails } from '@/types';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { getUserDoc, updateUserDoc } from '@/app/dashboard/exam/actions';
 import { isFirebaseEnabled } from '@/lib/firebase';
+import { updateUserDoc, listenToUserDoc } from '@/services/firestore';
 
 interface ExamContextType {
   exam: ExamDetails | null;
@@ -31,26 +30,25 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchExam = async () => {
-        if (user && isFirebaseEnabled) {
-            setLoading(true);
-            try {
-                const userData = await getUserDoc(user.uid);
-                setExam(userData?.exam || null);
-            } catch (error) {
-                console.error("Failed to fetch exam details:", error);
-                setExam(null);
-            } finally {
-                setLoading(false);
-            }
-        } else {
-            setExam(null);
-            setLoading(false);
-        }
-    };
-    fetchExam();
+    if (user && isFirebaseEnabled) {
+      setLoading(true);
+      const unsubscribe = listenToUserDoc(user, (data) => {
+        setExam(data?.exam || null);
+        setLoading(false);
+      });
+      return () => unsubscribe();
+    } else {
+      setExam(null);
+      setLoading(false);
+    }
   }, [user]);
 
+  const addExam = async (newExam: ExamDetails) => {
+    if (!user || !isFirebaseEnabled) return;
+    setExam(newExam); // Optimistic update
+    await updateUserDoc(user.uid, { exam: newExam });
+  };
+  
   const clearExam = async () => {
     if (!user || !isFirebaseEnabled) return;
     setExam(null); // Optimistic update
@@ -84,11 +82,6 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
     return () => clearInterval(timer);
   }, [exam]);
 
-  const addExam = async (newExam: ExamDetails) => {
-    if (!user || !isFirebaseEnabled) return;
-    await updateUserDoc(user.uid, { exam: newExam });
-    setExam(newExam); // Update state after DB call
-  };
 
   return (
     <ExamContext.Provider value={{ exam, addExam, clearExam, timeLeft, loading }}>

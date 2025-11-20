@@ -7,7 +7,7 @@ import { useTopic } from './TopicContext';
 import { useRoadmap } from './RoadmapContext';
 import { usePomodoro } from './PomodoroContext';
 import { useProfile } from './ProfileContext';
-import { getUserDoc } from '@/app/dashboard/pricing/actions';
+import { listenToUserDoc } from '@/services/firestore';
 
 interface Subscription {
   plan: string;
@@ -37,31 +37,22 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
   const { profile, loading: profileLoading } = useProfile();
   
   useEffect(() => {
-    const fetchSubscription = async () => {
-      if (user && isFirebaseEnabled) {
-        setLoading(true);
-        try {
-          const userData = await getUserDoc(user.uid);
-          let sub = userData?.subscription || null;
-
+    if (user && isFirebaseEnabled) {
+      setLoading(true);
+      const unsubscribe = listenToUserDoc(user, (data) => {
+          let sub = data?.subscription || null;
           // Check for expiry
           if (sub && new Date(sub.expiryDate) < new Date()) {
             sub.status = 'inactive';
           }
-          
           setSubscription(sub);
-        } catch (error) {
-          console.error("Failed to fetch subscription:", error);
-          setSubscription(null);
-        } finally {
           setLoading(false);
-        }
-      } else {
-        setSubscription(null);
-        setLoading(false);
-      }
-    };
-    fetchSubscription();
+      });
+      return () => unsubscribe();
+    } else {
+      setSubscription(null);
+      setLoading(false);
+    }
   }, [user]);
 
   const canUseFeature = (feature: Feature): boolean => {

@@ -1,11 +1,11 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { Topic } from '@/types';
 import { useAuth } from './AuthContext';
 import { isFirebaseEnabled } from '@/lib/firebase';
-import { getUserDoc, updateUserDoc } from '@/app/topic/actions';
+import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import type { Timestamp } from 'firebase/firestore';
 
 interface TopicContextType {
   topics: Topic[];
@@ -36,7 +36,7 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
                   ...t,
                   createdAt: t.createdAt?.toDate ? t.createdAt.toDate() : new Date(t.createdAt)
               }));
-              setTopics(parsedTopics.sort((a: Topic, b: Topic) => b.createdAt.getTime() - a.createdAt.getTime()));
+              setTopics(parsedTopics.sort((a: Topic, b: Topic) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
             } else {
               setTopics([]);
             }
@@ -57,8 +57,9 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
   const addTopic = async (topic: Topic) => {
     if (!user || !isFirebaseEnabled) return;
     const newTopics = [topic, ...topics];
-    setTopics(newTopics); // Optimistic update
+    // Don't optimistically update here to avoid flashing, wait for db write
     await updateUserDoc(user.uid, { topics: newTopics });
+    setTopics(newTopics.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
   };
 
   const getTopicById = (id: string) => {

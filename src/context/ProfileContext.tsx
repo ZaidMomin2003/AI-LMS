@@ -1,10 +1,9 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { useAuth } from './AuthContext';
 import { isFirebaseEnabled } from '@/lib/firebase';
-import { getUserDoc, updateUserDoc } from '@/app/dashboard/profile/actions';
+import { listenToUserDoc, updateUserDoc } from '@/services/firestore';
 
 export interface ProfileData {
   phoneNumber?: string;
@@ -28,47 +27,36 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      if (user && isFirebaseEnabled) {
-        setLoading(true);
-        try {
-            const userData = await getUserDoc(user.uid);
-            const profileData = userData?.profile || {};
-            if (typeof profileData.captureCount !== 'number') {
-                profileData.captureCount = 0;
-            }
-            setProfile(profileData);
-        } catch (error) {
-            console.error("Failed to fetch profile:", error);
-            setProfile({ captureCount: 0 });
-        } finally {
-            setLoading(false);
-        }
-      } else {
-        setProfile(null);
-        setLoading(false);
-      }
-    };
-    fetchProfile();
+    if (user && isFirebaseEnabled) {
+      setLoading(true);
+      const unsubscribe = listenToUserDoc(user, (data) => {
+          const profileData = data?.profile || {};
+          if (typeof profileData.captureCount !== 'number') {
+              profileData.captureCount = 0;
+          }
+          setProfile(profileData);
+          setLoading(false);
+      });
+      return () => unsubscribe();
+    } else {
+      setProfile(null);
+      setLoading(false);
+    }
   }, [user]);
 
   const updateProfile = useCallback(async (data: Partial<ProfileData>) => {
     if (!user || !isFirebaseEnabled) return;
 
-    // Create the new profile state first
-    const newProfile = { ...profile, ...data };
+    const currentProfile = profile || {};
+    const newProfile = { ...currentProfile, ...data };
 
-    // Special handling for captureCount increment
     if (data.captureCount === -1) {
-        newProfile.captureCount = (profile?.captureCount || 0) + 1;
+        newProfile.captureCount = (currentProfile?.captureCount || 0) + 1;
     }
-
-    // Perform the side effect (database update)
+    
+    setProfile(newProfile); // Optimistic update
     await updateUserDoc(user.uid, { profile: newProfile });
-
-    // Then update the local state
-    setProfile(newProfile);
-}, [user, profile]);
+  }, [user, profile]);
 
 
   return (

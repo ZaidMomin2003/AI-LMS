@@ -1,11 +1,10 @@
-
 'use client';
 
 import type { GenerateRoadmapOutput } from '@/ai/flows/generate-roadmap-flow';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { getUserDoc, updateUserDoc } from '@/app/dashboard/roadmap/actions';
 import { isFirebaseEnabled } from '@/lib/firebase';
+import { listenToUserDoc, updateUserDoc } from '@/services/firestore';
 
 interface RoadmapContextType {
     roadmap: GenerateRoadmapOutput | null;
@@ -21,24 +20,17 @@ export const RoadmapProvider = ({ children }: { children: React.ReactNode }) => 
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchRoadmap = async () => {
-            if (user && isFirebaseEnabled) {
-                setLoading(true);
-                try {
-                    const userData = await getUserDoc(user.uid);
-                    setRoadmapState(userData?.roadmap || null);
-                } catch (error) {
-                    console.error("Failed to fetch roadmap:", error);
-                    setRoadmapState(null);
-                } finally {
-                    setLoading(false);
-                }
-            } else {
-                setRoadmapState(null);
+        if (user && isFirebaseEnabled) {
+            setLoading(true);
+            const unsubscribe = listenToUserDoc(user, (data) => {
+                setRoadmapState(data?.roadmap || null);
                 setLoading(false);
-            }
-        };
-        fetchRoadmap();
+            });
+            return () => unsubscribe();
+        } else {
+            setRoadmapState(null);
+            setLoading(false);
+        }
     }, [user]);
 
     const setRoadmap = async (newRoadmap: GenerateRoadmapOutput | null) => {

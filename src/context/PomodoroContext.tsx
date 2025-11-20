@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { isFirebaseEnabled } from '@/lib/firebase';
 import type { PomodoroSession } from '@/types';
-import { getUserDoc, updateUserDoc } from '@/app/dashboard/pomodoro/actions';
+import { getUserDoc, updateUserDoc } from '@/services/firestore';
 
 interface PomodoroContextType {
   pomodoroHistory: PomodoroSession[];
@@ -42,13 +42,15 @@ export const PomodoroProvider = ({ children }: { children: React.ReactNode }) =>
 
   const addCompletedPomodoro = async (session: { topic: string, sessions: number }) => {
     if (!user || !isFirebaseEnabled) return;
+    
     const newSession: PomodoroSession = {
         ...session,
         completedAt: new Date().toISOString(),
     }
     const newHistory = [...pomodoroHistory, newSession];
-    setPomodoroHistory(newHistory); // Optimistic update
+    
     await updateUserDoc(user.uid, { pomodoroHistory: newHistory });
+    setPomodoroHistory(newHistory);
   };
 
   return (

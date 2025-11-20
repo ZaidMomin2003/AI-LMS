@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { KanbanTask, TaskPriority } from '@/types';
@@ -7,7 +6,7 @@ import { useAuth } from './AuthContext';
 import { debounce } from 'lodash';
 import { isFirebaseEnabled } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
-import { getUserDoc, updateUserDoc } from '@/app/dashboard/plan/actions';
+import { getUserDoc, updateUserDoc } from '@/services/firestore';
 
 type ColumnId = 'todo' | 'in-progress' | 'done';
 const columnOrder: ColumnId[] = ['todo', 'in-progress', 'done'];
@@ -28,7 +27,7 @@ const debouncedUpdate = debounce((uid: string, tasks: KanbanTask[]) => {
     if (isFirebaseEnabled) {
         updateUserDoc(uid, { tasks });
     }
-}, 500);
+}, 1000);
 
 
 export const TaskProvider = ({ children }: { children: React.ReactNode }) => {

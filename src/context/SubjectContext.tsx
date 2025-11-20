@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { isFirebaseEnabled } from '@/lib/firebase';
-import { getUserDoc, updateUserDoc } from '@/app/dashboard/subjects/actions';
+import { listenToUserDoc, updateUserDoc } from '@/services/firestore';
 
 interface SubjectContextType {
   subjects: string[];
@@ -19,24 +19,17 @@ export const SubjectProvider = ({ children }: { children: React.ReactNode }) => 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSubjects = async () => {
-      if (user && isFirebaseEnabled) {
-        setLoading(true);
-        try {
-          const userData = await getUserDoc(user.uid);
-          setSubjects(userData?.subjects || []);
-        } catch (error) {
-          console.error("Failed to fetch subjects:", error);
-          setSubjects([]);
-        } finally {
+    if (user && isFirebaseEnabled) {
+      setLoading(true);
+      const unsubscribe = listenToUserDoc(user, (data) => {
+          setSubjects(data?.subjects || []);
           setLoading(false);
-        }
-      } else {
-        setSubjects([]);
-        setLoading(false);
-      }
-    };
-    fetchSubjects();
+      });
+      return () => unsubscribe();
+    } else {
+      setSubjects([]);
+      setLoading(false);
+    }
   }, [user]);
 
   const addSubject = async (newSubject: string) => {
