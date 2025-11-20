@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { DollarSign, Users, TrendingDown } from 'lucide-react';
+import { DollarSign, Users, TrendingDown, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
 
@@ -20,35 +20,36 @@ const StatCard = ({ icon, title, value, className }: { icon: React.ReactNode, ti
 );
 
 const userTiers = [10, 100, 500, 1000, 1500, 2000];
+const commissionPerSale = 39;
 
 export function VolumeCalculator() {
     const [users, setUsers] = useState(100);
-    const minPrice = 149; // New lower price at max tier
+    const minPrice = 149;
     const maxPrice = 199;
     const minUsers = userTiers[0];
     const maxUsers = userTiers[userTiers.length - 1];
 
-    // Adjusted linear interpolation for price
     const pricePerUser = maxPrice - ((maxPrice - minPrice) * (users - minUsers)) / (maxUsers - minUsers);
     const totalCost = pricePerUser * users;
     const savings = (maxPrice * users) - totalCost;
+    const partnerEarning = commissionPerSale * users;
 
     return (
         <section className="py-20 sm:py-24 bg-background">
             <div className="container mx-auto max-w-4xl px-4">
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-                        Scale Your Earnings with Volume Discounts
+                        Scale Your Earnings
                     </h2>
                     <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                        The more licenses you sell, the lower the price per user. Select a tier to see your potential earnings.
+                        Earn a <span className="font-bold text-primary">${commissionPerSale} commission</span> for every new customer you refer. The more licenses you sell, the more you earn.
                     </p>
                 </div>
 
                 <Card className="shadow-lg">
                     <CardHeader>
-                        <CardTitle className="font-headline text-center">Discount Calculator</CardTitle>
-                        <CardDescription className="text-center">Select the number of licenses to see your discount.</CardDescription>
+                        <CardTitle className="font-headline text-center">Commission Calculator</CardTitle>
+                        <CardDescription className="text-center">Select the number of referred users to see your potential earnings.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-8">
                         <div className="flex flex-wrap justify-center p-1 bg-muted rounded-lg gap-1">
@@ -64,22 +65,22 @@ export function VolumeCalculator() {
                             ))}
                         </div>
                         
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <StatCard 
-                                icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
-                                title="Price per User"
-                                value={`$${pricePerUser.toFixed(2)}`}
-                            />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                              <StatCard 
                                 icon={<Users className="h-4 w-4 text-muted-foreground" />}
-                                title="Total Annual Cost"
-                                value={`$${totalCost.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
+                                title="Number of Users"
+                                value={`${users}`}
                             />
                              <StatCard 
-                                icon={<TrendingDown className="h-4 w-4 text-muted-foreground" />}
-                                title="Total Savings"
-                                value={`$${savings.toLocaleString('en-US', { maximumFractionDigits: 0 })}`}
-                                className="bg-primary/10 border-primary/20"
+                                icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
+                                title="Commission per Sale"
+                                value={`$${commissionPerSale}`}
+                            />
+                             <StatCard 
+                                icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
+                                title="Your Potential Earning"
+                                value={`$${partnerEarning.toLocaleString('en-US')}`}
+                                className="bg-primary/10 border-primary/20 sm:col-span-2"
                             />
                         </div>
                     </CardContent>
