@@ -31,20 +31,6 @@ import { Loader2 } from 'lucide-react';
 import { submitSupportRequest } from './actions';
 import Link from 'next/link';
 
-const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    {...props}
-    viewBox="0 0 32 32"
-    xmlns="http://www.w3.org/2000/svg"
-    >
-    <path
-      d="M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39a.63.63 0 0 1-.315-.1c-.802-.402-1.504-.817-2.163-1.447-.545-.516-1.146-1.29-1.46-1.963a.426.426 0 0 1-.073-.215c0-.33.99-.945.99-1.49 0-.543-.57-1.49-1.49-1.49-1.256 0-2.437 1.39-2.673 1.39-.237 0-.99-.237-.99-1.002 0-.765.99-1.964.99-2.932 0-.965-1.743-2.437-2.673-2.437-1.252 0-2.673 1.49-2.673 2.929s1.417 2.437 1.417 2.437c0 .167-.402.99-.99 1.962-.59 1.002-1.39 1.963-1.39 2.673 0 .71.372 1.39.99 1.39.615 0 1.002-.166 1.417-.237.414-.07.99-.1.99.237 0 .33-.372.99-.99 1.963-.617.965-1.002 1.39-1.002 2.162 0 .765.238 1.39.99 1.39.765 0 2.437-1.146 3.408-2.162.97-1.017 2.674-2.932 2.674-4.66.002-2.437.99-3.648.99-4.66s-.99-1.49-1.49-1.49zM16 .003C7.164.003 0 7.165 0 16.002s7.164 16 16 16c8.837 0 16-7.164 16-16S24.837.003 16.002.003z"
-      fillRule="evenodd"
-    ></path>
-  </svg>
-);
-
-
 const formSchema = z.object({
   name: z.string().min(2, 'Please enter your name.'),
   email: z.string().email('Please enter a valid email.'),
@@ -188,7 +174,6 @@ export default function SupportPage() {
                   </Button>
                   <Button asChild variant="outline" className="bg-green-500 text-white hover:bg-green-600 hover:text-white border-green-600">
                     <Link href="https://wa.link/9utpte" target="_blank">
-                      <WhatsAppIcon className="mr-2 h-5 w-5" />
                       Chat on WhatsApp
                     </Link>
                   </Button>
