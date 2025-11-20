@@ -126,10 +126,10 @@ export default function BusinessPage() {
           </div>
         </section>
         
-        <Features />
-
         {/* --- Volume Discount Calculator --- */}
         <VolumeCalculator />
+
+        <Features />
 
         {/* --- FAQ Section --- */}
         <section className="bg-secondary/50 py-20 sm:py-24">
