@@ -17,20 +17,21 @@ import { ThemeToggle } from '../ThemeToggle';
 
 
 const footerNav = {
+    account: [
+      { name: 'Dashboard', href: '/dashboard' },
+      { name: 'Login', href: '/login' },
+      { name: 'Sign Up', href: '/signup' },
+    ],
     company: [
       { name: 'About', href: '/developer' },
       { name: 'Institution', href: '/business' },
       { name: 'Contact', href: '/#contact' },
     ],
-    features: [
-      { name: 'Stories', href: '/stories' },
-      { name: 'SageMaker', href: '/#features' },
-      { name: 'Roadmaps', href: '/#features' },
-      { name: 'Quizzes', href: '/#features' },
-    ],
     legal: [
       { name: 'Privacy', href: '/privacy' },
       { name: 'Terms', href: '/terms' },
+      { name: 'Refund Policy', href: '/refund' },
+      { name: 'Delivery Policy', href: '/delivery' },
     ],
   };
 
@@ -101,7 +102,7 @@ export function Footer() {
 
           {/* Navigation Links */}
           <div className="grid w-full grid-cols-2 sm:grid-cols-3 items-start justify-between gap-8 lg:col-span-3">
-            {(['company', 'features', 'legal'] as const).map(
+            {(['account', 'company', 'legal'] as const).map(
               (section) => (
                 <div key={section} className="w-full">
                   <h3 className="mb-4 text-sm font-semibold tracking-wider uppercase">
