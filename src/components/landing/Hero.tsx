@@ -3,14 +3,14 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, ChevronRight, History, Sparkles, Send, Folder, LayoutDashboard, Bookmark, ClipboardCheck, Map, Timer, Camera, BarChart, Gem, LogOut, Check } from 'lucide-react';
+import { ArrowRight, ChevronRight, History, Sparkles, Send, Folder, LayoutDashboard, Bookmark, ClipboardCheck, Map, Timer, Camera, BarChart, Gem, LogOut, Check, BookOpenCheck, Search, MoreHorizontal, CalendarPlus, LifeBuoy, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Card, CardContent } from '../ui/card';
 import { Input } from '../ui/input';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback } from '../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 
 const StatCard = ({ title, value, subtext, className }: { title: string, value: string | number, subtext: string, className?: string }) => (
@@ -34,6 +34,10 @@ const ProtoSidebarMenuItem = ({ icon: Icon, text, active = false, badgeText }: {
         <span>{text}</span>
     </div>
 );
+
+const ProtoSidebarGroupLabel = ({ text }: { text: string }) => (
+  <div className="px-2 pt-2 text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider">{text}</div>
+)
 
 const TimeCardProto = ({ value, unit }: { value: string, unit: string }) => (
     <div className="flex flex-col items-center">
@@ -158,20 +162,35 @@ export function Hero() {
                         {/* Proto Sidebar (Desktop) */}
                         <div className="w-64 p-2 flex-shrink-0 flex-col bg-sidebar-DEFAULT border-r border-sidebar-border hidden md:flex">
                              <div className="flex items-center gap-3 p-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-primary"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/><path d="m14 12-2-1-2 1"/><path d="M12 11V7"/></svg>
-                                <span className="font-headline text-2xl font-bold">ScholarAI</span>
+                                <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
+                                    <BookOpenCheck className="w-5 h-5" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="font-bold font-headline text-xl -mb-1">Wisdom</span>
+                                    <span className="text-xs text-muted-foreground">AI Studybuddy</span>
+                                </div>
                             </div>
-                            <div className="p-2 space-y-2 mt-4 flex-1">
+                            <div className="relative mt-2 px-2">
+                                <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input placeholder="Search..." className="pl-10 h-9 bg-background/50" />
+                            </div>
+
+                            <div className="space-y-1 p-2 mt-2 flex-1">
                                 <ProtoSidebarMenuItem icon={LayoutDashboard} text="Dashboard" active />
+                                <ProtoSidebarMenuItem icon={BarChart} text="Analytics" />
+                                <div className="py-2"><div className="border-t border-sidebar-border mx-2"></div></div>
+                                <ProtoSidebarGroupLabel text="Organize" />
                                 <ProtoSidebarMenuItem icon={Folder} text="Subjects" />
                                 <ProtoSidebarMenuItem icon={Bookmark} text="Bookmarks" />
                                 <ProtoSidebarMenuItem icon={ClipboardCheck} text="Study Plan" />
+                                <div className="py-2"><div className="border-t border-sidebar-border mx-2"></div></div>
+                                <ProtoSidebarGroupLabel text="Tools" />
                                 <ProtoSidebarMenuItem icon={Map} text="Roadmap" />
                                 <ProtoSidebarMenuItem icon={Timer} text="Pomodoro" />
                                 <ProtoSidebarMenuItem icon={Camera} text="Capture" />
-                                <ProtoSidebarMenuItem icon={BarChart} text="Analytics" />
-                                <ProtoSidebarMenuItem icon={Sparkles} text="SageMaker" />
+                                <ProtoSidebarMenuItem icon={Sparkles} text="WisdomGPT" />
                             </div>
+
                             <div className="p-2 space-y-2">
                                 <div className="p-2 space-y-2 rounded-lg bg-sidebar-accent relative">
                                     <p className="text-sm font-semibold text-sidebar-accent-foreground truncate px-1">Final year exam</p>
@@ -182,18 +201,28 @@ export function Hero() {
                                         <TimeCardProto value="51" unit="Secs" />
                                     </div>
                                 </div>
-                                <div className="cursor-pointer border-0 bg-primary text-primary-foreground font-semibold flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm h-10">
-                                    <Gem />
-                                    <span>Scholar Subscription</span>
+                                <div className="cursor-pointer group relative rounded-lg p-3 bg-gradient-to-br from-primary/80 to-primary text-primary-foreground overflow-hidden">
+                                    <h4 className="font-bold text-sm flex items-center gap-2">
+                                        <Gem className="w-4 h-4" />
+                                        Upgrade to Pro
+                                    </h4>
+                                    <p className="text-xs text-primary-foreground/80">Unlock all features</p>
+                                    <div className="absolute top-1 right-1 bg-primary-foreground/20 text-primary-foreground rounded-full p-1.5">
+                                        <ArrowRight className="w-3 h-3" />
+                                    </div>
+                                    <Sparkles className="absolute -bottom-4 -right-2 w-16 h-16 text-primary-foreground/10" />
                                 </div>
-                                <div className="flex items-center justify-between p-2">
+                                 <div className="flex items-center justify-between p-2">
                                     <div className="flex items-center gap-2">
                                         <Avatar className="h-9 w-9">
                                             <AvatarFallback className="bg-sidebar-accent">A</AvatarFallback>
                                         </Avatar>
-                                        <span className="truncate text-sm">arshadbashamomin</span>
+                                        <div className="flex-1 truncate">
+                                            <p className="text-sm font-medium truncate">arshad</p>
+                                            <p className="text-xs text-muted-foreground truncate">arshad@example.com</p>
+                                        </div>
                                     </div>
-                                    <LogOut className="w-4 h-4 text-sidebar-foreground/70" />
+                                    <MoreHorizontal className="w-4 h-4 text-sidebar-foreground/70" />
                                 </div>
                             </div>
                         </div>
@@ -272,4 +301,6 @@ export function Hero() {
 }
 
     
+    
+
     
