@@ -29,6 +29,25 @@ import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { submitSupportRequest } from './actions';
+import Link from 'next/link';
+
+const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    stroke="currentColor"
+    strokeWidth="0"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M16.75 13.96c.25.13.43.2.5.28.07.08.15.18.22.33.07.15.03.3.01.46-.02.15-.23.28-.48.36-.25.08-.5.1-.78.08-.28-.03-.55-.08-.83-.16-.28-.08-.53-.2-.78-.36-.25-.16-.5-.35-.73-.58-.23-.23-.45-.48-.65-.75-.2-.27-.38-.56-.53-.86-.15-.3-.25-.6-.3-.9.05-.28.18-.53.38-.73.2-.2.43-.33.68-.38.25-.05.48-.03.68.03.2.05.35.1.45.13l.1.05c.1.05.18.1.25.15s.13.1.15.13.05.05.08.08c.03.03.05.05.08.08l.08.08c.03.03.05.05.08.08.03.03.05.05.08.08h.08c.03.03.05.05.08.08.03.03.05.05.08.08v.08c.03.03.05.05.08.08.03.03.05.05.08.08.03.03.05.05.08.08l.08.08c.03.03.05.05.08.08s.13.1.15.13.1.1.13.15.1.1.13.15.1.1.13.15.1.1.13.15zm-5.18-8.3c-3.3 0-6 2.7-6 6s2.7 6 6 6c3.3 0 6-2.7 6-6s-2.7-6-6-6zm0 10.5c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5zM12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2z" />
+  </svg>
+);
+
 
 const formSchema = z.object({
   name: z.string().min(2, 'Please enter your name.'),
@@ -166,10 +185,18 @@ export default function SupportPage() {
                   )}
                 />
 
-                <Button type="submit" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Submit Request
-                </Button>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Submit Request
+                  </Button>
+                  <Button asChild variant="outline" className="bg-green-500 text-white hover:bg-green-600 hover:text-white border-green-600">
+                    <Link href="https://wa.link/9utpte" target="_blank">
+                      <WhatsAppIcon className="mr-2 h-5 w-5" />
+                      Chat on WhatsApp
+                    </Link>
+                  </Button>
+                </div>
               </form>
             </Form>
           </CardContent>
