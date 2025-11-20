@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
@@ -48,15 +49,18 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
     if (!user || !isFirebaseEnabled) return;
 
     const currentProfile = profile || {};
-    const newProfile = { ...currentProfile, ...data };
+    let newProfileData = { ...currentProfile, ...data };
 
     if (data.captureCount === -1) {
-        newProfile.captureCount = (currentProfile?.captureCount || 0) + 1;
+        newProfileData.captureCount = (currentProfile?.captureCount || 0) + 1;
     }
-    
-    setProfile(newProfile); // Optimistic update
-    await updateUserDoc(user.uid, { profile: newProfile });
-  }, [user, profile]);
+
+    // Perform the database update
+    await updateUserDoc(user.uid, { profile: newProfileData });
+
+    // Then, update the local state
+    setProfile(newProfileData);
+}, [user, profile]);
 
 
   return (
