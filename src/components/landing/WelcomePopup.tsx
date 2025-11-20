@@ -6,6 +6,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PartyPopper, CheckCircle, X, Sparkles, BookOpenCheck } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const includedFeatures = [
   'AI-Generated Notes & Summaries',
@@ -38,10 +39,17 @@ export function WelcomePopup() {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl w-full p-0 overflow-hidden grid grid-cols-1 md:grid-cols-2 shadow-2xl rounded-2xl border-border/20">
         {/* Left Side - Visual */}
-        <div className="relative hidden md:flex flex-col items-center justify-center p-8 bg-primary/90 text-primary-foreground overflow-hidden">
-             <div className="absolute -bottom-20 -right-20 w-60 h-60 bg-primary-foreground/10 rounded-full blur-3xl" />
-             <div className="absolute -top-10 -left-10 w-40 h-40 bg-primary-foreground/10 rounded-full blur-3xl" />
-             <div className="relative z-10 text-center space-y-4">
+        <div className="relative hidden md:flex flex-col items-center justify-center p-8 text-primary-foreground overflow-hidden">
+             <Image
+                src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto=format&fit=crop"
+                alt="Library background"
+                layout="fill"
+                objectFit="cover"
+                className="z-0"
+                data-ai-hint="library books"
+             />
+             <div className="absolute inset-0 bg-primary/90 z-10"></div>
+             <div className="relative z-20 text-center space-y-4">
                 <div className="w-24 h-24 mx-auto rounded-full bg-primary-foreground/20 flex items-center justify-center backdrop-blur-sm border border-primary-foreground/20">
                     <Sparkles className="w-12 h-12 text-primary-foreground" />
                 </div>
