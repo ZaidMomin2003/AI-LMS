@@ -19,35 +19,24 @@ export default function RefundPage() {
                         <p className="text-muted-foreground mt-2">Last updated: {lastUpdated}</p>
                     </div>
                     <div className="prose prose-invert max-w-none bg-card p-8 md:p-12 rounded-2xl border border-border/50 shadow-lg">
-                        <p>At wisdom, we are committed to your satisfaction. Our policy outlines the conditions under which we offer refunds for our digital services.</p>
+                        <h2>1. Our No-Refund Policy</h2>
+                        <p>At wisdom, we are dedicated to providing you with powerful, high-quality AI-driven study tools. Due to the nature of our service, which provides immediate access to digital content and incurs irreversible costs for AI generation upon use, we operate under a strict no-refund policy.</p>
+                        <p><strong>All purchases are final and non-refundable.</strong> Once a subscription is purchased and our service is used, the costs associated with generating your personalized study materials cannot be recovered. We encourage you to make use of our free trial to ensure our service meets your needs before committing to a subscription.</p>
 
-                        <h2>1. Overview</h2>
-                        <p>Our service provides a one-year subscription plan for access to our AI-powered study tools. Given the digital nature of our service and the immediate access to our proprietary features upon purchase, our refund policy is as follows.</p>
-                        
-                        <h2>2. Refund Eligibility</h2>
-                        <p>We offer a <strong>7-day money-back guarantee</strong> on all new subscriptions. To be eligible for a refund, you must request it within 7 calendar days of your original purchase date.</p>
+                        <h2>2. Our Commitment to Your Satisfaction</h2>
+                        <p>While we do not offer refunds, your satisfaction is our highest priority. We are committed to ensuring you have a positive and productive experience with our platform. If you encounter any issues, have technical difficulties, or are unsatisfied with the service, we strongly encourage you to contact our support team.</p>
                         <ul>
-                            <li>Requests made after the 7-day period will not be eligible for a refund.</li>
-                            <li>Refunds are only available for new subscriptions, not for renewal payments.</li>
-                            <li>We reserve the right to deny a refund if we detect abuse of our services or this policy.</li>
+                            <li><strong>Dedicated Support:</strong> We provide robust customer support to resolve any technical problems, answer questions, and assist you in getting the most out of our features.</li>
+                            <li><strong>Service Reliability:</strong> We are committed to maintaining a high level of service availability and continuously improving our AI models and platform features.</li>
                         </ul>
 
-                        <h2>3. How to Request a Refund</h2>
-                        <p>To request a refund, please contact our support team directly via email. You do not need to provide a reason, but we welcome feedback as it helps us improve.</p>
-                        <ul>
-                            <li>Send an email to <strong>hello@wisdomis.fun</strong> from the email address associated with your account.</li>
-                            <li>Include the subject line: "Refund Request".</li>
-                            <li>Please include your order ID or any purchase details to help us locate your transaction quickly.</li>
+                        <h2>3. How to Get Help</h2>
+                        <p>If you are facing any challenges, please do not hesitate to reach out. We are here to help you succeed.</p>
+                         <ul>
+                            <li><strong>Email Support:</strong> Contact us directly at <strong>hello@wisdomis.fun</strong>. Our team will review your issue and work with you to find a satisfactory solution.</li>
+                            <li><strong>In-App Support:</strong> For faster assistance, use the support form available within your dashboard.</li>
                         </ul>
-
-                        <h2>4. Processing Your Refund</h2>
-                        <p>Once we receive your refund request, we will process it within 3-5 business days. The funds will be returned to your original method of payment. Please note that it may take an additional 5-10 business days for the credit to appear on your bank or credit card statement, depending on your financial institution.</p>
-                        
-                        <h2>5. Service Access After Refund</h2>
-                        <p>Upon a successful refund, your account will be reverted to the free plan, and you will lose access to all Pro features associated with the subscription.</p>
-
-                        <h2>6. Contact Us</h2>
-                        <p>If you have any questions about our Refund Policy, please do not hesitate to contact us at: hello@wisdomis.fun</p>
+                        <p>We believe in the value and effectiveness of our service and are dedicated to providing the support you need to achieve your learning goals.</p>
                     </div>
                 </div>
             </main>
