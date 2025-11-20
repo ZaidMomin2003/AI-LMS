@@ -18,19 +18,15 @@ export function WelcomePopup() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const popupShown = sessionStorage.getItem('welcomePopupShown');
-    
-    if (!popupShown) {
-      const timer = setTimeout(() => {
-        setIsOpen(true);
-      }, 2500);
+    // Popup will show 2.5 seconds after every page load.
+    const timer = setTimeout(() => {
+      setIsOpen(true);
+    }, 2500);
 
-      return () => clearTimeout(timer);
-    }
+    return () => clearTimeout(timer);
   }, []);
 
   const handleClose = () => {
-    sessionStorage.setItem('welcomePopupShown', 'true');
     setIsOpen(false);
   };
 
@@ -58,15 +54,6 @@ export function WelcomePopup() {
         
         {/* Right Side - Content */}
         <div className="relative p-8 flex flex-col justify-center">
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleClose}
-                className="absolute top-4 right-4 h-8 w-8 rounded-full"
-            >
-                <X className="w-4 h-4" />
-                <span className="sr-only">Close</span>
-            </Button>
             
             <div className="w-full max-w-sm mx-auto text-center md:text-left">
                 <h3 className="text-2xl font-headline font-bold text-foreground">Start Your Free Trial</h3>
