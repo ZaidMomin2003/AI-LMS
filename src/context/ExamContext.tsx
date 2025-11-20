@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { ExamDetails } from '@/types';
@@ -11,6 +12,7 @@ interface ExamContextType {
   addExam: (exam: ExamDetails) => Promise<void>;
   clearExam: () => Promise<void>;
   timeLeft: TimeLeft | null;
+  loading: boolean;
 }
 
 interface TimeLeft {
@@ -26,23 +28,34 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
   const [exam, setExam] = useState<ExamDetails | null>(null);
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchExam = async () => {
         if (user && isFirebaseEnabled) {
+            setLoading(true);
             try {
                 const userData = await getUserDoc(user.uid);
                 setExam(userData?.exam || null);
             } catch (error) {
                 console.error("Failed to fetch exam details:", error);
                 setExam(null);
+            } finally {
+                setLoading(false);
             }
         } else {
             setExam(null);
+            setLoading(false);
         }
     };
     fetchExam();
   }, [user]);
+
+  const clearExam = async () => {
+    if (!user || !isFirebaseEnabled) return;
+    setExam(null); // Optimistic update
+    await updateUserDoc(user.uid, { exam: null });
+  };
 
   useEffect(() => {
     if (!exam?.date) {
@@ -73,18 +86,12 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
 
   const addExam = async (newExam: ExamDetails) => {
     if (!user || !isFirebaseEnabled) return;
-    setExam(newExam); // Optimistic update
     await updateUserDoc(user.uid, { exam: newExam });
-  };
-
-  const clearExam = async () => {
-    if (!user || !isFirebaseEnabled) return;
-    setExam(null); // Optimistic update
-    await updateUserDoc(user.uid, { exam: null });
+    setExam(newExam); // Update state after DB call
   };
 
   return (
-    <ExamContext.Provider value={{ exam, addExam, clearExam, timeLeft }}>
+    <ExamContext.Provider value={{ exam, addExam, clearExam, timeLeft, loading }}>
       {children}
     </ExamContext.Provider>
   );
