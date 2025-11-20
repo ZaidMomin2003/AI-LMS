@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, PartyPopper, CheckCircle, X, Sparkles, BookOpenCheck } from 'lucide-react';
 import Link from 'next/link';
@@ -64,10 +64,12 @@ export function WelcomePopup() {
         <div className="relative p-8 flex flex-col justify-center">
             
             <div className="w-full max-w-sm mx-auto text-center md:text-left">
-                <h3 className="text-2xl font-headline font-bold text-foreground">Start Your Free Trial</h3>
-                <p className="text-muted-foreground mt-2 mb-6">
-                    Join thousands of students learning faster. Your first topic generation is on us.
-                </p>
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-headline font-bold text-foreground">Start Your Free Trial</DialogTitle>
+                  <DialogDescription className="text-muted-foreground mt-2 mb-6">
+                      Join thousands of students learning faster. Your first topic generation is on us.
+                  </DialogDescription>
+                </DialogHeader>
                 
                 <ul className="space-y-3 text-left mb-8">
                     {includedFeatures.map((feature) => (
