@@ -158,7 +158,7 @@ export function Hero() {
               </div>
               <div className="relative">
                 <div className="p-1.5 rounded-b-xl bg-card/60">
-                    <div className="flex h-auto md:h-[80vh] md:min-h-[600px] w-full rounded-lg bg-sidebar-DEFAULT overflow-hidden">
+                    <div className="flex h-auto md:h-[90vh] md:min-h-[750px] w-full rounded-lg bg-sidebar-DEFAULT overflow-hidden">
                         {/* Proto Sidebar (Desktop) */}
                         <div className="w-64 p-2 flex-shrink-0 flex-col bg-sidebar-DEFAULT border-r border-sidebar-border hidden md:flex">
                              <div className="flex items-center gap-3 p-2">
