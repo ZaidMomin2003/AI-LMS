@@ -43,7 +43,7 @@ export function VolumeCalculator() {
                         Partnership & Volume Calculator
                     </h2>
                     <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                        Institutions receive a volume discount, and partners earn a <span className="font-bold text-primary">${commissionPerSale} commission</span> for every student.
+                        Institutions receive a volume discount and also earn a $39 commission for every student.
                     </p>
                 </div>
 
