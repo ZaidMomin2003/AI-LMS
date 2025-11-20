@@ -32,8 +32,7 @@ export function VolumeCalculator() {
 
     // Calculate dynamic pricing based on user volume
     const pricePerUser = maxPrice - ((maxPrice - minPrice) * (users - minUsers)) / (maxUsers - minUsers);
-    const totalCost = pricePerUser * users;
-    const savings = (maxPrice * users) - totalCost;
+    const savings = (maxPrice * users) - (pricePerUser * users);
     const partnerEarning = commissionPerSale * users;
 
     return (
@@ -81,9 +80,9 @@ export function VolumeCalculator() {
                             />
                              <StatCard 
                                 icon={<TrendingDown className="h-4 w-4 text-muted-foreground" />}
-                                title="Total Institution Cost"
-                                value={`$${totalCost.toLocaleString('en-US', {maximumFractionDigits: 0})}`}
-                                description={`Total savings: $${savings.toLocaleString('en-US', {maximumFractionDigits: 0})}`}
+                                title="Total User Savings"
+                                value={`$${savings.toLocaleString('en-US', {maximumFractionDigits: 0})}`}
+                                description="across all users"
                             />
                              <StatCard 
                                 icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
