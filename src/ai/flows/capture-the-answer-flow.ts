@@ -42,7 +42,7 @@ Your response MUST be a valid JSON object matching the provided schema.
 
 - "question": A string containing the exact question you identified from the image.
 - "answer": A string containing the correct and direct answer to that question.
-- "solution": A string containing a step-by-step explanation of how to arrive at the correct answer. **This solution must be formatted in Markdown**, using lists, bold text for emphasis, or code blocks where appropriate to make it as clear as possible.
+- "solution": A string containing a step-by-step explanation of how to arrive at the correct answer. **This solution must be formatted in Markdown**. **Crucially, if there are any mathematical formulas or equations, you MUST enclose them in KaTeX delimiters, like this: \`$$E=mc^2$$\`. This is non-negotiable.**
 
 Image with the question is below:
 {{media url=imageDataUri}}`,

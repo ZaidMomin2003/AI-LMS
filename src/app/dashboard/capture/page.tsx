@@ -13,7 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { captureAnswerAction } from './actions';
 import type { CaptureTheAnswerOutput } from '@/ai/flows/capture-the-answer-flow';
 import { Separator } from '@/components/ui/separator';
-import { MarkdownRenderer } from '@/components/MarkdownRenderer';
+import { MathRenderer } from '@/components/MathRenderer';
 import { useProfile } from '@/context/ProfileContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import Link from 'next/link';
@@ -229,7 +229,7 @@ export default function CapturePage() {
                                         <div>
                                              <p className="font-semibold text-muted-foreground text-sm">Solution:</p>
                                              <div className="prose prose-sm prose-invert max-w-none">
-                                                <MarkdownRenderer content={result.solution} />
+                                                <MathRenderer content={result.solution} />
                                              </div>
                                         </div>
                                     </div>

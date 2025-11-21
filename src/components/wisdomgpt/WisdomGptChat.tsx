@@ -18,7 +18,7 @@ import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { wisdomGptAction } from '@/app/dashboard/wisdomgpt/actions';
 import { Button } from '../ui/button';
-import { MarkdownRenderer } from '../MarkdownRenderer';
+import { MathRenderer } from '../MathRenderer';
 
 // --- TYPES AND INTERFACES ---
 
@@ -287,7 +287,7 @@ export default function WisdomGptChat() {
                                         </div>
                                     )}
                                     <div className="prose prose-sm prose-invert max-w-none text-current">
-                                        <MarkdownRenderer content={message.content} />
+                                        <MathRenderer content={message.content} />
                                     </div>
                                 </div>
                             </div>
