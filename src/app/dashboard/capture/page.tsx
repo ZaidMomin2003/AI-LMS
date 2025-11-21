@@ -17,7 +17,7 @@ import { MathRenderer } from '@/components/MathRenderer';
 import { useProfile } from '@/context/ProfileContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import Link from 'next/link';
-import { useIsMobile } from '@/hooks/use-is-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 export default function CapturePage() {
@@ -37,20 +37,22 @@ export default function CapturePage() {
 
   useEffect(() => {
     let stream: MediaStream | null = null;
-    if (mode === 'capture' && videoRef.current) {
-        navigator.mediaDevices.getUserMedia({ video: true })
-        .then(s => {
-            stream = s;
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
+    const getCameraPermission = async () => {
+        if (mode === 'capture' && videoRef.current) {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                }
+                setHasCameraPermission(true);
+            } catch (err) {
+                console.error('Error accessing camera:', err);
+                setHasCameraPermission(false);
             }
-            setHasCameraPermission(true);
-        })
-        .catch(err => {
-            console.error('Error accessing camera:', err);
-            setHasCameraPermission(false);
-        });
-    }
+        }
+    };
+    getCameraPermission();
+
     return () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
@@ -58,7 +60,7 @@ export default function CapturePage() {
     };
   }, [mode]);
 
-  const getCameraPermission = async () => {
+  const startCamera = () => {
     if (!canUseCapture) {
         showUpgradeToast();
         return;
@@ -162,7 +164,7 @@ export default function CapturePage() {
         case 'idle':
             return (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Card onClick={getCameraPermission} className="cursor-pointer hover:border-primary transition-colors text-center p-8 flex flex-col items-center justify-center">
+                    <Card onClick={startCamera} className="cursor-pointer hover:border-primary transition-colors text-center p-8 flex flex-col items-center justify-center">
                         <Camera className="w-12 h-12 text-primary mb-4" />
                         <CardTitle>Capture Image</CardTitle>
                         <CardDescription>Use your camera to snap a photo of the question.</CardDescription>
@@ -212,34 +214,48 @@ export default function CapturePage() {
                             </div>
                         </div>
                         <div className="space-y-4">
-                            <h3 className="font-headline text-xl">AI's Answer</h3>
-                            <Card className="min-h-[300px] flex items-center justify-center">
-                                <CardContent className="p-6 w-full">
-                                    {isLoading && <div className="text-center text-muted-foreground">Analyzing...</div>}
-                                    {result ? (
-                                        <div className="space-y-4">
-                                            <div>
-                                                <p className="font-semibold text-muted-foreground text-sm">Question Identified:</p>
-                                                <p className="font-medium italic">"{result.question}"</p>
+                             {result && (
+                                <>
+                                    <h3 className="font-headline text-xl">AI's Answer</h3>
+                                    <Card className="min-h-[300px] flex items-center justify-center">
+                                        <CardContent className="p-6 w-full">
+                                            {isLoading && <div className="text-center text-muted-foreground">Analyzing...</div>}
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <p className="font-semibold text-muted-foreground text-sm">Question Identified:</p>
+                                                    <p className="font-medium italic">"{result.question}"</p>
+                                                </div>
+                                                <Separator/>
+                                                <div>
+                                                     <p className="font-semibold text-muted-foreground text-sm">Direct Answer:</p>
+                                                     <p className="font-bold text-lg text-primary">{result.answer}</p>
+                                                </div>
+                                                 <Separator/>
+                                                <div>
+                                                     <p className="font-semibold text-muted-foreground text-sm">Solution:</p>
+                                                     <div className="prose prose-sm prose-invert max-w-none">
+                                                        <MathRenderer content={result.solution} />
+                                                     </div>
+                                                </div>
                                             </div>
-                                            <Separator/>
-                                            <div>
-                                                 <p className="font-semibold text-muted-foreground text-sm">Direct Answer:</p>
-                                                 <p className="font-bold text-lg text-primary">{result.answer}</p>
-                                            </div>
-                                             <Separator/>
-                                            <div>
-                                                 <p className="font-semibold text-muted-foreground text-sm">Solution:</p>
-                                                 <div className="prose prose-sm prose-invert max-w-none">
-                                                    <MathRenderer content={result.solution} />
-                                                 </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        !isLoading && <div className="text-center text-muted-foreground">The answer and solution will appear here.</div>
-                                    )}
-                                </CardContent>
-                            </Card>
+                                        </CardContent>
+                                    </Card>
+                                </>
+                             )}
+                              {!result && !isLoading && (
+                                 <Card className="min-h-[300px] flex items-center justify-center">
+                                     <CardContent className="p-6 w-full text-center text-muted-foreground">
+                                         The answer and solution will appear here.
+                                     </CardContent>
+                                 </Card>
+                             )}
+                             {isLoading && (
+                                <Card className="min-h-[300px] flex items-center justify-center">
+                                    <CardContent className="p-6 w-full text-center text-muted-foreground">
+                                        <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                                    </CardContent>
+                                </Card>
+                            )}
                         </div>
                     </div>
                 );
@@ -253,7 +269,7 @@ export default function CapturePage() {
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent">
                         <div className="max-w-4xl mx-auto space-y-4">
                             <Card className="border-border/50 bg-background/80 backdrop-blur-md shadow-2xl">
-                                <CardContent className="p-6 flex flex-col sm:flex-row gap-4">
+                                <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-center gap-4">
                                     <Button onClick={handleGetAnswer} disabled={isLoading} size="lg" className="w-full sm:w-auto">
                                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                                         {result ? 'Regenerate' : 'Get Answer'}
@@ -268,21 +284,17 @@ export default function CapturePage() {
                                 <Card className="border-border/50 bg-background/80 backdrop-blur-md shadow-lg">
                                     <CardHeader>
                                         <CardTitle className="font-headline">AI Solution</CardTitle>
+                                        <CardDescription className="italic">"{result.question}"</CardDescription>
                                     </CardHeader>
                                     <CardContent>
                                         <div className="space-y-4">
-                                            <div>
-                                                <p className="font-semibold text-muted-foreground text-xs">Question Identified:</p>
-                                                <p className="font-medium italic text-sm">"{result.question}"</p>
-                                            </div>
-                                            <Separator/>
                                             <div>
                                                 <p className="font-semibold text-muted-foreground text-xs">Direct Answer:</p>
                                                 <p className="font-bold text-base text-primary">{result.answer}</p>
                                             </div>
                                             <Separator/>
                                             <div>
-                                                <p className="font-semibold text-muted-foreground text-xs">Solution:</p>
+                                                <p className="font-semibold text-muted-foreground text-xs">Step-by-Step Solution:</p>
                                                 <ScrollArea className="h-48">
                                                     <div className="prose prose-sm prose-invert max-w-none pr-4">
                                                         <MathRenderer content={result.solution} />
