@@ -323,7 +323,7 @@ export default function WisdomGptChat() {
       </div>
 
       {/* Input Area */}
-      <div className="mt-auto px-4 pb-4">
+      <div className="px-4 pb-4">
         <div className="max-w-3xl mx-auto">
             <div className="relative rounded-xl border bg-background shadow-lg">
                 <AnimatePresence>
