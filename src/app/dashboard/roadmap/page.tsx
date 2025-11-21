@@ -95,6 +95,7 @@ export default function RoadmapPage() {
         <CardContent>
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <fieldset disabled={!canCreateRoadmap} className="space-y-6">
                 <FormField
                 control={form.control}
                 name="syllabus"
@@ -160,7 +161,8 @@ export default function RoadmapPage() {
                     )}
                 />
                 </div>
-                <Button type="submit" disabled={isLoading}>
+              </fieldset>
+                <Button type="submit" disabled={isLoading || !canCreateRoadmap}>
                 {isLoading ? (
                     <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -191,27 +193,30 @@ export default function RoadmapPage() {
           </p>
         </div>
 
-        {!canCreateRoadmap && !roadmap ? (
-            <Card className="max-w-md w-full text-center mx-auto">
-                <CardHeader>
-                    <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
-                        <Lock className="w-6 h-6" />
-                    </div>
-                    <CardTitle className="font-headline">Limit Reached</CardTitle>
-                    <CardDescription>You've used your free roadmap generation. Upgrade for unlimited plans.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Button asChild>
-                        <Link href="/dashboard/pricing">
-                            <Gem className="mr-2 h-4 w-4" />
-                            Upgrade to Pro
-                        </Link>
-                    </Button>
-                </CardContent>
-            </Card>
-        ) : !roadmap ? (
-            renderForm()
-        ): null }
+        {!roadmap && (
+            <div className="space-y-4">
+              {renderForm()}
+              {!canCreateRoadmap && (
+                  <Card className="max-w-md w-full text-center mx-auto border-primary/50 bg-primary/5">
+                      <CardHeader>
+                          <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                              <Lock className="w-6 h-6" />
+                          </div>
+                          <CardTitle className="font-headline">Limit Reached</CardTitle>
+                          <CardDescription>You've used your free roadmap generation. Upgrade for unlimited plans.</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                          <Button asChild>
+                              <Link href="/dashboard/pricing">
+                                  <Gem className="mr-2 h-4 w-4" />
+                                  Upgrade to Pro
+                              </Link>
+                          </Button>
+                      </CardContent>
+                  </Card>
+              )}
+            </div>
+        )}
 
         {isLoading && (
             <div className="space-y-4 mt-8">
@@ -241,7 +246,10 @@ export default function RoadmapPage() {
 
         {roadmap && roadmap.plan.length > 0 && (
           <div className="mt-8">
-            <h3 className="text-2xl font-headline font-bold tracking-tight mb-4">Your Study Roadmap</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-2xl font-headline font-bold tracking-tight">Your Study Roadmap</h3>
+              <Button variant="outline" onClick={() => setRoadmap(null)}>Create New Roadmap</Button>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {roadmap.plan.map((day, index) => (
                 <Card key={index} className="flex flex-col">
