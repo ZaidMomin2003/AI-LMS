@@ -262,11 +262,13 @@ export default function CapturePage() {
             }
             // Desktop/Tablet view
             return (
-                <div className="h-[calc(100vh-150px)] w-full relative flex items-center justify-center">
+                <div className="w-full relative">
                     {imageData && (
-                        <Image src={imageData} alt="Question preview" layout="fill" className="object-contain" />
+                        <div className="relative w-full h-[60vh] mb-8">
+                             <Image src={imageData} alt="Question preview" layout="fill" className="object-contain" />
+                        </div>
                     )}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent">
+                    <div className="sticky bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent">
                         <div className="max-w-4xl mx-auto space-y-4">
                             <Card className="border-border/50 bg-background/80 backdrop-blur-md shadow-2xl">
                                 <CardContent className="p-6 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -295,11 +297,9 @@ export default function CapturePage() {
                                             <Separator/>
                                             <div>
                                                 <p className="font-semibold text-muted-foreground text-xs">Step-by-Step Solution:</p>
-                                                <ScrollArea className="h-48">
-                                                    <div className="prose prose-sm prose-invert max-w-none pr-4">
-                                                        <MathRenderer content={result.solution} />
-                                                    </div>
-                                                </ScrollArea>
+                                                <div className="prose prose-sm prose-invert max-w-none pr-4">
+                                                    <MathRenderer content={result.solution} />
+                                                </div>
                                             </div>
                                         </div>
                                     </CardContent>
