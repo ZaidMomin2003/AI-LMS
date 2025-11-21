@@ -252,7 +252,7 @@ export default function WisdomGptChat() {
               <h2 className="text-2xl font-bold font-headline">
                 How can I help you today?
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 w-full">
+              <div className="hidden md:grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 w-full">
                 <PromptSuggestionCard text="Explain the causes of the American Revolution" onClick={handleSuggestionClick} />
                 <PromptSuggestionCard text="Summarize the key concepts of photosynthesis" onClick={handleSuggestionClick} />
                 <PromptSuggestionCard text="Create a study plan for my upcoming calculus exam" onClick={handleSuggestionClick} />
