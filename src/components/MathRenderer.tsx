@@ -10,8 +10,8 @@ interface MathRendererProps {
 
 /**
  * Renders a string containing HTML and KaTeX-formatted math.
- * It finds all instances of `$$...$$` and replaces them with
- * HTML rendered by KaTeX.
+ * It finds all instances of `$$...$$` (for block display) and `$...$` (for inline display)
+ * and replaces them with HTML rendered by KaTeX.
  */
 export const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
   // Safety check to ensure content is a string
@@ -19,14 +19,17 @@ export const MathRenderer: React.FC<MathRendererProps> = ({ content }) => {
     return null;
   }
 
-  // Regex to find all instances of $$...$$
-  const regex = /\$\$(.*?)\$\$/g;
+  // Regex to find all instances of $$...$$ or $...$
+  const regex = /\$\$(.*?)\$\$|\$(.*?)\$/g;
   
-  const processedContent = content.replace(regex, (match, equation) => {
+  const processedContent = content.replace(regex, (match, blockEquation, inlineEquation) => {
+    const equation = blockEquation || inlineEquation;
+    const displayMode = !!blockEquation; // True for block, false for inline
+
     try {
       return katex.renderToString(equation, {
         throwOnError: false, // Don't crash if there's a syntax error
-        displayMode: true, // Renders the math in display style
+        displayMode: displayMode,
       });
     } catch (error) {
       console.error('KaTeX rendering error:', error);

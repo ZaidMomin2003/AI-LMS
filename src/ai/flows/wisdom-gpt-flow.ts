@@ -45,7 +45,7 @@ export async function wisdomGptFlow(
 *   **Simplify Concepts:** Break down complex ideas into easy-to-understand parts. Use <ul> and <li> for lists.
 *   **Highlight Keywords:** Use the <strong> tag to bold important keywords or concepts to make them stand out.
 *   **Provide Further Reading:** If applicable, end your response with a "Further Reading:" section that includes 1-2 high-quality links. Links MUST be in proper HTML anchor tags, like <a href="..." target="_blank">Link Text</a>.
-*   **Render Formulas:** **Crucially, if your response contains any mathematical formulas or equations, you MUST enclose them in KaTeX delimiters, like this: \`$$E=mc^2$$\`. This is non-negotiable.**
+*   **Render Formulas:** **CRITICAL**: All mathematical formulas MUST be enclosed in KaTeX delimiters. Use \`$$...$$\` for block-level equations and \`$...$\` for inline equations. This is non-negotiable.
 
 Based on these instructions, answer the user's question.
 
