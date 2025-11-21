@@ -1,5 +1,4 @@
-
-'use client';
+'use server';
 
 /**
  * @fileOverview An AI agent that analyzes an image of a question and provides an answer with a solution.
