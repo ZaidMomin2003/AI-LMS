@@ -44,10 +44,10 @@ Your response MUST be a valid JSON object matching the provided schema.
 - **question**: A string containing the exact question from the image.
 - **answer**: A string with only the final, direct answer.
 - **solution**: A string containing a step-by-step explanation formatted in simple HTML.
-  - Use `<h4>` for step headings (e.g., `<h4>Step 1: Identify the formula</h4>`).
-  - Use `<p>` for explanations.
-  - Use `<strong>` to highlight key terms or values.
-  - **CRITICAL**: All mathematical formulas, variables, and equations MUST be enclosed in KaTeX delimiters (e.g., `$$P = \\frac{a^3b^2}{c\\sqrt{d}}$$`). This is non-negotiable.
+  - Use \`<h4>\` for step headings (e.g., \`<h4>Step 1: Identify the formula</h4>\`).
+  - Use \`<p>\` for explanations.
+  - Use \`<strong>\` to highlight key terms or values.
+  - **CRITICAL**: All mathematical formulas, variables, and equations MUST be enclosed in KaTeX delimiters (e.g., \`$$P = \\frac{a^3b^2}{c\\sqrt{d}}$$\`). This is non-negotiable.
   - Do NOT be conversational. Provide a direct, structured solution.
 
 Image with the question is below:
