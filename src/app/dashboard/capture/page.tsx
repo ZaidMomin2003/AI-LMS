@@ -33,14 +33,27 @@ export default function CapturePage() {
   const canUseCapture = canUseFeature('capture');
 
   useEffect(() => {
+    let stream: MediaStream | null = null;
+    if (mode === 'capture' && hasCameraPermission && videoRef.current) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(s => {
+          stream = s;
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        })
+        .catch(err => {
+          console.error('Error accessing camera:', err);
+          setHasCameraPermission(false);
+        });
+    }
     return () => {
-      // Stop video stream when component unmounts
-      if (videoRef.current?.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
+      // Stop video stream when component unmounts or mode changes
+      if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, []);
+  }, [mode, hasCameraPermission]);
 
   const getCameraPermission = async () => {
     if (!canUseCapture) {
@@ -48,11 +61,11 @@ export default function CapturePage() {
         return;
     }
     try {
+      // Just check for permission, don't start the stream here.
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      // Stop the stream immediately, we only wanted to check for permission.
+      stream.getTracks().forEach(track => track.stop());
       setHasCameraPermission(true);
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
       setMode('capture');
     } catch (error) {
       console.error('Error accessing camera:', error);
@@ -259,3 +272,5 @@ export default function CapturePage() {
     </AppLayout>
   );
 }
+
+    
