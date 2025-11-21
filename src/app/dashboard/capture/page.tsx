@@ -37,48 +37,33 @@ export default function CapturePage() {
 
   useEffect(() => {
     let stream: MediaStream | null = null;
-    if (mode === 'capture' && hasCameraPermission && videoRef.current) {
-      navigator.mediaDevices.getUserMedia({ video: true })
+    if (mode === 'capture' && videoRef.current) {
+        navigator.mediaDevices.getUserMedia({ video: true })
         .then(s => {
-          stream = s;
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
+            stream = s;
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+            }
+            setHasCameraPermission(true);
         })
         .catch(err => {
-          console.error('Error accessing camera:', err);
-          setHasCameraPermission(false);
+            console.error('Error accessing camera:', err);
+            setHasCameraPermission(false);
         });
     }
     return () => {
-      // Stop video stream when component unmounts or mode changes
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, [mode, hasCameraPermission]);
+  }, [mode]);
 
   const getCameraPermission = async () => {
     if (!canUseCapture) {
         showUpgradeToast();
         return;
     }
-    try {
-      // Just check for permission, don't start the stream here.
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      // Stop the stream immediately, we only wanted to check for permission.
-      stream.getTracks().forEach(track => track.stop());
-      setHasCameraPermission(true);
-      setMode('capture');
-    } catch (error) {
-      console.error('Error accessing camera:', error);
-      setHasCameraPermission(false);
-      toast({
-        variant: 'destructive',
-        title: 'Camera Access Denied',
-        description: 'Please enable camera permissions in your browser settings.',
-      });
-    }
+    setMode('capture');
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,9 +179,9 @@ export default function CapturePage() {
             return (
                 <div className="flex flex-col items-center gap-4">
                     <div className="w-full max-w-lg aspect-video bg-muted rounded-lg overflow-hidden border">
-                        <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                         <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
                     </div>
-                    {hasCameraPermission === false && (
+                     {hasCameraPermission === false && (
                         <Alert variant="destructive" className="max-w-lg">
                           <AlertTriangle className="h-4 w-4" />
                           <AlertTitle>Camera Access Denied</AlertTitle>
@@ -266,51 +251,56 @@ export default function CapturePage() {
                         <Image src={imageData} alt="Question preview" layout="fill" className="object-contain" />
                     )}
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent">
-                        <Card className="max-w-4xl mx-auto border-border/50 bg-background/80 backdrop-blur-md shadow-2xl">
-                             <CardContent className="p-6">
-                                <div className="grid grid-cols-3 gap-6 items-start">
-                                    {/* Column 1: Buttons */}
-                                    <div className="col-span-3 lg:col-span-1 flex lg:flex-col gap-4">
-                                        <Button onClick={handleGetAnswer} disabled={isLoading} size="lg" className="w-full">
-                                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                                            {result ? 'Regenerate' : 'Get Answer'}
-                                        </Button>
-                                        <Button onClick={reset} variant="outline" size="lg" className="w-full">
-                                            Try Again
-                                        </Button>
-                                    </div>
-                                    {/* Column 2: Results */}
-                                    <div className="col-span-3 lg:col-span-2">
-                                    {isLoading ? (
-                                         <div className="text-center text-muted-foreground h-32 flex items-center justify-center">Analyzing...</div>
-                                    ) : result ? (
-                                        <ScrollArea className="h-48">
-                                            <div className="space-y-4 pr-4">
-                                                <div>
-                                                    <p className="font-semibold text-muted-foreground text-xs">Question Identified:</p>
-                                                    <p className="font-medium italic text-sm">"{result.question}"</p>
-                                                </div>
-                                                <Separator/>
-                                                <div>
-                                                    <p className="font-semibold text-muted-foreground text-xs">Direct Answer:</p>
-                                                    <p className="font-bold text-base text-primary">{result.answer}</p>
-                                                </div>
-                                                <Separator/>
-                                                <div>
-                                                    <p className="font-semibold text-muted-foreground text-xs">Solution:</p>
-                                                    <div className="prose prose-sm prose-invert max-w-none">
-                                                        <MathRenderer content={result.solution} />
+                        <div className="max-w-4xl mx-auto space-y-4">
+                            <Card className="border-border/50 bg-background/80 backdrop-blur-md shadow-2xl">
+                                <CardContent className="p-6">
+                                    <div className="grid grid-cols-3 gap-6 items-start">
+                                        {/* Column 1: Buttons */}
+                                        <div className="col-span-3 lg:col-span-1 flex lg:flex-col gap-4">
+                                            <Button onClick={handleGetAnswer} disabled={isLoading} size="lg" className="w-full">
+                                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                                                {result ? 'Regenerate' : 'Get Answer'}
+                                            </Button>
+                                            <Button onClick={reset} variant="outline" size="lg" className="w-full">
+                                                Try Again
+                                            </Button>
+                                        </div>
+                                        {/* Column 2: Results */}
+                                        <div className="col-span-3 lg:col-span-2">
+                                        {isLoading ? (
+                                            <div className="text-center text-muted-foreground h-32 flex items-center justify-center">Analyzing...</div>
+                                        ) : result ? (
+                                            <ScrollArea className="h-48">
+                                                <div className="space-y-4 pr-4">
+                                                    <div>
+                                                        <p className="font-semibold text-muted-foreground text-xs">Direct Answer:</p>
+                                                        <p className="font-bold text-base text-primary">{result.answer}</p>
+                                                    </div>
+                                                    <Separator/>
+                                                    <div>
+                                                        <p className="font-semibold text-muted-foreground text-xs">Solution:</p>
+                                                        <div className="prose prose-sm prose-invert max-w-none">
+                                                            <MathRenderer content={result.solution} />
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </ScrollArea>
-                                    ) : (
-                                        <div className="text-center text-muted-foreground h-32 flex items-center justify-center">The answer and solution will appear here.</div>
-                                    )}
+                                            </ScrollArea>
+                                        ) : (
+                                            <div className="text-center text-muted-foreground h-32 flex items-center justify-center">The answer and solution will appear here.</div>
+                                        )}
+                                        </div>
                                     </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                                </CardContent>
+                            </Card>
+                            {result && (
+                                <Card className="border-border/50 bg-background/80 backdrop-blur-md shadow-lg">
+                                    <CardContent className="p-4">
+                                        <p className="font-semibold text-muted-foreground text-xs">Question Identified:</p>
+                                        <p className="font-medium italic text-sm">"{result.question}"</p>
+                                    </CardContent>
+                                </Card>
+                            )}
+                        </div>
                     </div>
                 </div>
             )
