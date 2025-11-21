@@ -17,7 +17,7 @@ import { MathRenderer } from '@/components/MathRenderer';
 import { useProfile } from '@/context/ProfileContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import Link from 'next/link';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 import { cn } from '@/lib/utils';
 
 export default function CapturePage() {
@@ -253,52 +253,52 @@ export default function CapturePage() {
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/90 to-transparent">
                         <div className="max-w-4xl mx-auto space-y-4">
                             <Card className="border-border/50 bg-background/80 backdrop-blur-md shadow-2xl">
-                                <CardContent className="p-6">
-                                    <div className="grid grid-cols-3 gap-6 items-start">
-                                        {/* Column 1: Buttons */}
-                                        <div className="col-span-3 lg:col-span-1 flex lg:flex-col gap-4">
-                                            <Button onClick={handleGetAnswer} disabled={isLoading} size="lg" className="w-full">
-                                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                                                {result ? 'Regenerate' : 'Get Answer'}
-                                            </Button>
-                                            <Button onClick={reset} variant="outline" size="lg" className="w-full">
-                                                Try Again
-                                            </Button>
-                                        </div>
-                                        {/* Column 2: Results */}
-                                        <div className="col-span-3 lg:col-span-2">
-                                        {isLoading ? (
-                                            <div className="text-center text-muted-foreground h-32 flex items-center justify-center">Analyzing...</div>
-                                        ) : result ? (
-                                            <ScrollArea className="h-48">
-                                                <div className="space-y-4 pr-4">
-                                                    <div>
-                                                        <p className="font-semibold text-muted-foreground text-xs">Direct Answer:</p>
-                                                        <p className="font-bold text-base text-primary">{result.answer}</p>
-                                                    </div>
-                                                    <Separator/>
-                                                    <div>
-                                                        <p className="font-semibold text-muted-foreground text-xs">Solution:</p>
-                                                        <div className="prose prose-sm prose-invert max-w-none">
-                                                            <MathRenderer content={result.solution} />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </ScrollArea>
-                                        ) : (
-                                            <div className="text-center text-muted-foreground h-32 flex items-center justify-center">The answer and solution will appear here.</div>
-                                        )}
-                                        </div>
-                                    </div>
+                                <CardContent className="p-6 flex flex-col sm:flex-row gap-4">
+                                    <Button onClick={handleGetAnswer} disabled={isLoading} size="lg" className="w-full sm:w-auto">
+                                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                                        {result ? 'Regenerate' : 'Get Answer'}
+                                    </Button>
+                                    <Button onClick={reset} variant="outline" size="lg" className="w-full sm:w-auto">
+                                        Try Again
+                                    </Button>
                                 </CardContent>
                             </Card>
+
                             {result && (
                                 <Card className="border-border/50 bg-background/80 backdrop-blur-md shadow-lg">
-                                    <CardContent className="p-4">
-                                        <p className="font-semibold text-muted-foreground text-xs">Question Identified:</p>
-                                        <p className="font-medium italic text-sm">"{result.question}"</p>
+                                    <CardHeader>
+                                        <CardTitle className="font-headline">AI Solution</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-4">
+                                            <div>
+                                                <p className="font-semibold text-muted-foreground text-xs">Question Identified:</p>
+                                                <p className="font-medium italic text-sm">"{result.question}"</p>
+                                            </div>
+                                            <Separator/>
+                                            <div>
+                                                <p className="font-semibold text-muted-foreground text-xs">Direct Answer:</p>
+                                                <p className="font-bold text-base text-primary">{result.answer}</p>
+                                            </div>
+                                            <Separator/>
+                                            <div>
+                                                <p className="font-semibold text-muted-foreground text-xs">Solution:</p>
+                                                <ScrollArea className="h-48">
+                                                    <div className="prose prose-sm prose-invert max-w-none pr-4">
+                                                        <MathRenderer content={result.solution} />
+                                                    </div>
+                                                </ScrollArea>
+                                            </div>
+                                        </div>
                                     </CardContent>
                                 </Card>
+                            )}
+
+                            {isLoading && (
+                                <div className="text-center text-foreground h-32 flex items-center justify-center">
+                                    <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                                    Analyzing...
+                                </div>
                             )}
                         </div>
                     </div>
