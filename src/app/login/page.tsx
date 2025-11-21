@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -10,9 +9,8 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpenCheck, CheckCircle, Quote } from 'lucide-react';
-import Image from 'next/image';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { BookOpenCheck, CheckCircle } from 'lucide-react';
+import { TestimonialColumn } from '@/components/landing/Testimonials';
 
 
 const GoogleIcon = () => (
@@ -26,6 +24,33 @@ const features = [
     "Interactive Flashcards",
     "Personalized Quizzes",
     "AI Study Roadmaps"
+];
+
+const testimonials = [
+  {
+    text: "The roadmap feature planned my entire finals week. I knew exactly what to study each day and didn't have to stress about it. Total game-changer.",
+    name: 'Jasmine K.',
+    role: 'AP Student',
+    img: `https://picsum.photos/seed/Jasmine/100/100`
+  },
+  {
+    text: "I used to spend hours making my own Quizlets. This does it for me in seconds, and the quizzes are way better. My grades have actually improved.",
+    name: 'Leo F.',
+    role: 'Sophomore',
+    img: `https://picsum.photos/seed/Leo/100/100`
+  },
+  {
+    text: "SageMaker is like having a super smart friend you can text at 2 AM when you're stuck on a math problem. It just explains things in a way that makes sense.",
+    name: 'Ben A.',
+    role: 'Mathlete',
+    img: `https://picsum.photos/seed/Ben/100/100`
+  },
+  {
+    text: "I have so much more free time for sports and hanging out with friends because my study sessions are so much more efficient now. No more all-nighters!",
+    name: 'Harper J.',
+    role: 'Student Athlete',
+    img: `https://picsum.photos/seed/Harper/100/100`
+  },
 ];
 
 export default function LoginPage() {
@@ -60,22 +85,11 @@ export default function LoginPage() {
 
     return (
         <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-            <div className="hidden bg-secondary lg:flex items-center justify-center p-12">
-                <div className="max-w-md w-full">
-                    <Quote className="h-10 w-10 text-primary" />
-                    <blockquote className="mt-4 text-2xl font-semibold text-foreground">
-                        "The roadmap feature planned my entire finals week. I knew exactly what to study each day and didn't have to stress about it. Total game-changer."
-                    </blockquote>
-                    <div className="mt-8 flex items-center gap-4">
-                        <Avatar>
-                            <AvatarImage src="https://picsum.photos/seed/student-testimonials/100/100" alt="@jess" />
-                            <AvatarFallback>JS</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <p className="font-semibold">Jessica Smith</p>
-                            <p className="text-sm text-muted-foreground">AP Student, Class of '24</p>
-                        </div>
-                    </div>
+            <div className="hidden bg-secondary lg:flex items-center justify-center p-12 overflow-hidden">
+                <div className="w-full max-w-md h-full relative">
+                    <TestimonialColumn testimonials={testimonials} duration={60} />
+                    <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-secondary to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-secondary to-transparent" />
                 </div>
             </div>
             <div className="flex min-h-screen items-center justify-center p-4">

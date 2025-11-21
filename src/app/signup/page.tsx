@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -10,8 +9,8 @@ import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { BookOpenCheck, CheckCircle, Quote } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { BookOpenCheck, CheckCircle } from 'lucide-react';
+import { TestimonialColumn } from '@/components/landing/Testimonials';
 
 
 const GoogleIcon = () => (
@@ -26,6 +25,34 @@ const features = [
     "Personalized Quizzes",
     "AI Study Roadmaps"
 ];
+
+const testimonials = [
+  {
+    text: "I uploaded a picture of a confusing physics problem from my homework and it gave me the answer AND the steps. I was shocked it actually worked.",
+    name: 'Noah P.',
+    role: 'Physics Student',
+    img: 'https://picsum.photos/seed/Noah/100/100'
+  },
+  {
+    text: "My English teacher was so impressed with my detailed analysis of 'The Great Gatsby.' Little does she know, AI helped me organize my thoughts!",
+    name: 'Sophia W.',
+    role: 'Literature Lover',
+    img: 'https://picsum.photos/seed/Sophia/100/100'
+  },
+  {
+    text: "Being able to just paste my whole syllabus for the semester and get a study plan was incredible. I've never felt so organized.",
+    name: 'Liam G.',
+    role: 'Grade 12',
+    img: 'https://picsum.photos/seed/Liam/100/100'
+  },
+  {
+    text: "The Pomodoro timer keeps me from getting distracted by my phone. Those 25-minute focus blocks are surprisingly effective.",
+    name: 'Isabella C.',
+    role: 'Procrastinator turned Pro',
+    img: 'https://picsum.photos/seed/Isabella/100/100'
+  }
+];
+
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -58,22 +85,11 @@ export default function SignUpPage() {
 
     return (
         <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-            <div className="hidden bg-secondary lg:flex items-center justify-center p-12">
-                <div className="max-w-md w-full">
-                    <Quote className="h-10 w-10 text-primary" />
-                    <blockquote className="mt-4 text-2xl font-semibold text-foreground">
-                       "I used to spend hours making my own Quizlets. This does it for me in seconds, and the quizzes are way better. My grades have actually improved."
-                    </blockquote>
-                    <div className="mt-8 flex items-center gap-4">
-                        <Avatar>
-                            <AvatarImage src="https://picsum.photos/seed/student-testimonials-2/100/100" alt="@leo" />
-                            <AvatarFallback>LF</AvatarFallback>
-                        </Avatar>
-                        <div>
-                            <p className="font-semibold">Leo Foster</p>
-                            <p className="text-sm text-muted-foreground">University Sophomore</p>
-                        </div>
-                    </div>
+            <div className="hidden bg-secondary lg:flex items-center justify-center p-12 overflow-hidden">
+                 <div className="w-full max-w-md h-full relative">
+                    <TestimonialColumn testimonials={testimonials} duration={50} />
+                    <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-secondary to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-secondary to-transparent" />
                 </div>
             </div>
             <div className="flex min-h-screen items-center justify-center p-4">

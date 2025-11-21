@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useEffect } from 'react';
@@ -97,6 +96,7 @@ const adaptedTestimonials = originalTestimonials.map(t => ({
     name: t.name,
     username: `@${t.name.split(' ')[0].toLowerCase()}`,
     role: t.handle,
+    img: `https://picsum.photos/seed/${t.name.split(' ')[0].toLowerCase()}/100/100`
 }));
 
 
@@ -258,3 +258,45 @@ export function Testimonials({
      </section>
    );
  }
+
+export const TestimonialColumn = ({
+  testimonials,
+  duration = 60,
+  className
+}: {
+  testimonials: typeof adaptedTestimonials;
+  duration?: number;
+  className?: string;
+}) => {
+  return (
+    <div className={cn("flex flex-col gap-4", className)}>
+        <motion.div
+            animate={{ translateY: "-50%" }}
+            transition={{
+                duration: duration,
+                repeat: Infinity,
+                repeatType: "loop",
+                ease: "linear",
+            }}
+            className="flex flex-col gap-4 pb-4"
+        >
+            {[...testimonials, ...testimonials].map((t, i) => (
+                <div key={i} className="w-full shrink-0 rounded-lg border bg-secondary p-6 shadow-sm">
+                    <Quote className="h-8 w-8 text-primary/50 mb-4" />
+                    <p className="mb-6 leading-relaxed text-muted-foreground">{t.text}</p>
+                    <div className="flex items-center gap-4">
+                         <Avatar>
+                            <AvatarImage src={t.img} alt={t.name} />
+                            <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <p className="font-semibold">{t.name}</p>
+                            <p className="text-sm text-muted-foreground">{t.role}</p>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </motion.div>
+    </div>
+  );
+};
