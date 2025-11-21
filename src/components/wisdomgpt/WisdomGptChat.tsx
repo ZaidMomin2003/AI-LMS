@@ -242,7 +242,7 @@ export default function WisdomGptChat() {
     <div className="flex h-full w-full flex-col bg-card border rounded-xl overflow-hidden">
       {/* Chat Messages Area */}
       <div ref={chatContainerRef} className="flex-1 overflow-y-auto">
-        <div className="max-w-3xl mx-auto px-4 py-6 md:py-10">
+        <div className="max-w-3xl mx-auto px-2 sm:px-4 py-6 md:py-10">
           {messages.length === 0 && !isTyping ? (
             <div className="flex flex-col items-center justify-center text-center h-full pt-16">
               <div className="relative w-32 h-32 mb-6">
@@ -264,13 +264,13 @@ export default function WisdomGptChat() {
                 {messages.map((message, index) => {
                     const isUser = message.role === 'user';
                     return (
-                        <div key={index} className={cn("flex items-start gap-4", isUser && "justify-end")}>
+                        <div key={index} className={cn("flex items-start gap-3 sm:gap-4", isUser && "justify-end")}>
                             {!isUser && (
                                 <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center">
                                     <Sparkles size={18} />
                                 </div>
                             )}
-                            <div className={cn("flex-1 max-w-[80%]", isUser && "text-right")}>
+                            <div className={cn("flex-1 max-w-[90%] sm:max-w-[80%]", isUser && "text-right")}>
                                 <div className={cn(
                                     "p-3 rounded-2xl inline-block",
                                     isUser ? "bg-primary text-primary-foreground rounded-br-none" : "bg-secondary rounded-bl-none"
@@ -323,7 +323,7 @@ export default function WisdomGptChat() {
       </div>
 
       {/* Input Area */}
-      <div className="px-4 pb-4">
+      <div className="mt-auto px-2 sm:px-4 pb-2 sm:pb-4">
         <div className="max-w-3xl mx-auto">
             <div className="relative rounded-xl border bg-background shadow-lg">
                 <AnimatePresence>

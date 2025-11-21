@@ -60,7 +60,7 @@ export default function WisdomGptPage() {
     
     return (
         <AppLayout>
-            <div className="flex-1 p-4 h-full">
+            <div className="flex-1 p-2 sm:p-4 h-full">
                 <WisdomGptChat />
             </div>
         </AppLayout>
