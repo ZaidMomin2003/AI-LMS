@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { StudyNotes } from '@/types';
@@ -7,7 +8,7 @@ import { MathRenderer } from '../MathRenderer';
 import { BookOpen, List, FlaskConical, Beaker, Lightbulb, FileText, Sparkles, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent } from '../ui/popover';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '../ui/button';
 import { PopoverAnchor } from '@radix-ui/react-popover';
@@ -56,7 +57,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
   const { toast } = useToast();
   const notesViewRef = React.useRef<HTMLDivElement>(null);
   const virtualRef = React.useRef<{ getBoundingClientRect: () => DOMRect } | null>(null);
-  const debounceTimer = React.useRef<NodeJS.Timeout | null>(null);
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   const fullNoteText = React.useMemo(() => {
     if (!notes) return '';
@@ -103,22 +104,41 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
   }, [fullNoteText, toast, explainTextAction]);
   
   useEffect(() => {
-    const debouncedSelectionHandler = () => {
-        if (debounceTimer.current) {
-            clearTimeout(debounceTimer.current);
-        }
+    const viewRef = notesViewRef.current;
+    if (!viewRef) return;
+
+    const handleSelection = () => {
+        if (debounceTimer.current) clearTimeout(debounceTimer.current);
         debounceTimer.current = setTimeout(() => {
-            handleTextSelection();
-        }, 500); // Wait 500ms after the last selection change
+            const selection = window.getSelection();
+            if (selection && selection.toString().trim()) {
+                handleTextSelection();
+            }
+        }, 300); // Debounce to wait for user to finish selecting
+    };
+    
+    // `selectionchange` is good for tracking the process of selecting
+    // but `mouseup` is better for knowing when the selection is final.
+    const handleMouseUp = () => {
+        handleSelection();
     };
 
-    document.addEventListener('selectionchange', debouncedSelectionHandler);
+    const handleContextMenu = (event: MouseEvent) => {
+        const selection = window.getSelection();
+        if (selection && selection.toString().trim()) {
+            event.preventDefault();
+        }
+    };
+    
+    viewRef.addEventListener('mouseup', handleMouseUp);
+    viewRef.addEventListener('touchend', handleMouseUp);
+    viewRef.addEventListener('contextmenu', handleContextMenu);
     
     return () => {
-        document.removeEventListener('selectionchange', debouncedSelectionHandler);
-        if (debounceTimer.current) {
-            clearTimeout(debounceTimer.current);
-        }
+        if (debounceTimer.current) clearTimeout(debounceTimer.current);
+        viewRef.removeEventListener('mouseup', handleMouseUp);
+        viewRef.removeEventListener('touchend', handleMouseUp);
+        viewRef.removeEventListener('contextmenu', handleContextMenu);
     }
   }, [handleTextSelection]);
 
