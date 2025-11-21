@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -84,15 +85,15 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-            <div className="hidden bg-secondary lg:flex items-center justify-center p-12 overflow-hidden">
+        <div className="w-full lg:grid lg:grid-cols-2 h-screen">
+            <div className="hidden bg-secondary lg:flex items-center justify-center p-12 overflow-hidden h-screen">
                 <div className="w-full max-w-md h-full relative">
                     <TestimonialColumn testimonials={testimonials} duration={60} />
                     <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-secondary to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-secondary to-transparent" />
                 </div>
             </div>
-            <div className="flex min-h-screen items-center justify-center p-4">
+            <div className="flex items-center justify-center p-4 h-screen">
                 <div className="w-full max-w-sm">
                     <Card className="border-0 shadow-none sm:border sm:shadow-lg">
                         <CardHeader className="text-center">
