@@ -24,7 +24,7 @@ export type CaptureTheAnswerInput = z.infer<typeof CaptureTheAnswerInputSchema>;
 const CaptureTheAnswerOutputSchema = z.object({
   question: z.string().describe('The question identified from the image.'),
   answer: z.string().describe("A simple, direct answer to the question."),
-  solution: z.string().describe("A step-by-step explanation or solution for how the answer was reached, formatted in Markdown."),
+  solution: z.string().describe("A step-by-step explanation or solution for how the answer was reached, formatted in HTML."),
 });
 export type CaptureTheAnswerOutput = z.infer<typeof CaptureTheAnswerOutputSchema>;
 
@@ -36,13 +36,19 @@ const prompt = ai.definePrompt({
   name: 'captureTheAnswerPrompt',
   input: {schema: CaptureTheAnswerInputSchema},
   output: {schema: CaptureTheAnswerOutputSchema},
-  prompt: `You are an expert tutor AI with deep knowledge across all subjects. Your task is to analyze the provided image, accurately identify the question written in it, and provide a correct, clear, and concise answer along with a step-by-step solution.
+  prompt: `You are an expert tutor AI. Your task is to analyze the provided image, identify the question, and provide a correct answer with a clear, step-by-step solution.
 
+**Output Requirements:**
 Your response MUST be a valid JSON object matching the provided schema.
 
-- "question": A string containing the exact question you identified from the image.
-- "answer": A string containing the correct and direct answer to that question.
-- "solution": A string containing a step-by-step explanation of how to arrive at the correct answer. **This solution must be formatted in Markdown**. **Crucially, if there are any mathematical formulas or equations, you MUST enclose them in KaTeX delimiters, like this: \`$$E=mc^2$$\`. This is non-negotiable.**
+- **question**: A string containing the exact question from the image.
+- **answer**: A string with only the final, direct answer.
+- **solution**: A string containing a step-by-step explanation formatted in simple HTML.
+  - Use `<h4>` for step headings (e.g., `<h4>Step 1: Identify the formula</h4>`).
+  - Use `<p>` for explanations.
+  - Use `<strong>` to highlight key terms or values.
+  - **CRITICAL**: All mathematical formulas, variables, and equations MUST be enclosed in KaTeX delimiters (e.g., `$$P = \\frac{a^3b^2}{c\\sqrt{d}}$$`). This is non-negotiable.
+  - Do NOT be conversational. Provide a direct, structured solution.
 
 Image with the question is below:
 {{media url=imageDataUri}}`,
