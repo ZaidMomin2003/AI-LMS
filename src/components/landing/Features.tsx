@@ -206,6 +206,7 @@ interface BentoItem {
   demo: React.ReactNode;
   colSpan?: number;
   rowSpan?: number;
+  className?: string;
 }
 
 const bentoItems: BentoItem[] = [
@@ -240,6 +241,7 @@ const bentoItems: BentoItem[] = [
     demo: <FlashcardDemo />,
     colSpan: 1,
     rowSpan: 1,
+    className: "min-h-[12rem] md:min-h-0", // Set a min-height for mobile
   },
   {
     title: 'Challenging Quizzes',
@@ -315,7 +317,7 @@ export function Features() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-                <Card className="group bg-card/40 relative h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-border/60 overflow-hidden p-4 flex flex-col">
+                <Card className={cn("group bg-card/40 relative h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-border/60 overflow-hidden p-4 flex flex-col", item.className)}>
                      <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
                              <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
