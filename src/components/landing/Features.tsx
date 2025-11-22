@@ -241,7 +241,7 @@ const bentoItems: BentoItem[] = [
     demo: <FlashcardDemo />,
     colSpan: 1,
     rowSpan: 1,
-    className: "min-h-[12rem] md:min-h-0", // Set a min-height for mobile
+    className: "min-h-[15rem] md:min-h-0", // Set a min-height for mobile
   },
   {
     title: 'Challenging Quizzes',
