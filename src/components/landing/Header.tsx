@@ -10,6 +10,7 @@ import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog';
 import Image from 'next/image';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
 
 interface NavItem {
   name: string;
@@ -23,8 +24,12 @@ const navItems: NavItem[] = [
     { name: 'FAQ', href: '/#faq' },
     { name: 'Pricing', href: '/#cta' },
     { name: 'Contact', href: '/#contact' },
-    { name: 'Institution', href: '/business' },
 ];
+
+const institutionNavItems = [
+    { name: 'For Business', href: '/business' },
+    { name: 'Invitation', href: '/invitation' },
+]
 
 const TARGET_TEXT = "Dashboard";
 const CYCLES_PER_LETTER = 2;
@@ -185,6 +190,21 @@ export function Header() {
                                 {item.name}
                             </Link>
                         ))}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="rounded-full px-3 py-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground hover:bg-transparent">
+                                    Institution
+                                    <ChevronDown className="ml-1 h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                {institutionNavItems.map((item) => (
+                                <DropdownMenuItem key={item.name} asChild>
+                                    <Link href={item.href}>{item.name}</Link>
+                                </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </nav>
 
@@ -236,7 +256,7 @@ export function Header() {
                                 )}
                             </div>
                         )}
-                        {navItems.map((item) => (
+                        {[...navItems, ...institutionNavItems].map((item) => (
                         <Link
                             key={item.name}
                             href={item.href}
