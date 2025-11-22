@@ -27,9 +27,10 @@ export function ChatMain() {
   const [historySearchTerm, setHistorySearchTerm] = useState('');
 
   const filteredTopics = useMemo(() => {
+    if (!historySearchTerm) return topics;
     return topics.filter(topic => 
-        topic.title.toLowerCase().includes(historySearchTerm.toLowerCase()) ||
-        topic.subject.toLowerCase().includes(historySearchTerm.toLowerCase())
+        (topic.title && topic.title.toLowerCase().includes(historySearchTerm.toLowerCase())) ||
+        (topic.subject && topic.subject.toLowerCase().includes(historySearchTerm.toLowerCase()))
     );
   }, [topics, historySearchTerm]);
   
