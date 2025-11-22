@@ -1,13 +1,13 @@
 
 'use client';
 
-import { Send, Bot, History, BookOpen, ListTodo, Lock, Star } from 'lucide-react';
+import { Send, Bot, History, BookOpen, ListTodo, Lock, Star, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import Image from 'next/image';
 import { DashboardStats } from '../dashboard/DashboardStats';
 import { TopicForm } from '../dashboard/TopicForm';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from '@/components/ui/dialog';
 import { useTopic } from '@/context/TopicContext';
 import { ScrollArea } from '../ui/scroll-area';
@@ -17,12 +17,21 @@ import { TodayStudyTask } from '../dashboard/TodayStudyTask';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '../ui/badge';
 import { Card, CardContent } from '../ui/card';
+import { Input } from '../ui/input';
 
 
 export function ChatMain() {
   const { user } = useAuth();
   const { topics } = useTopic();
   const isMobile = useIsMobile();
+  const [historySearchTerm, setHistorySearchTerm] = useState('');
+
+  const filteredTopics = useMemo(() => {
+    return topics.filter(topic => 
+        topic.title.toLowerCase().includes(historySearchTerm.toLowerCase()) ||
+        topic.subject.toLowerCase().includes(historySearchTerm.toLowerCase())
+    );
+  }, [topics, historySearchTerm]);
   
   return (
     <div className="h-full flex flex-col bg-card border rounded-lg relative overflow-hidden">
@@ -47,10 +56,21 @@ export function ChatMain() {
                             Here are the study topics you've recently generated.
                         </DialogDescription>
                     </DialogHeader>
+
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input 
+                            placeholder="Search history..."
+                            className="pl-10"
+                            value={historySearchTerm}
+                            onChange={(e) => setHistorySearchTerm(e.target.value)}
+                        />
+                    </div>
+
                     <ScrollArea className="h-[300px] pr-4">
-                         {topics.length > 0 ? (
+                         {filteredTopics.length > 0 ? (
                             <div className="space-y-4">
-                                {topics.map((topic) => (
+                                {filteredTopics.map((topic) => (
                                 <div
                                     key={topic.id}
                                     className="flex items-center justify-between p-2 rounded-lg hover:bg-secondary"
@@ -72,7 +92,9 @@ export function ChatMain() {
                             </div>
                          ) : (
                             <div className="text-center text-muted-foreground py-10">
-                                <p>No topics created yet.</p>
+                                <p>
+                                    {topics.length > 0 ? `No topics found for "${historySearchTerm}".` : 'No topics created yet.'}
+                                </p>
                             </div>
                          )}
                     </ScrollArea>
