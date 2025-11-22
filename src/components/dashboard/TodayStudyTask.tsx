@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { useSubscription } from "@/context/SubscriptionContext";
+import { ScrollArea } from "../ui/scroll-area";
 
 export function TodayStudyTask() {
     const { roadmap } = useRoadmap();
@@ -83,15 +84,17 @@ export function TodayStudyTask() {
                 aria-label="Mark task as complete"
              />
              <div className="flex-1">
-                <label 
-                    htmlFor="today-task-checkbox" 
-                    className={cn(
-                        "text-sm font-medium transition-colors whitespace-normal",
-                        isCompleted && "line-through text-muted-foreground"
-                    )}
-                >
-                    {todaysTask!.topicsToCover}
-                </label>
+                <ScrollArea className="h-full max-h-[100px] pr-4">
+                    <label 
+                        htmlFor="today-task-checkbox" 
+                        className={cn(
+                            "text-sm font-medium transition-colors whitespace-normal",
+                            isCompleted && "line-through text-muted-foreground"
+                        )}
+                    >
+                        {todaysTask!.topicsToCover}
+                    </label>
+                </ScrollArea>
              </div>
         </div>
     );
