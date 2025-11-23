@@ -59,8 +59,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
   const { toast } = useToast();
   const notesViewRef = useRef<HTMLDivElement>(null);
   const virtualRef = useRef<{ getBoundingClientRect: () => DOMRect } | null>(null);
-  const rangeRef = useRef<Range | null>(null);
-
+  
   const fullNoteText = React.useMemo(() => {
     if (!notes) return '';
     return Object.values(notes).join('\n');
@@ -78,7 +77,6 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
             virtualRef.current = {
                 getBoundingClientRect: () => range.getBoundingClientRect(),
             };
-            rangeRef.current = range.cloneRange();
             
             setSelectedText(text);
             setPopoverContent('options');
@@ -93,25 +91,30 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     const viewRef = notesViewRef.current;
     if (!viewRef) return;
     
-    const handlePointerUp = () => {
-      setTimeout(() => {
+    // Use 'selectionchange' for real-time selection detection
+    const handleSelectionChange = () => {
         const selection = window.getSelection();
-        if (selection && !selection.isCollapsed) {
-          handleTextSelection();
-        } else {
-          if (popoverOpen) {
+        if (selection && selection.isCollapsed) {
             setPopoverOpen(false);
-          }
         }
+    };
+    
+    // Use 'pointerup' to finalize the selection and show the popover
+    const handlePointerUp = (event: PointerEvent) => {
+      // Add a small delay to allow the selection to finalize
+      setTimeout(() => {
+        handleTextSelection();
       }, 10);
     };
 
+    document.addEventListener('selectionchange', handleSelectionChange);
     viewRef.addEventListener('pointerup', handlePointerUp);
     
     return () => {
+        document.removeEventListener('selectionchange', handleSelectionChange);
         viewRef.removeEventListener('pointerup', handlePointerUp);
     }
-  }, [handleTextSelection, popoverOpen]);
+  }, [handleTextSelection]);
 
   const handleExplain = () => {
     setPopoverContent('explanation');
@@ -139,16 +142,12 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) return;
 
-    const range = selection.getRangeAt(0);
-    
-    // This is a more robust way to highlight content.
-    // `surroundContents` fails if the selection spans across different block elements.
-    // This approach creates a new element and replaces the content.
     try {
+        const range = selection.getRangeAt(0);
         const mark = document.createElement('mark');
-        mark.className = "bg-yellow-300/70 text-foreground";
+        mark.className = "bg-yellow-300/70 text-foreground px-1 rounded";
         
-        // This will wrap the selected content in the mark tag, even if it spans multiple nodes.
+        // This robustly wraps even partial nodes and multiple nodes.
         mark.appendChild(range.extractContents());
         range.insertNode(mark);
         
@@ -182,7 +181,16 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         <PopoverAnchor asChild>
           <div ref={virtualRef as any} />
         </PopoverAnchor>
-        <div className="cursor-text" ref={notesViewRef}>
+        <div 
+          className="cursor-text" 
+          ref={notesViewRef}
+          // Prevent default context menu on text selection for a cleaner mobile experience
+          onContextMenu={(e) => {
+            if (window.getSelection()?.toString()) {
+              e.preventDefault();
+            }
+          }}
+        >
             <ScrollArea className="h-[calc(100vh-200px)]">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
                     {/* Left Column */}
