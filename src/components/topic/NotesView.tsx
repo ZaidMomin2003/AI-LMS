@@ -7,7 +7,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { MathRenderer } from '../MathRenderer';
 import { BookOpen, List, FlaskConical, Beaker, Lightbulb, FileText, Sparkles, Loader2, X, Highlighter } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverContent } from '../ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '../ui/button';
@@ -93,15 +93,12 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     const viewRef = notesViewRef.current;
     if (!viewRef) return;
     
-    // Using onMouseUp is more reliable than onClick for text selection.
-    const handleMouseUp = () => {
-      // Use a small timeout to let the selection stabilize
+    const handlePointerUp = () => {
       setTimeout(() => {
         const selection = window.getSelection();
         if (selection && !selection.isCollapsed) {
           handleTextSelection();
         } else {
-          // If the click doesn't result in a selection, close the popover.
           if (popoverOpen) {
             setPopoverOpen(false);
           }
@@ -109,27 +106,12 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
       }, 10);
     };
 
-    const handleTouchEnd = () => {
-        setTimeout(() => {
-            const selection = window.getSelection();
-            if (selection && !selection.isCollapsed) {
-                handleTextSelection();
-            } else {
-                if (popoverOpen) {
-                    setPopoverOpen(false);
-                }
-            }
-        }, 100); // Increased delay for touch to avoid accidental triggers
-    }
-
-    viewRef.addEventListener('mouseup', handleMouseUp);
-    viewRef.addEventListener('touchend', handleTouchEnd);
+    viewRef.addEventListener('pointerup', handlePointerUp);
     
     return () => {
-        viewRef.removeEventListener('mouseup', handleMouseUp);
-        viewRef.removeEventListener('touchend', handleTouchEnd);
+        viewRef.removeEventListener('pointerup', handlePointerUp);
     }
-  }, [handleTextSelection, popoverOpen]); // Re-bind if popoverOpen changes to ensure we can close it
+  }, [handleTextSelection, popoverOpen]);
 
   const handleExplain = () => {
     setPopoverContent('explanation');
@@ -158,22 +140,26 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     if (!selection || selection.rangeCount === 0) return;
 
     const range = selection.getRangeAt(0);
-    const mark = document.createElement('mark');
-    mark.className = "bg-yellow-300/70 text-foreground";
     
+    // This is a more robust way to highlight content.
+    // `surroundContents` fails if the selection spans across different block elements.
+    // This approach creates a new element and replaces the content.
     try {
-      // The most robust way to handle this is to extract the content, wrap it, and insert it.
-      // However, `surroundContents` is simpler if it works.
-      range.surroundContents(mark);
+        const mark = document.createElement('mark');
+        mark.className = "bg-yellow-300/70 text-foreground";
+        
+        // This will wrap the selected content in the mark tag, even if it spans multiple nodes.
+        mark.appendChild(range.extractContents());
+        range.insertNode(mark);
+        
     } catch (e) {
-        console.error("Highlighting failed, likely due to selection spanning multiple block elements:", e);
+        console.error("Highlighting failed:", e);
         toast({
             variant: "destructive",
             title: "Highlight Failed",
-            description: "Cannot highlight text that spans across different paragraphs or sections."
+            description: "An unexpected error occurred while highlighting."
         });
     } finally {
-        // Clean up
         window.getSelection()?.removeAllRanges();
         setPopoverOpen(false);
     }
