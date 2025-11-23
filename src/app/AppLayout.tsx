@@ -341,10 +341,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" onClick={toggleFullscreen}>
-                    {isFullscreen ? <Minimize className="h-5 w-5" /> : <Expand className="h-5 w-5" />}
-                    <span className="sr-only">Toggle Fullscreen</span>
-                  </Button>
                   <Button asChild variant="ghost" size="icon">
                     <Link href="/dashboard/bookmarks">
                       <Bookmark className="h-5 w-5" />
@@ -357,6 +353,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         <span className="sr-only">Open WisdomGPT</span>
                       </Link>
                     </Button>
+                  <Button variant="ghost" size="icon" onClick={toggleFullscreen}>
+                    {isFullscreen ? <Minimize className="h-5 w-5" /> : <Expand className="h-5 w-5" />}
+                    <span className="sr-only">Toggle Fullscreen</span>
+                  </Button>
                   <SidebarTrigger>
                       <PanelLeft className="h-5 w-5" />
                       <span className="sr-only">Toggle Menu</span>
@@ -372,5 +372,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </SidebarProvider>
   );
 }
+
+    
 
     
