@@ -25,6 +25,7 @@ const footerNav = {
     company: [
       { name: 'About', href: '/developer' },
       { name: 'Institution', href: '/business' },
+      { name: 'Invitation', href: '/invitation' },
       { name: 'Contact', href: '/#contact' },
     ],
     legal: [
