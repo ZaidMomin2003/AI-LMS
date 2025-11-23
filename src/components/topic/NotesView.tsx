@@ -14,10 +14,34 @@ import { Button } from '../ui/button';
 import { PopoverAnchor } from '@radix-ui/react-popover';
 import type { ExplainTextInput, ExplainTextOutput } from '@/ai/flows/explain-text-flow';
 import { Separator } from '../ui/separator';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-interface NotesViewProps {
-  notes: StudyNotes;
-  explainTextAction: (input: ExplainTextInput) => Promise<ExplainTextOutput>;
+
+const Sentence = ({ text, onSentenceClick }: { text: string, onSentenceClick: (sentence: string) => void }) => {
+    return (
+        <span 
+            className="cursor-pointer hover:bg-primary/10 transition-colors rounded"
+            onClick={() => onSentenceClick(text)}
+        >
+            {text}
+        </span>
+    );
+};
+
+const ProcessedContent = ({ htmlContent, onSentenceClick }: { htmlContent: string, onSentenceClick: (sentence: string) => void}) => {
+    const parts = htmlContent.split(/(?<![A-Z].)\. /g);
+
+    return (
+        <>
+            {parts.map((part, index) => {
+                const isLastPart = index === parts.length - 1;
+                const sentence = isLastPart ? part : part + '. ';
+                return (
+                    <Sentence key={index} text={sentence} onSentenceClick={onSentenceClick} />
+                );
+            })}
+        </>
+    )
 }
 
 const NoteSection = ({ 
@@ -25,13 +49,27 @@ const NoteSection = ({
     content,
     icon: Icon,
     className,
+    isMobile,
+    onSentenceClick,
 }: { 
     title: string, 
     content: string | null | undefined,
     icon: React.ElementType,
     className?: string,
+    isMobile: boolean,
+    onSentenceClick: (sentence: string) => void,
 }) => {
     if (!content || content.toLowerCase() === '<p>none</p>' || content.toLowerCase() === 'none') return null;
+
+    const renderContent = () => {
+        if (isMobile) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+            const textOnly = tempDiv.textContent || tempDiv.innerText || '';
+            return <ProcessedContent htmlContent={textOnly} onSentenceClick={onSentenceClick} />;
+        }
+        return <MathRenderer content={content} />;
+    }
 
     return (
         <Card className={cn("bg-secondary/30 border-border/50", className)}>
@@ -43,7 +81,7 @@ const NoteSection = ({
             </CardHeader>
             <CardContent>
                 <div className="prose prose-sm prose-invert max-w-none text-foreground">
-                    <MathRenderer content={content} />
+                    {renderContent()}
                 </div>
             </CardContent>
         </Card>
@@ -59,6 +97,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
   const { toast } = useToast();
   const notesViewRef = useRef<HTMLDivElement>(null);
   const virtualRef = useRef<{ getBoundingClientRect: () => DOMRect } | null>(null);
+  const isMobile = useIsMobile();
   
   const fullNoteText = React.useMemo(() => {
     if (!notes) return '';
@@ -88,6 +127,8 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
   }, []);
   
    useEffect(() => {
+    if (isMobile) return; // Only apply this logic for desktop
+
     const notesView = notesViewRef.current;
     if (notesView) {
       const handleMouseUp = () => handleTextSelection();
@@ -108,14 +149,16 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         notesView.removeEventListener('contextmenu', preventDefaultContextMenu);
       };
     }
-  }, [handleTextSelection]);
+  }, [handleTextSelection, isMobile]);
 
-  const handleExplain = () => {
+  const triggerExplanation = (text: string) => {
+    setSelectedText(text);
     setPopoverContent('explanation');
+    setPopoverOpen(true);
     setIsLoadingExplanation(true);
     setExplanation('');
 
-    explainTextAction({ selectedText, contextText: fullNoteText })
+    explainTextAction({ selectedText: text, contextText: fullNoteText })
       .then(result => {
         setExplanation(result.explanation);
       })
@@ -130,6 +173,10 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
       .finally(() => {
         setIsLoadingExplanation(false);
       });
+  };
+
+  const handleExplain = () => {
+    triggerExplanation(selectedText);
   };
 
   const handleHighlight = () => {
@@ -156,7 +203,6 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         setPopoverOpen(false);
     }
   };
-
 
   if (!notes) {
     return (
@@ -186,21 +232,29 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
                             title="Introduction" 
                             content={notes.introduction} 
                             icon={BookOpen}
+                            isMobile={isMobile}
+                            onSentenceClick={triggerExplanation}
                         />
                          <NoteSection 
                             title="Example" 
                             content={notes.exampleWithExplanation} 
                             icon={Beaker}
+                            isMobile={isMobile}
+                            onSentenceClick={triggerExplanation}
                         />
                         <NoteSection 
                             title="Core Concepts" 
                             content={notes.coreConcepts} 
                             icon={FileText}
+                            isMobile={isMobile}
+                            onSentenceClick={triggerExplanation}
                         />
                         <NoteSection 
                             title="Summary" 
                             content={notes.summary} 
                             icon={Lightbulb}
+                            isMobile={isMobile}
+                            onSentenceClick={triggerExplanation}
                         />
                     </div>
                     
@@ -210,16 +264,22 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
                             title="Key Vocabulary" 
                             content={notes.keyVocabulary} 
                             icon={List}
+                            isMobile={isMobile}
+                            onSentenceClick={triggerExplanation}
                         />
                         <NoteSection 
                             title="Key Definitions" 
                             content={notes.keyDefinitions} 
                             icon={List}
+                             isMobile={isMobile}
+                            onSentenceClick={triggerExplanation}
                         />
                         <NoteSection 
                             title="Formulas & Points" 
                             content={notes.keyFormulasOrPoints} 
                             icon={FlaskConical}
+                             isMobile={isMobile}
+                            onSentenceClick={triggerExplanation}
                         />
                     </div>
                 </div>
