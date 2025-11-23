@@ -17,6 +17,11 @@ import { Separator } from '../ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 
+interface NotesViewProps {
+    notes: StudyNotes;
+    explainTextAction: (input: ExplainTextInput) => Promise<ExplainTextOutput>;
+}
+
 const Sentence = ({ text, onSentenceClick }: { text: string, onSentenceClick: (sentence: string) => void }) => {
     return (
         <span 
@@ -29,6 +34,7 @@ const Sentence = ({ text, onSentenceClick }: { text: string, onSentenceClick: (s
 };
 
 const ProcessedContent = ({ htmlContent, onSentenceClick }: { htmlContent: string, onSentenceClick: (sentence: string) => void}) => {
+    if (!htmlContent) return null;
     const parts = htmlContent.split(/(?<![A-Z].)\. /g);
 
     return (
@@ -104,53 +110,30 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     return Object.values(notes).join('\n');
   }, [notes]);
   
-  const handleTextSelection = useCallback(() => {
-    const selection = window.getSelection();
-    const text = selection?.toString().trim();
+    const handleTextSelection = useCallback(() => {
+        if (isMobile) return; // Don't run this logic on mobile
 
-    if (text && text.length > 2 && text.length < 500 && selection?.rangeCount) {
-        const range = selection.getRangeAt(0);
-        const parentElement = range.startContainer.parentElement;
+        const selection = window.getSelection();
+        const text = selection?.toString().trim();
 
-        if (notesViewRef.current && parentElement && notesViewRef.current.contains(parentElement)) {
-            virtualRef.current = {
-                getBoundingClientRect: () => range.getBoundingClientRect(),
-            };
-            
-            setSelectedText(text);
-            setPopoverContent('options');
-            setPopoverOpen(true);
+        if (text && text.length > 2 && text.length < 500 && selection?.rangeCount) {
+            const range = selection.getRangeAt(0);
+            const parentElement = range.startContainer.parentElement;
+
+            if (notesViewRef.current && parentElement && notesViewRef.current.contains(parentElement)) {
+                virtualRef.current = {
+                    getBoundingClientRect: () => range.getBoundingClientRect(),
+                };
+                
+                setSelectedText(text);
+                setPopoverContent('options');
+                setPopoverOpen(true);
+            }
+        } else {
+            setPopoverOpen(false);
         }
-    } else {
-        setPopoverOpen(false);
-    }
-  }, []);
+  }, [isMobile]);
   
-   useEffect(() => {
-    if (isMobile) return; // Only apply this logic for desktop
-
-    const notesView = notesViewRef.current;
-    if (notesView) {
-      const handleMouseUp = () => handleTextSelection();
-      
-      const preventDefaultContextMenu = (e: Event) => {
-        if (window.getSelection()?.toString()) {
-            e.preventDefault();
-        }
-      };
-
-      notesView.addEventListener('mouseup', handleMouseUp);
-      notesView.addEventListener('touchend', handleMouseUp);
-      notesView.addEventListener('contextmenu', preventDefaultContextMenu);
-
-      return () => {
-        notesView.removeEventListener('mouseup', handleMouseUp);
-        notesView.removeEventListener('touchend', handleMouseUp);
-        notesView.removeEventListener('contextmenu', preventDefaultContextMenu);
-      };
-    }
-  }, [handleTextSelection, isMobile]);
-
   const triggerExplanation = (text: string) => {
     setSelectedText(text);
     setPopoverContent('explanation');
@@ -203,6 +186,31 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         setPopoverOpen(false);
     }
   };
+  
+   useEffect(() => {
+    if (isMobile) return; // Only apply this logic for desktop
+
+    const notesView = notesViewRef.current;
+    if (notesView) {
+      const handleMouseUp = () => handleTextSelection();
+      
+      const preventDefaultContextMenu = (e: Event) => {
+        if (window.getSelection()?.toString()) {
+            e.preventDefault();
+        }
+      };
+
+      notesView.addEventListener('mouseup', handleMouseUp);
+      notesView.addEventListener('touchend', handleMouseUp);
+      notesView.addEventListener('contextmenu', preventDefaultContextMenu);
+
+      return () => {
+        notesView.removeEventListener('mouseup', handleMouseUp);
+        notesView.removeEventListener('touchend', handleMouseUp);
+        notesView.removeEventListener('contextmenu', preventDefaultContextMenu);
+      };
+    }
+  }, [handleTextSelection, isMobile]);
 
   if (!notes) {
     return (
@@ -221,7 +229,6 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
           <div ref={virtualRef as any} />
         </PopoverAnchor>
         <div 
-          className="selectable-text" 
           ref={notesViewRef}
         >
             <ScrollArea className="h-[calc(100vh-200px)]">
