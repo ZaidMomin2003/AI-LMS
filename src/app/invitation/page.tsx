@@ -15,7 +15,7 @@ export default function InvitationPage() {
       <Header />
       <main className="flex-grow">
         {/* --- Hero Section --- */}
-        <section className="bg-secondary/20 py-20 sm:py-16 lg:py-24">
+        <section className="bg-secondary/20 py-28 sm:py-16 lg:py-32">
             <div className="container mx-auto max-w-7xl">
                 <div className="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
                     <div>
