@@ -5,14 +5,15 @@ import type { StudyNotes } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '../ui/scroll-area';
 import { MathRenderer } from '../MathRenderer';
-import { BookOpen, List, FlaskConical, Beaker, Lightbulb, FileText, Sparkles, Loader2, X } from 'lucide-react';
+import { BookOpen, List, FlaskConical, Beaker, Lightbulb, FileText, Sparkles, Loader2, X, Highlighter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent } from '../ui/popover';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '../ui/button';
 import { PopoverAnchor } from '@radix-ui/react-popover';
 import type { ExplainTextInput, ExplainTextOutput } from '@/ai/flows/explain-text-flow';
+import { Separator } from '../ui/separator';
 
 interface NotesViewProps {
   notes: StudyNotes;
@@ -50,14 +51,15 @@ const NoteSection = ({
 }
 
 export function NotesView({ notes, explainTextAction }: NotesViewProps) {
-  const [popoverOpen, setPopoverOpen] = React.useState(false);
-  const [selectedText, setSelectedText] = React.useState('');
-  const [explanation, setExplanation] = React.useState('');
-  const [isLoadingExplanation, setIsLoadingExplanation] = React.useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [popoverContent, setPopoverContent] = useState<'options' | 'explanation'>('options');
+  const [selectedText, setSelectedText] = useState('');
+  const [explanation, setExplanation] = useState('');
+  const [isLoadingExplanation, setIsLoadingExplanation] = useState(false);
   const { toast } = useToast();
-  const notesViewRef = React.useRef<HTMLDivElement>(null);
-  const virtualRef = React.useRef<{ getBoundingClientRect: () => DOMRect } | null>(null);
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+  const notesViewRef = useRef<HTMLDivElement>(null);
+  const virtualRef = useRef<{ getBoundingClientRect: () => DOMRect } | null>(null);
+  const rangeRef = useRef<Range | null>(null);
 
   const fullNoteText = React.useMemo(() => {
     if (!notes) return '';
@@ -68,7 +70,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     const selection = window.getSelection();
     const text = selection?.toString().trim();
 
-    if (text && text.length > 2 && text.length < 300 && selection?.rangeCount) {
+    if (text && text.length > 2 && text.length < 500 && selection?.rangeCount) {
         const range = selection.getRangeAt(0);
         const parentElement = range.startContainer.parentElement;
 
@@ -76,71 +78,96 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
             virtualRef.current = {
                 getBoundingClientRect: () => range.getBoundingClientRect(),
             };
+            rangeRef.current = range.cloneRange();
             
             setSelectedText(text);
+            setPopoverContent('options');
             setPopoverOpen(true);
-            setIsLoadingExplanation(true);
-            setExplanation('');
-
-            explainTextAction({ selectedText: text, contextText: fullNoteText })
-                .then(result => {
-                    setExplanation(result.explanation);
-                })
-                .catch(error => {
-                    toast({
-                        variant: 'destructive',
-                        title: 'Explanation Failed',
-                        description: 'Could not get an explanation for the selected text.',
-                    });
-                    setPopoverOpen(false);
-                })
-                .finally(() => {
-                    setIsLoadingExplanation(false);
-                });
         }
     } else {
         setPopoverOpen(false);
     }
-  }, [fullNoteText, toast, explainTextAction]);
+  }, []);
   
   useEffect(() => {
     const viewRef = notesViewRef.current;
     if (!viewRef) return;
     
-    // This function will be called when the user finishes selecting text.
-    const handleSelectionEnd = () => {
-        if (debounceTimer.current) clearTimeout(debounceTimer.current);
-        debounceTimer.current = setTimeout(() => {
+    const handleMouseUp = () => {
+      // Use a small timeout to let the selection stabilize
+      setTimeout(() => {
+        const selection = window.getSelection();
+        if (selection && !selection.isCollapsed) {
+          handleTextSelection();
+        } else {
+          setPopoverOpen(false);
+        }
+      }, 10);
+    };
+
+    const handleTouchEnd = () => {
+        setTimeout(() => {
             const selection = window.getSelection();
-            if (selection && selection.toString().trim().length > 0) {
+            if (selection && !selection.isCollapsed) {
                 handleTextSelection();
             } else {
                 setPopoverOpen(false);
             }
-        }, 100); // A short delay to ensure selection is stable
-    };
+        }, 100);
+    }
 
-    // This function prevents the default browser menu (Copy, Paste, etc.)
-    const preventContextMenu = (event: MouseEvent) => {
-        const selection = window.getSelection();
-        if (selection && selection.toString().trim().length > 0) {
-            event.preventDefault();
-        }
-    };
+    viewRef.addEventListener('mouseup', handleMouseUp);
+    viewRef.addEventListener('touchend', handleTouchEnd);
     
-    // Add event listeners for both mouse and touch events.
-    viewRef.addEventListener('mouseup', handleSelectionEnd);
-    viewRef.addEventListener('touchend', handleSelectionEnd);
-    viewRef.addEventListener('contextmenu', preventContextMenu);
-    
-    // Cleanup function to remove listeners when the component unmounts.
     return () => {
-        if (debounceTimer.current) clearTimeout(debounceTimer.current);
-        viewRef.removeEventListener('mouseup', handleSelectionEnd);
-        viewRef.removeEventListener('touchend', handleSelectionEnd);
-        viewRef.removeEventListener('contextmenu', preventContextMenu);
+        viewRef.removeEventListener('mouseup', handleMouseUp);
+        viewRef.removeEventListener('touchend', handleTouchEnd);
     }
   }, [handleTextSelection]);
+
+  const handleExplain = () => {
+    setPopoverContent('explanation');
+    setIsLoadingExplanation(true);
+    setExplanation('');
+
+    explainTextAction({ selectedText, contextText: fullNoteText })
+      .then(result => {
+        setExplanation(result.explanation);
+      })
+      .catch(error => {
+        toast({
+            variant: 'destructive',
+            title: 'Explanation Failed',
+            description: 'Could not get an explanation for the selected text.',
+        });
+        setPopoverOpen(false);
+      })
+      .finally(() => {
+        setIsLoadingExplanation(false);
+      });
+  };
+
+  const handleHighlight = () => {
+    if (rangeRef.current) {
+        const mark = document.createElement('mark');
+        mark.className = "bg-yellow-300/70 text-foreground";
+        try {
+            // Surround the contents of the range with the new <mark> tag
+            rangeRef.current.surroundContents(mark);
+        } catch (e) {
+            // Fallback for when the range spans across multiple elements
+            console.error("Could not highlight selection directly, using fallback.", e);
+            toast({
+                variant: "destructive",
+                title: "Highlight Failed",
+                description: "Cannot highlight text that spans multiple sections."
+            })
+        } finally {
+            window.getSelection()?.removeAllRanges();
+            setPopoverOpen(false);
+        }
+    }
+  };
 
   if (!notes) {
     return (
@@ -206,9 +233,22 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
                 </div>
             </ScrollArea>
         </div>
-        <PopoverContent className="w-80 shadow-2xl" sideOffset={8}>
-             <div className="space-y-2 relative">
-                <Button variant="ghost" size="icon" className="absolute -top-2 -right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
+        <PopoverContent className="w-auto shadow-2xl p-0" sideOffset={8}>
+            {popoverContent === 'options' ? (
+                <div className="flex rounded-md border bg-background">
+                    <Button variant="ghost" onClick={handleHighlight} className="p-3 h-auto rounded-r-none">
+                        <Highlighter className="w-5 h-5"/>
+                        <span className="ml-2 font-semibold">Highlight</span>
+                    </Button>
+                    <Separator orientation="vertical" className="h-auto"/>
+                    <Button variant="ghost" onClick={handleExplain} className="p-3 h-auto rounded-l-none">
+                        <Sparkles className="w-5 h-5 text-primary"/>
+                        <span className="ml-2 font-semibold">Explain</span>
+                    </Button>
+                </div>
+            ) : (
+             <div className="space-y-2 p-4 w-80 relative">
+                <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
                     <X className="w-4 h-4"/>
                 </Button>
                 <h4 className="font-medium leading-none flex items-center gap-2 font-headline">
@@ -230,8 +270,11 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
                     )}
                 </div>
             </div>
+            )}
         </PopoverContent>
       </Popover>
     </>
   );
 }
+
+    
