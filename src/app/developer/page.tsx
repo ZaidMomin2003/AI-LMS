@@ -102,7 +102,8 @@ export default function DeveloperPage() {
                                 )
                             })}
                         </div>
-                    </section>
+                    </div>
+                </section>
                 
                 {/* --- Tech Stack --- */}
                  <section className="bg-secondary/30 py-20 sm:py-24">
@@ -154,5 +155,3 @@ export default function DeveloperPage() {
         </div>
     );
 }
-
-    
