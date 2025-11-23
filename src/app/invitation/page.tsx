@@ -35,7 +35,7 @@ export default function InvitationPage() {
                                     Accept Invitation <ArrowRight className="ml-2 h-5 w-5" />
                                 </Link>
                             </Button>
-                            <a href="https://wa.link/9utpte" title="" className="inline-flex items-center mt-6 text-base font-semibold transition-all duration-200 sm:mt-0 hover:opacity-80">
+                            <a href="https://wa.link/o0dcmr" title="" className="inline-flex items-center mt-6 text-base font-semibold transition-all duration-200 sm:mt-0 hover:opacity-80">
                                 <MessageCircle className="w-8 h-8 mr-3 text-primary" />
                                 Chat with Us
                             </a>

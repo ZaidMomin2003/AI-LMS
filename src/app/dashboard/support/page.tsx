@@ -173,7 +173,7 @@ export default function SupportPage() {
                     Submit Request
                   </Button>
                   <Button asChild variant="outline" className="bg-green-500 text-white hover:bg-green-600 hover:text-white border-green-600">
-                    <Link href="https://wa.link/9utpte" target="_blank">
+                    <Link href="https://wa.link/o0dcmr" target="_blank">
                       Chat on WhatsApp
                     </Link>
                   </Button>
