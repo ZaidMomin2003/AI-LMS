@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Gift, MessageCircle } from 'lucide-react';
 import { Features } from '@/components/landing/Features';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function InvitationPage() {
   return (
@@ -14,31 +15,38 @@ export default function InvitationPage() {
       <Header />
       <main className="flex-grow">
         {/* --- Hero Section --- */}
-        <section className="relative overflow-hidden bg-secondary/30 py-20 lg:py-32">
-          <div className="container mx-auto px-4 text-center">
-            <div className="mx-auto mb-6 w-fit rounded-full bg-primary/10 p-4 text-primary">
-              <Gift className="h-10 w-10" />
+        <section className="bg-secondary/20 py-20 sm:py-16 lg:py-24">
+            <div className="container mx-auto max-w-7xl">
+                <div className="grid items-center grid-cols-1 gap-12 lg:grid-cols-2">
+                    <div>
+                        <h1 className="text-4xl font-bold text-foreground sm:text-6xl lg:text-7xl font-headline">
+                            Shape the Future of 
+                            <div className="relative inline-flex">
+                                <span className="absolute inset-x-0 bottom-0 border-b-[20px] border-primary/30"></span>
+                                <h1 className="relative text-4xl font-bold text-foreground sm:text-6xl lg:text-7xl font-headline">Learning.</h1>
+                            </div>
+                        </h1>
+
+                        <p className="mt-8 text-base text-muted-foreground sm:text-xl">We're inviting a select group of students to get <strong>3 months of Wisdom Pro, absolutely free</strong>. Help us build the best study tool ever, and get unlimited access in return. All we ask for is your honest feedback.</p>
+
+                        <div className="mt-10 sm:flex sm:items-center sm:space-x-8">
+                            <Button asChild size="lg">
+                                <Link href="/signup">
+                                    Accept Invitation <ArrowRight className="ml-2 h-5 w-5" />
+                                </Link>
+                            </Button>
+                            <a href="https://wa.link/9utpte" title="" className="inline-flex items-center mt-6 text-base font-semibold transition-all duration-200 sm:mt-0 hover:opacity-80">
+                                <MessageCircle className="w-8 h-8 mr-3 text-primary" />
+                                Chat with Us
+                            </a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <Image className="w-full" src="https://cdn.rareblocks.xyz/collection/celebration/images/hero/2/hero-img.png" alt="Students collaborating" width={500} height={500} />
+                    </div>
+                </div>
             </div>
-            <h1 className="font-headline text-4xl font-bold text-foreground sm:text-6xl">
-              Shape the Future of Learning
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-              We're inviting a select group of students to get <strong>3 months of Wisdom Pro, absolutely free</strong>. Help us build the best study tool ever, and get unlimited access in return. All we ask for is your honest feedback.
-            </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Button asChild size="lg">
-                <Link href="/signup">
-                  Accept Invitation <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-               <Button asChild variant="outline" size="lg">
-                <a href="https://wa.link/9utpte" target="_blank" rel="noopener noreferrer">
-                    <MessageCircle className="mr-2 h-5 w-5" />
-                    Chat with Us
-                </a>
-              </Button>
-            </div>
-          </div>
         </section>
         
         {/* --- Features Bento Grid --- */}
