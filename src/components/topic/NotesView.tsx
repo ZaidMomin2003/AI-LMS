@@ -106,39 +106,39 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
   useEffect(() => {
     const viewRef = notesViewRef.current;
     if (!viewRef) return;
-
-    const handleSelection = () => {
+    
+    // This function will be called when the user finishes selecting text.
+    const handleSelectionEnd = () => {
         if (debounceTimer.current) clearTimeout(debounceTimer.current);
         debounceTimer.current = setTimeout(() => {
             const selection = window.getSelection();
-            if (selection && selection.toString().trim()) {
+            if (selection && selection.toString().trim().length > 0) {
                 handleTextSelection();
+            } else {
+                setPopoverOpen(false);
             }
-        }, 300); // Debounce to wait for user to finish selecting
-    };
-    
-    // `selectionchange` is good for tracking the process of selecting
-    // but `mouseup` is better for knowing when the selection is final.
-    const handleMouseUp = () => {
-        handleSelection();
+        }, 100); // A short delay to ensure selection is stable
     };
 
-    const handleContextMenu = (event: MouseEvent) => {
+    // This function prevents the default browser menu (Copy, Paste, etc.)
+    const preventContextMenu = (event: MouseEvent) => {
         const selection = window.getSelection();
-        if (selection && selection.toString().trim()) {
+        if (selection && selection.toString().trim().length > 0) {
             event.preventDefault();
         }
     };
     
-    viewRef.addEventListener('mouseup', handleMouseUp);
-    viewRef.addEventListener('touchend', handleMouseUp);
-    viewRef.addEventListener('contextmenu', handleContextMenu);
+    // Add event listeners for both mouse and touch events.
+    viewRef.addEventListener('mouseup', handleSelectionEnd);
+    viewRef.addEventListener('touchend', handleSelectionEnd);
+    viewRef.addEventListener('contextmenu', preventContextMenu);
     
+    // Cleanup function to remove listeners when the component unmounts.
     return () => {
         if (debounceTimer.current) clearTimeout(debounceTimer.current);
-        viewRef.removeEventListener('mouseup', handleMouseUp);
-        viewRef.removeEventListener('touchend', handleMouseUp);
-        viewRef.removeEventListener('contextmenu', handleContextMenu);
+        viewRef.removeEventListener('mouseup', handleSelectionEnd);
+        viewRef.removeEventListener('touchend', handleSelectionEnd);
+        viewRef.removeEventListener('contextmenu', preventContextMenu);
     }
   }, [handleTextSelection]);
 
