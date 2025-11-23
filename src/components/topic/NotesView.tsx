@@ -92,15 +92,25 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     if (!viewRef) return;
     
     const handlePointerUp = (event: PointerEvent) => {
+      // Use a small timeout to allow the selection to finalize
       setTimeout(() => {
         handleTextSelection();
       }, 10);
     };
 
+    // This prevents the default browser menu (copy, share, etc.) from appearing on long-press/right-click
+    const preventDefaultContextMenu = (event: MouseEvent) => {
+        if (window.getSelection()?.toString()) {
+            event.preventDefault();
+        }
+    };
+
     document.addEventListener('pointerup', handlePointerUp);
+    viewRef.addEventListener('contextmenu', preventDefaultContextMenu);
     
     return () => {
         document.removeEventListener('pointerup', handlePointerUp);
+        viewRef.removeEventListener('contextmenu', preventDefaultContextMenu);
     }
   }, [handleTextSelection]);
 
@@ -171,11 +181,6 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         <div 
           className="cursor-text" 
           ref={notesViewRef}
-          onContextMenu={(e) => {
-            if (window.getSelection()?.toString()) {
-              e.preventDefault();
-            }
-          }}
         >
             <ScrollArea className="h-[calc(100vh-200px)]">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
