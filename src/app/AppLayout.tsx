@@ -53,6 +53,8 @@ import {
   Workflow,
   ArrowRight,
   Loader2,
+  Expand,
+  Minimize,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -110,6 +112,7 @@ function SidebarSubscriptionButton() {
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const { loading: subLoading } = useSubscription();
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const router = useRouter();
   const pathname = usePathname();
@@ -120,6 +123,24 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       router.replace('/login');
     }
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+        setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+  };
 
   const appIsLoading = authLoading || subLoading || !user;
 
@@ -289,6 +310,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         <LifeBuoy className="mr-2 h-4 w-4" />
                         <span>Support</span>
                     </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={toggleFullscreen} className="cursor-pointer">
+                        {isFullscreen ? <Minimize className="mr-2 h-4 w-4" /> : <Expand className="mr-2 h-4 w-4" />}
+                        <span>{isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}</span>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="cursor-default focus:bg-transparent">
                         <div className="flex items-center justify-between w-full">
                            <span>Theme</span>
@@ -316,6 +341,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" onClick={toggleFullscreen}>
+                    {isFullscreen ? <Minimize className="h-5 w-5" /> : <Expand className="h-5 w-5" />}
+                    <span className="sr-only">Toggle Fullscreen</span>
+                  </Button>
                   <Button asChild variant="ghost" size="icon">
                     <Link href="/dashboard/bookmarks">
                       <Bookmark className="h-5 w-5" />
