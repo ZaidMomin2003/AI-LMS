@@ -93,6 +93,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     const viewRef = notesViewRef.current;
     if (!viewRef) return;
     
+    // Using onMouseUp is more reliable than onClick for text selection.
     const handleMouseUp = () => {
       // Use a small timeout to let the selection stabilize
       setTimeout(() => {
@@ -100,7 +101,10 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         if (selection && !selection.isCollapsed) {
           handleTextSelection();
         } else {
-          setPopoverOpen(false);
+          // If the click doesn't result in a selection, close the popover.
+          if (popoverOpen) {
+            setPopoverOpen(false);
+          }
         }
       }, 10);
     };
@@ -111,9 +115,11 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
             if (selection && !selection.isCollapsed) {
                 handleTextSelection();
             } else {
-                setPopoverOpen(false);
+                if (popoverOpen) {
+                    setPopoverOpen(false);
+                }
             }
-        }, 100);
+        }, 100); // Increased delay for touch to avoid accidental triggers
     }
 
     viewRef.addEventListener('mouseup', handleMouseUp);
@@ -123,7 +129,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         viewRef.removeEventListener('mouseup', handleMouseUp);
         viewRef.removeEventListener('touchend', handleTouchEnd);
     }
-  }, [handleTextSelection]);
+  }, [handleTextSelection, popoverOpen]); // Re-bind if popoverOpen changes to ensure we can close it
 
   const handleExplain = () => {
     setPopoverContent('explanation');
@@ -148,26 +154,31 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
   };
 
   const handleHighlight = () => {
-    if (rangeRef.current) {
-        const mark = document.createElement('mark');
-        mark.className = "bg-yellow-300/70 text-foreground";
-        try {
-            // Surround the contents of the range with the new <mark> tag
-            rangeRef.current.surroundContents(mark);
-        } catch (e) {
-            // Fallback for when the range spans across multiple elements
-            console.error("Could not highlight selection directly, using fallback.", e);
-            toast({
-                variant: "destructive",
-                title: "Highlight Failed",
-                description: "Cannot highlight text that spans multiple sections."
-            })
-        } finally {
-            window.getSelection()?.removeAllRanges();
-            setPopoverOpen(false);
-        }
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+
+    const range = selection.getRangeAt(0);
+    const mark = document.createElement('mark');
+    mark.className = "bg-yellow-300/70 text-foreground";
+    
+    try {
+      // The most robust way to handle this is to extract the content, wrap it, and insert it.
+      // However, `surroundContents` is simpler if it works.
+      range.surroundContents(mark);
+    } catch (e) {
+        console.error("Highlighting failed, likely due to selection spanning multiple block elements:", e);
+        toast({
+            variant: "destructive",
+            title: "Highlight Failed",
+            description: "Cannot highlight text that spans across different paragraphs or sections."
+        });
+    } finally {
+        // Clean up
+        window.getSelection()?.removeAllRanges();
+        setPopoverOpen(false);
     }
   };
+
 
   if (!notes) {
     return (
@@ -276,5 +287,3 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     </>
   );
 }
-
-    
