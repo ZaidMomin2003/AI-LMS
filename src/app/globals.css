@@ -102,4 +102,10 @@
     -ms-user-select: text;
     user-select: text;
   }
+  .selectable-text {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
 }

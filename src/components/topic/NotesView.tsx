@@ -87,10 +87,29 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     }
   }, []);
   
-  useEffect(() => {
-    // This feature is disabled as text selection is globally turned off.
-    // The code is left here for potential future re-enabling.
-  }, []);
+   useEffect(() => {
+    const notesView = notesViewRef.current;
+    if (notesView) {
+      const handleMouseUp = () => handleTextSelection();
+      notesView.addEventListener('mouseup', handleMouseUp);
+      // For mobile devices
+      notesView.addEventListener('touchend', handleMouseUp);
+      
+      const preventDefaultContextMenu = (e: Event) => {
+        // Only prevent if there is a text selection
+        if (window.getSelection()?.toString()) {
+            e.preventDefault();
+        }
+      };
+      notesView.addEventListener('contextmenu', preventDefaultContextMenu);
+
+      return () => {
+        notesView.removeEventListener('mouseup', handleMouseUp);
+        notesView.removeEventListener('touchend', handleMouseUp);
+        notesView.removeEventListener('contextmenu', preventDefaultContextMenu);
+      };
+    }
+  }, [handleTextSelection]);
 
   const handleExplain = () => {
     setPopoverContent('explanation');
@@ -157,7 +176,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
           <div ref={virtualRef as any} />
         </PopoverAnchor>
         <div 
-          className="cursor-text" 
+          className="selectable-text" 
           ref={notesViewRef}
         >
             <ScrollArea className="h-[calc(100vh-200px)]">
