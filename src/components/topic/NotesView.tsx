@@ -42,7 +42,7 @@ const NoteSection = ({
                 <CardTitle className="font-headline text-xl">{title}</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="prose prose-sm prose-invert max-w-none text-foreground">
+                <div className="prose prose-sm prose-invert max-w-none text-foreground selectable-text">
                     <MathRenderer content={content} />
                 </div>
             </CardContent>
@@ -91,28 +91,16 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     const viewRef = notesViewRef.current;
     if (!viewRef) return;
     
-    // Use 'selectionchange' for real-time selection detection
-    const handleSelectionChange = () => {
-        const selection = window.getSelection();
-        if (selection && selection.isCollapsed) {
-            setPopoverOpen(false);
-        }
-    };
-    
-    // Use 'pointerup' to finalize the selection and show the popover
     const handlePointerUp = (event: PointerEvent) => {
-      // Add a small delay to allow the selection to finalize
       setTimeout(() => {
         handleTextSelection();
       }, 10);
     };
 
-    document.addEventListener('selectionchange', handleSelectionChange);
-    viewRef.addEventListener('pointerup', handlePointerUp);
+    document.addEventListener('pointerup', handlePointerUp);
     
     return () => {
-        document.removeEventListener('selectionchange', handleSelectionChange);
-        viewRef.removeEventListener('pointerup', handlePointerUp);
+        document.removeEventListener('pointerup', handlePointerUp);
     }
   }, [handleTextSelection]);
 
@@ -145,9 +133,8 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     try {
         const range = selection.getRangeAt(0);
         const mark = document.createElement('mark');
-        mark.className = "bg-yellow-300/70 text-foreground px-1 rounded";
+        mark.className = "bg-yellow-300/70 dark:bg-yellow-400/50 text-foreground px-1 rounded";
         
-        // This robustly wraps even partial nodes and multiple nodes.
         mark.appendChild(range.extractContents());
         range.insertNode(mark);
         
@@ -184,7 +171,6 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         <div 
           className="cursor-text" 
           ref={notesViewRef}
-          // Prevent default context menu on text selection for a cleaner mobile experience
           onContextMenu={(e) => {
             if (window.getSelection()?.toString()) {
               e.preventDefault();
@@ -268,7 +254,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
                         </div>
                     ) : (
                         <ScrollArea className="h-full max-h-60 pr-4">
-                            <div className="prose prose-sm prose-invert max-w-none text-foreground">
+                            <div className="prose prose-sm prose-invert max-w-none text-foreground selectable-text">
                                 <MathRenderer content={explanation} />
                             </div>
                         </ScrollArea>
