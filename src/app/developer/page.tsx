@@ -33,15 +33,6 @@ const philosophyCards: {
   },
 ];
 
-const techStack = [
-    { name: 'Next.js', logo: '/logos/nextjs.svg' },
-    { name: 'React', logo: '/logos/react.svg' },
-    { name: 'Firebase', logo: '/logos/firebase.svg' },
-    { name: 'Genkit', logo: '/logos/genkit.svg' },
-    { name: 'Tailwind CSS', logo: '/logos/tailwind.svg' },
-    { name: 'TypeScript', logo: '/logos/typescript.svg' },
-]
-
 
 export default function DeveloperPage() {
     return (
@@ -67,11 +58,6 @@ export default function DeveloperPage() {
                                 <p className="text-muted-foreground mt-4 max-w-xl mx-auto md:mx-0">
                                     B.Tech in Computer Science & Engineering, driven by a passion for leveraging technology to help students overcome their learning challenges and achieve academic excellence.
                                 </p>
-                                <div className="mt-6 flex justify-center md:justify-start items-center gap-4">
-                                    <Button asChild variant="ghost" size="icon"><Link href="https://twitter.com" target="_blank"><Twitter className="h-5 w-5"/></Link></Button>
-                                    <Button asChild variant="ghost" size="icon"><Link href="https://linkedin.com" target="_blank"><Linkedin className="h-5 w-5"/></Link></Button>
-                                    <Button asChild variant="ghost" size="icon"><Link href="https://github.com" target="_blank"><Github className="h-5 w-5"/></Link></Button>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -101,30 +87,6 @@ export default function DeveloperPage() {
                                     </Card>
                                 )
                             })}
-                        </div>
-                    </div>
-                </section>
-                
-                {/* --- Tech Stack --- */}
-                 <section className="bg-secondary/30 py-20 sm:py-24">
-                    <div className="container mx-auto px-4">
-                         <div className="text-center mb-12">
-                            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-                                Technology Stack
-                            </h2>
-                            <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                                Built with a modern, scalable, and powerful stack.
-                            </p>
-                        </div>
-                        <div className="mx-auto grid max-w-4xl grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-8">
-                            {techStack.map((tech) => (
-                                <div key={tech.name} className="flex flex-col items-center justify-center gap-2 text-center">
-                                    <div className="relative w-16 h-16 grayscale opacity-60 transition-all hover:grayscale-0 hover:opacity-100 hover:scale-110">
-                                         <Image src={tech.logo} alt={tech.name} layout="fill" objectFit="contain" />
-                                    </div>
-                                    <p className="text-sm font-medium text-muted-foreground">{tech.name}</p>
-                                </div>
-                            ))}
                         </div>
                     </div>
                 </section>
