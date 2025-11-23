@@ -91,16 +91,15 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     const notesView = notesViewRef.current;
     if (notesView) {
       const handleMouseUp = () => handleTextSelection();
-      notesView.addEventListener('mouseup', handleMouseUp);
-      // For mobile devices
-      notesView.addEventListener('touchend', handleMouseUp);
       
       const preventDefaultContextMenu = (e: Event) => {
-        // Only prevent if there is a text selection
         if (window.getSelection()?.toString()) {
             e.preventDefault();
         }
       };
+
+      notesView.addEventListener('mouseup', handleMouseUp);
+      notesView.addEventListener('touchend', handleMouseUp);
       notesView.addEventListener('contextmenu', preventDefaultContextMenu);
 
       return () => {
