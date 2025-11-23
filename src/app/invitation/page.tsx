@@ -54,19 +54,37 @@ export default function InvitationPage() {
 
         {/* --- Final CTA --- */}
         <section className="py-20 sm:py-24">
-          <div className="container mx-auto max-w-2xl px-4 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-              Ready to Join?
-            </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-muted-foreground">
-              Your feedback is invaluable. Become a founding member of our student community and get unlimited access to every feature we have to offer.
-            </p>
-            <div className="mt-10">
-              <Button asChild size="lg">
-                <Link href="/signup">
-                  Get Your Free Access <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
+          <div className="container mx-auto">
+            <div className="relative overflow-hidden rounded-2xl bg-secondary/50 p-8 sm:p-16">
+              <div className="grid grid-cols-1 items-center gap-y-12 lg:grid-cols-10 lg:gap-x-16">
+                <div className="lg:col-span-7">
+                  <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+                    Ready to Join?
+                  </h2>
+                  <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
+                    Your feedback is invaluable. Become a founding member of our student community and get unlimited access to every feature we have to offer. Don't miss out on this exclusive opportunity to shape the future of learning.
+                  </p>
+                  <div className="mt-8">
+                    <Button asChild size="lg">
+                      <Link href="/signup">
+                        Get Your Free Access <ArrowRight className="ml-2 h-5 w-5" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+                <div className="hidden lg:col-span-3 lg:block">
+                  <div className="aspect-[3/4] relative">
+                    <Image
+                      src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop"
+                      alt="Student community"
+                      layout="fill"
+                      objectFit="cover"
+                      className="rounded-xl shadow-lg"
+                      data-ai-hint="student community"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
