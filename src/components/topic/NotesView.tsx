@@ -42,7 +42,7 @@ const NoteSection = ({
                 <CardTitle className="font-headline text-xl">{title}</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="prose prose-sm prose-invert max-w-none text-foreground selectable-text">
+                <div className="prose prose-sm prose-invert max-w-none text-foreground">
                     <MathRenderer content={content} />
                 </div>
             </CardContent>
@@ -88,31 +88,9 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
   }, []);
   
   useEffect(() => {
-    const viewRef = notesViewRef.current;
-    if (!viewRef) return;
-    
-    const handlePointerUp = (event: PointerEvent) => {
-      // Use a small timeout to allow the selection to finalize
-      setTimeout(() => {
-        handleTextSelection();
-      }, 10);
-    };
-
-    // This prevents the default browser menu (copy, share, etc.) from appearing on long-press/right-click
-    const preventDefaultContextMenu = (event: MouseEvent) => {
-        if (window.getSelection()?.toString()) {
-            event.preventDefault();
-        }
-    };
-
-    document.addEventListener('pointerup', handlePointerUp);
-    viewRef.addEventListener('contextmenu', preventDefaultContextMenu);
-    
-    return () => {
-        document.removeEventListener('pointerup', handlePointerUp);
-        viewRef.removeEventListener('contextmenu', preventDefaultContextMenu);
-    }
-  }, [handleTextSelection]);
+    // This feature is disabled as text selection is globally turned off.
+    // The code is left here for potential future re-enabling.
+  }, []);
 
   const handleExplain = () => {
     setPopoverContent('explanation');
@@ -259,7 +237,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
                         </div>
                     ) : (
                         <ScrollArea className="h-full max-h-60 pr-4">
-                            <div className="prose prose-sm prose-invert max-w-none text-foreground selectable-text">
+                            <div className="prose prose-sm prose-invert max-w-none text-foreground">
                                 <MathRenderer content={explanation} />
                             </div>
                         </ScrollArea>
