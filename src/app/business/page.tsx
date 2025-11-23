@@ -158,24 +158,31 @@ export default function BusinessPage() {
 
         {/* --- CTA Section --- */}
         <section className="py-20 sm:py-32">
-          <div className="container mx-auto max-w-2xl px-4 text-center">
-             <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit mb-6">
-                <Gift className="w-10 h-10" />
-            </div>
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-              Ready to Start Earning?
-            </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-muted-foreground">
-              Applying is quick and easy. Send us an email with a link to your
-              blog, website, or social media profile, and we'll get back to
-              you within 48 hours.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button asChild size="lg">
-                <a href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
-                  Apply Now <ArrowRight className="ml-2 h-5 w-5" />
-                </a>
-              </Button>
+          <div className="container mx-auto px-4">
+            <div className="relative w-full max-w-4xl mx-auto overflow-hidden rounded-[40px] bg-primary p-6 sm:p-10 md:p-20">
+              <div className="absolute inset-0 hidden h-full w-full overflow-hidden md:block">
+                  <div className="absolute top-1/2 right-[-45%] aspect-square h-[800px] w-[800px] -translate-y-1/2">
+                      <div className="absolute inset-0 rounded-full bg-primary/80 opacity-30"></div>
+                      <div className="absolute inset-0 scale-[0.8] rounded-full bg-primary/70 opacity-30"></div>
+                      <div className="absolute inset-0 scale-[0.6] rounded-full bg-primary/50 opacity-30"></div>
+                      <div className="absolute inset-0 scale-[0.4] rounded-full bg-primary/30 opacity-30"></div>
+                      <div className="absolute inset-0 scale-[0.2] rounded-full bg-primary/10 opacity-30"></div>
+                      <div className="absolute inset-0 scale-[0.1] rounded-full bg-white/50 opacity-30"></div>
+                  </div>
+              </div>
+              <div className="relative z-10">
+                <h2 className="text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl font-headline">
+                  Ready to Start Earning?
+                </h2>
+                <p className="mb-6 max-w-md text-base text-primary-foreground/90 sm:text-lg md:mb-8">
+                  Applying is quick and easy. Send us an email with a link to your blog, website, or social media profile, and we'll get back to you within 48 hours.
+                </p>
+                <Button asChild size="lg" className="bg-card text-card-foreground hover:bg-card/90 shadow-lg">
+                  <a href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
+                    Apply Now <ArrowRight className="ml-2 h-5 w-5" />
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
         </section>
