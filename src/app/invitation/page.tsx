@@ -29,16 +29,13 @@ export default function InvitationPage() {
 
                         <p className="mt-8 text-base text-muted-foreground sm:text-xl">We're inviting a select group of students to get <strong>3 months of Wisdom Pro, absolutely free</strong>. Help us build the best study tool ever, and get unlimited access in return. All we ask for is your honest feedback.</p>
 
-                        <div className="mt-10 sm:flex sm:items-center sm:space-x-8">
+                        <div className="mt-10">
                             <Button asChild size="lg">
-                                <Link href="/signup">
-                                    Accept Invitation <ArrowRight className="ml-2 h-5 w-5" />
-                                </Link>
+                                <a href="https://wa.link/o0dcmr" title="" className="inline-flex items-center">
+                                    <MessageCircle className="w-6 h-6 mr-3" />
+                                    Chat with Us
+                                </a>
                             </Button>
-                            <a href="https://wa.link/o0dcmr" title="" className="inline-flex items-center mt-6 text-base font-semibold transition-all duration-200 sm:mt-0 hover:opacity-80">
-                                <MessageCircle className="w-8 h-8 mr-3 text-primary" />
-                                Chat with Us
-                            </a>
                         </div>
                     </div>
 
@@ -66,15 +63,16 @@ export default function InvitationPage() {
                             Your feedback is invaluable. Become a founding member of our student community and get unlimited access to every feature we have to offer. Don't miss out on this exclusive opportunity to shape the future of learning.
                         </p>
                         <div className="mt-8">
-                            <Button asChild size="lg">
-                            <Link href="/signup">
-                                Get Your Free Access <ArrowRight className="ml-2 h-5 w-5" />
-                            </Link>
+                             <Button asChild size="lg">
+                                <a href="https://wa.link/o0dcmr" title="" className="inline-flex items-center">
+                                    <MessageCircle className="w-6 h-6 mr-3" />
+                                    Chat with Us
+                                </a>
                             </Button>
                         </div>
                     </div>
                 </div>
-                <div className="hidden lg:col-span-3 lg:block relative">
+                <div className="lg:col-span-3 relative h-64 lg:h-full">
                     <Image
                       src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655?q=80&w=2070&auto=format&fit=crop"
                       alt="Student community"
