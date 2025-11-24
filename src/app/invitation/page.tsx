@@ -99,6 +99,15 @@ export default function InvitationPage() {
                         ))}
                     </div>
                 </div>
+
+                <div className="mt-16 text-center">
+                     <Button asChild size="lg">
+                        <a href="https://wa.link/o0dcmr" title="" className="inline-flex items-center">
+                            <MessageCircle className="w-6 h-6 mr-3" />
+                            Chat with Us to Get Started
+                        </a>
+                    </Button>
+                </div>
             </div>
         </section>
 
