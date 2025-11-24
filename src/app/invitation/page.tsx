@@ -27,7 +27,7 @@ export default function InvitationPage() {
                             </div>
                         </h1>
 
-                        <p className="mt-8 text-base text-muted-foreground sm:text-xl">We're inviting a select group of students to get <strong>3 months of Wisdom Pro, absolutely free</strong>. Help us build the best study tool ever, and get unlimited access in return. All we ask for is your honest feedback.</p>
+                        <p className="mt-8 text-base text-muted-foreground sm:text-xl">We're inviting a select group of students to get <strong>1 month of Wisdom Pro, absolutely free</strong>. Help us build the best study tool ever, and get unlimited access in return. All we ask for is your honest feedback.</p>
 
                         <div className="mt-10">
                             <Button asChild size="lg">
