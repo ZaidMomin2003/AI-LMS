@@ -4,9 +4,19 @@
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { featuresData, type Feature } from '@/lib/roadmap-data';
-import { Map, ArrowRight } from 'lucide-react';
+import { Map, ArrowRight, CheckCircle, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { GradientBars } from '@/components/ui/gradient-bars';
+
+const upcomingFeatures = [
+  'Highlight and save notes directly',
+  'Add sticky notes to documents',
+  'Translate materials to any language',
+  'Talk with your PDF documents',
+  'Voice-based interactive tutor',
+  'Advanced analytics on study habits',
+];
 
 export default function RoadmapPage() {
   return (
@@ -15,17 +25,44 @@ export default function RoadmapPage() {
       <main className="flex-grow">
         {/* --- Hero Section --- */}
         <section className="relative overflow-hidden bg-secondary/30 py-20 lg:py-32">
+          <GradientBars />
           <div className="container mx-auto px-4">
-            <div className="max-w-3xl mx-auto text-center">
-              <div className="mx-auto bg-primary/10 text-primary p-4 rounded-full w-fit mb-6">
-                <Map className="w-10 h-10" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+              {/* Left Column: Upcoming Features */}
+              <div className="relative z-10 rounded-2xl border bg-background/50 p-8 shadow-lg backdrop-blur-md">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-primary/10 text-primary p-2 rounded-lg">
+                        <Lightbulb className="w-6 h-6" />
+                    </div>
+                    <h2 className="text-2xl font-bold font-headline text-foreground">
+                        What's Next?
+                    </h2>
+                </div>
+                <p className="text-muted-foreground mb-6 text-sm">
+                    We're constantly innovating. Here are some of the exciting features you can expect to experience in the near future.
+                </p>
+                <ul className="space-y-3">
+                  {upcomingFeatures.map((feature, index) => (
+                    <li key={index} className="flex items-center gap-3">
+                      <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span className="text-sm font-medium">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <h1 className="font-headline mt-4 text-4xl font-bold text-foreground sm:text-6xl">
-                Our Development Journey
-              </h1>
-              <p className="mt-6 text-lg text-muted-foreground">
-                From a simple idea to a powerful learning toolkit. Explore the timeline of how Wisdom was built, feature by feature.
-              </p>
+
+              {/* Right Column: Original Hero */}
+              <div className="relative z-10 text-center md:text-left">
+                  <div className="inline-block bg-primary/10 text-primary p-4 rounded-full mb-6">
+                    <Map className="w-10 h-10" />
+                  </div>
+                  <h1 className="font-headline mt-4 text-4xl font-bold text-foreground sm:text-6xl">
+                    Our Development Journey
+                  </h1>
+                  <p className="mt-6 text-lg text-muted-foreground">
+                    From a simple idea to a powerful learning toolkit. Explore the timeline of how Wisdom was built, feature by feature.
+                  </p>
+              </div>
             </div>
           </div>
         </section>
