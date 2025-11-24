@@ -4,10 +4,9 @@
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { featuresData, type Feature } from '@/lib/roadmap-data';
-import { Map, ArrowRight, CheckCircle, Lightbulb } from 'lucide-react';
+import { Map, ArrowRight, CheckCircle, Lightbulb, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { GradientBars } from '@/components/ui/gradient-bars';
 
 const upcomingFeatures = [
   'Highlight and save notes directly',
@@ -49,6 +48,12 @@ export default function RoadmapPage() {
                     </li>
                   ))}
                 </ul>
+                 <Button asChild className="mt-8 w-full">
+                    <a href="https://wa.link/o0dcmr" target="_blank" rel="noopener noreferrer">
+                        <MessageCircle className="w-5 h-5 mr-2" />
+                        Request a Feature
+                    </a>
+                </Button>
               </div>
 
               {/* Right Column: Original Hero */}
