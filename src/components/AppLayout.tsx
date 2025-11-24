@@ -266,11 +266,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     asChild
                     isActive={pathname.startsWith('/dashboard/exam')}
                     tooltip={{ children: 'Add Exam Countdown' }}
-                    className="border-2 border-dashed border-primary/50 bg-transparent hover:bg-primary/10 hover:border-primary/80 shadow-lg shadow-primary/20 animate-pulse"
+                    className="bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary-foreground border border-primary/20"
                   >
                     <Link href="/dashboard/exam">
                       <CalendarPlus />
-                      <span>Add Exam</span>
+                      <span>Add Exam Countdown</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -377,5 +377,3 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </SidebarProvider>
   );
 }
-
-    
