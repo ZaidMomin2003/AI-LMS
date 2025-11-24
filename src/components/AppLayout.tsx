@@ -53,6 +53,9 @@ import {
   Workflow,
   ArrowRight,
   Loader2,
+  Expand,
+  Minimize,
+  FileClock,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -110,6 +113,7 @@ function SidebarSubscriptionButton() {
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const { loading: subLoading } = useSubscription();
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   const router = useRouter();
   const pathname = usePathname();
@@ -120,6 +124,24 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       router.replace('/login');
     }
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+        setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+  };
 
   const appIsLoading = authLoading || subLoading || !user;
 
@@ -152,10 +174,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   <span className="font-bold font-headline text-xl -mb-1">Wisdom</span>
                   <span className="text-xs text-muted-foreground">AI Studybuddy</span>
               </div>
-            </div>
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Search..." className="pl-10 h-9" />
             </div>
           </SidebarHeader>
           <SidebarContent>
@@ -293,6 +311,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         <LifeBuoy className="mr-2 h-4 w-4" />
                         <span>Support</span>
                     </DropdownMenuItem>
+                     <DropdownMenuItem onSelect={() => router.push('/roadmap')} className="cursor-pointer">
+                        <FileClock className="mr-2 h-4 w-4" />
+                        <span>Changelog</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={toggleFullscreen} className="cursor-pointer">
+                        {isFullscreen ? <Minimize className="mr-2 h-4 w-4" /> : <Expand className="mr-2 h-4 w-4" />}
+                        <span>{isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}</span>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="cursor-default focus:bg-transparent">
                         <div className="flex items-center justify-between w-full">
                            <span>Theme</span>
@@ -310,11 +336,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </Sidebar>
         <SidebarInset>
             <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4 min-w-0 md:hidden">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     <div className="w-8 h-8 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
                         <BookOpenCheck className="w-5 h-5" />
                     </div>
-                    <span className="font-headline text-lg font-bold">Wisdom</span>
+                    <div className="flex flex-col">
+                      <span className="font-bold font-headline text-lg -mb-1">Wisdom</span>
+                      <span className="text-xs text-muted-foreground">AI Studybuddy</span>
+                    </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button asChild variant="ghost" size="icon">
@@ -329,6 +358,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         <span className="sr-only">Open WisdomGPT</span>
                       </Link>
                     </Button>
+                  <Button variant="ghost" size="icon" onClick={toggleFullscreen}>
+                    {isFullscreen ? <Minimize className="h-5 w-5" /> : <Expand className="h-5 w-5" />}
+                    <span className="sr-only">Toggle Fullscreen</span>
+                  </Button>
                   <SidebarTrigger>
                       <PanelLeft className="h-5 w-5" />
                       <span className="sr-only">Toggle Menu</span>
@@ -344,3 +377,5 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </SidebarProvider>
   );
 }
+
+    
