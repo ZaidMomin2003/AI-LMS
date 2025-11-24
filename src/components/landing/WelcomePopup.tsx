@@ -19,12 +19,15 @@ export function WelcomePopup() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Popup will show 2.5 seconds after every page load.
-    const timer = setTimeout(() => {
-      setIsOpen(true);
-    }, 2500);
+    const popupShown = sessionStorage.getItem('welcomePopupShown');
+    if (!popupShown) {
+      const timer = setTimeout(() => {
+        setIsOpen(true);
+        sessionStorage.setItem('welcomePopupShown', 'true');
+      }, 2500);
 
-    return () => clearTimeout(timer);
+      return () => clearTimeout(timer);
+    }
   }, []);
 
   const handleClose = () => {
