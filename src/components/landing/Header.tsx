@@ -24,6 +24,7 @@ const navItems: NavItem[] = [
     { name: 'FAQ', href: '/#faq' },
     { name: 'Pricing', href: '/#cta' },
     { name: 'Contact', href: '/#contact' },
+    { name: 'Roadmap', href: '/roadmap' },
 ];
 
 const institutionNavItems = [
