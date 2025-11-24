@@ -13,7 +13,7 @@ const freeWisdomSteps = [
   {
     title: 'Start Your Free Trial',
     description:
-      'Chat with us and start your free trial',
+      "Chat with us to begin your journey. You'll get a free trial to generate your first set of study materials and explore the power of our AI.",
     icon: <UserPlus className="h-8 w-8" />,
   },
   {
