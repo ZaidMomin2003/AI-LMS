@@ -12,6 +12,7 @@ import {
   Folder,
   BarChart,
   BookOpen,
+  Highlighter,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -78,6 +79,13 @@ export const featuresData: Feature[] = [
     title: 'User Experience Boost: Bookmarks & Analytics',
     description: 'We refined the user experience by adding a bookmarking system for saving key topics and a personal analytics dashboard to track learning progress.',
     icon: BarChart,
+    status: 'Launched',
+  },
+  {
+    date: 'November 20, 2025',
+    title: 'Mobile Enhancement: Click to Explain',
+    description: 'To make the mobile experience more intuitive, we introduced a feature where tapping any sentence in the notes would instantly bring up an AI explanation.',
+    icon: Highlighter,
     status: 'Launched',
   },
   {
