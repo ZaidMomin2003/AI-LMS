@@ -25,7 +25,7 @@ export default function RoadmapPage() {
       <main className="flex-grow">
         {/* --- Hero Section --- */}
         <section className="relative overflow-hidden bg-secondary/30 py-20 lg:py-32">
-          <GradientBars />
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.15),transparent_80%)]" />
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
               {/* Left Column: Upcoming Features */}
