@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -24,6 +25,7 @@ import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Calendar } from '../ui/calendar';
 import { format } from 'date-fns';
+import type { ExamDetails } from '@/types';
 
 const onboardingSchema = z.object({
   phoneNumber: z.string().min(10, 'Please enter a valid phone number.').optional().or(z.literal('')),
@@ -70,9 +72,10 @@ export function OnboardingForm() {
 
   const nextStep = async () => {
     const fields = steps[currentStep].fields;
-    const output = await trigger(fields as (keyof OnboardingData)[], { shouldFocus: true });
-    
-    if (!output) return;
+    if (fields.length > 0) {
+        const output = await trigger(fields as (keyof OnboardingData)[], { shouldFocus: true });
+        if (!output) return;
+    }
 
     if (currentStep === steps.length - 1) {
         await handleSubmit();
@@ -95,11 +98,10 @@ export function OnboardingForm() {
             addExam({
                 name: values.examName,
                 date: values.examDate.toISOString(),
-                syllabus: `Syllabus for ${values.examName}`, // Default syllabus
-            })
+            } as ExamDetails)
         ]);
         toast({
-            title: "Welcome to Wisdomis Fun!",
+            title: "Welcome to Wisdom!",
             description: "Your profile is set up. Let's start learning.",
         });
         router.push('/dashboard');
@@ -129,7 +131,7 @@ export function OnboardingForm() {
         >
           {currentStep === 0 && (
             <div className="text-center">
-              <h1 className="text-4xl font-headline font-bold mb-4">Welcome to Wisdomis Fun!</h1>
+              <h1 className="text-4xl font-headline font-bold mb-4">Welcome to Wisdom!</h1>
               <p className="text-lg text-muted-foreground mb-8">Let's get your profile set up with a few quick questions.</p>
               <Button onClick={nextStep} size="lg">Let's Go <ArrowRight className="ml-2" /></Button>
             </div>
@@ -188,7 +190,7 @@ export function OnboardingForm() {
                       </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0">
-                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date()} initialFocus />
+                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus />
                     </PopoverContent>
                   </Popover>
                 )}
@@ -229,9 +231,11 @@ export function OnboardingForm() {
                   {isSubmitting ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
                   ) : (
+                    <>
+                      Go to Dashboard
                       <ArrowRight className="ml-2" />
+                    </>
                   )}
-                  Go to Dashboard
               </Button>
             </div>
           )}

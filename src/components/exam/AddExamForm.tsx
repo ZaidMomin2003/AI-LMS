@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -13,10 +14,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useState } from 'react';
-import { CalendarIcon, Loader2, Upload } from 'lucide-react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 import { useExam } from '@/context/ExamContext';
 import { useRouter } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -27,7 +27,6 @@ import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   name: z.string().min(3, { message: 'Exam name must be at least 3 characters.' }),
-  syllabus: z.string().min(10, { message: 'Syllabus must be at least 10 characters.' }),
   date: z.date({
     required_error: "An exam date is required.",
   }),
@@ -45,7 +44,6 @@ export function AddExamForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      syllabus: '',
     },
   });
 
@@ -79,25 +77,6 @@ export function AddExamForm() {
                   <FormLabel>Exam Name</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g., Final Year Chemistry Exam" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="syllabus"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex justify-between items-center">
-                    <FormLabel>Syllabus</FormLabel>
-                    <Button type="button" variant="outline" size="sm" disabled>
-                      <Upload className="mr-2 h-4 w-4" />
-                      Upload (soon)
-                    </Button>
-                  </div>
-                  <FormControl>
-                    <Textarea placeholder="Paste or type your syllabus here..." className="min-h-[150px]" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

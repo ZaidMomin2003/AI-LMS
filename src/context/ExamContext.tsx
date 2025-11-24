@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { ExamDetails } from '@/types';
@@ -45,8 +46,9 @@ export const ExamProvider = ({ children }: { children: React.ReactNode }) => {
 
   const addExam = async (newExam: ExamDetails) => {
     if (!user || !isFirebaseEnabled) return;
-    setExam(newExam); // Optimistic update
-    await updateUserDoc(user.uid, { exam: newExam });
+    const examDataWithSyllabus = { ...newExam, syllabus: `Syllabus for ${newExam.name}` };
+    setExam(examDataWithSyllabus); // Optimistic update
+    await updateUserDoc(user.uid, { exam: examDataWithSyllabus });
   };
   
   const clearExam = async () => {

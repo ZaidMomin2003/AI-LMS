@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
+import type { ExamDetails } from '@/types';
 
 const profileSchema = z.object({
   phoneNumber: z.string().optional(),
@@ -62,11 +63,11 @@ export default function ProfilePage() {
                 country: data.country,
                 grade: data.grade,
             });
-            await addExam({
+            const examData: ExamDetails = {
                 name: data.examName,
-                syllabus: exam?.syllabus || `Syllabus for ${data.examName}`,
                 date: data.examDate.toISOString(),
-            });
+            };
+            await addExam(examData);
             toast({
                 title: 'Profile Updated',
                 description: 'Your changes have been saved successfully.',

@@ -49,7 +49,6 @@ export interface KanbanTask {
 
 export interface ExamDetails {
   name: string;
-  syllabus: string;
   date: string; // Storing as ISO string
 }
 

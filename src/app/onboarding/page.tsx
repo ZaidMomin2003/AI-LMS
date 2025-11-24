@@ -1,3 +1,4 @@
+
 'use client';
 
 import { OnboardingForm } from '@/components/onboarding/OnboardingForm';
@@ -20,7 +21,8 @@ export default function OnboardingPage() {
         }
         
         // If profile data exists, user has already onboarded.
-        if (!profileLoading && profile) {
+        // Check specifically for a property that should be set during onboarding, like 'country'.
+        if (!profileLoading && profile && profile.country) {
             router.replace('/dashboard');
         }
     }, [user, authLoading, profile, profileLoading, router]);
@@ -34,7 +36,7 @@ export default function OnboardingPage() {
     }
     
     // Only show the form if the user is authenticated but hasn't onboarded yet
-    if (user && !profile) {
+    if (user && (!profile || !profile.country)) {
         return (
             <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4">
                 <div className="absolute top-8 left-8">
