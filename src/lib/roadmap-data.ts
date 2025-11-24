@@ -81,9 +81,9 @@ export const featuresData: Feature[] = [
     status: 'Launched',
   },
   {
-    date: 'November 24, 2025',
+    date: 'November 21, 2025',
     title: 'Wisdom 2.0 Launch',
-    description: 'Today! We are consolidating all our features into a refined, powerful, and cohesive platform, marking the official launch of Wisdom 2.0.',
+    description: 'We are consolidating all our features into a refined, powerful, and cohesive platform, marking the official launch of Wisdom 2.0.',
     icon: BrainCircuit,
     status: 'Launched',
   },
