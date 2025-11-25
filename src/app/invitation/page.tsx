@@ -4,16 +4,16 @@
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Gift, MessageCircle, UserPlus, Heart, Award } from 'lucide-react';
+import { ArrowRight, Gift, MessageCircle, UserPlus, Heart, Award, FileText } from 'lucide-react';
 import { Features } from '@/components/landing/Features';
 import Link from 'next/link';
 import Image from 'next/image';
 
 const freeWisdomSteps = [
   {
-    title: 'Start Your Free Trial',
+    title: 'Fill Out the Form',
     description:
-      "Chat with us to begin your journey. You'll get a free trial to generate your first set of study materials and explore the power of our AI.",
+      "Fill out our simple form to get started. We'll set you up with a free trial to generate your first set of study materials and explore the power of our AI.",
     icon: <UserPlus className="h-8 w-8" />,
   },
   {
@@ -53,9 +53,9 @@ export default function InvitationPage() {
 
                         <div className="mt-10">
                             <Button asChild size="lg">
-                                <a href="https://wa.link/o0dcmr" title="" className="inline-flex items-center">
-                                    <MessageCircle className="w-6 h-6 mr-3" />
-                                    Chat with Us
+                                <a href="https://docs.google.com/forms/d/e/1FAIpQLSevXEneWq5oT3tffH9quuN3tkmTwWrVnVCU91hN7NeOGKokFQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" className="inline-flex items-center">
+                                    <FileText className="w-6 h-6 mr-3" />
+                                    Fill out the Form
                                 </a>
                             </Button>
                         </div>
@@ -102,9 +102,9 @@ export default function InvitationPage() {
 
                 <div className="mt-16 text-center">
                      <Button asChild size="lg">
-                        <a href="https://wa.link/o0dcmr" title="" className="inline-flex items-center">
-                            <MessageCircle className="w-6 h-6 mr-3" />
-                            Chat with Us to Get Started
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSevXEneWq5oT3tffH9quuN3tkmTwWrVnVCU91hN7NeOGKokFQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" className="inline-flex items-center">
+                            <FileText className="w-6 h-6 mr-3" />
+                            Fill out the Form to Get Started
                         </a>
                     </Button>
                 </div>
@@ -129,9 +129,9 @@ export default function InvitationPage() {
                         </p>
                         <div className="mt-8">
                              <Button asChild size="lg">
-                                <a href="https://wa.link/o0dcmr" title="" className="inline-flex items-center">
-                                    <MessageCircle className="w-6 h-6 mr-3" />
-                                    Chat with Us
+                                <a href="https://docs.google.com/forms/d/e/1FAIpQLSevXEneWq5oT3tffH9quuN3tkmTwWrVnVCU91hN7NeOGKokFQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" className="inline-flex items-center">
+                                    <FileText className="w-6 h-6 mr-3" />
+                                    Fill out the Form
                                 </a>
                             </Button>
                         </div>
