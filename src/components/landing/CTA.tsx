@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -23,7 +24,7 @@ export function CTA() {
                     Get Started with wisdom Today
                 </h1>
                 <p className="mb-6 max-w-md text-base text-primary-foreground/90 sm:text-lg md:mb-8">
-                    Join the first 100 users and get 50% off your first subscription. Plus, every new account gets a free trial on us.
+                    Join now and get a free trial. Get Wisdom is Fun at the lowest cost now, pricing is increasing soon.
                 </p>
                 
                 <Button asChild className="group flex w-full items-center justify-between rounded-full bg-card px-6 py-6 text-card-foreground shadow-lg sm:w-[280px] hover:bg-card/90 transition-transform hover:scale-105">
