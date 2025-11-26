@@ -1,38 +1,35 @@
 
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 export function CTA() {
   return (
     <section id="cta" className="py-20 sm:py-24 bg-background">
       <div className="container mx-auto px-4">
-        <div className="relative w-full max-w-4xl mx-auto overflow-hidden rounded-[40px] bg-primary p-6 sm:p-10 md:p-20">
-            <div className="absolute inset-0 hidden h-full w-full overflow-hidden md:block">
-                <div className="absolute top-1/2 right-[-45%] aspect-square h-[800px] w-[800px] -translate-y-1/2">
-                    <div className="absolute inset-0 rounded-full bg-primary/80 opacity-30"></div>
-                    <div className="absolute inset-0 scale-[0.8] rounded-full bg-primary/70 opacity-30"></div>
-                    <div className="absolute inset-0 scale-[0.6] rounded-full bg-primary/50 opacity-30"></div>
-                    <div className="absolute inset-0 scale-[0.4] rounded-full bg-primary/30 opacity-30"></div>
-                    <div className="absolute inset-0 scale-[0.2] rounded-full bg-primary/10 opacity-30"></div>
-                    <div className="absolute inset-0 scale-[0.1] rounded-full bg-white/50 opacity-30"></div>
-                </div>
-            </div>
+        <div className="relative w-full max-w-5xl mx-auto overflow-hidden rounded-2xl bg-[#111115] p-12 sm:p-20 text-center">
+            {/* Left Crescent */}
+            <div className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-1/2 w-96 h-96 bg-primary/80 rounded-full blur-3xl opacity-20" />
+             {/* Right Crescent */}
+            <div className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-1/2 w-96 h-96 bg-primary/80 rounded-full blur-3xl opacity-20" />
 
             <div className="relative z-10">
-                <h1 className="mb-3 text-3xl font-bold text-primary-foreground sm:text-4xl md:mb-4 md:text-5xl font-headline">
-                    Get Started with wisdom Today
+                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary mb-6">
+                    <Sparkles className="w-4 h-4" />
+                    <span>Get Started Today</span>
+                </div>
+
+                <h1 className="mb-4 text-4xl font-bold text-white sm:text-5xl md:text-6xl font-headline">
+                    Start your free trial today
                 </h1>
-                <p className="mb-6 max-w-md text-base text-primary-foreground/90 sm:text-lg md:mb-8">
+                <p className="mb-8 max-w-xl mx-auto text-base text-white/70 sm:text-lg">
                     Join now and get a free trial. Get Wisdom is Fun at the lowest cost now, pricing is increasing soon.
                 </p>
                 
-                <Button asChild className="group flex w-full items-center justify-between rounded-full bg-card px-6 py-6 text-card-foreground shadow-lg sm:w-[280px] hover:bg-card/90 transition-transform hover:scale-105">
+                <Button asChild size="lg">
                    <Link href="/signup">
-                     <span className="font-bold text-lg">Claim Free Trial</span>
-                     <span className="h-8 w-8 flex-shrink-0 rounded-full bg-primary flex items-center justify-center text-primary-foreground transition-transform group-hover:rotate-45">
-                        <ArrowRight className="w-5 h-5"/>
-                     </span>
+                     Claim Free Trial
+                     <ArrowRight className="ml-2 w-4 h-4"/>
                    </Link>
                 </Button>
             </div>
