@@ -3,7 +3,7 @@ import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Heart, Target, Eye, BrainCircuit, Bot, Map, Twitter, Linkedin, Github, ArrowRight } from 'lucide-react';
+import { Heart, Target, Eye, BrainCircuit, Bot, Map, Twitter, Linkedin, Github, ArrowRight, Instagram } from 'lucide-react';
 import type { LucideProps } from 'lucide-react';
 import type { ForwardRefExoticComponent, RefAttributes } from 'react';
 import { Button } from '@/components/ui/button';
@@ -58,6 +58,20 @@ export default function DeveloperPage() {
                                 <p className="text-muted-foreground mt-4 max-w-xl mx-auto md:mx-0">
                                     B.Tech in Computer Science & Engineering, driven by a passion for leveraging technology to help students overcome their learning challenges and achieve academic excellence.
                                 </p>
+                                <div className="mt-6 flex justify-center md:justify-start gap-4">
+                                    <Button asChild variant="outline" size="icon">
+                                        <Link href="https://www.linkedin.com/in/arshad-momin-a3139b21b/" target="_blank" rel="noopener noreferrer">
+                                            <Linkedin className="h-5 w-5" />
+                                            <span className="sr-only">LinkedIn</span>
+                                        </Link>
+                                    </Button>
+                                    <Button asChild variant="outline" size="icon">
+                                        <Link href="https://www.instagram.com/fallen_zaid/" target="_blank" rel="noopener noreferrer">
+                                            <Instagram className="h-5 w-5" />
+                                            <span className="sr-only">Instagram</span>
+                                        </Link>
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </div>
