@@ -22,7 +22,7 @@ const navItems: NavItem[] = [
     { name: 'Features', href: '/#features' },
     { name: 'Stories', href: '/stories' },
     { name: 'FAQ', href: '/#faq' },
-    { name: 'Pricing', href: '/#cta' },
+    { name: 'Pricing', href: '/#pricing' },
     { name: 'Contact', href: '/#contact' },
     { name: 'Roadmap', href: '/roadmap' },
 ];
