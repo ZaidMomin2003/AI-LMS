@@ -23,7 +23,7 @@ export function CTA() {
                     Start your free trial today
                 </h1>
                 <p className="mb-8 max-w-xl mx-auto text-base text-white/70 sm:text-lg">
-                    Join now and get a free trial. Get Wisdom is Fun at the lowest cost now, pricing is increasing soon.
+                    Your free trial awaits. Lock in our introductory price forever before it increases soon. Don't miss out on the smartest way to study.
                 </p>
                 
                 <Button asChild size="lg">
