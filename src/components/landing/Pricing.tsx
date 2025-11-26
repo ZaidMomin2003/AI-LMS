@@ -25,6 +25,7 @@ const proFeatures = [
 
 
 export function Pricing() {
+    const monthlyPrice = (199 / 12).toFixed(2);
     return (
         <section id="pricing" className="py-20 sm:py-24 bg-background">
             <div className="container mx-auto px-4">
@@ -81,15 +82,16 @@ export function Pricing() {
                             <CardHeader className="bg-gradient-to-br from-primary/20 via-foreground to-foreground p-6">
                                 <div className="flex justify-between items-center">
                                     <CardTitle className="font-headline text-2xl">Sage</CardTitle>
-                                    <div className="flex items-center gap-1 rounded-full bg-primary/80 px-3 py-1 text-xs font-semibold text-primary-foreground shadow-lg">
+                                    <div className="flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-lg">
                                         <Sparkles className="h-4 w-4" />
                                         Best Value
                                     </div>
                                 </div>
                                 <CardDescription className="text-background/70">For dedicated students and professionals.</CardDescription>
-                                <div className="pt-4">
-                                    <span className="text-4xl font-bold text-background">$199</span>
-                                    <span className="text-background/70"> / year</span>
+                                <div className="pt-4 text-center sm:text-left">
+                                    <span className="text-4xl font-bold text-background">${monthlyPrice}</span>
+                                    <span className="text-background/70"> / month</span>
+                                    <p className="text-xs text-background/60 mt-1">Billed annually at $199</p>
                                 </div>
                             </CardHeader>
                             <CardContent className="space-y-4 flex-1">
