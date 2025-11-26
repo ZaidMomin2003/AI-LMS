@@ -12,9 +12,7 @@ import { CTA } from '@/components/landing/CTA';
 import { WelcomePopup } from '@/components/landing/WelcomePopup';
 import { Workflow } from '@/components/landing/Workflow';
 import { Testimonials } from '@/components/landing/Testimonials';
-import { Award, Heart, UserPlus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { Pricing } from '@/components/landing/Pricing';
 
 export default function LandingPage() {
   return (
@@ -27,6 +25,7 @@ export default function LandingPage() {
         <Testimonials />
         <Features />
         <UseCases />
+        <Pricing />
         <FAQ />
         <CTA />
         <Contact />
