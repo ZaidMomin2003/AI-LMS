@@ -78,7 +78,7 @@ export function Pricing() {
                         {/* Pro Plan */}
                         <Card className="relative flex flex-col h-full bg-foreground text-background border-primary/50 shadow-2xl shadow-primary/20 overflow-hidden">
                             <div className="absolute top-0 right-0 -z-1 w-52 h-52 bg-gradient-to-br from-primary/30 to-transparent rounded-bl-full blur-3xl" />
-                            <CardHeader>
+                            <CardHeader className="bg-gradient-to-br from-primary/20 via-foreground to-foreground p-6">
                                 <div className="flex justify-between items-center">
                                     <CardTitle className="font-headline text-2xl">Sage</CardTitle>
                                     <div className="flex items-center gap-1 rounded-full bg-primary/80 px-3 py-1 text-xs font-semibold text-primary-foreground shadow-lg">
