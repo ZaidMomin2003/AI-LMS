@@ -3,7 +3,7 @@
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Gem, Lock, Star, Ticket, X } from 'lucide-react';
+import { Check, Gem, Lock, Star, Ticket, X, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { useToast } from '@/hooks/use-toast';
@@ -12,6 +12,10 @@ import { useState, Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
+import { useForm, type SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { applyCouponAction } from './actions';
 
 interface Plan {
     name: string;
@@ -27,7 +31,42 @@ const sagePlan: Plan = {
     durationMonths: 12, 
 };
 
+const couponSchema = z.object({
+  code: z.string().min(1, 'Please enter a code.'),
+});
+type CouponFormValues = z.infer<typeof couponSchema>;
+
 const CouponCodeForm = () => {
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const form = useForm<CouponFormValues>({
+        resolver: zodResolver(couponSchema),
+        defaultValues: { code: '' },
+    });
+    
+    const onSubmit: SubmitHandler<CouponFormValues> = async (data) => {
+        if (!user) {
+            toast({ variant: 'destructive', title: 'You must be logged in.'});
+            return;
+        }
+        setIsLoading(true);
+        try {
+            const result = await applyCouponAction(data.code, user.uid);
+            if (result.success) {
+                toast({ title: 'Coupon Applied!', description: result.message });
+                form.reset();
+            } else {
+                toast({ variant: 'destructive', title: 'Invalid Coupon', description: result.message });
+            }
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not apply coupon. Please try again.'});
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
       <Card className="max-w-md w-full mx-auto mt-8">
         <CardHeader>
@@ -38,9 +77,11 @@ const CouponCodeForm = () => {
           <CardDescription>Enter your code below to apply your discount.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="flex items-center gap-2">
-            <Input placeholder="Enter your coupon" />
-            <Button type="submit">Apply</Button>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-center gap-2">
+            <Input {...form.register('code')} placeholder="Enter your coupon" />
+            <Button type="submit" disabled={isLoading}>
+                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Apply'}
+            </Button>
           </form>
         </CardContent>
       </Card>
@@ -140,6 +181,8 @@ const PricingContent = () => {
     };
 
     const currencySymbol = '$';
+    const monthlyPrice = (sagePlan.price / sagePlan.durationMonths).toFixed(2);
+
 
     const sageFeatures = [
         'Unlimited Topic Generations',
@@ -164,9 +207,9 @@ const PricingContent = () => {
                     <Card className="flex flex-col h-full max-w-md w-full border-primary ring-2 ring-primary shadow-2xl shadow-primary/20">
                         <CardHeader className="text-center">
                             <CardTitle className="font-headline text-2xl">{sagePlan.name}</CardTitle>
-                            <CardDescription className="flex flex-col">
-                                <span className="text-4xl font-bold text-foreground">{currencySymbol}{sagePlan.price}</span>
-                                <span className="text-muted-foreground text-sm mt-1">{sagePlan.priceDescription}</span>
+                             <CardDescription className="flex flex-col">
+                                <span className="text-4xl font-bold text-foreground">{currencySymbol}{monthlyPrice} <span className="text-xl text-muted-foreground">/mo</span></span>
+                                <span className="text-muted-foreground text-sm mt-1">Billed annually at ${sagePlan.price}</span>
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4 flex-1">
@@ -189,7 +232,7 @@ const PricingContent = () => {
                             </Button>
                         </CardFooter>
                     </Card>
-                    <CouponCodeForm />
+                    {subscription?.status !== 'active' && <CouponCodeForm />}
                 </div>
             </div>
         </AppLayout>
