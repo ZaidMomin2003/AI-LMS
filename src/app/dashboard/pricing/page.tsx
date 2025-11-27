@@ -1,8 +1,9 @@
+
 'use client';
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Gem, Lock, Star, X } from 'lucide-react';
+import { Check, Gem, Lock, Star, Ticket, X } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { useToast } from '@/hooks/use-toast';
@@ -10,6 +11,7 @@ import Script from 'next/script';
 import { useState, Suspense, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import { Input } from '@/components/ui/input';
 
 interface Plan {
     name: string;
@@ -23,6 +25,26 @@ const sagePlan: Plan = {
     price: 199, 
     priceDescription: 'for 12 months of access',
     durationMonths: 12, 
+};
+
+const CouponCodeForm = () => {
+    return (
+      <Card className="max-w-md w-full mx-auto mt-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 font-headline">
+            <Ticket className="w-5 h-5 text-primary" />
+            Have a Coupon Code?
+          </CardTitle>
+          <CardDescription>Enter your code below to apply your discount.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="flex items-center gap-2">
+            <Input placeholder="Enter your coupon" />
+            <Button type="submit">Apply</Button>
+          </form>
+        </CardContent>
+      </Card>
+    );
 };
 
 const PricingContent = () => {
@@ -138,7 +160,7 @@ const PricingContent = () => {
                         Get unlimited access to all AI-powered tools with our one-year plan.
                     </p>
                 </div>
-                <div className="flex justify-center pt-8">
+                <div className="flex flex-col items-center pt-8">
                     <Card className="flex flex-col h-full max-w-md w-full border-primary ring-2 ring-primary shadow-2xl shadow-primary/20">
                         <CardHeader className="text-center">
                             <CardTitle className="font-headline text-2xl">{sagePlan.name}</CardTitle>
@@ -167,6 +189,7 @@ const PricingContent = () => {
                             </Button>
                         </CardFooter>
                     </Card>
+                    <CouponCodeForm />
                 </div>
             </div>
         </AppLayout>
