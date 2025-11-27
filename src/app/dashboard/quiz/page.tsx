@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { Loader2, Wand2, FileQuestion } from 'lucide-react';
+import { Loader2, Wand2, FileQuestion, Upload, List, Plus, X, File } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   Select,
@@ -33,6 +33,8 @@ import { z } from 'zod';
 import { createQuizAction } from './actions';
 import { MathRenderer } from '@/components/MathRenderer';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 
 const GenerateCustomQuizInputSchema = z.object({
   topics: z.string().min(3, { message: 'Topics must be at least 3 characters long.' }),
@@ -47,6 +49,8 @@ export default function CustomQuizPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [quizResult, setQuizResult] = useState<GenerateCustomQuizOutput | null>(null);
   const [currentQuestionType, setCurrentQuestionType] = useState<string | null>(null);
+  const [topicList, setTopicList] = useState<string[]>([]);
+  const [currentTopic, setCurrentTopic] = useState('');
   const { toast } = useToast();
 
   const form = useForm<FormValues>({
@@ -58,13 +62,38 @@ export default function CustomQuizPage() {
       questionType: 'Multiple Choice',
     },
   });
+  
+  const handleAddTopic = () => {
+    if (currentTopic.trim()) {
+        setTopicList(prev => [...prev, currentTopic.trim()]);
+        setCurrentTopic('');
+    }
+  };
+
+  const handleRemoveTopic = (index: number) => {
+    setTopicList(prev => prev.filter((_, i) => i !== index));
+  };
+
 
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
     setQuizResult(null);
     setCurrentQuestionType(values.questionType);
+    
+    // Consolidate topics from the list if it's the active source
+    const topics = topicList.length > 0 ? topicList.join(', ') : values.topics;
+    if (!topics.trim()) {
+        toast({
+            variant: "destructive",
+            title: "No Topics Provided",
+            description: "Please enter at least one topic or paste some content.",
+        });
+        setIsLoading(false);
+        return;
+    }
+
     try {
-      const result = await createQuizAction(values);
+      const result = await createQuizAction({...values, topics });
       setQuizResult(result);
       toast({
         title: 'Quiz Generated!',
@@ -143,25 +172,73 @@ export default function CustomQuizPage() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="topics"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Topics or Content</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Paste your notes, a chapter summary, or list key topics..."
-                          className="min-h-[150px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>Provide the source material for the quiz.</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Tabs defaultValue="paste" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="upload">
+                            <Upload className="mr-2 h-4 w-4" />
+                            Upload File
+                        </TabsTrigger>
+                        <TabsTrigger value="list">
+                            <List className="mr-2 h-4 w-4" />
+                            List Topics
+                        </TabsTrigger>
+                        <TabsTrigger value="paste">
+                            <File className="mr-2 h-4 w-4" />
+                            Paste Content
+                        </TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="upload" className="pt-4">
+                        <Card className="border-dashed border-2 text-center h-48 flex flex-col justify-center items-center" >
+                           <Upload className="h-8 w-8 text-muted-foreground mb-2"/>
+                           <p className="font-medium">Feature coming soon!</p>
+                           <p className="text-sm text-muted-foreground">Drag & drop or click to upload PDF/PPT</p>
+                        </Card>
+                    </TabsContent>
+                    <TabsContent value="list" className="pt-4">
+                        <div className="flex gap-2">
+                            <Input
+                                placeholder="Enter a topic"
+                                value={currentTopic}
+                                onChange={(e) => setCurrentTopic(e.target.value)}
+                                onKeyDown={(e) => { if(e.key === 'Enter') { e.preventDefault(); handleAddTopic(); }}}
+                            />
+                            <Button type="button" onClick={handleAddTopic}>
+                                <Plus className="mr-2 h-4 w-4" /> Add
+                            </Button>
+                        </div>
+                        {topicList.length > 0 && (
+                             <div className="flex flex-wrap gap-2 mt-4">
+                                {topicList.map((topic, index) => (
+                                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                                        {topic}
+                                        <button onClick={() => handleRemoveTopic(index)} className="rounded-full hover:bg-destructive/20 p-0.5">
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                    </Badge>
+                                ))}
+                            </div>
+                        )}
+                    </TabsContent>
+                    <TabsContent value="paste" className="pt-4">
+                         <FormField
+                            control={form.control}
+                            name="topics"
+                            render={({ field }) => (
+                                <FormItem>
+                                <FormControl>
+                                    <Textarea
+                                    placeholder="Paste your notes, a chapter summary, or list key topics..."
+                                    className="min-h-[150px]"
+                                    {...field}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                                </FormItem>
+                            )}
+                            />
+                    </TabsContent>
+                </Tabs>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
                   <FormField
                     control={form.control}
                     name="numQuestions"
