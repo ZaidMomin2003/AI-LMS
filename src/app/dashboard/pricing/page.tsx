@@ -184,6 +184,15 @@ const PricingContent = () => {
     const monthlyPrice = (sagePlan.price / sagePlan.durationMonths).toFixed(2);
 
 
+    const freeFeatures = [
+        { text: '1 Topic Generation', included: true },
+        { text: '1 Study Roadmap', included: true },
+        { text: '1 Pomodoro Session', included: true },
+        { text: '1 Capture Use', included: true },
+        { text: 'WisdomGPT AI Assistant', included: false },
+        { text: 'Priority Email Support', included: false },
+    ];
+    
     const sageFeatures = [
         'Unlimited Topic Generations',
         'Unlimited Study Roadmaps',
@@ -203,8 +212,36 @@ const PricingContent = () => {
                         Get unlimited access to all AI-powered tools with our one-year plan.
                     </p>
                 </div>
-                <div className="flex flex-col items-center pt-8">
-                    <Card className="flex flex-col h-full max-w-md w-full border-primary ring-2 ring-primary shadow-2xl shadow-primary/20">
+                <div className="grid grid-cols-1 lg:grid-cols-2 items-start gap-8 max-w-4xl mx-auto pt-8">
+                     {/* Free Plan */}
+                    <Card className="flex flex-col h-full">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-2xl">Free</CardTitle>
+                            <CardDescription>For casual learners to get a taste of AI power.</CardDescription>
+                            <div className="pt-4">
+                                <span className="text-4xl font-bold text-foreground">{currencySymbol}0</span>
+                                <span className="text-muted-foreground"> / forever</span>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4 flex-1">
+                            <ul className="space-y-3">
+                                {freeFeatures.map(feature => (
+                                    <li key={feature.text} className="flex items-center gap-3 text-sm">
+                                        {feature.included ? <Check className="w-5 h-5 text-primary" /> : <X className="w-5 h-5 text-muted-foreground" />}
+                                        <span className={cn(!feature.included && 'text-muted-foreground')}>{feature.text}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </CardContent>
+                        <CardFooter>
+                            <Button asChild className="w-full" variant="outline" disabled={true}>
+                                <Link href="#">Your Current Plan</Link>
+                            </Button>
+                        </CardFooter>
+                    </Card>
+
+                    {/* Pro Plan */}
+                    <Card className="flex flex-col h-full border-primary ring-2 ring-primary shadow-2xl shadow-primary/20">
                         <CardHeader className="text-center">
                             <CardTitle className="font-headline text-2xl">{sagePlan.name}</CardTitle>
                              <CardDescription className="flex flex-col">
@@ -228,12 +265,14 @@ const PricingContent = () => {
                                 onClick={handlePayment}
                                 disabled={subLoading || isLoading || subscription?.status === 'active'}
                             >
-                                {isLoading ? 'Processing...' : (subscription?.status === 'active') ? 'Your Current Plan' : 'Get Sage Plan'}
+                                {isLoading ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Processing...</>) 
+                                : (subscription?.status === 'active') ? 'Your Current Plan' 
+                                : (<><Gem className="mr-2 h-4 w-4" /> Get Sage Plan</>)}
                             </Button>
                         </CardFooter>
                     </Card>
-                    {subscription?.status !== 'active' && <CouponCodeForm />}
                 </div>
+                {subscription?.status !== 'active' && <CouponCodeForm />}
             </div>
         </AppLayout>
     );
