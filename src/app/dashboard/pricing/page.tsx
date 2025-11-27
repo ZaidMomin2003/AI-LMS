@@ -16,6 +16,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { applyCouponAction } from './actions';
+import Link from 'next/link';
 
 interface Plan {
     name: string;
