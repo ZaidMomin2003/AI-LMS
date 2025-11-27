@@ -234,7 +234,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                      <SidebarMenuItem>
                         <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/quiz')}>
                             <Link href="/dashboard/quiz">
-                                <FileQuestion /><span>AI Quiz</span>
+                                <FileQuestion />
+                                <span className="flex items-center gap-2">
+                                    AI Quiz <Badge variant="secondary" className="text-xs">Soon</Badge>
+                                </span>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
