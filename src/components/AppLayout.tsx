@@ -231,6 +231,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
+                     <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/quiz')}>
+                            <Link href="/dashboard/quiz">
+                                <FileQuestion /><span>AI Quiz</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/pomodoro')}>
                             <Link href="/dashboard/pomodoro">
