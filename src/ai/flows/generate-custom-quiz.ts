@@ -47,7 +47,7 @@ const FillInTheBlanksSchema = z.object({
 });
 
 
-export const GenerateCustomQuizOutputSchema = z.object({
+const GenerateCustomQuizOutputSchema = z.object({
   questions: z.any().describe("An array of generated quiz questions. The structure of objects in this array will depend on the requested questionType.")
 });
 export type GenerateCustomQuizOutput = z.infer<typeof GenerateCustomQuizOutputSchema>;
