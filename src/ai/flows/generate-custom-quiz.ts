@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -17,7 +18,7 @@ const QuestionTypeSchema = z.enum([
     'Fill in the Blanks',
 ]);
 
-export const GenerateCustomQuizInputSchema = z.object({
+const GenerateCustomQuizInputSchema = z.object({
   topics: z.string().describe('A string containing the topics or content for the quiz.'),
   difficulty: z.enum(['Easy', 'Medium', 'Hard']).describe('The difficulty level of the quiz.'),
   numQuestions: z.coerce.number().int().positive().describe('The number of questions to generate.'),

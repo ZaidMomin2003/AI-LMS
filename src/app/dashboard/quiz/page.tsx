@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -27,11 +28,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { GenerateCustomQuizInputSchema, type GenerateCustomQuizOutput } from '@/ai/flows/generate-custom-quiz';
-import type { z } from 'zod';
+import { type GenerateCustomQuizOutput } from '@/ai/flows/generate-custom-quiz';
+import { z } from 'zod';
 import { createQuizAction } from './actions';
 import { MathRenderer } from '@/components/MathRenderer';
 import { ScrollArea } from '@/components/ui/scroll-area';
+
+const GenerateCustomQuizInputSchema = z.object({
+  topics: z.string().min(3, { message: 'Topics must be at least 3 characters long.' }),
+  difficulty: z.enum(['Easy', 'Medium', 'Hard']),
+  numQuestions: z.coerce.number().min(1, 'Please enter at least 1 question.').max(20, 'You can generate a maximum of 20 questions.'),
+  questionType: z.enum(['Multiple Choice', 'True/False', 'Fill in the Blanks']),
+});
 
 type FormValues = z.infer<typeof GenerateCustomQuizInputSchema>;
 
