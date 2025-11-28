@@ -314,7 +314,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
                             <Loader2 className="w-6 h-6 animate-spin text-primary" />
                         </div>
                     ) : (
-                        <ScrollArea className="h-full max-h-60 pr-4">
+                        <ScrollArea className="max-h-60 pr-4">
                             <div className="prose prose-sm prose-invert max-w-none text-foreground">
                                 <MathRenderer content={explanation} />
                             </div>
