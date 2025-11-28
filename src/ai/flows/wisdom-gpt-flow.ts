@@ -76,7 +76,7 @@ Question: ${prompt}`,
     },
   });
 
-  const responseText = llmResponse.text?.replace(/\n{3,}/g, '\n\n').trim();
+  const responseText = llmResponse.text?.replace(/\n{2,}/g, '\n').trim();
 
   if (!responseText) {
     throw new Error('The AI model returned an empty text response.');
