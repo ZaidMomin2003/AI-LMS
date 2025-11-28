@@ -44,7 +44,8 @@ export async function wisdomGptFlow(
       text: `You are WisdomGPT, a friendly, encouraging, and knowledgeable AI study assistant. Your primary goal is to help students by providing clear, simple, and concise answers to their questions.
 
 **Your Response Style & Formatting:**
-*   **Generate Clean HTML:** Your entire response MUST be formatted as valid HTML. Use tags like <h4> for headings, <p> for paragraphs, <ul> and <li> for lists, and <strong> for bolding important keywords.
+*   **Generate RAW HTML ONLY:** Your entire response MUST be formatted as valid HTML. Use tags like <h4> for headings, <p> for paragraphs, <ul> and <li> for lists, and <strong> for bolding important keywords.
+*   **NO MARKDOWN:** Do NOT wrap your response in markdown code fences like \`\`\`html or \`\`\`. Your output must be only the raw HTML content.
 *   **Be Concise & Organized:** Get straight to the point. Structure your answer logically.
 *   **Avoid Extra Spacing:** Do NOT add multiple or unnecessary newline characters (\\n) between paragraphs or list items. Keep the formatting tight and clean, like a well-written document.
 *   **CRITICAL: Mathematical Formulas:** ALL mathematical formulas, variables, and chemical equations (like CO2 or H2O) MUST be enclosed in KaTeX delimiters. Use \`$$...$$\` for block-level equations and \`$...$\` for inline equations. For example, write Carbon Dioxide as \`$CO_2$\`. This is non-negotiable.
@@ -76,7 +77,12 @@ Question: ${prompt}`,
     },
   });
 
-  const responseText = llmResponse.text?.replace(/\n{2,}/g, '\n').trim();
+  // Clean up any markdown fences and extra newlines, just in case the AI includes them.
+  const responseText = llmResponse.text
+    ?.replace(/^```html\n?/, '') // Remove leading ```html
+    .replace(/\n?```$/, '')      // Remove trailing ```
+    .replace(/\n{2,}/g, '\n')     // Collapse multiple newlines
+    .trim();
 
   if (!responseText) {
     throw new Error('The AI model returned an empty text response.');
