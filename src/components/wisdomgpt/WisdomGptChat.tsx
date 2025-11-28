@@ -228,16 +228,11 @@ export default function WisdomGptChat() {
     const filteredTopics = topics.filter(topic => topic.title.toLowerCase().includes(topicSearch.toLowerCase()));
 
     const handleTopicSelect = (topic: Topic) => {
-        const noteContent = notesToString(topic.notes);
-        const prompt = `Using my notes on "${topic.title}", please answer the following question: `;
-        setInput(prompt);
         setShowTopicSuggestions(false);
         setTopicSearch('');
-        // We set the prompt and context, but don't send the message immediately.
-        // This allows the user to add their specific question.
-        // We will pass the `noteContent` when the user eventually clicks send.
-        // The current implementation of `handleSendMessage` needs to be adapted to handle this.
-        // For now, let's just set the input. The user can manually trigger send.
+        const noteContent = notesToString(topic.notes);
+        const prompt = `Summarize my notes on "${topic.title}" for me.`;
+        handleSendMessage(prompt, noteContent);
     };
 
   return (
