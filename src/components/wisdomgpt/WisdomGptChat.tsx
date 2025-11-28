@@ -55,13 +55,7 @@ const ACTIONS = [
 ];
 
 export default function WisdomGptChat() {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-      {
-        id: nanoid(),
-        role: 'assistant',
-        content: `<h4>Hello there!</h4><p>I'm WisdomGPT, your friendly AI study assistant. How can I help you learn today?</p>`
-      }
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   
@@ -201,7 +195,19 @@ export default function WisdomGptChat() {
       {/* Scrollable chat messages area */}
       <div ref={chatContainerRef} className="flex-1 overflow-y-auto pb-24">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-8">
-            {messages.map((message) => {
+            {messages.length === 0 && !isTyping ? (
+                 <div className="flex flex-col items-center justify-center text-center h-full pt-16">
+                     <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+                        <IconSparkles size={28} />
+                    </div>
+                    <h2 className="text-2xl font-bold font-headline">
+                        WisdomGPT
+                    </h2>
+                    <p className="text-muted-foreground mt-2">
+                        Your personal AI tutor for any subject
+                    </p>
+                 </div>
+            ) : messages.map((message) => {
                 const isUser = message.role === 'user';
                 return (
                     <div key={message.id} className={cn("flex items-start gap-4", isUser && "justify-end")}>
@@ -277,7 +283,7 @@ export default function WisdomGptChat() {
       {/* Fixed input area */}
       <div className="fixed bottom-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-md">
         <div className="relative z-10 w-full max-w-2xl mx-auto px-4 pb-4">
-            {messages.length <= 1 && !isTyping && (
+            {messages.length === 0 && !isTyping && (
                 <div className="max-w-xs sm:max-w-md mx-auto flex-wrap gap-2 flex min-h-0 shrink-0 items-center justify-center pb-4">
                 {ACTIONS.map((action) => (
                     <Button
