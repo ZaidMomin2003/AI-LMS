@@ -299,22 +299,24 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
                     </Button>
                 </div>
             ) : (
-             <div className="space-y-2 p-4 w-80 relative bg-popover">
-                <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
-                    <X className="w-4 h-4"/>
-                </Button>
-                <h4 className="font-medium leading-none flex items-center gap-2 font-headline">
-                    <Sparkles className="w-5 h-5 text-primary"/>
-                    Explanation
-                </h4>
-                <p className="text-sm text-muted-foreground italic truncate">For: "{selectedText}"</p>
-                <div className="pt-2">
+             <div className="flex flex-col w-80 bg-popover">
+                <div className="p-4 space-y-2 relative">
+                    <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
+                        <X className="w-4 h-4"/>
+                    </Button>
+                    <h4 className="font-medium leading-none flex items-center gap-2 font-headline">
+                        <Sparkles className="w-5 h-5 text-primary"/>
+                        Explanation
+                    </h4>
+                    <p className="text-sm text-muted-foreground italic truncate">For: "{selectedText}"</p>
+                </div>
+                <div className="flex-1 px-4 pb-4">
                     {isLoadingExplanation ? (
                         <div className="flex items-center justify-center h-20">
                             <Loader2 className="w-6 h-6 animate-spin text-primary" />
                         </div>
                     ) : (
-                        <ScrollArea className="max-h-60 pr-4">
+                        <ScrollArea className="h-full max-h-60 pr-4">
                             <div className="prose prose-sm prose-invert max-w-none text-foreground">
                                 <MathRenderer content={explanation} />
                             </div>
