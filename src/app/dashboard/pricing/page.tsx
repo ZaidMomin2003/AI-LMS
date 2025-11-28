@@ -3,7 +3,7 @@
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Gem, Lock, Star, Ticket, X, Loader2 } from 'lucide-react';
+import { Check, Gem, Lock, Star, Ticket, X, Loader2, Sparkles } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { useToast } from '@/hooks/use-toast';
@@ -130,7 +130,6 @@ const PricingContent = () => {
             const orderData = await orderResponse.json();
 
             if (!orderResponse.ok) {
-                // This will now display the specific error from the server
                 throw new Error(orderData.error || 'Could not create a payment order.');
             }
             
@@ -148,7 +147,6 @@ const PricingContent = () => {
                     data.append('razorpay_signature', response.razorpay_signature);
                     data.append('plan_duration', sagePlan.durationMonths.toString());
                     
-                    // Use a form submission to redirect, which works better with server-side redirects
                     const form = document.createElement('form');
                     form.method = 'POST';
                     form.action = '/api/payment-verification';
@@ -183,16 +181,6 @@ const PricingContent = () => {
 
     const currencySymbol = '$';
     const monthlyPrice = (sagePlan.price / sagePlan.durationMonths).toFixed(2);
-
-
-    const freeFeatures = [
-        { text: '1 Topic Generation', included: true },
-        { text: '1 Study Roadmap', included: true },
-        { text: '1 Pomodoro Session', included: true },
-        { text: '1 Capture Use', included: true },
-        { text: 'WisdomGPT AI Assistant', included: false },
-        { text: 'Priority Email Support', included: false },
-    ];
     
     const sageFeatures = [
         'Unlimited Topic Generations',
@@ -206,63 +194,28 @@ const PricingContent = () => {
     return (
         <AppLayout>
             <Script id="razorpay-checkout-js" src="https://checkout.razorpay.com/v1/checkout.js" />
-            <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-                <div className="text-center space-y-2">
-                    <h2 className="text-3xl font-headline font-bold tracking-tight">Unlock Your Full Potential</h2>
-                    <p className="text-muted-foreground max-w-xl mx-auto">
-                        Get unlimited access to all AI-powered tools with our one-year plan.
+            <div className="flex-1 space-y-8 p-4 md:p-8 pt-6">
+                <div className="text-center space-y-2 max-w-2xl mx-auto">
+                    <h2 className="text-3xl font-headline font-bold tracking-tight">One Plan to Rule Them All</h2>
+                    <p className="text-muted-foreground">
+                        Simple, transparent pricing. Get every feature we have, and every feature we will ever build, with one single plan.
                     </p>
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 items-start gap-8 max-w-4xl mx-auto pt-8">
-                     {/* Free Plan */}
-                    <Card className="flex flex-col h-full">
-                        <CardHeader>
-                            <CardTitle className="font-headline text-2xl">Free</CardTitle>
-                            <CardDescription>For casual learners to get a taste of AI power.</CardDescription>
-                            <div className="pt-4">
-                                <span className="text-4xl font-bold text-foreground">{currencySymbol}0</span>
-                                <span className="text-muted-foreground"> / forever</span>
+                
+                <div className="max-w-md mx-auto">
+                    <Card className="shadow-2xl shadow-primary/10 overflow-hidden">
+                        <CardHeader className="p-8 bg-card">
+                            <div className="flex justify-between items-center">
+                                <h3 className="text-2xl font-headline font-bold">{sagePlan.name} Plan</h3>
+                                <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold">Save 25%</div>
                             </div>
-                        </CardHeader>
-                        <CardContent className="space-y-4 flex-1">
-                            <ul className="space-y-3">
-                                {freeFeatures.map(feature => (
-                                    <li key={feature.text} className="flex items-center gap-3 text-sm">
-                                        {feature.included ? <Check className="w-5 h-5 text-primary" /> : <X className="w-5 h-5 text-muted-foreground" />}
-                                        <span className={cn(!feature.included && 'text-muted-foreground')}>{feature.text}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </CardContent>
-                        <CardFooter>
-                            <Button asChild className="w-full" variant="outline" disabled={true}>
-                                <Link href="#">Your Current Plan</Link>
-                            </Button>
-                        </CardFooter>
-                    </Card>
-
-                    {/* Pro Plan */}
-                    <Card className="flex flex-col h-full border-primary ring-2 ring-primary shadow-2xl shadow-primary/20">
-                        <CardHeader className="text-center">
-                            <CardTitle className="font-headline text-2xl">{sagePlan.name}</CardTitle>
-                             <CardDescription className="flex flex-col">
+                            <CardDescription className="flex flex-col pt-4">
                                 <span className="text-4xl font-bold text-foreground">{currencySymbol}{monthlyPrice} <span className="text-xl text-muted-foreground">/mo</span></span>
                                 <span className="text-muted-foreground text-sm mt-1">Billed annually at ${sagePlan.price}</span>
                             </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4 flex-1">
-                            <ul className="space-y-3">
-                                {sageFeatures.map(feature => (
-                                    <li key={feature} className="flex items-center gap-3 text-sm">
-                                        <Check className="w-5 h-5 text-primary" />
-                                        <span>{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </CardContent>
-                        <CardFooter>
                             <Button
-                                className="w-full"
+                                size="lg"
+                                className="w-full mt-6"
                                 onClick={handlePayment}
                                 disabled={subLoading || isLoading || subscription?.status === 'active'}
                             >
@@ -270,10 +223,40 @@ const PricingContent = () => {
                                 : (subscription?.status === 'active') ? 'Your Current Plan' 
                                 : (<><Gem className="mr-2 h-4 w-4" /> Get Sage Plan</>)}
                             </Button>
-                        </CardFooter>
+                        </CardHeader>
+                        <CardContent className="p-8 bg-primary/5">
+                            <p className="text-sm font-semibold text-foreground mb-4">Everything in Free, plus:</p>
+                            <ul className="space-y-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6">
+                                {sageFeatures.map(feature => (
+                                    <li key={feature} className="flex items-center gap-3 text-sm">
+                                        <Check className="w-5 h-5 text-primary" />
+                                        <span className="text-muted-foreground">{feature}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </CardContent>
                     </Card>
                 </div>
-                {subscription?.status !== 'active' && <CouponCodeForm />}
+                
+                <div className="max-w-md mx-auto">
+                    {subscription?.status !== 'active' && <CouponCodeForm />}
+                </div>
+
+                <Card className="max-w-md mx-auto text-center border-dashed">
+                    <CardHeader>
+                        <CardTitle className="font-headline">Any Questions?</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-muted-foreground mb-4">
+                            If you have questions about billing or need help with a custom plan, our team is ready to assist.
+                        </p>
+                        <Button asChild variant="outline">
+                            <Link href="/dashboard/support">
+                                Talk with our team
+                            </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
             </div>
         </AppLayout>
     );
