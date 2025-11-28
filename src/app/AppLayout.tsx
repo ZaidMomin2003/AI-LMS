@@ -262,8 +262,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/wisdomgpt')} tooltip={{ children: 'WisdomGPT AI' }}>
-                            <Link href="/dashboard/wisdomgpt">
-                                <Sparkles /><span>WisdomGPT</span>
+                            <Link href="/dashboard/wisdomgpt" className="flex items-center gap-2 w-full">
+                                <Sparkles />
+                                <span className="flex-1">WisdomGPT</span>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Zap className="w-4 h-4 text-amber-500 animate-pulse" />
+                                    </TooltipTrigger>
+                                    <TooltipContent side="right">
+                                        <p>crazy stuff under development</p>
+                                    </TooltipContent>
+                                </Tooltip>
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
