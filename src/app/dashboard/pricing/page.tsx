@@ -194,7 +194,12 @@ const PricingContent = () => {
                             <div className="mt-8">
                                 <Button
                                     size="lg"
-                                    className="w-full bg-white text-zinc-900 hover:bg-zinc-200 font-bold text-base"
+                                    className={cn(
+                                        "w-full font-bold text-base",
+                                        subscription?.status === 'active'
+                                        ? "bg-blue-600 text-white cursor-not-allowed opacity-100"
+                                        : "bg-white text-zinc-900 hover:bg-zinc-200"
+                                    )}
                                     onClick={handlePayment}
                                     disabled={subLoading || isLoading || subscription?.status === 'active'}
                                 >
