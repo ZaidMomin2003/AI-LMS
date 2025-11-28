@@ -22,7 +22,7 @@ export default function WisdomGptPage() {
                 <Button asChild>
                     <Link href="/dashboard">
                         <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Dashboard
+                        Dashboard
                     </Link>
                 </Button>
             </header>
