@@ -36,7 +36,7 @@ import { Bot, FileQuestion, LoaderIcon, User } from "lucide-react";
 import { MathRenderer } from "../MathRenderer";
 import type { WisdomGptInput } from "@/ai/flows/wisdom-gpt-flow";
 import { wisdomGptAction } from "@/app/dashboard/wisdomgpt/actions";
-import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from '../ui/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../ui/command';
 import { useTopic } from "@/context/TopicContext";
 import type { Topic, StudyNotes } from "@/types";
@@ -164,9 +164,6 @@ export default function WisdomGptChat() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
-    }
-     if (e.key === '@') {
-      setShowTopicSuggestions(true);
     }
   };
 
@@ -348,34 +345,7 @@ export default function WisdomGptChat() {
                 ))}
                 </div>
             )}
-             <Popover open={showTopicSuggestions} onOpenChange={setShowTopicSuggestions}>
-                <PopoverAnchor asChild>
-                    <div />
-                </PopoverAnchor>
-                <PopoverContent className="w-[400px] p-0 mb-2">
-                    <Command>
-                    <CommandInput 
-                        placeholder="Search your notes..." 
-                        value={topicSearch}
-                        onValueChange={setTopicSearch}
-                    />
-                    <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup>
-                        {filteredTopics.map((topic) => (
-                            <CommandItem
-                            key={topic.id}
-                            onSelect={() => handleTopicSelect(topic)}
-                            >
-                            <span>{topic.title}</span>
-                            </CommandItem>
-                        ))}
-                        </CommandGroup>
-                    </CommandList>
-                    </Command>
-                </PopoverContent>
-            </Popover>
-
+            
             <form
             className="overflow-visible rounded-xl border bg-card p-2 transition-colors duration-200 focus-within:border-ring"
             onSubmit={handleSubmit}
@@ -406,109 +376,137 @@ export default function WisdomGptChat() {
                 className="max-h-50 min-h-10 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask anything about your studies, or type '@' to reference your notes..."
+                placeholder="Ask anything, or reference notes with the '@' button..."
                 value={input}
             />
 
             <div className="flex items-center gap-1">
                 <div className="flex items-end gap-0.5 sm:gap-1">
-                <input
-                    className="sr-only"
-                    onChange={handleFileChange}
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                />
-
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                    <Button
-                        className="ml-[-2px] h-7 w-7 rounded-md"
-                        size="icon"
-                        type="button"
-                        variant="ghost"
-                    >
-                        <IconPlus size={16} />
-                    </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                    align="start"
-                    className="max-w-xs rounded-xl p-1"
-                    >
-                    <DropdownMenuGroup className="space-y-1">
-                        <DropdownMenuItem
-                        className="rounded-md text-sm"
-                        onClick={() => fileInputRef.current?.click()}
+                    <input
+                        className="sr-only"
+                        onChange={handleFileChange}
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                    />
+                    <Popover open={showTopicSuggestions} onOpenChange={setShowTopicSuggestions}>
+                        <PopoverTrigger asChild>
+                            <Button className="ml-[-2px] h-7 w-7 rounded-md" size="icon" type="button" variant="ghost">
+                                <span className="font-semibold text-base text-muted-foreground">@</span>
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[400px] p-0 mb-2">
+                            <Command>
+                                <CommandInput 
+                                    placeholder="Search your notes..." 
+                                    value={topicSearch}
+                                    onValueChange={setTopicSearch}
+                                />
+                                <CommandList>
+                                    <CommandEmpty>No results found.</CommandEmpty>
+                                    <CommandGroup>
+                                    {filteredTopics.map((topic) => (
+                                        <CommandItem
+                                        key={topic.id}
+                                        onSelect={() => handleTopicSelect(topic)}
+                                        >
+                                        <span>{topic.title}</span>
+                                        </CommandItem>
+                                    ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                        <Button
+                            className="h-7 w-7 rounded-md"
+                            size="icon"
+                            type="button"
+                            variant="ghost"
                         >
-                        <div className="flex items-center gap-2">
-                            <IconPaperclip className="text-muted-foreground" size={16} />
-                            <span>Attach Image</span>
-                        </div>
-                        </DropdownMenuItem>
-                    </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                            <IconPlus size={16} />
+                        </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                        align="start"
+                        className="max-w-xs rounded-xl p-1"
+                        >
+                        <DropdownMenuGroup className="space-y-1">
+                            <DropdownMenuItem
+                            className="rounded-md text-sm"
+                            onClick={() => fileInputRef.current?.click()}
+                            >
+                            <div className="flex items-center gap-2">
+                                <IconPaperclip className="text-muted-foreground" size={16} />
+                                <span>Attach Image</span>
+                            </div>
+                            </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
 
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                    <Button
-                        className="size-7 rounded-md"
-                        size="icon"
-                        type="button"
-                        variant="ghost"
-                    >
-                        <IconAdjustmentsHorizontal size={16} />
-                    </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                    align="start"
-                    className="w-56 rounded-xl p-3"
-                    >
-                    <DropdownMenuGroup className="space-y-3">
-                        <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <IconSparkles className="text-muted-foreground" size={16} />
-                            <Label className="text-xs">Explain Like I'm 10</Label>
-                        </div>
-                        <Switch
-                            checked={settings.explainSimple}
-                            className="scale-75"
-                            onCheckedChange={(value) =>
-                            updateSetting("explainSimple", value)
-                            }
-                        />
-                        </div>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                        <Button
+                            className="size-7 rounded-md"
+                            size="icon"
+                            type="button"
+                            variant="ghost"
+                        >
+                            <IconAdjustmentsHorizontal size={16} />
+                        </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                        align="start"
+                        className="w-56 rounded-xl p-3"
+                        >
+                        <DropdownMenuGroup className="space-y-3">
+                            <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <IconSparkles className="text-muted-foreground" size={16} />
+                                <Label className="text-xs">Explain Like I'm 10</Label>
+                            </div>
+                            <Switch
+                                checked={settings.explainSimple}
+                                className="scale-75"
+                                onCheckedChange={(value) =>
+                                updateSetting("explainSimple", value)
+                                }
+                            />
+                            </div>
 
-                        <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <IconPlayerPlay className="text-muted-foreground" size={16} />
-                            <Label className="text-xs">Include Examples</Label>
-                        </div>
-                        <Switch
-                            checked={settings.includeExamples}
-                            className="scale-75"
-                            onCheckedChange={(value) =>
-                            updateSetting("includeExamples", value)
-                            }
-                        />
-                        </div>
+                            <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <IconPlayerPlay className="text-muted-foreground" size={16} />
+                                <Label className="text-xs">Include Examples</Label>
+                            </div>
+                            <Switch
+                                checked={settings.includeExamples}
+                                className="scale-75"
+                                onCheckedChange={(value) =>
+                                updateSetting("includeExamples", value)
+                                }
+                            />
+                            </div>
 
-                        <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <IconHistory className="text-muted-foreground" size={16} />
-                            <Label className="text-xs">Suggest Follow-up</Label>
-                        </div>
-                        <Switch
-                            checked={settings.suggestFollowUp}
-                            className="scale-75"
-                            onCheckedChange={(value) =>
-                            updateSetting("suggestFollowUp", value)
-                            }
-                        />
-                        </div>
-                    </DropdownMenuGroup>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                            <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <IconHistory className="text-muted-foreground" size={16} />
+                                <Label className="text-xs">Suggest Follow-up</Label>
+                            </div>
+                            <Switch
+                                checked={settings.suggestFollowUp}
+                                className="scale-75"
+                                onCheckedChange={(value) =>
+                                updateSetting("suggestFollowUp", value)
+                                }
+                            />
+                            </div>
+                        </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
 
                 <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
