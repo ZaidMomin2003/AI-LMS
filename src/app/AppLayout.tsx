@@ -150,27 +150,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     return <AppLoadingScreen />;
   }
   
-  if (pathname === '/dashboard/wisdomgpt') {
-    return (
-      <div className="flex flex-col h-screen bg-background">
-        <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-background px-4">
-          <Button asChild variant="outline">
-            <Link href="/dashboard">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Dashboard
-            </Link>
-          </Button>
-          <div className="flex items-center gap-2">
-            <h3 className="font-headline font-bold text-lg">WisdomGPT</h3>
-            <Sparkles className="h-5 w-5 text-primary" />
-          </div>
-        </header>
-        {/* The children (page content) will fill the remaining space */}
-        <div className="flex-1 min-h-0">{children}</div>
-      </div>
-    );
-  }
-
+  // The special case for wisdomgpt has been moved to its own page component
+  // for better separation of concerns.
 
   const handleLogout = async () => {
     const { auth } = initializeFirebase();
