@@ -32,14 +32,15 @@ const prompt = ai.definePrompt({
   name: 'explainTextPrompt',
   input: {schema: ExplainTextInputSchema},
   output: {schema: ExplainTextOutputSchema},
-  prompt: `You are an expert tutor AI. A student has highlighted a piece of text from their study notes and needs an explanation.
+  prompt: `You are an expert tutor AI. A student has highlighted a piece of text and needs an explanation.
 
 Your task is to explain the selected text in the context of the surrounding document.
 
 - **Analyze the Context:** First, understand the overall topic from the 'contextText'.
 - **Focus on the Selection:** Then, provide a clear, concise explanation for the 'selectedText'.
-- **Keep it Simple:** Explain it as you would to a high school student. Avoid jargon where possible or explain it if necessary.
-- **Format in HTML:** Your response must be formatted as a simple HTML string. Use tags like <p> for paragraphs and <strong> for emphasis on key terms. Do not use headings or lists unless absolutely necessary.
+- **CRITICAL:** Your explanation must be a maximum of 30 words. Be brief and to the point.
+- **Keep it Simple:** Explain it as you would to a high school student. Avoid jargon.
+- **Format in HTML:** Your response must be formatted as a simple HTML string. Use tags like <p> for paragraphs and <strong> for emphasis on key terms. Do not use headings or lists.
 
 **Context Document:**
 ---
@@ -49,7 +50,7 @@ Your task is to explain the selected text in the context of the surrounding docu
 **Selected Text to Explain:**
 "{{{selectedText}}}"
 
-Now, provide your explanation.`,
+Now, provide your explanation (max 30 words).`,
 });
 
 
