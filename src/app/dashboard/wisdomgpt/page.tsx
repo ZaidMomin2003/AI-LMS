@@ -8,11 +8,9 @@ import { wisdomGptAction } from './actions';
 export default function WisdomGptPage() {
     return (
         <AppLayout>
-            <div className="flex-1 h-full flex flex-col">
+            <div className="flex-1 flex flex-col h-[calc(100vh_-_theme(spacing.14))]">
                 <WisdomGptChat />
             </div>
         </AppLayout>
     )
 }
-
-    
