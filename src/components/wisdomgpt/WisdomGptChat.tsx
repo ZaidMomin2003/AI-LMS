@@ -46,10 +46,30 @@ interface AttachedFile {
 }
 
 const ACTIONS = [
-  { id: "explain-concept", icon: IconSparkles, label: "Explain a concept" },
-  { id: "summarize-topic", icon: IconFileText, label: "Summarize this chapter" },
-  { id: "practice-problems", icon: IconBrain, label: "Create practice problems" },
-  { id: "homework-help", icon: IconHelp, label: "Help me with my homework" },
+  {
+    id: "explain-concept",
+    icon: IconSparkles,
+    label: "Explain a concept",
+    prompt: "Explain the concept of [Your Topic] in simple terms. Use an analogy and provide a real-world example.",
+  },
+  {
+    id: "summarize-topic",
+    icon: IconFileText,
+    label: "Summarize a chapter",
+    prompt: "Summarize the key points from the chapter on [Your Topic]. Focus on the most important definitions, people, and events.",
+  },
+  {
+    id: "practice-problems",
+    icon: IconBrain,
+    label: "Create practice problems",
+    prompt: "Create 5 multiple-choice practice questions about [Your Topic]. Include the correct answer and a brief explanation for each.",
+  },
+  {
+    id: "homework-help",
+    icon: IconHelp,
+    label: "Help with homework",
+    prompt: "I'm stuck on my homework about [Your Topic]. Can you help me understand [specific question or concept]?",
+  },
 ];
 
 export default function WisdomGptChat({
@@ -147,8 +167,8 @@ export default function WisdomGptChat({
     setAttachedFiles((prev) => prev.filter((file) => file.id !== fileId));
   };
   
-  const handleActionClick = (label: string) => {
-    setPrompt(label + " ");
+  const handleActionClick = (promptTemplate: string) => {
+    setPrompt(promptTemplate);
     textareaRef.current?.focus();
   };
 
@@ -368,7 +388,7 @@ export default function WisdomGptChat({
             key={action.id}
             size="sm"
             variant="outline"
-            onClick={() => handleActionClick(action.label)}
+            onClick={() => handleActionClick(action.prompt)}
           >
             <action.icon size={16} />
             {action.label}
