@@ -1,3 +1,4 @@
+
 "use client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,13 +16,14 @@ import { cn } from "@/lib/utils";
 import {
   IconAdjustmentsHorizontal,
   IconArrowUp,
-  IconBrandFigma,
-  IconCamera,
+  IconBrain,
+  IconFileText,
+  IconHelp,
   IconCirclePlus,
   IconClipboard,
   IconFileUpload,
   IconHistory,
-  IconLayoutDashboard,
+  IconBook,
   IconLink,
   IconPaperclip,
   IconPlayerPlay,
@@ -41,10 +43,10 @@ interface AttachedFile {
 }
 
 const ACTIONS = [
-  { id: "clone-screenshot", icon: IconCamera, label: "Clone a Screenshot" },
-  { id: "import-figma", icon: IconBrandFigma, label: "Import from Figma" },
-  { id: "upload-project", icon: IconFileUpload, label: "Upload a Project" },
-  { id: "landing-page", icon: IconLayoutDashboard, label: "Landing Page" },
+  { id: "explain-concept", icon: IconSparkles, label: "Explain a concept" },
+  { id: "summarize-topic", icon: IconFileText, label: "Summarize this chapter" },
+  { id: "practice-problems", icon: IconBrain, label: "Create practice problems" },
+  { id: "homework-help", icon: IconHelp, label: "Help me with my homework" },
 ];
 
 export default function WisdomGptChat({
@@ -147,7 +149,7 @@ export default function WisdomGptChat({
         WisdomGPT
       </h1>
       <h2 className="-my-5 pb-4 text-center text-xl text-muted-foreground">
-        Build real, working software just by describing it
+        Your personal AI tutor for any subject.
       </h2>
 
       <div className="relative z-10 flex flex-col w-full mx-auto max-w-2xl content-center">
@@ -199,7 +201,7 @@ export default function WisdomGptChat({
             className="max-h-50 min-h-12 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
-            placeholder="Ask anything"
+            placeholder="Ask a question about your studies..."
             value={prompt}
           />
 
@@ -365,3 +367,5 @@ export default function WisdomGptChat({
     </div>
   );
 }
+
+    
