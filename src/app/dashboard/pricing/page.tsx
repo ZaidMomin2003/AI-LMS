@@ -241,22 +241,6 @@ const PricingContent = () => {
                 <div className="max-w-md mx-auto">
                     {subscription?.status !== 'active' && <CouponCodeForm />}
                 </div>
-
-                <Card className="max-w-md mx-auto text-center border-dashed">
-                    <CardHeader>
-                        <CardTitle className="font-headline">Any Questions?</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-muted-foreground mb-4">
-                            If you have questions about billing or need help with a custom plan, our team is ready to assist.
-                        </p>
-                        <Button asChild variant="outline">
-                            <Link href="/dashboard/support">
-                                Talk with our team
-                            </Link>
-                        </Button>
-                    </CardContent>
-                </Card>
             </div>
         </AppLayout>
     );
