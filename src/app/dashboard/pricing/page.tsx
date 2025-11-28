@@ -204,7 +204,7 @@ const PricingContent = () => {
                 
                 <div className="max-w-md mx-auto">
                     <Card className="shadow-2xl shadow-primary/10 overflow-hidden">
-                        <CardHeader className="p-8 bg-card">
+                        <CardHeader className="p-8 bg-card relative overflow-hidden animate-liquid-gradient">
                             <div className="flex justify-between items-center">
                                 <h3 className="text-2xl font-headline font-bold">{sagePlan.name} Plan</h3>
                                 <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold">Save 25%</div>

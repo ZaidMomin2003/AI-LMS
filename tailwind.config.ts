@@ -110,6 +110,10 @@ const config = {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-50%)' },
         },
+         'liquid-gradient': {
+          '0%, 100%': { 'background-position': '0% 50%' },
+          '50%': { 'background-position': '100% 50%' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -119,6 +123,7 @@ const config = {
         'text-gradient': 'text-gradient 3s linear infinite',
         'marquee-y': 'marquee-y 60s linear infinite',
         'marquee-x': 'marquee-x 25s linear infinite',
+        'liquid-gradient': 'liquid-gradient 15s ease infinite',
       },
       perspective: {
         '1000': '1000px',
