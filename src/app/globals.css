@@ -86,7 +86,7 @@
         @apply text-xl font-bold font-headline mb-2;
     }
     p, ul {
-        @apply mb-2;
+        @apply mb-0;
     }
     li {
         @apply my-1;

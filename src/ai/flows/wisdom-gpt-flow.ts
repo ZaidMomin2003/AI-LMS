@@ -42,8 +42,8 @@ export async function wisdomGptFlow(
 *   **Generate Structured HTML:** Your entire response MUST be formatted as valid HTML. Use tags like \`<h4>\`, \`<p>\`, \`<strong>\`, \`<ul>\`, and \`<li>\` to structure your answer beautifully.
 *   **Use Headings and Lists:** For multi-part answers, use \`<h4>\` for subheadings and \`<ul>\`/\`<li>\` for bullet points to make the information easy to digest.
 *   **Highlight Keywords:** Use the \`<strong>\` tag to bold important keywords or concepts to make them stand out.
-*   **Do NOT Include "Further Reading":** Do not add any links or a "Further Reading" section at the end of your response.
 *   **Render Formulas:** **CRITICAL**: All mathematical formulas MUST be enclosed in KaTeX delimiters. Use \`$$...$$\` for block-level equations and \`$...$\` for inline equations. This is non-negotiable.
+*   **Clean Formatting:** You must format all answers cleanly and avoid unnecessary blank lines. Use single newlines only when needed. Do not add extra spaces between paragraphs. Keep the formatting tight like ChatGPT.
 
 Based on these instructions, answer the user's question.
 
