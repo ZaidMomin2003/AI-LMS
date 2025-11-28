@@ -19,7 +19,7 @@ export default function WisdomGptPage() {
                         <span className="text-xs text-muted-foreground">AI Studybuddy</span>
                     </div>
                 </div>
-                <Button asChild variant="outline">
+                <Button asChild>
                     <Link href="/dashboard">
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back to Dashboard
