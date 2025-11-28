@@ -238,7 +238,7 @@ export default function WisdomGptChat() {
   return (
     <div className="flex h-full w-full flex-col">
       {/* Scrollable chat messages area */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto pb-48">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto pb-52">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-8">
             {messages.length === 0 && !isTyping ? (
                  <div className="flex flex-col items-center justify-center text-center h-full pt-16">
@@ -407,7 +407,9 @@ export default function WisdomGptChat() {
                                     {filteredTopics.map((topic) => (
                                         <CommandItem
                                         key={topic.id}
+                                        value={topic.title}
                                         onSelect={() => handleTopicSelect(topic)}
+                                        className="aria-selected:bg-primary aria-selected:text-primary-foreground"
                                         >
                                         <span>{topic.title}</span>
                                         </CommandItem>
