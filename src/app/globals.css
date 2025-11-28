@@ -118,7 +118,11 @@
     padding: 0 !important;
   }
 
-  .prose-tight p,
+  .prose-tight p {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
   .prose-tight h1,
   .prose-tight h2,
   .prose-tight h3,
