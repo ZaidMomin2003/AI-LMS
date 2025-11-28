@@ -204,18 +204,18 @@ const PricingContent = () => {
                 
                 <div className="max-w-md mx-auto">
                     <Card className="shadow-2xl shadow-primary/10 overflow-hidden">
-                        <CardHeader className="p-8 bg-card relative overflow-hidden animate-liquid-gradient">
-                            <div className="flex justify-between items-center">
+                        <CardHeader className="p-8 bg-card relative overflow-hidden bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 animate-liquid-gradient" style={{ backgroundSize: '400% 400%' }}>
+                            <div className="flex justify-between items-center text-primary-foreground">
                                 <h3 className="text-2xl font-headline font-bold">{sagePlan.name} Plan</h3>
-                                <div className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold">Save 25%</div>
+                                <div className="bg-primary-foreground/20 text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">Save 25%</div>
                             </div>
                             <CardDescription className="flex flex-col pt-4">
-                                <span className="text-4xl font-bold text-foreground">{currencySymbol}{monthlyPrice} <span className="text-xl text-muted-foreground">/mo</span></span>
-                                <span className="text-muted-foreground text-sm mt-1">Billed annually at ${sagePlan.price}</span>
+                                <span className="text-4xl font-bold text-primary-foreground">{currencySymbol}{monthlyPrice} <span className="text-xl text-primary-foreground/80">/mo</span></span>
+                                <span className="text-primary-foreground/80 text-sm mt-1">Billed annually at ${sagePlan.price}</span>
                             </CardDescription>
                             <Button
                                 size="lg"
-                                className="w-full mt-6"
+                                className="w-full mt-6 bg-primary-foreground text-primary hover:bg-primary-foreground/90"
                                 onClick={handlePayment}
                                 disabled={subLoading || isLoading || subscription?.status === 'active'}
                             >
