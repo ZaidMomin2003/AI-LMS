@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { QuizQuestion } from '@/types';
@@ -26,7 +25,7 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
   const [isFinished, setIsFinished] = useState(false);
 
   const score = userAnswers.reduce((acc, answer, index) => {
-    if (answer === quiz[index].answer) {
+    if (quiz[index] && answer === quiz[index].answer) {
       return acc + 1;
     }
     return acc;
@@ -34,7 +33,7 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
 
   useEffect(() => {
     const saveQuizStats = async () => {
-      if (isFinished && user) {
+      if (isFinished && user && quiz.length > 0) {
         try {
           const userData = await getUserDoc(user.uid);
           const existingStats = userData?.quizStats || {};
@@ -54,6 +53,13 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
     };
     saveQuizStats();
   }, [isFinished, score, quiz.length, topicId, user]);
+  
+  // Restore selected answer if user has already answered this question
+  useEffect(() => {
+    if (!isFinished) {
+      setSelectedAnswer(userAnswers[currentQuestionIndex] || null);
+    }
+  }, [currentQuestionIndex, userAnswers, isFinished]);
 
   if (!quiz || quiz.length === 0) {
     return (
@@ -71,8 +77,6 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
     setUserAnswers(newAnswers);
 
     if (currentQuestionIndex < quiz.length - 1) {
-        const nextAnswer = userAnswers[currentQuestionIndex + 1] || null;
-        setSelectedAnswer(nextAnswer);
         setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       setIsFinished(true);
@@ -81,8 +85,6 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
 
   const handlePrevious = () => {
       if (currentQuestionIndex > 0) {
-          const prevAnswer = userAnswers[currentQuestionIndex - 1] || null;
-          setSelectedAnswer(prevAnswer);
           setCurrentQuestionIndex(currentQuestionIndex - 1);
       }
   }
@@ -94,13 +96,15 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
     setIsFinished(false);
   };
   
-  if (isFinished) {
-    const percentage = Math.round((score / quiz.length) * 100);
-    return (
-        <Card className="w-full max-w-2xl mx-auto">
-            <CardHeader className="text-center">
+  const currentQuestion = quiz[currentQuestionIndex];
+  
+  return (
+    <Card className="w-full max-w-2xl mx-auto">
+      {isFinished ? (
+        <>
+           <CardHeader className="text-center">
                 <CardTitle className="font-headline text-2xl">Quiz Completed!</CardTitle>
-                <CardDescription>You scored {score} out of {quiz.length} ({percentage}%)</CardDescription>
+                <CardDescription>You scored {score} out of {quiz.length} ({Math.round((score / quiz.length) * 100)}%)</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
@@ -126,51 +130,42 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
                     Take Again
                 </Button>
             </CardContent>
-        </Card>
-    )
-  }
-
-  const currentQuestion = quiz[currentQuestionIndex];
-  
-  // Restore selected answer if user has already answered this question
-  useEffect(() => {
-    setSelectedAnswer(userAnswers[currentQuestionIndex] || null);
-  }, [currentQuestionIndex, userAnswers]);
-
-
-  return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <Progress value={((currentQuestionIndex + 1) / quiz.length) * 100} className="mb-4" />
-        <div className="flex justify-between items-center">
-            <CardTitle className="font-headline">Question {currentQuestionIndex + 1} of {quiz.length}</CardTitle>
-            <div className="flex gap-2">
-                <Button variant="outline" size="icon" onClick={handlePrevious} disabled={currentQuestionIndex === 0}>
-                    <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="icon" onClick={handleNext} disabled={currentQuestionIndex === quiz.length - 1}>
-                    <ArrowRight className="h-4 w-4" />
-                </Button>
+        </>
+      ) : (
+        <>
+          <CardHeader>
+            <Progress value={((currentQuestionIndex + 1) / quiz.length) * 100} className="mb-4" />
+            <div className="flex justify-between items-center">
+                <CardTitle className="font-headline">Question {currentQuestionIndex + 1} of {quiz.length}</CardTitle>
+                <div className="flex gap-2">
+                    <Button variant="outline" size="icon" onClick={handlePrevious} disabled={currentQuestionIndex === 0}>
+                        <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="icon" onClick={handleNext} disabled={!selectedAnswer && currentQuestionIndex === quiz.length - 1}>
+                        <ArrowRight className="h-4 w-4" />
+                    </Button>
+                </div>
             </div>
-        </div>
-        <CardDescription className="text-lg pt-2">{currentQuestion.question}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <RadioGroup
-          value={selectedAnswer ?? ''}
-          onValueChange={setSelectedAnswer}
-        >
-          {currentQuestion.options.map((option, index) => (
-            <div key={index} className="flex items-center space-x-3 rounded-md border p-4 transition-all hover:bg-secondary/50">
-              <RadioGroupItem value={option} id={`q${currentQuestionIndex}-o${index}`} />
-              <Label htmlFor={`q${currentQuestionIndex}-o${index}`} className="flex-1 cursor-pointer">{option}</Label>
-            </div>
-          ))}
-        </RadioGroup>
-        <Button onClick={handleNext} disabled={!selectedAnswer} className="w-full">
-          {currentQuestionIndex < quiz.length - 1 ? 'Next Question' : 'Finish Quiz'}
-        </Button>
-      </CardContent>
+            <CardDescription className="text-lg pt-2">{currentQuestion.question}</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <RadioGroup
+              value={selectedAnswer ?? ''}
+              onValueChange={setSelectedAnswer}
+            >
+              {currentQuestion.options.map((option, index) => (
+                <div key={index} className="flex items-center space-x-3 rounded-md border p-4 transition-all hover:bg-secondary/50">
+                  <RadioGroupItem value={option} id={`q${currentQuestionIndex}-o${index}`} />
+                  <Label htmlFor={`q${currentQuestionIndex}-o${index}`} className="flex-1 cursor-pointer">{option}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+            <Button onClick={handleNext} disabled={!selectedAnswer} className="w-full">
+              {currentQuestionIndex < quiz.length - 1 ? 'Next Question' : 'Finish Quiz'}
+            </Button>
+          </CardContent>
+        </>
+      )}
     </Card>
   );
 }
