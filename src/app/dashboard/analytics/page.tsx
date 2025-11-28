@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -6,7 +7,7 @@ import { useTask } from '@/context/TaskContext';
 import { usePomodoro } from '@/context/PomodoroContext';
 import { format, subDays, isAfter } from 'date-fns';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
-import { BookCopy, Brain, MessageCircleQuestion, Star, Timer } from 'lucide-react';
+import { BookCopy, Brain, MessageCircleQuestion, Star, Timer, ArrowLeft } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Card,
@@ -29,6 +30,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function AnalyticsPage() {
   const { topics, dataLoading: topicsLoading } = useTopic();
@@ -317,6 +320,14 @@ export default function AnalyticsPage() {
               )}
             </CardContent>
           </Card>
+        </div>
+        <div className="hidden md:flex justify-center pt-8">
+          <Button asChild>
+            <Link href="/dashboard">
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back to Dashboard
+            </Link>
+          </Button>
         </div>
       </div>
     </>
