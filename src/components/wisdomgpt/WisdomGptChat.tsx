@@ -34,7 +34,7 @@ import { nanoid } from 'nanoid';
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { Bot, LoaderIcon, User } from "lucide-react";
+import { Bot, FileQuestion, LoaderIcon, User } from "lucide-react";
 import { MarkdownRenderer } from "../MarkdownRenderer";
 import type { WisdomGptInput } from "@/ai/flows/wisdom-gpt-flow";
 import { wisdomGptAction } from "@/app/dashboard/wisdomgpt/actions";
@@ -51,7 +51,7 @@ const ACTIONS = [
   { id: "explain-concept", icon: IconSparkles, label: "Explain a concept" },
   { id: "summarize-chapter", icon: IconBook, label: "Summarize a chapter" },
   { id: "practice-problems", icon: IconBrain, label: "Create practice problems" },
-  { id: "create-flashcards", icon: IconFileText, label: "Generate flashcards" },
+  { id: "practice-questions", icon: FileQuestion, label: "Give me 5 practice questions for AP Biology" },
 ];
 
 export default function WisdomGptChat() {
@@ -156,7 +156,7 @@ export default function WisdomGptChat() {
         'explain-concept': "Explain the concept of [Your Topic] in simple terms. Include a real-world example to help me understand.",
         'summarize-chapter': "Summarize the key points of [Chapter Title or Topic]. Focus on the main ideas and takeaways.",
         'practice-problems': "Create 5 practice problems based on [Your Topic]. Include a mix of difficulties.",
-        'create-flashcards': "Generate a set of 10 flashcards for [Your Topic], with a term on the front and a definition on the back."
+        'practice-questions': "Give me 5 practice questions for AP Biology",
     };
     const newPrompt = prompts[actionId] || "";
     setInput(newPrompt);
@@ -313,7 +313,7 @@ export default function WisdomGptChat() {
                         alt="Preview"
                         className="absolute inset-0 h-full w-full rounded-sm object-cover"
                         src={imagePreview}
-                        layout="fill"
+                        fill
                     />
                     <button
                         className="absolute right-1 top-1 z-10 rounded-full p-0.5 bg-background/50 text-foreground opacity-0 focus-visible:opacity-100 group-hover:opacity-100"
@@ -462,4 +462,5 @@ export default function WisdomGptChat() {
   );
 }
 
+    
     
