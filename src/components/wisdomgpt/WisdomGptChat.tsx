@@ -286,7 +286,7 @@ export default function WisdomGptChat() {
                                             />
                                         </div>
                                     )}
-                                    <div className="prose prose-sm prose-invert max-w-none text-current">
+                                    <div className="prose prose-sm prose-invert max-w-none text-current whitespace-pre-wrap break-words">
                                         <MathRenderer content={message.content} />
                                     </div>
                                 </div>
@@ -322,7 +322,7 @@ export default function WisdomGptChat() {
         </div>
       </div>
 
-      {/* Input Area */}
+      {/* Chat Input Area */}
       <div className="border-t bg-card">
         <div className="max-w-3xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
             <div className="relative rounded-xl border bg-background shadow-lg">
@@ -413,3 +413,5 @@ export default function WisdomGptChat() {
     </div>
   );
 }
+
+    
