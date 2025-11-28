@@ -116,7 +116,7 @@ const PricingContent = () => {
                     email: user.email || '',
                 },
                 theme: {
-                    color: '#4B0082', 
+                    color: '#BF00FF', 
                 },
             };
 
@@ -156,7 +156,7 @@ const PricingContent = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Left Side of the card */}
                                 <div className="space-y-6">
-                                    <h3 className="text-2xl font-bold font-headline text-primary">Sage</h3>
+                                    <h3 className="text-2xl font-bold font-headline text-primary">Sage Mode</h3>
                                     <p className="text-zinc-300">All the best features for dedicated learners and professionals.</p>
                                     
                                     <div className="flex items-end gap-4">
