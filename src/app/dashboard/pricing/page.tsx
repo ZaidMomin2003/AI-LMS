@@ -37,49 +37,6 @@ const couponSchema = z.object({
 });
 type CouponFormValues = z.infer<typeof couponSchema>;
 
-const CouponCodeForm = () => {
-    const { user } = useAuth();
-    const { toast } = useToast();
-    const [isLoading, setIsLoading] = useState(false);
-    
-    const form = useForm<CouponFormValues>({
-        resolver: zodResolver(couponSchema),
-        defaultValues: { code: '' },
-    });
-    
-    const onSubmit: SubmitHandler<CouponFormValues> = async (data) => {
-        if (!user) {
-            toast({ variant: 'destructive', title: 'You must be logged in.'});
-            return;
-        }
-        setIsLoading(true);
-        try {
-            const result = await applyCouponAction(data.code, user.uid);
-            if (result.success) {
-                toast({ title: 'Coupon Applied!', description: result.message });
-                form.reset();
-            } else {
-                toast({ variant: 'destructive', title: 'Invalid Coupon', description: result.message });
-            }
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not apply coupon. Please try again.'});
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    return (
-        <div className="text-center">
-            <p className="text-sm text-muted-foreground">Have a coupon code?</p>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-center gap-2 max-w-sm mx-auto mt-2">
-                <Input {...form.register('code')} placeholder="Enter code 'FIRST25'" className="bg-background/50" />
-                <Button type="submit" disabled={isLoading} variant="secondary">
-                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Apply'}
-                </Button>
-            </form>
-        </div>
-    );
-};
 
 const PricingContent = () => {
     const { user } = useAuth();
@@ -186,62 +143,69 @@ const PricingContent = () => {
     return (
         <AppLayout>
             <Script id="razorpay-checkout-js" src="https://checkout.razorpay.com/v1/checkout.js" />
-            <div className="flex-1 space-y-8 p-4 md:p-8 pt-6">
-                <div className="text-center space-y-2 max-w-2xl mx-auto">
-                    <h2 className="text-3xl font-headline font-bold tracking-tight">One Plan to Rule Them All</h2>
-                    <p className="text-muted-foreground">
-                        Simple, transparent pricing. Get every feature we have, and every feature we will ever build, with one single plan.
-                    </p>
-                </div>
-                
-                <div className="max-w-md mx-auto">
-                    <Card className="shadow-2xl shadow-primary/10 overflow-hidden">
-                        <CardHeader className="relative p-8 bg-card overflow-hidden bg-gradient-to-r from-yellow-400 via-green-400 to-blue-500 animate-liquid-gradient" style={{ backgroundSize: '400% 400%' }}>
-                            <div className="flex justify-between items-center text-primary-foreground">
-                                <h3 className="text-2xl font-headline font-bold">{sagePlan.name} Plan</h3>
-                                <div className="bg-primary-foreground/20 text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">Save 25%</div>
+            <div className="flex-1 p-4 md:p-8 flex flex-col items-center justify-center bg-zinc-900 text-white">
+                <div className="w-full max-w-4xl mx-auto space-y-8">
+                    <div className="text-center">
+                        <h2 className="text-4xl md:text-5xl font-bold font-headline">A plan for your success</h2>
+                        <p className="text-zinc-400 mt-2">Choose the plan that will propel you to your academic goals.</p>
+                    </div>
+
+                    <div className="relative p-0.5 rounded-2xl bg-gradient-to-br from-primary/50 to-zinc-800">
+                        <div className="rounded-[15px] bg-zinc-900 p-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {/* Left Side of the card */}
+                                <div className="space-y-6">
+                                    <h3 className="text-2xl font-bold font-headline text-primary">Sage</h3>
+                                    <p className="text-zinc-300">All the best features for dedicated learners and professionals.</p>
+                                    
+                                    <div className="flex items-end gap-4">
+                                        <div>
+                                            <span className="text-4xl font-bold">${monthlyPrice}</span>
+                                            <span className="text-zinc-400">/mo</span>
+                                        </div>
+                                        <div className="border-l border-zinc-600 pl-4">
+                                            <span className="text-xl font-bold">${sagePlan.price}</span>
+                                            <span className="text-zinc-400">/year</span>
+                                        </div>
+                                    </div>
+                                    <ul className="space-y-3 pt-4">
+                                        {sageFeatures.slice(0, 3).map(feature => (
+                                            <li key={feature} className="flex items-center gap-3">
+                                                <Check className="w-5 h-5 text-primary" />
+                                                <span className="text-zinc-300">{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                {/* Right Side of the card */}
+                                <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-8 space-y-6">
+                                    <p className="font-semibold text-zinc-200">Everything in Sage includes:</p>
+                                    <ul className="space-y-3">
+                                        {sageFeatures.map(feature => (
+                                            <li key={feature} className="flex items-center gap-3 text-sm">
+                                                <Check className="w-4 h-4 text-zinc-400" />
+                                                <span className="text-zinc-300">{feature}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             </div>
-                            <CardDescription className="flex flex-col pt-4">
-                                <span className="text-4xl font-bold text-primary-foreground">{currencySymbol}{monthlyPrice} <span className="text-xl text-primary-foreground/80">/mo</span></span>
-                                <span className="text-primary-foreground/80 text-sm mt-1">Billed annually at ${sagePlan.price}</span>
-                            </CardDescription>
-                            <Button
-                                size="lg"
-                                className="w-full mt-6 bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-                                onClick={handlePayment}
-                                disabled={subLoading || isLoading || subscription?.status === 'active'}
-                            >
-                                {isLoading ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Processing...</>) 
-                                : (subscription?.status === 'active') ? 'Your Current Plan' 
-                                : (<><Gem className="mr-2 h-4 w-4" /> Get Sage Plan</>)}
-                            </Button>
-                        </CardHeader>
-                        <CardContent className="p-8 bg-black border-t-2 border-white">
-                            <p className="text-sm font-semibold text-white mb-4">Everything in Free, plus:</p>
-                            <ul className="space-y-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6">
-                                {sageFeatures.map(feature => (
-                                    <li key={feature} className="flex items-center gap-3 text-sm">
-                                        <Check className="w-5 h-5 text-primary" />
-                                        <span className="text-muted-foreground">{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </CardContent>
-                    </Card>
-                </div>
-                
-                <Card className="max-w-md mx-auto mt-8 p-6 bg-secondary/50 border-dashed">
-                    <CardContent className="p-0 text-center space-y-4">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                            <Sparkles className="w-4 h-4" />
-                            <span>Limited Time Offer</span>
+                            <div className="mt-8">
+                                <Button
+                                    size="lg"
+                                    className="w-full bg-white text-zinc-900 hover:bg-zinc-200 font-bold text-base"
+                                    onClick={handlePayment}
+                                    disabled={subLoading || isLoading || subscription?.status === 'active'}
+                                >
+                                    {isLoading ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Processing...</>) 
+                                    : (subscription?.status === 'active') ? 'You are on the Sage Plan' 
+                                    : 'Sign up for Sage'}
+                                </Button>
+                            </div>
                         </div>
-                        <p className="text-foreground max-w-sm mx-auto">
-                            Your free trial awaits. Lock in our introductory price forever before it increases soon.
-                        </p>
-                        {subscription?.status !== 'active' && <CouponCodeForm />}
-                    </CardContent>
-                </Card>
+                    </div>
+                </div>
             </div>
         </AppLayout>
     );
