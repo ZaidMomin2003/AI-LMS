@@ -3,7 +3,7 @@
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Gem, Lock, Star, Ticket, X, Loader2, Sparkles } from 'lucide-react';
+import { Check, Gem, Lock, Star, Ticket, X, Loader2, Sparkles, LifeBuoy } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { useToast } from '@/hooks/use-toast';
@@ -17,6 +17,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { applyCouponAction } from './actions';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 interface Plan {
     name: string;
@@ -131,7 +132,7 @@ const PricingContent = () => {
     const currencySymbol = '$';
     const monthlyPrice = (sagePlan.price / sagePlan.durationMonths).toFixed(2);
     
-    const sageFeatures = [
+    const proFeatures = [
         'Unlimited Topic Generations',
         'Unlimited Study Roadmaps',
         'Unlimited Pomodoro Timers',
@@ -169,7 +170,7 @@ const PricingContent = () => {
                                         </div>
                                     </div>
                                     <ul className="space-y-3 pt-4">
-                                        {sageFeatures.slice(0, 3).map(feature => (
+                                        {proFeatures.slice(0, 3).map(feature => (
                                             <li key={feature} className="flex items-center gap-3">
                                                 <Check className="w-5 h-5 text-primary" />
                                                 <span className="text-zinc-300">{feature}</span>
@@ -182,7 +183,7 @@ const PricingContent = () => {
                                 <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-8 space-y-6">
                                     <p className="font-semibold text-zinc-200">Everything in Sage includes:</p>
                                     <ul className="space-y-3">
-                                        {sageFeatures.map(feature => (
+                                        {proFeatures.map(feature => (
                                             <li key={feature} className="flex items-center gap-3 text-sm">
                                                 <Check className="w-4 h-4 text-zinc-400" />
                                                 <span className="text-zinc-300">{feature}</span>
@@ -192,21 +193,34 @@ const PricingContent = () => {
                                 </div>
                             </div>
                             <div className="mt-8">
-                                <Button
-                                    size="lg"
-                                    className={cn(
-                                        "w-full font-bold text-base",
-                                        subscription?.status === 'active'
-                                        ? "bg-blue-600 text-white cursor-not-allowed opacity-100"
-                                        : "bg-white text-zinc-900 hover:bg-zinc-200"
-                                    )}
-                                    onClick={handlePayment}
-                                    disabled={subLoading || isLoading || subscription?.status === 'active'}
-                                >
-                                    {isLoading ? (<><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Processing...</>) 
-                                    : (subscription?.status === 'active') ? 'You are on the Sage Plan' 
-                                    : 'Sign up for Sage'}
-                                </Button>
+                                {subLoading || isLoading ? (
+                                    <Button size="lg" className="w-full font-bold text-base" disabled>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin"/> Processing...
+                                    </Button>
+                                ) : subscription?.status === 'active' ? (
+                                    <motion.div
+                                        className="group relative overflow-hidden rounded-md border-[1px] border-blue-500/50 bg-blue-600/90 text-white transition-colors"
+                                    >
+                                        <div className="relative z-10 flex items-center justify-center gap-2 px-3 py-2.5 font-mono text-sm font-medium uppercase text-center w-full">
+                                            <Check className="h-4 w-4" />
+                                            <span>You are on the Sage Plan</span>
+                                        </div>
+                                        <motion.span
+                                            initial={{ y: "100%" }}
+                                            animate={{ y: "-100%" }}
+                                            transition={{ repeat: Infinity, repeatType: "mirror", duration: 1, ease: "linear" }}
+                                            className="duration-300 absolute inset-0 z-0 scale-125 bg-gradient-to-t from-blue-500/0 from-40% via-blue-400/100 to-blue-500/0 to-60% opacity-100"
+                                        />
+                                    </motion.div>
+                                ) : (
+                                    <Button
+                                        size="lg"
+                                        className="w-full font-bold text-base bg-white text-zinc-900 hover:bg-zinc-200"
+                                        onClick={handlePayment}
+                                    >
+                                        Sign up for Sage
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     </div>
