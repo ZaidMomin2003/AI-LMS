@@ -2,7 +2,6 @@
 'use client';
 
 import WisdomGptChat from '@/components/wisdomgpt/WisdomGptChat';
-import { wisdomGptAction } from './actions';
 
 export default function WisdomGptPage() {
     return (

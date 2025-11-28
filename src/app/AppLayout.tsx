@@ -56,6 +56,7 @@ import {
   Expand,
   Minimize,
   FileClock,
+  ArrowLeft,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
