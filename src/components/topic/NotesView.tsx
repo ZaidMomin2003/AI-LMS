@@ -299,7 +299,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
                     </Button>
                 </div>
             ) : (
-             <div className="space-y-2 p-4 w-80 relative bg-secondary/50">
+             <div className="space-y-2 p-4 w-80 relative bg-popover">
                 <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
                     <X className="w-4 h-4"/>
                 </Button>
