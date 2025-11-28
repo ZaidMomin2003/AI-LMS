@@ -406,12 +406,13 @@ export default function WisdomGptChat() {
                                     <CommandGroup>
                                     {filteredTopics.map((topic) => (
                                         <CommandItem
-                                        key={topic.id}
-                                        value={topic.title}
-                                        onSelect={() => handleTopicSelect(topic)}
-                                        className="aria-selected:bg-primary aria-selected:text-primary-foreground"
+                                            key={topic.id}
+                                            value={topic.title}
+                                            className="aria-selected:bg-primary aria-selected:text-primary-foreground"
                                         >
-                                        <span>{topic.title}</span>
+                                            <div onClick={() => handleTopicSelect(topic)} className="w-full">
+                                                {topic.title}
+                                            </div>
                                         </CommandItem>
                                     ))}
                                     </CommandGroup>
@@ -531,3 +532,5 @@ export default function WisdomGptChat() {
     </div>
   );
 }
+
+    
