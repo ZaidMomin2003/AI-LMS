@@ -235,7 +235,7 @@ export default function WisdomGptChat() {
                                         />
                                     </div>
                                 )}
-                                <div className="prose prose-sm prose-invert max-w-none text-current whitespace-pre-wrap break-words">
+                                <div className="prose prose-sm prose-invert prose-tight max-w-none text-current whitespace-normal break-words">
                                     <MathRenderer content={message.content} />
                                 </div>
                             </div>
