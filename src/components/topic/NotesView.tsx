@@ -129,10 +129,11 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
                 setPopoverContent('options');
                 setPopoverOpen(true);
             }
-        } else {
+        } else if (!popoverOpen) {
+            // Only close if we are not already in an explanation popover
             setPopoverOpen(false);
         }
-  }, [isMobile]);
+  }, [isMobile, popoverOpen]);
   
   const triggerExplanation = (text: string) => {
     setSelectedText(text);
@@ -171,6 +172,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         const mark = document.createElement('mark');
         mark.className = "bg-yellow-300/70 dark:bg-yellow-400/50 text-foreground px-1 rounded";
         
+        // This is a simplified way to handle highlighting. For complex nested nodes, a library might be better.
         mark.appendChild(range.extractContents());
         range.insertNode(mark);
         
@@ -182,6 +184,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
             description: "An unexpected error occurred while highlighting."
         });
     } finally {
+        // Deselect text after highlighting
         window.getSelection()?.removeAllRanges();
         setPopoverOpen(false);
     }
@@ -220,10 +223,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         <PopoverAnchor asChild>
           <div ref={virtualRef as any} />
         </PopoverAnchor>
-        <div 
-          ref={notesViewRef}
-          className="selectable-text"
-        >
+        <div ref={notesViewRef}>
             <ScrollArea className="h-[calc(100vh-200px)]">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
                     {/* Left Column */}
@@ -299,7 +299,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
                     </Button>
                 </div>
             ) : (
-             <div className="space-y-2 p-4 w-80 relative">
+             <div className="space-y-2 p-4 w-80 relative bg-secondary/50">
                 <Button variant="ghost" size="icon" className="absolute top-2 right-2 h-6 w-6" onClick={() => setPopoverOpen(false)}>
                     <X className="w-4 h-4"/>
                 </Button>
