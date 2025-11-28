@@ -37,16 +37,6 @@ import { nanoid } from 'nanoid';
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from 'framer-motion';
 
-import { 
-    Conversation, 
-    ConversationContent 
-} from '@/components/ai-elements/conversation';
-import { 
-    Message, 
-    MessageAvatar, 
-    MessageContent, 
-    MessageResponse 
-} from '@/components/ai-elements/message';
 import { Bot, LoaderIcon, User } from "lucide-react";
 import { MarkdownRenderer } from "../MarkdownRenderer";
 import type { WisdomGptInput } from "@/ai/flows/wisdom-gpt-flow";
@@ -150,6 +140,11 @@ export default function WisdomGptChat() {
     } finally {
       setIsTyping(false);
     }
+  };
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleSendMessage();
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -461,5 +456,3 @@ export default function WisdomGptChat() {
     </div>
   );
 }
-
-    
