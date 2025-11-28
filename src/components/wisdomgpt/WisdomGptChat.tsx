@@ -192,6 +192,25 @@ export default function WisdomGptChat() {
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
+    // This effect handles clicking on follow-up buttons
+    useEffect(() => {
+        const handleFollowUpClick = (event: Event) => {
+            const target = event.target as HTMLElement;
+            if (target.matches('button.follow-up-btn')) {
+                const question = target.textContent;
+                if (question) {
+                    handleSendMessage(question);
+                }
+            }
+        };
+
+        const chatEl = chatContainerRef.current;
+        chatEl?.addEventListener('click', handleFollowUpClick);
+
+        return () => {
+            chatEl?.removeEventListener('click', handleFollowUpClick);
+        };
+    }, [handleSendMessage]); // Re-bind if handleSendMessage changes
 
   return (
     <div className="flex h-full w-full flex-col">

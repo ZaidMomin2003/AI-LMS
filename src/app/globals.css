@@ -135,3 +135,12 @@
     margin: 0 !important;
   }
 }
+
+@layer components {
+    .example-box {
+        @apply border-l-4 border-primary bg-secondary/50 p-4 my-4 rounded-r-lg;
+    }
+    .follow-up-btn {
+        @apply bg-background border border-border text-foreground hover:bg-secondary text-sm rounded-lg px-3 py-1.5 transition-colors cursor-pointer mr-2 mt-2;
+    }
+}
