@@ -86,7 +86,7 @@ export default function WisdomGptChat() {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSendMessage = async (promptOverride?: string) => {
+  const handleSendMessage = useCallback(async (promptOverride?: string) => {
     const currentInput = promptOverride || input.trim();
     if (!currentInput && !imageData) return;
 
@@ -140,7 +140,7 @@ export default function WisdomGptChat() {
     } finally {
       setIsTyping(false);
     }
-  };
+  }, [input, imageData, imagePreview, settings, toast]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,7 +215,7 @@ export default function WisdomGptChat() {
   return (
     <div className="flex h-full w-full flex-col">
       {/* Scrollable chat messages area */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto pb-24">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto pb-28">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-8">
             {messages.length === 0 && !isTyping ? (
                  <div className="flex flex-col items-center justify-center text-center h-full pt-16">
@@ -254,7 +254,7 @@ export default function WisdomGptChat() {
                                         />
                                     </div>
                                 )}
-                                <div className="prose prose-sm prose-invert prose-tight max-w-none text-current whitespace-normal break-words">
+                               <div className="prose prose-sm prose-invert prose-tight max-w-none text-current whitespace-normal break-words">
                                     <MathRenderer content={message.content} />
                                 </div>
                             </div>
@@ -486,3 +486,4 @@ export default function WisdomGptChat() {
 
     
     
+
