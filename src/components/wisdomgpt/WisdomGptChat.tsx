@@ -198,7 +198,7 @@ export default function WisdomGptChat() {
       <div ref={chatContainerRef} className="flex-1 overflow-y-auto">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-8">
             {messages.length === 0 && !isTyping ? (
-                 <div className="flex flex-col items-center justify-center text-center h-full">
+                 <div className="flex flex-col items-center justify-center text-center h-full pt-16">
                      <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
                         <IconSparkles size={28} />
                     </div>
@@ -283,6 +283,22 @@ export default function WisdomGptChat() {
       </div>
 
       <div className="relative z-10 w-full max-w-2xl mx-auto px-4 pb-4">
+        {messages.length === 0 && !isTyping && (
+            <div className="max-w-xs sm:max-w-md mx-auto flex-wrap gap-2 flex min-h-0 shrink-0 items-center justify-center pb-4">
+            {ACTIONS.map((action) => (
+                <Button
+                className="gap-2 rounded-full"
+                key={action.id}
+                size="sm"
+                variant="outline"
+                onClick={() => handleActionClick(action.id)}
+                >
+                <action.icon size={16} />
+                {action.label}
+                </Button>
+            ))}
+            </div>
+        )}
         <form
           className="overflow-visible rounded-xl border bg-card p-2 transition-colors duration-200 focus-within:border-ring"
           onSubmit={handleSubmit}
@@ -437,21 +453,6 @@ export default function WisdomGptChat() {
             </div>
           </div>
         </form>
-
-        <div className="max-w-xs sm:max-w-md mx-auto flex-wrap gap-2 flex min-h-0 shrink-0 items-center justify-center pt-4">
-          {ACTIONS.map((action) => (
-            <Button
-              className="gap-2 rounded-full"
-              key={action.id}
-              size="sm"
-              variant="outline"
-              onClick={() => handleActionClick(action.id)}
-            >
-              <action.icon size={16} />
-              {action.label}
-            </Button>
-          ))}
-        </div>
       </div>
     </div>
   );
