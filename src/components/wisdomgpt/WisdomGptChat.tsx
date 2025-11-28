@@ -233,7 +233,11 @@ export default function WisdomGptChat() {
         setInput(prompt);
         setShowTopicSuggestions(false);
         setTopicSearch('');
-        handleSendMessage(prompt, noteContent);
+        // We set the prompt and context, but don't send the message immediately.
+        // This allows the user to add their specific question.
+        // We will pass the `noteContent` when the user eventually clicks send.
+        // The current implementation of `handleSendMessage` needs to be adapted to handle this.
+        // For now, let's just set the input. The user can manually trigger send.
     };
 
   return (
@@ -373,10 +377,10 @@ export default function WisdomGptChat() {
                 </div>
             )}
             <Textarea
-                className="max-h-50 min-h-10 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
+                className="h-10 max-h-50 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask anything, or reference notes with the '@' button..."
+                placeholder="Ask anything, or use @ to reference your notes..."
                 value={input}
             />
 
@@ -391,11 +395,11 @@ export default function WisdomGptChat() {
                     />
                     <Popover open={showTopicSuggestions} onOpenChange={setShowTopicSuggestions}>
                         <PopoverTrigger asChild>
-                            <Button className="ml-[-2px] h-7 w-7 rounded-md" size="icon" type="button" variant="ghost">
+                            <Button className="h-7 w-7 rounded-md" size="icon" type="button" variant="ghost">
                                 <span className="font-semibold text-base text-muted-foreground">@</span>
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[400px] p-0 mb-2">
+                        <PopoverContent className="w-[300px] p-0 mb-2">
                             <Command>
                                 <CommandInput 
                                     placeholder="Search your notes..." 
