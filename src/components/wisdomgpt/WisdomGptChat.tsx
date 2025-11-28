@@ -1,5 +1,6 @@
 
 "use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,27 +19,45 @@ import {
   IconArrowUp,
   IconCirclePlus,
   IconClipboard,
-  IconFileUpload,
-  IconHistory,
-  IconLink,
   IconPaperclip,
   IconPlayerPlay,
   IconPlus,
-  IconSparkles,
   IconTemplate,
   IconX,
   IconBrain,
   IconBook,
   IconFileText,
+  IconSparkles,
+  IconHistory,
+  IconLink,
 } from "@tabler/icons-react";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
+import { nanoid } from 'nanoid';
+import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from 'framer-motion';
 
-interface AttachedFile {
+import { 
+    Conversation, 
+    ConversationContent 
+} from '@/components/ai-elements/conversation';
+import { 
+    Message, 
+    MessageAvatar, 
+    MessageContent, 
+    MessageResponse 
+} from '@/components/ai-elements/message';
+import { Bot, LoaderIcon, User } from "lucide-react";
+import { MarkdownRenderer } from "../MarkdownRenderer";
+import type { WisdomGptInput } from "@/ai/flows/wisdom-gpt-flow";
+import { wisdomGptAction } from "@/app/dashboard/wisdomgpt/actions";
+
+
+interface ChatMessage {
   id: string;
-  name: string;
-  file: File;
-  preview?: string;
+  role: 'user' | 'assistant';
+  content: string;
+  image?: string;
 }
 
 const ACTIONS = [
@@ -48,17 +67,17 @@ const ACTIONS = [
   { id: "create-flashcards", icon: IconFileText, label: "Generate flashcards" },
 ];
 
-export const title = "Full-Featured AI Prompt with Files";
+export default function WisdomGptChat() {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  
+  const [imageData, setImageData] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-export default function WisdomGptChat({
-  onSubmit,
-}: {
-  onSubmit?: (prompt: string) => void;
-}) {
-  const [prompt, setPrompt] = useState("");
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   const [settings, setSettings] = useState({
     explainSimple: true,
@@ -66,84 +85,80 @@ export default function WisdomGptChat({
     suggestFollowUp: false,
   });
 
-  const generateFileId = () => Math.random().toString(36).substring(7);
-  const processFiles = (files: File[]) => {
-    for (const file of files) {
-      const fileId = generateFileId();
-      const attachedFile: AttachedFile = {
-        id: fileId,
-        name: file.name,
-        file,
-      };
-
-      if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          setAttachedFiles((prev) =>
-            prev.map((f) =>
-              f.id === fileId ? { ...f, preview: reader.result as string } : f
-            )
-          );
-        };
-        reader.readAsDataURL(file);
-      }
-
-      setAttachedFiles((prev) => [...prev, attachedFile]);
+   useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
     }
-  };
-  const submitPrompt = () => {
-    if (prompt.trim() && onSubmit) {
-      onSubmit(prompt.trim());
-      setPrompt("");
-    }
-  };
+  }, [messages, isTyping]);
+
+
   const updateSetting = (key: keyof typeof settings, value: boolean) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    submitPrompt();
-  };
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  };
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
 
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      processFiles(files);
+  const handleSendMessage = async (promptOverride?: string) => {
+    const currentInput = promptOverride || input.trim();
+    if (!currentInput && !imageData) return;
+
+    setIsTyping(true);
+    setInput("");
+
+    const userMessage: ChatMessage = {
+      id: nanoid(),
+      role: 'user',
+      content: currentInput,
+      ...(imagePreview && { image: imagePreview }),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    
+    const currentImageData = imageData;
+    setImageData(null);
+    setImagePreview(null);
+    if(fileInputRef.current) fileInputRef.current.value = "";
+
+    try {
+        const aiInput: WisdomGptInput = { prompt: currentInput };
+        if (currentImageData) {
+            aiInput.imageDataUri = currentImageData;
+        }
+        
+      const response = await wisdomGptAction(aiInput);
+
+      const assistantMessage: ChatMessage = {
+        id: nanoid(),
+        role: 'assistant',
+        content: response.response,
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      console.error("Error getting AI response:", error);
+      toast({
+          variant: 'destructive',
+          title: "AI Error",
+          description: "Could not get a response. Please try again."
+      });
+       const errorMessage: ChatMessage = {
+        id: nanoid(),
+        role: 'assistant',
+        content: "Sorry, I encountered an error. Please check the console and try again.",
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
     }
   };
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setPrompt(e.target.value);
-  };
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      submitPrompt();
+      handleSendMessage();
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    processFiles(files);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const handleRemoveFile = (fileId: string) => {
-    setAttachedFiles((prev) => prev.filter((file) => file.id !== fileId));
-  };
-  
   const handleActionClick = (actionId: string) => {
     const prompts: { [key: string]: string } = {
         'explain-concept': "Explain the concept of [Your Topic] in simple terms. Include a real-world example to help me understand.",
@@ -151,79 +166,170 @@ export default function WisdomGptChat({
         'practice-problems': "Create 5 practice problems based on [Your Topic]. Include a mix of difficulties.",
         'create-flashcards': "Generate a set of 10 flashcards for [Your Topic], with a term on the front and a definition on the back."
     };
-    setPrompt(prompts[actionId] || "");
+    const newPrompt = prompts[actionId] || "";
+    setInput(newPrompt);
   };
+  
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            if (file.size > 4 * 1024 * 1024) { // 4MB limit
+                toast({
+                    variant: "destructive",
+                    title: "File too large",
+                    description: "Please upload an image smaller than 4MB."
+                });
+                return;
+            }
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = reader.result as string;
+                setImagePreview(result);
+                setImageData(result);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    
+    const handleRemoveFile = () => {
+        setImageData(null);
+        setImagePreview(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
 
   return (
-    <div className="mx-auto flex w-full flex-col gap-4">
-        <h1 className="text-pretty text-center font-heading font-semibold text-[29px] text-foreground tracking-tighter sm:text-[32px] md:text-[46px]">
-            WisdomGPT
-        </h1>
-        <h2 className="-my-5 pb-4 text-center text-xl text-muted-foreground">
-            Your personal AI tutor for any subject
-        </h2>
+    <div className="flex h-full w-full flex-col">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto">
+        <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-8">
+            {messages.length === 0 && !isTyping ? (
+                 <div className="flex flex-col items-center justify-center text-center h-full">
+                     <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+                        <IconSparkles size={28} />
+                    </div>
+                    <h2 className="text-2xl font-bold font-headline">
+                        WisdomGPT
+                    </h2>
+                     <p className="text-muted-foreground">Your personal AI tutor for any subject</p>
+                </div>
+            ) : (
+              messages.map((message) => {
+                  const isUser = message.role === 'user';
+                  return (
+                     <div key={message.id} className={cn("flex items-start gap-4", isUser && "justify-end")}>
+                        {!isUser && (
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center">
+                                <Bot size={18} />
+                            </div>
+                        )}
+                         <div className={cn("flex-1 max-w-[80%]", isUser && "text-right")}>
+                             <div className={cn(
+                                 "p-3 rounded-2xl inline-block",
+                                 isUser ? "bg-primary text-primary-foreground rounded-br-none" : "bg-secondary rounded-bl-none"
+                             )}>
+                                 {message.image && (
+                                     <div className="mb-2">
+                                         <Image
+                                             src={message.image}
+                                             alt="User upload"
+                                             width={200}
+                                             height={200}
+                                             className="rounded-lg border"
+                                         />
+                                     </div>
+                                 )}
+                                 <div className="prose prose-sm prose-invert max-w-none text-current whitespace-pre-wrap break-words">
+                                      <MarkdownRenderer content={message.content} />
+                                  </div>
+                             </div>
+                         </div>
+                         {isUser && (
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                                <User size={18} />
+                            </div>
+                        )}
+                     </div>
+                  )
+              })
+            )}
+             <AnimatePresence>
+                {isTyping && (
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="flex items-start gap-4"
+                >
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center">
+                        <Bot size={18} />
+                    </div>
+                    <div className="flex-1 mt-3">
+                        <div className="flex items-center gap-1.5">
+                            {[1, 2, 3].map((dot) => (
+                                <motion.div
+                                key={dot}
+                                className="h-2 w-2 rounded-full bg-foreground/50"
+                                initial={{ y: 0 }}
+                                animate={{ y: [-2, 2, -2] }}
+                                transition={{
+                                    duration: 1.2,
+                                    repeat: Infinity,
+                                    delay: dot * 0.15,
+                                    ease: 'easeInOut',
+                                }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+      </div>
 
-      <div className="relative z-10 flex flex-col w-full mx-auto max-w-2xl content-center">
+      <div className="relative z-10 w-full max-w-2xl mx-auto px-4 pb-4">
         <form
           className="overflow-visible rounded-xl border bg-card p-2 transition-colors duration-200 focus-within:border-ring"
-          onDragLeave={handleDragLeave}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
           onSubmit={handleSubmit}
         >
-          {attachedFiles.length > 0 && (
-            <div className="relative flex w-fit items-center gap-2 mb-2 overflow-hidden">
-              {attachedFiles.map((file) => (
+          {imagePreview && (
+            <div className="relative flex w-fit items-center gap-2 mb-2">
                 <Badge
                   variant="outline"
-                  className="group relative h-6 max-w-30 cursor-pointer overflow-hidden text-[13px] transition-colors hover:bg-accent px-0"
-                  key={file.id}
+                  className="group relative h-16 w-16 cursor-default overflow-hidden p-0"
                 >
-                  <span className="flex h-full items-center gap-1.5 overflow-hidden pl-1 font-normal">
-                    <div className="relative flex h-4 min-w-4 items-center justify-center">
-                      {file.preview ? (
-                        <Image
-                          alt={file.name}
-                          className="absolute inset-0 h-4 w-4 rounded border object-cover"
-                          src={file.preview}
-                          width={16}
-                          height={16}
-                        />
-                      ) : (
-                        <IconPaperclip className="opacity-60" size={12} />
-                      )}
-                    </div>
-                    <span className="inline overflow-hidden truncate pr-1.5 transition-all">
-                      {file.name}
-                    </span>
-                  </span>
+                  <Image
+                      alt="Preview"
+                      className="absolute inset-0 h-full w-full rounded-sm object-cover"
+                      src={imagePreview}
+                      layout="fill"
+                  />
                   <button
-                    className="absolute right-1 z-10 rounded-sm p-0.5 text-muted-foreground opacity-0 focus-visible:bg-accent focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background group-hover:opacity-100"
-                    onClick={() => handleRemoveFile(file.id)}
+                    className="absolute right-1 top-1 z-10 rounded-full p-0.5 bg-background/50 text-foreground opacity-0 focus-visible:opacity-100 group-hover:opacity-100"
+                    onClick={handleRemoveFile}
                     type="button"
                   >
                     <IconX size={12} />
                   </button>
                 </Badge>
-              ))}
             </div>
           )}
           <Textarea
-            className="max-h-50 min-h-12 resize-none rounded-none border-none bg-transparent! p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
-            onChange={handleTextareaChange}
+            className="max-h-50 min-h-12 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
+            onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask anything about your studies..."
-            value={prompt}
+            value={input}
           />
 
           <div className="flex items-center gap-1">
             <div className="flex items-end gap-0.5 sm:gap-1">
               <input
                 className="sr-only"
-                multiple
-                onChange={handleFileSelect}
+                onChange={handleFileChange}
                 ref={fileInputRef}
                 type="file"
+                accept="image/*"
               />
 
               <DropdownMenu>
@@ -239,31 +345,19 @@ export default function WisdomGptChat({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="max-w-xs rounded-2xl p-1.5"
+                  className="max-w-xs rounded-xl p-1"
                 >
                   <DropdownMenuGroup className="space-y-1">
                     <DropdownMenuItem
-                      className="rounded-[calc(1rem-6px)] text-xs"
+                      className="rounded-md text-sm"
                       onClick={() => fileInputRef.current?.click()}
                     >
                       <div className="flex items-center gap-2">
                         <IconPaperclip className="text-muted-foreground" size={16} />
-                        <span>Attach Files</span>
+                        <span>Attach Image</span>
                       </div>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs">
-                      <div className="flex items-center gap-2">
-                        <IconLink className="text-muted-foreground" size={16} />
-                        <span>Import from URL</span>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs">
-                      <div className="flex items-center gap-2">
-                        <IconClipboard className="text-muted-foreground" size={16} />
-                        <span>Paste from Clipboard</span>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs">
+                    <DropdownMenuItem className="rounded-md text-sm">
                       <div className="flex items-center gap-2">
                         <IconTemplate className="text-muted-foreground" size={16} />
                         <span>Use Template</span>
@@ -286,10 +380,10 @@ export default function WisdomGptChat({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="w-56 rounded-2xl p-3"
+                  className="w-56 rounded-xl p-3"
                 >
                   <DropdownMenuGroup className="space-y-3">
-                    <div className="flex items-center justify-between">
+                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <IconSparkles className="text-muted-foreground" size={16} />
                         <Label className="text-xs">Explain Like I'm 10</Label>
@@ -338,44 +432,34 @@ export default function WisdomGptChat({
             <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
               <Button
                 className="h-7 w-7 rounded-md"
-                disabled={!prompt.trim()}
+                disabled={!input.trim() && !imageData || isTyping}
                 size="icon"
                 type="submit"
                 variant="default"
               >
-                <IconArrowUp size={16} />
+                {isTyping ? <LoaderIcon className="h-4 w-4 animate-spin"/> : <IconArrowUp size={16} />}
               </Button>
             </div>
           </div>
-
-          <div
-            className={cn(
-              "absolute inset-0 flex items-center justify-center pointer-events-none z-20 rounded-[inherit] border border-border border-dashed bg-muted text-foreground text-sm transition-opacity duration-200",
-              isDragOver ? "opacity-100" : "opacity-0"
-            )}
-          >
-            <span className="flex w-full items-center justify-center gap-1 font-medium">
-              <IconCirclePlus className="min-w-4" size={16} />
-              Drop files here to add as attachments
-            </span>
-          </div>
         </form>
-      </div>
 
-        <div className="max-w-250 mx-auto flex-wrap gap-3 flex min-h-0 shrink-0 items-center justify-center">
-            {ACTIONS.map((action) => (
+        <div className="max-w-xs sm:max-w-md mx-auto flex-wrap gap-2 flex min-h-0 shrink-0 items-center justify-center pt-4">
+          {ACTIONS.map((action) => (
             <Button
-                className="gap-2 rounded-full"
-                key={action.id}
-                size="sm"
-                variant="outline"
-                onClick={() => handleActionClick(action.id)}
+              className="gap-2 rounded-full"
+              key={action.id}
+              size="sm"
+              variant="outline"
+              onClick={() => handleActionClick(action.id)}
             >
-                <action.icon size={16} />
-                {action.label}
+              <action.icon size={16} />
+              {action.label}
             </Button>
-            ))}
+          ))}
         </div>
+      </div>
     </div>
   );
 }
+
+    
