@@ -453,8 +453,13 @@ export default function WisdomGptChat() {
                 </div>
             </div>
             </form>
+            <p className="text-xs text-center text-muted-foreground mt-2 px-2">
+                WisdomGPT may produce inaccurate information. Your chats are not stored.
+            </p>
         </div>
        </div>
     </div>
   );
 }
+
+    
