@@ -215,7 +215,7 @@ export default function WisdomGptChat() {
   return (
     <div className="flex h-full w-full flex-col">
       {/* Scrollable chat messages area */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto pb-28">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto pb-32">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-8">
             {messages.length === 0 && !isTyping ? (
                  <div className="flex flex-col items-center justify-center text-center h-full pt-16">
@@ -390,12 +390,6 @@ export default function WisdomGptChat() {
                             <span>Attach Image</span>
                         </div>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="rounded-md text-sm">
-                        <div className="flex items-center gap-2">
-                            <IconTemplate className="text-muted-foreground" size={16} />
-                            <span>Use Template</span>
-                        </div>
-                        </DropdownMenuItem>
                     </DropdownMenuGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -483,7 +477,3 @@ export default function WisdomGptChat() {
     </div>
   );
 }
-
-    
-    
-
