@@ -5,7 +5,8 @@ import WisdomGptChat from '@/components/wisdomgpt/WisdomGptChat';
 
 export default function WisdomGptPage() {
     return (
-        <div className="flex-1 flex flex-col h-full">
+        // The container now fills the parent space provided by the AppLayout
+        <div className="h-full">
             <WisdomGptChat />
         </div>
     )
