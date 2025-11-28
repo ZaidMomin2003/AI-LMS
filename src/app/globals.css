@@ -71,10 +71,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE/Edge */
-    user-select: none; /* Standard */
   }
   .react-pdf__Page__canvas {
       margin: 0 auto;

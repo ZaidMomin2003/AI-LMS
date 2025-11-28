@@ -194,20 +194,12 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
     if (notesView) {
       const handleMouseUp = () => handleTextSelection();
       
-      const preventDefaultContextMenu = (e: Event) => {
-        if (window.getSelection()?.toString()) {
-            e.preventDefault();
-        }
-      };
-
       notesView.addEventListener('mouseup', handleMouseUp);
       notesView.addEventListener('touchend', handleMouseUp);
-      notesView.addEventListener('contextmenu', preventDefaultContextMenu);
 
       return () => {
         notesView.removeEventListener('mouseup', handleMouseUp);
         notesView.removeEventListener('touchend', handleMouseUp);
-        notesView.removeEventListener('contextmenu', preventDefaultContextMenu);
       };
     }
   }, [handleTextSelection, isMobile]);
@@ -230,6 +222,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         </PopoverAnchor>
         <div 
           ref={notesViewRef}
+          className="selectable-text"
         >
             <ScrollArea className="h-[calc(100vh-200px)]">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 pr-4">
