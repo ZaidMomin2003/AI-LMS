@@ -224,8 +224,8 @@ const PricingContent = () => {
                                 : (<><Gem className="mr-2 h-4 w-4" /> Get Sage Plan</>)}
                             </Button>
                         </CardHeader>
-                        <CardContent className="p-8 bg-primary/5">
-                            <p className="text-sm font-semibold text-foreground mb-4">Everything in Free, plus:</p>
+                        <CardContent className="p-8 bg-black border-t-2 border-white">
+                            <p className="text-sm font-semibold text-white mb-4">Everything in Free, plus:</p>
                             <ul className="space-y-3 grid grid-cols-1 sm:grid-cols-2 gap-x-6">
                                 {sageFeatures.map(feature => (
                                     <li key={feature} className="flex items-center gap-3 text-sm">
