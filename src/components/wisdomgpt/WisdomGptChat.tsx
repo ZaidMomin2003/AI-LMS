@@ -19,13 +19,11 @@ import {
   IconArrowUp,
   IconBook,
   IconBrain,
-  IconFileText,
   IconHistory,
   IconPaperclip,
   IconPlayerPlay,
   IconPlus,
   IconSparkles,
-  IconTemplate,
   IconX,
 } from "@tabler/icons-react";
 import Image from "next/image";
@@ -38,6 +36,10 @@ import { Bot, FileQuestion, LoaderIcon, User } from "lucide-react";
 import { MathRenderer } from "../MathRenderer";
 import type { WisdomGptInput } from "@/ai/flows/wisdom-gpt-flow";
 import { wisdomGptAction } from "@/app/dashboard/wisdomgpt/actions";
+import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from '../ui/popover';
+import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../ui/command';
+import { useTopic } from "@/context/TopicContext";
+import type { Topic, StudyNotes } from "@/types";
 
 
 interface ChatMessage {
@@ -54,6 +56,12 @@ const ACTIONS = [
   { id: "practice-questions", icon: FileQuestion, label: "Give me 5 practice questions for AP Biology" },
 ];
 
+function notesToString(notes: StudyNotes): string {
+    return Object.entries(notes)
+        .map(([key, value]) => `### ${key}\n${value}`)
+        .join('\n\n');
+}
+
 export default function WisdomGptChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -66,10 +74,14 @@ export default function WisdomGptChat() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  const { topics } = useTopic();
+  const [showTopicSuggestions, setShowTopicSuggestions] = useState(false);
+  const [topicSearch, setTopicSearch] = useState('');
+
   const [settings, setSettings] = useState({
     explainSimple: true,
     includeExamples: false,
-    suggestFollowUp: false,
+    suggestFollowUp: true,
   });
 
    useEffect(() => {
@@ -86,7 +98,7 @@ export default function WisdomGptChat() {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSendMessage = useCallback(async (promptOverride?: string) => {
+  const handleSendMessage = useCallback(async (promptOverride?: string, notesContext?: string) => {
     const currentInput = promptOverride || input.trim();
     if (!currentInput && !imageData) return;
 
@@ -111,6 +123,7 @@ export default function WisdomGptChat() {
         const aiInput: WisdomGptInput = { 
           prompt: currentInput,
           settings: settings,
+          notesContext,
         };
         if (currentImageData) {
             aiInput.imageDataUri = currentImageData;
@@ -148,9 +161,12 @@ export default function WisdomGptChat() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+     if (e.key === '@') {
+      setShowTopicSuggestions(true);
     }
   };
 
@@ -210,12 +226,23 @@ export default function WisdomGptChat() {
         return () => {
             chatEl?.removeEventListener('click', handleFollowUpClick);
         };
-    }, [handleSendMessage]); // Re-bind if handleSendMessage changes
+    }, [handleSendMessage]);
+
+    const filteredTopics = topics.filter(topic => topic.title.toLowerCase().includes(topicSearch.toLowerCase()));
+
+    const handleTopicSelect = (topic: Topic) => {
+        const noteContent = notesToString(topic.notes);
+        const prompt = `Using my notes on "${topic.title}", please answer the following question: `;
+        setInput(prompt);
+        setShowTopicSuggestions(false);
+        setTopicSearch('');
+        handleSendMessage(prompt, noteContent);
+    };
 
   return (
     <div className="flex h-full w-full flex-col">
       {/* Scrollable chat messages area */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto pb-36">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto pb-48">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-8">
             {messages.length === 0 && !isTyping ? (
                  <div className="flex flex-col items-center justify-center text-center h-full pt-16">
@@ -321,6 +348,34 @@ export default function WisdomGptChat() {
                 ))}
                 </div>
             )}
+             <Popover open={showTopicSuggestions} onOpenChange={setShowTopicSuggestions}>
+                <PopoverAnchor asChild>
+                    <div />
+                </PopoverAnchor>
+                <PopoverContent className="w-[400px] p-0 mb-2">
+                    <Command>
+                    <CommandInput 
+                        placeholder="Search your notes..." 
+                        value={topicSearch}
+                        onValueChange={setTopicSearch}
+                    />
+                    <CommandList>
+                        <CommandEmpty>No results found.</CommandEmpty>
+                        <CommandGroup>
+                        {filteredTopics.map((topic) => (
+                            <CommandItem
+                            key={topic.id}
+                            onSelect={() => handleTopicSelect(topic)}
+                            >
+                            <span>{topic.title}</span>
+                            </CommandItem>
+                        ))}
+                        </CommandGroup>
+                    </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
+
             <form
             className="overflow-visible rounded-xl border bg-card p-2 transition-colors duration-200 focus-within:border-ring"
             onSubmit={handleSubmit}
@@ -351,7 +406,7 @@ export default function WisdomGptChat() {
                 className="max-h-50 min-h-10 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask anything about your studies..."
+                placeholder="Ask anything about your studies, or type '@' to reference your notes..."
                 value={input}
             />
 
