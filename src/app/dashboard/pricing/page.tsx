@@ -3,7 +3,7 @@
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Check, Gem, Lock, Star, Ticket, X, Loader2, Sparkles, LifeBuoy } from 'lucide-react';
+import { Check, Gem, Lock, Star, Ticket, X, Loader2, Sparkles, LifeBuoy, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import { useToast } from '@/hooks/use-toast';
@@ -27,7 +27,7 @@ interface Plan {
 }
 
 const sagePlan: Plan = {
-    name: 'Sage', 
+    name: 'Sage Mode', 
     price: 199, 
     priceDescription: 'for 12 months of access',
     durationMonths: 12, 
@@ -157,7 +157,7 @@ const PricingContent = () => {
                                 {/* Left Side of the card */}
                                 <div className="space-y-6">
                                     <h3 className="text-2xl font-bold font-headline text-primary">Sage Mode</h3>
-                                    <p className="text-zinc-300">All the best features for dedicated learners and professionals.</p>
+                                    <p className="text-zinc-300">Join thousands of top students and lock in your price before it increases.</p>
                                     
                                     <div className="flex items-end gap-4">
                                         <div>
