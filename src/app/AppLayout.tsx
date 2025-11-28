@@ -55,6 +55,7 @@ import {
   Loader2,
   Expand,
   Minimize,
+  FileClock,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -147,6 +148,27 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   if (appIsLoading) {
     return <AppLoadingScreen />;
   }
+  
+  if (pathname === '/dashboard/wisdomgpt') {
+    return (
+      <div className="flex flex-col h-screen bg-background">
+        <header className="sticky top-0 z-10 flex h-14 items-center justify-between gap-4 border-b bg-background px-4">
+          <Button asChild variant="outline">
+            <Link href="/dashboard">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Link>
+          </Button>
+          <div className="flex items-center gap-2">
+            <h3 className="font-headline font-bold text-lg">WisdomGPT</h3>
+            <Sparkles className="h-5 w-5 text-primary" />
+          </div>
+        </header>
+        <div className="flex-1 min-h-0">{children}</div>
+      </div>
+    );
+  }
+
 
   const handleLogout = async () => {
     const { auth } = initializeFirebase();
@@ -230,6 +252,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
+                     <SidebarMenuItem>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/quiz')}>
+                            <Link href="/dashboard/quiz">
+                                <FileQuestion />
+                                <span className="flex items-center gap-2">
+                                    AI Quiz <Badge variant="secondary" className="text-xs">Soon</Badge>
+                                </span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/pomodoro')}>
                             <Link href="/dashboard/pomodoro">
@@ -265,11 +297,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     asChild
                     isActive={pathname.startsWith('/dashboard/exam')}
                     tooltip={{ children: 'Add Exam Countdown' }}
-                    className="border-2 border-dashed border-primary/50 bg-transparent hover:bg-primary/10 hover:border-primary/80 shadow-lg shadow-primary/20 animate-pulse"
+                    className="bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary-foreground border border-primary/20"
                   >
                     <Link href="/dashboard/exam">
                       <CalendarPlus />
-                      <span>Add Exam</span>
+                      <span>Add Exam Countdown</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -309,6 +341,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     <DropdownMenuItem onSelect={() => router.push('/dashboard/support')} className="cursor-pointer">
                         <LifeBuoy className="mr-2 h-4 w-4" />
                         <span>Support</span>
+                    </DropdownMenuItem>
+                     <DropdownMenuItem onSelect={() => router.push('/roadmap')} className="cursor-pointer">
+                        <FileClock className="mr-2 h-4 w-4" />
+                        <span>Changelog</span>
                     </DropdownMenuItem>
                     <DropdownMenuItem onSelect={toggleFullscreen} className="cursor-pointer">
                         {isFullscreen ? <Minimize className="mr-2 h-4 w-4" /> : <Expand className="mr-2 h-4 w-4" />}
@@ -372,7 +408,3 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </SidebarProvider>
   );
 }
-
-    
-
-    
