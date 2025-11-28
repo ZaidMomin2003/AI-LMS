@@ -31,6 +31,9 @@ import {
   IconSparkles,
   IconTemplate,
   IconX,
+  IconSchool,
+  IconListDetails,
+  IconTrendingUp,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
@@ -60,9 +63,9 @@ export default function WisdomGptChat({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [settings, setSettings] = useState({
-    autoComplete: true,
-    streaming: false,
-    showHistory: false,
+    explainSimple: false,
+    includeExamples: true,
+    suggestNext: true,
   });
 
   const generateFileId = () => Math.random().toString(36).substring(7);
@@ -275,47 +278,47 @@ export default function WisdomGptChat({
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
                   align="start"
-                  className="w-48 rounded-2xl p-3"
+                  className="w-56 rounded-2xl p-3"
                 >
                   <DropdownMenuGroup className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <IconSparkles className="text-muted-foreground" size={16} />
-                        <Label className="text-xs">Auto-complete</Label>
+                        <IconSchool className="text-muted-foreground" size={16} />
+                        <Label className="text-xs">Explain Like I'm 10</Label>
                       </div>
                       <Switch
-                        checked={settings.autoComplete}
+                        checked={settings.explainSimple}
                         className="scale-75"
                         onCheckedChange={(value) =>
-                          updateSetting("autoComplete", value)
+                          updateSetting("explainSimple", value)
                         }
                       />
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <IconPlayerPlay className="text-muted-foreground" size={16} />
-                        <Label className="text-xs">Streaming</Label>
+                        <IconListDetails className="text-muted-foreground" size={16} />
+                        <Label className="text-xs">Include Examples</Label>
                       </div>
                       <Switch
-                        checked={settings.streaming}
+                        checked={settings.includeExamples}
                         className="scale-75"
                         onCheckedChange={(value) =>
-                          updateSetting("streaming", value)
+                          updateSetting("includeExamples", value)
                         }
                       />
                     </div>
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <IconHistory className="text-muted-foreground" size={16} />
-                        <Label className="text-xs">Show History</Label>
+                        <IconTrendingUp className="text-muted-foreground" size={16} />
+                        <Label className="text-xs">Suggest Follow-up</Label>
                       </div>
                       <Switch
-                        checked={settings.showHistory}
+                        checked={settings.suggestNext}
                         className="scale-75"
                         onCheckedChange={(value) =>
-                          updateSetting("showHistory", value)
+                          updateSetting("suggestNext", value)
                         }
                       />
                     </div>
@@ -367,5 +370,3 @@ export default function WisdomGptChat({
     </div>
   );
 }
-
-    
