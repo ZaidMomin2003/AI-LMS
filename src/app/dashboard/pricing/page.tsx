@@ -69,23 +69,15 @@ const CouponCodeForm = () => {
     };
 
     return (
-      <Card className="max-w-md w-full mx-auto mt-8">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 font-headline">
-            <Ticket className="w-5 h-5 text-primary" />
-            Have a Coupon Code?
-          </CardTitle>
-          <CardDescription>Enter your code below to apply your discount.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-center gap-2">
-            <Input {...form.register('code')} placeholder="Enter your coupon" />
-            <Button type="submit" disabled={isLoading}>
-                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Apply'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+        <div className="text-center">
+            <p className="text-sm text-muted-foreground">Have a coupon code?</p>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-center gap-2 max-w-sm mx-auto mt-2">
+                <Input {...form.register('code')} placeholder="Enter code 'FIRST25'" className="bg-background/50" />
+                <Button type="submit" disabled={isLoading} variant="secondary">
+                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Apply'}
+                </Button>
+            </form>
+        </div>
     );
 };
 
@@ -238,9 +230,18 @@ const PricingContent = () => {
                     </Card>
                 </div>
                 
-                <div className="max-w-md mx-auto">
-                    {subscription?.status !== 'active' && <CouponCodeForm />}
-                </div>
+                <Card className="max-w-md mx-auto mt-8 p-6 bg-secondary/50 border-dashed">
+                    <CardContent className="p-0 text-center space-y-4">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                            <Sparkles className="w-4 h-4" />
+                            <span>Limited Time Offer</span>
+                        </div>
+                        <p className="text-foreground max-w-sm mx-auto">
+                            Your free trial awaits. Lock in our introductory price forever before it increases soon.
+                        </p>
+                        {subscription?.status !== 'active' && <CouponCodeForm />}
+                    </CardContent>
+                </Card>
             </div>
         </AppLayout>
     );
