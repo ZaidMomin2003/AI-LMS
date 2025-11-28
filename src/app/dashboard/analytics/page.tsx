@@ -151,13 +151,23 @@ export default function AnalyticsPage() {
   return (
     <>
       <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-        <div className="space-y-2">
-          <h2 className="text-3xl font-headline font-bold tracking-tight">
-            Performance Analytics
-          </h2>
-          <p className="text-muted-foreground">
-            Track your content creation and study habits over time.
-          </p>
+        <div className="flex items-center justify-between">
+            <div className="space-y-2">
+                <h2 className="text-3xl font-headline font-bold tracking-tight">
+                    Performance Analytics
+                </h2>
+                <p className="text-muted-foreground">
+                    Track your content creation and study habits over time.
+                </p>
+            </div>
+            <div className="hidden md:flex">
+                <Button asChild>
+                    <Link href="/dashboard">
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Back to Dashboard
+                    </Link>
+                </Button>
+            </div>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
@@ -320,14 +330,6 @@ export default function AnalyticsPage() {
               )}
             </CardContent>
           </Card>
-        </div>
-        <div className="hidden md:flex justify-center pt-8">
-          <Button asChild>
-            <Link href="/dashboard">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Dashboard
-            </Link>
-          </Button>
         </div>
       </div>
     </>
