@@ -42,12 +42,15 @@ const prompt = ai.definePrompt({
 
   The output MUST be a valid JSON object matching the requested schema. All string values in the JSON must be valid, well-formed HTML. Do NOT include <html> or <body> tags.
 
+  **CRITICAL FORMATTING RULE:**
+  - All mathematical formulas, variables, and equations MUST be enclosed in KaTeX delimiters. Use \`$$...$$\` for block-level equations and \`$...$\` for inline equations. This is non-negotiable and applies to all sections.
+
   **Instructions for Each Section (in HTML):**
   - **introduction**: A brief, engaging intro to the topic in a <p> tag.
   - **coreConcepts**: The main content. Use <h2> for the main title, <h3> for sub-headings, and <p> tags.
   - **keyVocabulary**: An HTML <ul> of 5-7 important vocabulary words. Format: '<li><strong>Word:</strong> Brief definition.</li>'.
   - **keyDefinitions**: An HTML <ul> of 3-5 key concepts with full definitions. Format: '<li><strong>Concept:</strong> Detailed explanation.</li>'.
-  - **keyFormulasOrPoints**: An HTML <ul> of key formulas or important bullet points. If there are no formulas, the value should be the string '<p>None</p>'. **Crucially, if there are any mathematical formulas or equations, you MUST enclose them in KaTeX delimiters, like this: \`$$E=mc^2$$\`. This is non-negotiable.**
+  - **keyFormulasOrPoints**: An HTML <ul> of key formulas or important bullet points. If there are no formulas, the value should be the string '<p>None</p>'. Adhere to the critical KaTeX formatting rule here.
   - **summary**: A concise summary of all notes in one or two <p> tags.
   - **exampleWithExplanation**: A clear example. Use a <h3> for the example title and <p> tags for the content.
   `,
