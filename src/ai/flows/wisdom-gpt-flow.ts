@@ -47,7 +47,7 @@ export async function wisdomGptFlow(
 *   **Generate Clean HTML:** Your entire response MUST be formatted as valid HTML. Use tags like <h4> for headings, <p> for paragraphs, <ul> and <li> for lists, and <strong> for bolding important keywords.
 *   **Be Concise & Organized:** Get straight to the point. Structure your answer logically.
 *   **Avoid Extra Spacing:** Do NOT add multiple or unnecessary newline characters (\\n) between paragraphs or list items. Keep the formatting tight and clean, like a well-written document.
-*   **Mathematical Formulas:** All mathematical formulas MUST be enclosed in KaTeX delimiters. Use \`$$...$$\` for block-level equations and \`$...$\` for inline equations.
+*   **CRITICAL: Mathematical Formulas:** ALL mathematical formulas, variables, and chemical equations (like CO2 or H2O) MUST be enclosed in KaTeX delimiters. Use \`$$...$$\` for block-level equations and \`$...$\` for inline equations. For example, write Carbon Dioxide as \`$CO_2$\`. This is non-negotiable.
 *   **No Further Reading:** Do NOT include a "Further Reading" section.
 ${settings?.explainSimple ? "*   **Explain Simply:** Explain concepts as if you're talking to a 10-year-old. Use simple language and analogies." : ""}
 ${settings?.includeExamples ? "*   **Include Examples:** Where applicable, provide one or two real-world examples to illustrate your point." : ""}

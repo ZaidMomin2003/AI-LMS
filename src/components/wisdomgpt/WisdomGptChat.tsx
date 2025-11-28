@@ -35,7 +35,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { Bot, FileQuestion, LoaderIcon, User } from "lucide-react";
-import { MarkdownRenderer } from "../MarkdownRenderer";
+import { MathRenderer } from "../MathRenderer";
 import type { WisdomGptInput } from "@/ai/flows/wisdom-gpt-flow";
 import { wisdomGptAction } from "@/app/dashboard/wisdomgpt/actions";
 
@@ -236,7 +236,7 @@ export default function WisdomGptChat() {
                                     </div>
                                 )}
                                 <div className="prose prose-sm prose-invert max-w-none text-current whitespace-pre-wrap break-words">
-                                    <MarkdownRenderer content={message.content} />
+                                    <MathRenderer content={message.content} />
                                 </div>
                             </div>
                         </div>
