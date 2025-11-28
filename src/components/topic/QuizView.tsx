@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Progress } from '../ui/progress';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, ArrowLeft, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { getUserDoc, updateUserDoc } from '@/services/firestore';
 
@@ -70,14 +70,22 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
     newAnswers[currentQuestionIndex] = selectedAnswer;
     setUserAnswers(newAnswers);
 
-    setSelectedAnswer(null);
-
     if (currentQuestionIndex < quiz.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+        const nextAnswer = userAnswers[currentQuestionIndex + 1] || null;
+        setSelectedAnswer(nextAnswer);
+        setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       setIsFinished(true);
     }
   };
+
+  const handlePrevious = () => {
+      if (currentQuestionIndex > 0) {
+          const prevAnswer = userAnswers[currentQuestionIndex - 1] || null;
+          setSelectedAnswer(prevAnswer);
+          setCurrentQuestionIndex(currentQuestionIndex - 1);
+      }
+  }
 
   const restartQuiz = () => {
     setCurrentQuestionIndex(0);
@@ -123,12 +131,28 @@ export function QuizView({ quiz, topicId }: QuizViewProps) {
   }
 
   const currentQuestion = quiz[currentQuestionIndex];
+  
+  // Restore selected answer if user has already answered this question
+  useEffect(() => {
+    setSelectedAnswer(userAnswers[currentQuestionIndex] || null);
+  }, [currentQuestionIndex, userAnswers]);
+
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <Progress value={((currentQuestionIndex + 1) / quiz.length) * 100} className="mb-4" />
-        <CardTitle className="font-headline">Question {currentQuestionIndex + 1} of {quiz.length}</CardTitle>
+        <div className="flex justify-between items-center">
+            <CardTitle className="font-headline">Question {currentQuestionIndex + 1} of {quiz.length}</CardTitle>
+            <div className="flex gap-2">
+                <Button variant="outline" size="icon" onClick={handlePrevious} disabled={currentQuestionIndex === 0}>
+                    <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <Button variant="outline" size="icon" onClick={handleNext} disabled={currentQuestionIndex === quiz.length - 1}>
+                    <ArrowRight className="h-4 w-4" />
+                </Button>
+            </div>
+        </div>
         <CardDescription className="text-lg pt-2">{currentQuestion.question}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
