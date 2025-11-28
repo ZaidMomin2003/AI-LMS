@@ -61,6 +61,7 @@ export default function WisdomGptChat({
   const [isDragOver, setIsDragOver] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [settings, setSettings] = useState({
     explainSimple: false,
@@ -145,6 +146,11 @@ export default function WisdomGptChat({
   const handleRemoveFile = (fileId: string) => {
     setAttachedFiles((prev) => prev.filter((file) => file.id !== fileId));
   };
+  
+  const handleActionClick = (label: string) => {
+    setPrompt(label + " ");
+    textareaRef.current?.focus();
+  };
 
   return (
     <div className="mx-auto flex w-full flex-col gap-4 h-full items-center justify-center">
@@ -201,6 +207,7 @@ export default function WisdomGptChat({
             </div>
           )}
           <Textarea
+            ref={textareaRef}
             className="max-h-50 min-h-12 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
             onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
@@ -361,6 +368,7 @@ export default function WisdomGptChat({
             key={action.id}
             size="sm"
             variant="outline"
+            onClick={() => handleActionClick(action.label)}
           >
             <action.icon size={16} />
             {action.label}
