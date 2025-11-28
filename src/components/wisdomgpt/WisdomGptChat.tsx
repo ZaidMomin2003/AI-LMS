@@ -1,400 +1,438 @@
 
 "use client";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+  MessageBranch,
+  MessageBranchContent,
+  MessageBranchNext,
+  MessageBranchPage,
+  MessageBranchPrevious,
+  MessageBranchSelector,
+} from "@/components/ai-elements/message";
 import {
-  IconAdjustmentsHorizontal,
-  IconArrowUp,
-  IconBrain,
-  IconFileText,
-  IconHelp,
-  IconCirclePlus,
-  IconClipboard,
-  IconFileUpload,
-  IconHistory,
-  IconBook,
-  IconLink,
-  IconPaperclip,
-  IconPlayerPlay,
-  IconPlus,
-  IconSparkles,
-  IconTemplate,
-  IconX,
-  IconSchool,
-  IconListDetails,
-  IconTrendingUp,
-} from "@tabler/icons-react";
-import Image from "next/image";
-import { useRef, useState } from "react";
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
+import { Message, MessageContent } from "@/components/ai-elements/message";
+import {
+  PromptInput,
+  PromptInputActionAddAttachments,
+  PromptInputActionMenu,
+  PromptInputActionMenuContent,
+  PromptInputActionMenuTrigger,
+  PromptInputAttachment,
+  PromptInputAttachments,
+  PromptInputBody,
+  PromptInputButton,
+  PromptInputFooter,
+  PromptInputHeader,
+  type PromptInputMessage,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  PromptInputTools,
+} from "@/components/ai-elements/prompt-input";
+import {
+  ModelSelector,
+  ModelSelectorContent,
+  ModelSelectorEmpty,
+  ModelSelectorGroup,
+  ModelSelectorInput,
+  ModelSelectorItem,
+  ModelSelectorList,
+  ModelSelectorLogo,
+  ModelSelectorLogoGroup,
+  ModelSelectorName,
+  ModelSelectorTrigger,
+} from "@/components/ai-elements/model-selector";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "@/components/ai-elements/reasoning";
+import { MessageResponse } from "@/components/ai-elements/message";
+import {
+  Source,
+  Sources,
+  SourcesContent,
+  SourcesTrigger,
+} from "@/components/ai-elements/sources";
+import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
+import { type WisdomGptOutput } from "@/ai/flows/wisdom-gpt-flow";
+import type { ToolUIPart } from "ai";
+import { CheckIcon, GlobeIcon, MicIcon } from "lucide-react";
+import { nanoid } from "nanoid";
+import { useCallback, useState } from "react";
+import { toast } from "sonner";
 
-interface AttachedFile {
-  id: string;
-  name: string;
-  file: File;
-  preview?: string;
-}
+type MessageType = {
+  key: string;
+  from: "user" | "assistant";
+  sources?: { href: string; title: string }[];
+  versions: {
+    id: string;
+    content: string;
+  }[];
+  reasoning?: {
+    content: string;
+    duration: number;
+  };
+};
 
-const ACTIONS = [
+const initialMessages: MessageType[] = [];
+
+const models = [
   {
-    id: "explain-concept",
-    icon: IconSparkles,
-    label: "Explain a concept",
-    prompt: "Explain the concept of [Your Topic] in simple terms. Use an analogy and provide a real-world example.",
+    id: "gemini-2.5-flash-lite",
+    name: "Gemini 2.5 Flash",
+    chef: "Google",
+    chefSlug: "google",
+    providers: ["google"],
   },
   {
-    id: "summarize-topic",
-    icon: IconFileText,
-    label: "Summarize a chapter",
-    prompt: "Summarize the key points from the chapter on [Your Topic]. Focus on the most important definitions, people, and events.",
-  },
-  {
-    id: "practice-problems",
-    icon: IconBrain,
-    label: "Create practice problems",
-    prompt: "Create 5 multiple-choice practice questions about [Your Topic]. Include the correct answer and a brief explanation for each.",
-  },
-  {
-    id: "homework-help",
-    icon: IconHelp,
-    label: "Help with homework",
-    prompt: "I'm stuck on my homework about [Your Topic]. Can you help me understand [specific question or concept]?",
+    id: "gemini-2.5-pro-lite",
+    name: "Gemini 2.5 Pro",
+    chef: "Google",
+    chefSlug: "google",
+    providers: ["google"],
   },
 ];
 
-export default function WisdomGptChat({
+const suggestions = [
+  "Explain photosynthesis",
+  "What was the cause of World War I?",
+  "Summarize 'Romeo and Juliet'",
+  "Create 5 practice questions for calculus",
+];
+
+const mockResponses = [
+  "That's a great question! Let me help you understand this concept better. The key thing to remember is that proper implementation requires careful consideration of the underlying principles and best practices in the field.",
+  "I'd be happy to explain this topic in detail. From my understanding, there are several important factors to consider when approaching this problem. Let me break it down step by step for you.",
+  "This is an interesting topic that comes up frequently. The solution typically involves understanding the core concepts and applying them in the right context. Here's what I recommend...",
+  "Great choice of topic! This is something that many developers encounter. The approach I'd suggest is to start with the fundamentals and then build up to more complex scenarios.",
+  "That's definitely worth exploring. From what I can see, the best way to handle this is to consider both the theoretical aspects and practical implementation details.",
+];
+
+const WisdomGptChat = ({
   onSubmit,
 }: {
-  onSubmit?: (prompt: string) => void;
-}) {
-  const [prompt, setPrompt] = useState("");
-  const [isDragOver, setIsDragOver] = useState(false);
-  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  onSubmit?: (input: {prompt: string, imageDataUri?: string}) => Promise<WisdomGptOutput>;
+}) => {
+  const [model, setModel] = useState<string>(models[0].id);
+  const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
+  const [text, setText] = useState<string>("");
+  const [useWebSearch, setUseWebSearch] = useState<boolean>(false);
+  const [useMicrophone, setUseMicrophone] = useState<boolean>(false);
+  const [status, setStatus] = useState<
+    "submitted" | "streaming" | "ready" | "error"
+  >("ready");
+  const [messages, setMessages] = useState<MessageType[]>(initialMessages);
+  const [streamingMessageId, setStreamingMessageId] = useState<string | null>(
+    null
+  );
 
-  const [settings, setSettings] = useState({
-    explainSimple: false,
-    includeExamples: true,
-    suggestNext: true,
-  });
+  const selectedModelData = models.find((m) => m.id === model);
 
-  const generateFileId = () => Math.random().toString(36).substring(7);
-  const processFiles = (files: File[]) => {
-    for (const file of files) {
-      const fileId = generateFileId();
-      const attachedFile: AttachedFile = {
-        id: fileId,
-        name: file.name,
-        file,
-      };
+  const streamResponse = useCallback(
+    async (messageId: string, content: string) => {
+      setStatus("streaming");
+      setStreamingMessageId(messageId);
 
-      if (file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          setAttachedFiles((prev) =>
-            prev.map((f) =>
-              f.id === fileId ? { ...f, preview: reader.result as string } : f
-            )
-          );
-        };
-        reader.readAsDataURL(file);
+      const words = content.split(" ");
+      let currentContent = "";
+
+      for (let i = 0; i < words.length; i++) {
+        currentContent += (i > 0 ? " " : "") + words[i];
+
+        setMessages((prev) =>
+          prev.map((msg) => {
+            if (msg.versions.some((v) => v.id === messageId)) {
+              return {
+                ...msg,
+                versions: msg.versions.map((v) =>
+                  v.id === messageId ? { ...v, content: currentContent } : v
+                ),
+              };
+            }
+            return msg;
+          })
+        );
+
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.random() * 20 + 10)
+        );
       }
 
-      setAttachedFiles((prev) => [...prev, attachedFile]);
-    }
-  };
-  const submitPrompt = () => {
-    if (prompt.trim() && onSubmit) {
-      onSubmit(prompt.trim());
-      setPrompt("");
-    }
-  };
-  const updateSetting = (key: keyof typeof settings, value: boolean) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
-  };
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    submitPrompt();
-  };
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  };
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
+      setStatus("ready");
+      setStreamingMessageId(null);
+    },
+    []
+  );
 
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      processFiles(files);
+  const addUserMessage = useCallback(
+    async (content: string, imageDataUri?: string) => {
+      const userMessage: MessageType = {
+        key: `user-${nanoid()}`,
+        from: "user",
+        versions: [
+          {
+            id: `user-${nanoid()}`,
+            content,
+          },
+        ],
+      };
+
+      setMessages((prev) => [...prev, userMessage]);
+      setStatus("streaming");
+
+      try {
+        if (onSubmit) {
+          const assistantMessageId = `assistant-${nanoid()}`;
+          const assistantMessage: MessageType = {
+            key: `assistant-${nanoid()}`,
+            from: "assistant",
+            versions: [
+              {
+                id: assistantMessageId,
+                content: "",
+              },
+            ],
+          };
+          setMessages((prev) => [...prev, assistantMessage]);
+
+          const result = await onSubmit({ prompt: content, imageDataUri });
+          
+          setMessages((prev) =>
+            prev.map((msg) => {
+              if (msg.versions.some((v) => v.id === assistantMessageId)) {
+                return {
+                  ...msg,
+                  versions: msg.versions.map((v) =>
+                    v.id === assistantMessageId ? { ...v, content: result.response } : v
+                  ),
+                };
+              }
+              return msg;
+            })
+          );
+
+        } else {
+            // Fallback mock response if no onSubmit is provided
+            setTimeout(() => {
+            const assistantMessageId = `assistant-${nanoid()}`;
+            const randomResponse =
+                mockResponses[Math.floor(Math.random() * mockResponses.length)];
+
+            const assistantMessage: MessageType = {
+                key: `assistant-${nanoid()}`,
+                from: "assistant",
+                versions: [
+                {
+                    id: assistantMessageId,
+                    content: "",
+                },
+                ],
+            };
+
+            setMessages((prev) => [...prev, assistantMessage]);
+            streamResponse(assistantMessageId, randomResponse);
+            }, 500);
+        }
+      } catch (error) {
+        toast.error("An error occurred while getting a response.");
+        setStatus("error");
+      } finally {
+        setStatus("ready");
+        setStreamingMessageId(null);
+      }
+    },
+    [onSubmit, streamResponse]
+  );
+
+  const handleSubmit = (message: PromptInputMessage) => {
+    const hasText = Boolean(message.text);
+    const hasAttachments = Boolean(message.files?.length);
+
+    if (!(hasText || hasAttachments)) {
+      return;
     }
-  };
-  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setPrompt(e.target.value);
-  };
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      submitPrompt();
+
+    setStatus("submitted");
+
+    let imageDataUri: string | undefined = undefined;
+    if (message.files && message.files.length > 0) {
+        const file = message.files[0];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            imageDataUri = reader.result as string;
+            addUserMessage(message.text || "Image uploaded", imageDataUri);
+        }
+        reader.readAsDataURL(file);
+    } else {
+        addUserMessage(message.text || "");
     }
+    
+    setText("");
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    processFiles(files);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
-  const handleRemoveFile = (fileId: string) => {
-    setAttachedFiles((prev) => prev.filter((file) => file.id !== fileId));
-  };
-  
-  const handleActionClick = (promptTemplate: string) => {
-    setPrompt(promptTemplate);
-    textareaRef.current?.focus();
+  const handleSuggestionClick = (suggestion: string) => {
+    addUserMessage(suggestion);
   };
 
   return (
-    <div className="mx-auto flex w-full flex-col gap-4 h-full items-center justify-center">
-      <h1 className="text-pretty text-center font-headline font-semibold text-[29px] text-foreground tracking-tighter sm:text-[32px] md:text-[46px]">
-        WisdomGPT
-      </h1>
-      <h2 className="-my-5 pb-4 text-center text-xl text-muted-foreground">
-        Your personal AI tutor for any subject.
-      </h2>
-
-      <div className="relative z-10 flex flex-col w-full mx-auto max-w-2xl content-center">
-        <form
-          className="overflow-visible rounded-xl border bg-card p-2 transition-colors duration-200 focus-within:border-ring"
-          onDragLeave={handleDragLeave}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-          onSubmit={handleSubmit}
-        >
-          {attachedFiles.length > 0 && (
-            <div className="relative flex w-fit items-center gap-2 mb-2 overflow-hidden">
-              {attachedFiles.map((file) => (
-                <Badge
-                  variant="outline"
-                  className="group relative h-6 max-w-30 cursor-pointer overflow-hidden text-[13px] transition-colors hover:bg-accent px-0"
-                  key={file.id}
-                >
-                  <span className="flex h-full items-center gap-1.5 overflow-hidden pl-1 font-normal">
-                    <div className="relative flex h-4 min-w-4 items-center justify-center">
-                      {file.preview ? (
-                        <Image
-                          alt={file.name}
-                          className="absolute inset-0 h-4 w-4 rounded border object-cover"
-                          src={file.preview}
-                          width={16}
-                          height={16}
-                        />
-                      ) : (
-                        <IconPaperclip className="opacity-60" size={12} />
-                      )}
+    <div className="relative flex size-full flex-col divide-y overflow-hidden border rounded-xl bg-card">
+      <Conversation>
+        <ConversationContent>
+            {messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center text-center h-full px-4">
+                     <div className="bg-primary/10 text-primary mb-4 flex h-14 w-14 items-center justify-center rounded-full">
+                        <IconSparkles size={28} />
                     </div>
-                    <span className="inline overflow-hidden truncate pr-1.5 transition-all">
-                      {file.name}
-                    </span>
-                  </span>
-                  <button
-                    className="absolute right-1 z-10 rounded-sm p-0.5 text-muted-foreground opacity-0 focus-visible:bg-accent focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-background group-hover:opacity-100"
-                    onClick={() => handleRemoveFile(file.id)}
-                    type="button"
-                  >
-                    <IconX size={12} />
-                  </button>
-                </Badge>
-              ))}
-            </div>
-          )}
-          <Textarea
-            ref={textareaRef}
-            className="max-h-50 min-h-12 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
-            onChange={handleTextareaChange}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask a question about your studies..."
-            value={prompt}
-          />
-
-          <div className="flex items-center gap-1">
-            <div className="flex items-end gap-0.5 sm:gap-1">
-              <input
-                className="sr-only"
-                multiple
-                onChange={handleFileSelect}
-                ref={fileInputRef}
-                type="file"
-              />
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    className="ml-[-2px] h-7 w-7 rounded-md"
-                    size="icon"
-                    type="button"
-                    variant="ghost"
-                  >
-                    <IconPlus size={16} />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="start"
-                  className="max-w-xs rounded-2xl p-1.5"
-                >
-                  <DropdownMenuGroup className="space-y-1">
-                    <DropdownMenuItem
-                      className="rounded-[calc(1rem-6px)] text-xs"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <div className="flex items-center gap-2">
-                        <IconPaperclip className="text-muted-foreground" size={16} />
-                        <span>Attach Files</span>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs">
-                      <div className="flex items-center gap-2">
-                        <IconLink className="text-muted-foreground" size={16} />
-                        <span>Import from URL</span>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs">
-                      <div className="flex items-center gap-2">
-                        <IconClipboard className="text-muted-foreground" size={16} />
-                        <span>Paste from Clipboard</span>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="rounded-[calc(1rem-6px)] text-xs">
-                      <div className="flex items-center gap-2">
-                        <IconTemplate className="text-muted-foreground" size={16} />
-                        <span>Use Template</span>
-                      </div>
-                    </DropdownMenuItem>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    className="size-7 rounded-md"
-                    size="icon"
-                    type="button"
-                    variant="ghost"
-                  >
-                    <IconAdjustmentsHorizontal size={16} />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="start"
-                  className="w-56 rounded-2xl p-3"
-                >
-                  <DropdownMenuGroup className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <IconSchool className="text-muted-foreground" size={16} />
-                        <Label className="text-xs">Explain Like I'm 10</Label>
-                      </div>
-                      <Switch
-                        checked={settings.explainSimple}
-                        className="scale-75"
-                        onCheckedChange={(value) =>
-                          updateSetting("explainSimple", value)
-                        }
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <IconListDetails className="text-muted-foreground" size={16} />
-                        <Label className="text-xs">Include Examples</Label>
-                      </div>
-                      <Switch
-                        checked={settings.includeExamples}
-                        className="scale-75"
-                        onCheckedChange={(value) =>
-                          updateSetting("includeExamples", value)
-                        }
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <IconTrendingUp className="text-muted-foreground" size={16} />
-                        <Label className="text-xs">Suggest Follow-up</Label>
-                      </div>
-                      <Switch
-                        checked={settings.suggestNext}
-                        className="scale-75"
-                        onCheckedChange={(value) =>
-                          updateSetting("suggestNext", value)
-                        }
-                      />
-                    </div>
-                  </DropdownMenuGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-
-            <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
-              <Button
-                className="h-7 w-7 rounded-md"
-                disabled={!prompt.trim()}
-                size="icon"
-                type="submit"
-                variant="default"
-              >
-                <IconArrowUp size={16} />
-              </Button>
-            </div>
-          </div>
-
-          <div
-            className={cn(
-              "absolute inset-0 flex items-center justify-center pointer-events-none z-20 rounded-[inherit] border border-border border-dashed bg-muted text-foreground text-sm transition-opacity duration-200",
-              isDragOver ? "opacity-100" : "opacity-0"
+                    <h2 className="text-2xl font-bold font-headline">
+                        WisdomGPT
+                    </h2>
+                    <p className="text-muted-foreground mt-2">Your personal AI tutor for any subject.</p>
+                </div>
             )}
-          >
-            <span className="flex w-full items-center justify-center gap-1 font-medium">
-              <IconCirclePlus className="min-w-4" size={16} />
-              Drop files here to add as attachments
-            </span>
-          </div>
-        </form>
-      </div>
-
-      <div className="max-w-250 mx-auto flex-wrap gap-3 flex min-h-0 shrink-0 items-center justify-center">
-        {ACTIONS.map((action) => (
-          <Button
-            className="gap-2 rounded-full"
-            key={action.id}
-            size="sm"
-            variant="outline"
-            onClick={() => handleActionClick(action.prompt)}
-          >
-            <action.icon size={16} />
-            {action.label}
-          </Button>
-        ))}
+          {messages.map(({ versions, ...message }) => (
+            <MessageBranch defaultBranch={0} key={message.key}>
+              <MessageBranchContent>
+                {versions.map((version) => (
+                  <Message
+                    from={message.from}
+                    key={`${message.key}-${version.id}`}
+                  >
+                    <div>
+                      <MessageContent>
+                        <MessageResponse>{version.content}</MessageResponse>
+                      </MessageContent>
+                    </div>
+                  </Message>
+                ))}
+              </MessageBranchContent>
+              {versions.length > 1 && (
+                <MessageBranchSelector from={message.from}>
+                  <MessageBranchPrevious />
+                  <MessageBranchPage />
+                  <MessageBranchNext />
+                </MessageBranchSelector>
+              )}
+            </MessageBranch>
+          ))}
+        </ConversationContent>
+        <ConversationScrollButton />
+      </Conversation>
+      <div className="grid shrink-0 gap-4 pt-4">
+        <Suggestions className="px-4">
+          {messages.length === 0 && suggestions.map((suggestion) => (
+            <Suggestion
+              key={suggestion}
+              onClick={() => handleSuggestionClick(suggestion)}
+              suggestion={suggestion}
+            />
+          ))}
+        </Suggestions>
+        <div className="w-full px-4 pb-4">
+          <PromptInput globalDrop multiple onSubmit={handleSubmit}>
+            <PromptInputHeader>
+              <PromptInputAttachments>
+                {(attachment) => <PromptInputAttachment data={attachment} />}
+              </PromptInputAttachments>
+            </PromptInputHeader>
+            <PromptInputBody>
+              <PromptInputTextarea
+                onChange={(event) => setText(event.target.value)}
+                value={text}
+                placeholder="Ask a question about your studies..."
+              />
+            </PromptInputBody>
+            <PromptInputFooter>
+              <PromptInputTools>
+                <PromptInputActionMenu>
+                  <PromptInputActionMenuTrigger />
+                  <PromptInputActionMenuContent>
+                    <PromptInputActionAddAttachments />
+                  </PromptInputActionMenuContent>
+                </PromptInputActionMenu>
+                <PromptInputButton
+                  onClick={() => setUseMicrophone(!useMicrophone)}
+                  variant={useMicrophone ? "default" : "ghost"}
+                >
+                  <MicIcon size={16} />
+                  <span className="sr-only">Microphone</span>
+                </PromptInputButton>
+                <PromptInputButton
+                  onClick={() => setUseWebSearch(!useWebSearch)}
+                  variant={useWebSearch ? "default" : "ghost"}
+                >
+                  <GlobeIcon size={16} />
+                  <span>Search</span>
+                </PromptInputButton>
+                <ModelSelector
+                  onOpenChange={setModelSelectorOpen}
+                  open={modelSelectorOpen}
+                >
+                  <ModelSelectorTrigger asChild>
+                    <PromptInputButton>
+                      {selectedModelData?.chefSlug && (
+                        <ModelSelectorLogo provider={selectedModelData.chefSlug} />
+                      )}
+                      {selectedModelData?.name && (
+                        <ModelSelectorName>
+                          {selectedModelData.name}
+                        </ModelSelectorName>
+                      )}
+                    </PromptInputButton>
+                  </ModelSelectorTrigger>
+                  <ModelSelectorContent>
+                    <ModelSelectorInput placeholder="Search models..." />
+                    <ModelSelectorList>
+                      <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
+                      {["Google", "OpenAI", "Anthropic"].map((chef) => (
+                        <ModelSelectorGroup key={chef} heading={chef}>
+                          {models
+                            .filter((m) => m.chef === chef)
+                            .map((m) => (
+                              <ModelSelectorItem
+                                key={m.id}
+                                onSelect={() => {
+                                  setModel(m.id);
+                                  setModelSelectorOpen(false);
+                                }}
+                                value={m.id}
+                              >
+                                <ModelSelectorLogo provider={m.chefSlug} />
+                                <ModelSelectorName>{m.name}</ModelSelectorName>
+                                <ModelSelectorLogoGroup>
+                                  {m.providers.map((provider) => (
+                                    <ModelSelectorLogo
+                                      key={provider}
+                                      provider={provider}
+                                    />
+                                  ))}
+                                </ModelSelectorLogoGroup>
+                                {model === m.id ? (
+                                  <CheckIcon className="ml-auto size-4" />
+                                ) : (
+                                  <div className="ml-auto size-4" />
+                                )}
+                              </ModelSelectorItem>
+                            ))}
+                        </ModelSelectorGroup>
+                      ))}
+                    </ModelSelectorList>
+                  </ModelSelectorContent>
+                </ModelSelector>
+              </PromptInputTools>
+              <PromptInputSubmit
+                disabled={!(text.trim() || status) || status === "streaming"}
+                status={status}
+              />
+            </PromptInputFooter>
+          </PromptInput>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default WisdomGptChat;
