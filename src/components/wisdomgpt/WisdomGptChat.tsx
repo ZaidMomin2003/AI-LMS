@@ -241,7 +241,7 @@ export default function WisdomGptChat() {
   return (
     <div className="flex h-full w-full flex-col bg-card border rounded-xl overflow-hidden">
       {/* Chat Messages Area */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto">
+      <div id="messages" ref={chatContainerRef} className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto px-2 sm:px-4 py-6 md:py-10">
           {messages.length === 0 && !isTyping ? (
             <div className="flex flex-col items-center justify-center text-center h-full pt-16">
@@ -323,8 +323,8 @@ export default function WisdomGptChat() {
       </div>
 
       {/* Input Area */}
-      <div className="mt-auto px-2 sm:px-4 pb-2 sm:pb-4">
-        <div className="max-w-3xl mx-auto">
+      <div className="border-t bg-card">
+        <div className="max-w-3xl mx-auto px-2 sm:px-4 py-2 sm:py-4">
             <div className="relative rounded-xl border bg-background shadow-lg">
                 <AnimatePresence>
                 {imagePreview && (
