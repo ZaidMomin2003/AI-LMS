@@ -196,7 +196,7 @@ const PricingContent = () => {
                 
                 <div className="max-w-md mx-auto">
                     <Card className="shadow-2xl shadow-primary/10 overflow-hidden">
-                        <CardHeader className="p-8 bg-card relative overflow-hidden bg-gradient-to-r from-yellow-400 via-green-400 to-blue-500 animate-liquid-gradient" style={{ backgroundSize: '400% 400%' }}>
+                        <CardHeader className="relative p-8 bg-card overflow-hidden bg-gradient-to-r from-yellow-400 via-green-400 to-blue-500 animate-liquid-gradient" style={{ backgroundSize: '400% 400%' }}>
                             <div className="flex justify-between items-center text-primary-foreground">
                                 <h3 className="text-2xl font-headline font-bold">{sagePlan.name} Plan</h3>
                                 <div className="bg-primary-foreground/20 text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">Save 25%</div>
@@ -254,5 +254,3 @@ export default function PricingPage() {
         </Suspense>
     )
 }
-
-    
