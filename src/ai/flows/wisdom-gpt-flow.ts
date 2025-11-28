@@ -20,6 +20,11 @@ const WisdomGptInputSchema = z.object({
     .describe(
       "An optional image provided by the user, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
+  settings: z.object({
+    explainSimple: z.boolean().optional(),
+    includeExamples: z.boolean().optional(),
+    suggestFollowUp: z.boolean().optional(),
+  }).optional(),
 });
 export type WisdomGptInput = z.infer<typeof WisdomGptInputSchema>;
 
@@ -32,7 +37,7 @@ export type WisdomGptOutput = z.infer<typeof WisdomGptOutputSchema>;
 export async function wisdomGptFlow(
   input: WisdomGptInput
 ): Promise<WisdomGptOutput> {
-  const {prompt, imageDataUri} = input;
+  const {prompt, imageDataUri, settings} = input;
 
   const promptParts: Part[] = [
     {
@@ -41,9 +46,12 @@ export async function wisdomGptFlow(
 **Your Response Style & Formatting:**
 *   **Generate Clean HTML:** Your entire response MUST be formatted as valid HTML. Use tags like <h4> for headings, <p> for paragraphs, <ul> and <li> for lists, and <strong> for bolding important keywords.
 *   **Be Concise & Organized:** Get straight to the point. Structure your answer logically.
-*   **Avoid Extra Spacing:** Do NOT add multiple or unnecessary newline characters (\n) between paragraphs or list items. Keep the formatting tight and clean, like a well-written document.
+*   **Avoid Extra Spacing:** Do NOT add multiple or unnecessary newline characters (\\n) between paragraphs or list items. Keep the formatting tight and clean, like a well-written document.
 *   **Mathematical Formulas:** All mathematical formulas MUST be enclosed in KaTeX delimiters. Use \`$$...$$\` for block-level equations and \`$...$\` for inline equations.
 *   **No Further Reading:** Do NOT include a "Further Reading" section.
+${settings?.explainSimple ? "*   **Explain Simply:** Explain concepts as if you're talking to a 10-year-old. Use simple language and analogies." : ""}
+${settings?.includeExamples ? "*   **Include Examples:** Where applicable, provide one or two real-world examples to illustrate your point." : ""}
+${settings?.suggestFollowUp ? "*   **Suggest Follow-up:** At the end of your response, suggest one interesting follow-up question the user might want to ask." : ""}
 
 Based on these instructions, answer the user's question.
 

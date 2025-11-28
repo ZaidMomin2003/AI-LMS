@@ -108,7 +108,10 @@ export default function WisdomGptChat() {
     if(fileInputRef.current) fileInputRef.current.value = "";
 
     try {
-        const aiInput: WisdomGptInput = { prompt: currentInput };
+        const aiInput: WisdomGptInput = { 
+          prompt: currentInput,
+          settings: settings,
+        };
         if (currentImageData) {
             aiInput.imageDataUri = currentImageData;
         }
