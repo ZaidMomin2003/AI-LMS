@@ -2,21 +2,16 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider, isFirebaseEnabled } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BookOpenCheck, CheckCircle } from 'lucide-react';
 import { TestimonialColumn } from '@/components/landing/Testimonials';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 
 const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
@@ -58,37 +53,11 @@ const testimonials = [
   },
 ];
 
-const formSchema = z.object({
-    email: z.string().email({ message: "Please enter a valid email." }),
-    password: z.string().min(6, { message: "Password must be at least 6 characters." }),
-});
 
 export default function LoginPage() {
     const router = useRouter();
     const { toast } = useToast();
-    const [isLoading, setIsLoading] = useState(false);
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: { email: "", password: "" },
-    });
-
-    async function onSubmit(values: z.infer<typeof formSchema>) {
-        if (!isFirebaseEnabled || !auth) {
-            toast({ variant: 'destructive', title: 'Sign-In Failed', description: "Firebase is not configured correctly." });
-            return;
-        }
-        setIsLoading(true);
-        try {
-            await signInWithEmailAndPassword(auth, values.email, values.password);
-            router.push('/dashboard');
-        } catch (error: any) {
-            toast({ variant: 'destructive', title: 'Sign-In Failed', description: error.message || "An unexpected error occurred." });
-        } finally {
-            setIsLoading(false);
-        }
-    }
 
     async function handleGoogleSignIn() {
         if (!isFirebaseEnabled || !auth || !googleProvider) {
@@ -126,50 +95,6 @@ export default function LoginPage() {
                             <CardDescription>Sign in to continue your learning journey.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                             <Form {...form}>
-                                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                                    <FormField
-                                        control={form.control}
-                                        name="email"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Email</FormLabel>
-                                                <FormControl>
-                                                    <Input type="email" placeholder="m@example.com" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name="password"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Password</FormLabel>
-                                                <FormControl>
-                                                    <Input type="password" placeholder="••••••••" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <Button type="submit" className="w-full" disabled={isLoading}>
-                                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                        Sign In
-                                    </Button>
-                                </form>
-                            </Form>
-                             <div className="relative">
-                                <div className="absolute inset-0 flex items-center">
-                                    <span className="w-full border-t" />
-                                </div>
-                                <div className="relative flex justify-center text-xs uppercase">
-                                    <span className="bg-background px-2 text-muted-foreground">
-                                        Or continue with
-                                    </span>
-                                </div>
-                            </div>
                             <Button 
                                 variant="outline"
                                 className="w-full h-11" 
@@ -177,7 +102,7 @@ export default function LoginPage() {
                                 disabled={isGoogleLoading}
                             >
                               {isGoogleLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <GoogleIcon />}
-                              Google
+                              Sign In with Google
                             </Button>
                             <div className="text-center text-sm">
                               Don't have an account?{" "}
