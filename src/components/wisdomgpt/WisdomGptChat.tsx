@@ -27,7 +27,7 @@ import {
   IconX,
 } from "@tabler/icons-react";
 import Image from "next/image";
-import { useCallback, useRef, useState, useEffect } from "react";
+import { useCallback, useRef, useState, useEffect, useMemo } from "react";
 import { nanoid } from 'nanoid';
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from 'framer-motion';
@@ -36,6 +36,10 @@ import { Bot, FileQuestion, LoaderIcon, User } from "lucide-react";
 import { MathRenderer } from "../MathRenderer";
 import type { WisdomGptInput } from "@/ai/flows/wisdom-gpt-flow";
 import { wisdomGptAction } from "@/app/dashboard/wisdomgpt/actions";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
+import { useTopic } from "@/context/TopicContext";
+import type { Topic } from "@/types";
 
 
 interface ChatMessage {
@@ -54,6 +58,7 @@ const ACTIONS = [
 
 
 export default function WisdomGptChat() {
+  const { topics } = useTopic();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -71,6 +76,16 @@ export default function WisdomGptChat() {
     suggestFollowUp: true,
   });
 
+  const [showTopicSuggestions, setShowTopicSuggestions] = useState(false);
+  const [topicSearch, setTopicSearch] = useState('');
+
+  const filteredTopics = useMemo(() => {
+    return topics.filter((t) =>
+      t.title.toLowerCase().includes(topicSearch.toLowerCase())
+    );
+  }, [topics, topicSearch]);
+
+
    useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
@@ -85,9 +100,9 @@ export default function WisdomGptChat() {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSendMessage = useCallback(async (promptOverride?: string) => {
+  const handleSendMessage = useCallback(async (promptOverride?: string, notesContext?: string) => {
     const currentInput = promptOverride || input.trim();
-    if (!currentInput && !imageData) return;
+    if (!currentInput && !imageData && !notesContext) return;
 
     setIsTyping(true);
     setInput("");
@@ -110,6 +125,7 @@ export default function WisdomGptChat() {
         const aiInput: WisdomGptInput = { 
           prompt: currentInput,
           settings: settings,
+          ...(notesContext && { notesContext }),
         };
         if (currentImageData) {
             aiInput.imageDataUri = currentImageData;
@@ -140,6 +156,13 @@ export default function WisdomGptChat() {
       setIsTyping(false);
     }
   }, [input, imageData, imagePreview, settings, toast]);
+
+  const handleTopicSelect = (topic: Topic) => {
+    const prompt = `Please tell me more about my notes on "${topic.title}". Summarize the key points.`;
+    const notesContent = Object.values(topic.notes).join('\n\n');
+    handleSendMessage(prompt, notesContent);
+    setShowTopicSuggestions(false);
+  };
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -351,7 +374,7 @@ export default function WisdomGptChat() {
                 className="h-10 max-h-50 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask anything about your studies..."
+                placeholder="Ask anything, or type @ to reference your notes..."
                 value={input}
             />
 
@@ -373,7 +396,45 @@ export default function WisdomGptChat() {
                     >
                         <IconPaperclip size={16} />
                     </Button>
-                    
+                     <Popover open={showTopicSuggestions} onOpenChange={setShowTopicSuggestions}>
+                        <PopoverTrigger asChild>
+                            <Button
+                            className="h-7 w-7 rounded-md"
+                            size="icon"
+                            type="button"
+                            variant="ghost"
+                            >
+                            <span className="font-semibold text-base text-muted-foreground">@</span>
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[300px] p-0 z-50" align="start" sideOffset={5}>
+                            <Command shouldFilter={false}>
+                            <CommandInput
+                                placeholder="Search your notes..."
+                                value={topicSearch}
+                                onValueChange={setTopicSearch}
+                            />
+                            <CommandList>
+                                <CommandEmpty>No notes found.</CommandEmpty>
+                                <CommandGroup heading="Your Notes">
+                                {filteredTopics.map((topic) => (
+                                    <CommandItem
+                                    key={topic.id}
+                                    value={topic.title}
+                                    onSelect={() => {
+                                        handleTopicSelect(topic);
+                                        setShowTopicSuggestions(false);
+                                    }}
+                                    className="cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground"
+                                    >
+                                    {topic.title}
+                                    </CommandItem>
+                                ))}
+                                </CommandGroup>
+                            </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -458,5 +519,3 @@ export default function WisdomGptChat() {
     </div>
   );
 }
-
-    
