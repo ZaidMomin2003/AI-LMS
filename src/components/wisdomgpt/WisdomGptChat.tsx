@@ -31,8 +31,6 @@ import { useCallback, useRef, useState, useEffect, useMemo } from "react";
 import { nanoid } from 'nanoid';
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from 'framer-motion';
-import * as PopoverPrimitive from "@radix-ui/react-popover";
-
 
 import { Bot, FileQuestion, LoaderIcon, User } from "lucide-react";
 import { MathRenderer } from "../MathRenderer";
@@ -57,26 +55,6 @@ const ACTIONS = [
   { id: "practice-problems", icon: IconBrain, label: "Create practice problems" },
   { id: "practice-questions", icon: FileQuestion, label: "Give me 5 practice questions for AP Biology" },
 ];
-
-const ChatPopover = React.forwardRef<
-  React.ElementRef<typeof PopoverPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
->(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
-  <PopoverPrimitive.Portal>
-    <PopoverPrimitive.Content
-      ref={ref}
-      align={align}
-      sideOffset={sideOffset}
-      className={cn(
-        "z-[9999] w-72 rounded-md border bg-popover p-0 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        className
-      )}
-      {...props}
-    />
-  </PopoverPrimitive.Portal>
-));
-ChatPopover.displayName = "ChatPopover";
-
 
 export default function WisdomGptChat() {
   const { topics } = useTopic();
@@ -181,11 +159,15 @@ export default function WisdomGptChat() {
   }, [input, imageData, imagePreview, settings, toast]);
 
   const handleTopicSelect = (topic: Topic) => {
-    const prompt = `Tell me about my notes on "${topic.title}"`;
     const notesContent = Object.values(topic.notes).join('\n\n');
-    handleSendMessage(prompt, notesContent);
+    const prompt = `Using the context from my notes on "${topic.title}", please answer my next question.`;
+
+    setInput(''); // Clear the input after selection
+    setTopicSearch(''); // Clear search
     setShowTopicSuggestions(false);
-    setInput('');
+    
+    // Send a message to the AI using the notes as context
+    handleSendMessage(prompt, notesContent);
   };
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -512,12 +494,11 @@ export default function WisdomGptChat() {
                     </div>
                 </div>
                 </form>
-                 <ChatPopover
-                    anchor={triggerRef.current}
+                <PopoverContent
                     side="top"
                     align="start"
                     sideOffset={10}
-                    className="w-[300px] p-0 z-50"
+                    className="w-[300px] p-0 z-50 pointer-events-auto"
                   >
                     <Command shouldFilter={false}>
                         <CommandInput
@@ -526,17 +507,14 @@ export default function WisdomGptChat() {
                             onValueChange={setTopicSearch}
                         />
                         <CommandList>
-                            <CommandEmpty>No results found.</CommandEmpty>
+                            <CommandEmpty>No notes found.</CommandEmpty>
                             <CommandGroup heading="Reference a Note">
                                 {filteredTopics.map((topic) => (
                                     <CommandItem
                                     key={topic.id}
                                     value={topic.title}
-                                    onSelect={() => {
-                                        handleTopicSelect(topic);
-                                        setShowTopicSuggestions(false);
-                                    }}
-                                    className="cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground"
+                                    onSelect={() => handleTopicSelect(topic)}
+                                    className="cursor-pointer"
                                     >
                                     {topic.title}
                                     </CommandItem>
@@ -544,7 +522,7 @@ export default function WisdomGptChat() {
                             </CommandGroup>
                         </CommandList>
                     </Command>
-                </ChatPopover>
+                </PopoverContent>
             </Popover>
             <p className="text-xs text-center text-muted-foreground mt-2 px-2">
                 WisdomGPT may produce inaccurate information. Your chats are not stored.
@@ -554,5 +532,3 @@ export default function WisdomGptChat() {
     </div>
   );
 }
-
-    
