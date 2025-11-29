@@ -10,6 +10,8 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -36,8 +38,6 @@ import { Bot, FileQuestion, LoaderIcon, User } from "lucide-react";
 import { MathRenderer } from "../MathRenderer";
 import type { WisdomGptInput } from "@/ai/flows/wisdom-gpt-flow";
 import { wisdomGptAction } from "@/app/dashboard/wisdomgpt/actions";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
 import { useTopic } from "@/context/TopicContext";
 import type { Topic } from "@/types";
 
@@ -76,16 +76,7 @@ export default function WisdomGptChat() {
     suggestFollowUp: true,
   });
 
-  const [showTopicSuggestions, setShowTopicSuggestions] = useState(false);
-  const [topicSearch, setTopicSearch] = useState('');
-
-  const filteredTopics = useMemo(() => {
-    if (!topicSearch) return topics;
-    return topics.filter((t) =>
-      t.title.toLowerCase().includes(topicSearch.toLowerCase())
-    );
-  }, [topics, topicSearch]);
-
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
 
    useEffect(() => {
     if (chatContainerRef.current) {
@@ -101,9 +92,9 @@ export default function WisdomGptChat() {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSendMessage = useCallback(async (promptOverride?: string, notesContext?: string) => {
+  const handleSendMessage = useCallback(async (promptOverride?: string) => {
     const currentInput = promptOverride || input.trim();
-    if (!currentInput && !imageData && !notesContext) return;
+    if (!currentInput && !imageData) return;
 
     setIsTyping(true);
     setInput("");
@@ -121,6 +112,15 @@ export default function WisdomGptChat() {
     setImageData(null);
     setImagePreview(null);
     if(fileInputRef.current) fileInputRef.current.value = "";
+    
+    let notesContext: string | undefined = undefined;
+    if (selectedNoteId) {
+      const selectedTopic = topics.find(t => t.id === selectedNoteId);
+      if (selectedTopic) {
+        notesContext = Object.values(selectedTopic.notes).join('\n\n');
+      }
+    }
+
 
     try {
         const aiInput: WisdomGptInput = { 
@@ -156,14 +156,7 @@ export default function WisdomGptChat() {
     } finally {
       setIsTyping(false);
     }
-  }, [input, imageData, imagePreview, settings, toast]);
-
-  const handleTopicSelect = (topic: Topic) => {
-    const notesContent = Object.values(topic.notes).join('\n\n');
-    const prompt = `Using the context from my notes on "${topic.title}", please answer my next question.`;
-    handleSendMessage(prompt, notesContent);
-    setShowTopicSuggestions(false);
-  };
+  }, [input, imageData, imagePreview, settings, toast, selectedNoteId, topics]);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -234,6 +227,11 @@ export default function WisdomGptChat() {
             chatEl?.removeEventListener('click', handleFollowUpClick);
         };
     }, [handleSendMessage]);
+
+  const selectedTopicForBadge = useMemo(() => {
+    if (!selectedNoteId) return null;
+    return topics.find(t => t.id === selectedNoteId);
+  }, [selectedNoteId, topics]);
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -371,6 +369,24 @@ export default function WisdomGptChat() {
                         </Badge>
                     </div>
                 )}
+                 {selectedTopicForBadge && (
+                    <div className="relative flex w-fit items-center gap-2 mb-2">
+                        <Badge
+                        variant="secondary"
+                        className="group relative cursor-default p-2"
+                        >
+                            <IconBook size={14} className="mr-2 text-muted-foreground" />
+                            <span className="truncate max-w-[200px]">{selectedTopicForBadge.title}</span>
+                            <button
+                                className="ml-2 rounded-full p-0.5 hover:bg-background/50"
+                                onClick={() => setSelectedNoteId(null)}
+                                type="button"
+                            >
+                                <IconX size={12} />
+                            </button>
+                        </Badge>
+                    </div>
+                )}
                 <Textarea
                     className="h-10 max-h-50 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
                     onChange={(e) => setInput(e.target.value)}
@@ -398,44 +414,39 @@ export default function WisdomGptChat() {
                             <IconPaperclip size={16} />
                         </Button>
                         
-                        <Popover open={showTopicSuggestions} onOpenChange={setShowTopicSuggestions}>
-                          <PopoverTrigger asChild>
-                            <Button
-                              className="h-7 w-7 rounded-md"
-                              size="icon"
-                              type="button"
-                              variant="ghost"
-                            >
-                              <span className="font-semibold text-base text-muted-foreground">@</span>
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-[300px] p-0 z-50" align="start" sideOffset={5}>
-                            <Command shouldFilter={false}>
-                              <CommandInput
-                                placeholder="Search your notes..."
-                                value={topicSearch}
-                                onValueChange={setTopicSearch}
-                              />
-                              <CommandList>
-                                <CommandEmpty>No notes found.</CommandEmpty>
-                                <CommandGroup heading="Your Notes">
-                                  {filteredTopics.map((topic) => (
-                                    <CommandItem
-                                      key={topic.id}
-                                      value={topic.title}
-                                      onSelect={() => {
-                                        handleTopicSelect(topic);
-                                      }}
-                                      className="cursor-pointer"
-                                    >
-                                      {topic.title}
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </CommandList>
-                            </Command>
-                          </PopoverContent>
-                        </Popover>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                className="h-7 w-7 rounded-md"
+                                size="icon"
+                                type="button"
+                                variant="ghost"
+                                >
+                                <IconBook size={16} />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-64">
+                                <DropdownMenuLabel>Reference a Note</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuGroup>
+                                {topics.map((topic) => (
+                                    <DropdownMenuItem key={topic.id} className="flex items-center justify-between">
+                                        <span className="truncate flex-1 pr-4">{topic.title}</span>
+                                        <Switch
+                                            checked={selectedNoteId === topic.id}
+                                            onCheckedChange={(checked) => {
+                                                setSelectedNoteId(checked ? topic.id : null);
+                                            }}
+                                            className="scale-75"
+                                        />
+                                    </DropdownMenuItem>
+                                ))}
+                                {topics.length === 0 && (
+                                    <DropdownMenuItem disabled>No notes available</DropdownMenuItem>
+                                )}
+                                </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
 
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
