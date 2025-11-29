@@ -20,7 +20,6 @@ const WisdomGptInputSchema = z.object({
     .describe(
       "An optional image provided by the user, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
     ),
-  notesContext: z.string().optional().describe("Optional context from the user's study notes to provide a focused answer."),
   settings: z.object({
     explainSimple: z.boolean().optional(),
     includeExamples: z.boolean().optional(),
@@ -38,7 +37,7 @@ export type WisdomGptOutput = z.infer<typeof WisdomGptOutputSchema>;
 export async function wisdomGptFlow(
   input: WisdomGptInput
 ): Promise<WisdomGptOutput> {
-  const {prompt, imageDataUri, settings, notesContext} = input;
+  const {prompt, imageDataUri, settings} = input;
 
   const promptParts: Part[] = [
     {
@@ -51,7 +50,6 @@ export async function wisdomGptFlow(
 *   **Avoid Extra Spacing:** Do NOT add multiple or unnecessary newline characters (\\n) between paragraphs or list items. Keep the formatting tight and clean, like a well-written document.
 *   **CRITICAL: Mathematical Formulas:** ALL mathematical formulas, variables, and chemical equations (like CO2 or H2O) MUST be enclosed in KaTeX delimiters. Use \`$$...$$\` for block-level equations and \`$...$\` for inline equations. For example, write Carbon Dioxide as \`$CO_2$\`. This is non-negotiable.
 *   **No Further Reading:** Do NOT include a "Further Reading" section.
-${notesContext ? `*   **IMPORTANT CONTEXT:** You have been provided with the user's personal study notes. Use this as the primary source of truth to answer the following question. Refer to it as "your notes" or "the provided context".\n---STUDY NOTES---\n${notesContext}\n---END STUDY NOTES---` : ""}
 ${settings?.explainSimple ? "*   **Explain Simply:** Explain concepts as if you're talking to a 10-year-old. Use simple language, humor, and analogies." : ""}
 ${settings?.includeExamples ? "*   **Include Examples:** Where applicable, provide one or two real-world examples to illustrate your point. Format the example inside its own boxed and styled div, like this: \`<div class='example-box'><h4>Example</h4><p>Your example here...</p></div>\`" : ""}
 ${settings?.suggestFollowUp ? "*   **Suggest Follow-up:** At the very end of your response, suggest two interesting follow-up questions the user might want to ask. CRITICAL: Format them as HTML buttons, like this: \`<button class='follow-up-btn'>Your first question?</button><button class='follow-up-btn'>Your second question?</button>\`" : ""}
@@ -92,3 +90,5 @@ Question: ${prompt}`,
 
   return {response: responseText};
 }
+
+    

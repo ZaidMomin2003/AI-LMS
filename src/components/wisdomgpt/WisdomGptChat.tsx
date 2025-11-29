@@ -36,10 +36,6 @@ import { Bot, FileQuestion, LoaderIcon, User } from "lucide-react";
 import { MathRenderer } from "../MathRenderer";
 import type { WisdomGptInput } from "@/ai/flows/wisdom-gpt-flow";
 import { wisdomGptAction } from "@/app/dashboard/wisdomgpt/actions";
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Command, CommandInput, CommandEmpty, CommandGroup, CommandItem, CommandList } from '../ui/command';
-import { useTopic } from "@/context/TopicContext";
-import type { Topic, StudyNotes } from "@/types";
 
 
 interface ChatMessage {
@@ -56,11 +52,6 @@ const ACTIONS = [
   { id: "practice-questions", icon: FileQuestion, label: "Give me 5 practice questions for AP Biology" },
 ];
 
-function notesToString(notes: StudyNotes): string {
-    return Object.entries(notes)
-        .map(([key, value]) => `### ${key}\n${value}`)
-        .join('\n\n');
-}
 
 export default function WisdomGptChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -73,10 +64,6 @@ export default function WisdomGptChat() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-
-  const { topics } = useTopic();
-  const [showTopicSuggestions, setShowTopicSuggestions] = useState(false);
-  const [topicSearch, setTopicSearch] = useState('');
 
   const [settings, setSettings] = useState({
     explainSimple: true,
@@ -98,7 +85,7 @@ export default function WisdomGptChat() {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSendMessage = useCallback(async (promptOverride?: string, notesContext?: string) => {
+  const handleSendMessage = useCallback(async (promptOverride?: string) => {
     const currentInput = promptOverride || input.trim();
     if (!currentInput && !imageData) return;
 
@@ -123,7 +110,6 @@ export default function WisdomGptChat() {
         const aiInput: WisdomGptInput = { 
           prompt: currentInput,
           settings: settings,
-          notesContext,
         };
         if (currentImageData) {
             aiInput.imageDataUri = currentImageData;
@@ -224,16 +210,6 @@ export default function WisdomGptChat() {
             chatEl?.removeEventListener('click', handleFollowUpClick);
         };
     }, [handleSendMessage]);
-
-    const filteredTopics = topics.filter(topic => topic.title.toLowerCase().includes(topicSearch.toLowerCase()));
-
-    const handleTopicSelect = (topic: Topic) => {
-        setShowTopicSuggestions(false);
-        setTopicSearch('');
-        const noteContent = notesToString(topic.notes);
-        const prompt = `Summarize my notes on "${topic.title}" for me.`;
-        handleSendMessage(prompt, noteContent);
-    };
 
   return (
     <div className="flex h-full w-full flex-col">
@@ -375,7 +351,7 @@ export default function WisdomGptChat() {
                 className="h-10 max-h-50 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask anything, or use @ to reference your notes..."
+                placeholder="Ask anything about your studies..."
                 value={input}
             />
 
@@ -388,37 +364,6 @@ export default function WisdomGptChat() {
                         type="file"
                         accept="image/*"
                     />
-                    <Popover open={showTopicSuggestions} onOpenChange={setShowTopicSuggestions}>
-                        <PopoverTrigger asChild>
-                            <Button className="h-7 w-7 rounded-md" size="icon" type="button" variant="ghost">
-                                <span className="font-semibold text-base text-muted-foreground">@</span>
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[300px] p-0 mb-2 z-50">
-                            <Command>
-                                <CommandInput 
-                                    placeholder="Search your notes..." 
-                                    value={topicSearch}
-                                    onValueChange={setTopicSearch}
-                                />
-                                <CommandList>
-                                    <CommandEmpty>No results found.</CommandEmpty>
-                                    <CommandGroup>
-                                    {filteredTopics.map((topic) => (
-                                        <CommandItem
-                                            key={topic.id}
-                                            value={topic.title}
-                                            onSelect={() => handleTopicSelect(topic)}
-                                            className="aria-selected:bg-primary aria-selected:text-primary-foreground cursor-pointer"
-                                        >
-                                            {topic.title}
-                                        </CommandItem>
-                                    ))}
-                                    </CommandGroup>
-                                </CommandList>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
                     <Button
                         className="h-7 w-7 rounded-md"
                         size="icon"
@@ -513,3 +458,5 @@ export default function WisdomGptChat() {
     </div>
   );
 }
+
+    
