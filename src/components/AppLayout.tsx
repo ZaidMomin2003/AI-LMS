@@ -113,7 +113,7 @@ function SidebarSubscriptionButton() {
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
-  const { loading: subLoading } = useSubscription();
+  const { subscription, loading: subLoading, canUseFeature } = useSubscription();
   const [isFullscreen, setIsFullscreen] = useState(false);
   
   const router = useRouter();
@@ -150,27 +150,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     return <AppLoadingScreen />;
   }
   
-  if (pathname === '/dashboard/wisdomgpt') {
-    return (
-      <div className="flex flex-col h-screen bg-background">
-        <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-background px-4">
-          <Button asChild variant="outline">
-            <Link href="/dashboard">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Dashboard
-            </Link>
-          </Button>
-          <div className="flex items-center gap-2">
-            <h3 className="font-headline font-bold text-lg">WisdomGPT</h3>
-            <Sparkles className="h-5 w-5 text-primary" />
-          </div>
-        </header>
-        {/* The children (page content) will fill the remaining space */}
-        <div className="flex-1 min-h-0">{children}</div>
-      </div>
-    );
-  }
-
+  const canUseWisdomGpt = canUseFeature('wisdomGpt');
+  
+  // The special case for wisdomgpt has been moved to its own page component
+  // for better separation of concerns.
 
   const handleLogout = async () => {
     const { auth } = initializeFirebase();
@@ -280,9 +263,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/wisdomgpt')} tooltip={{ children: 'WisdomGPT AI' }}>
-                            <Link href="/dashboard/wisdomgpt">
-                                <Sparkles /><span>WisdomGPT</span>
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/wisdomgpt')} tooltip={{ children: canUseWisdomGpt ? 'WisdomGPT AI' : 'Upgrade to Pro' }}>
+                            <Link href={canUseWisdomGpt ? '/dashboard/wisdomgpt' : '/dashboard/pricing'}>
+                                <Sparkles />
+                                <span>WisdomGPT</span>
+                                {!canUseWisdomGpt && <Lock className="ml-auto w-4 h-4 text-muted-foreground" />}
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -386,7 +371,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </Link>
                   </Button>
                     <Button asChild variant="ghost" size="icon">
-                      <Link href="/dashboard/wisdomgpt">
+                      <Link href={canUseWisdomGpt ? '/dashboard/wisdomgpt' : '/dashboard/pricing'}>
                         <Sparkles className="h-5 w-5" />
                         <span className="sr-only">Open WisdomGPT</span>
                       </Link>
@@ -410,3 +395,5 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </SidebarProvider>
   );
 }
+
+    

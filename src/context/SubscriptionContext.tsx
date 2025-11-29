@@ -75,7 +75,7 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
       case 'capture':
         return (profile?.captureCount || 0) < 1;
       case 'wisdomGpt':
-        return false; // Never allowed on free plan
+        return false; // Only available on Pro plan
       default:
         return false;
     }
