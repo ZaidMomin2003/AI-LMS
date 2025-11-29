@@ -37,9 +37,9 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap"
           rel="stylesheet"
         ></link>
+        <GoogleAnalytics />
       </head>
       <body className="font-body antialiased">
-        <GoogleAnalytics />
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
