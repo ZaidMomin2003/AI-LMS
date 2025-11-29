@@ -38,6 +38,57 @@ const couponSchema = z.object({
 });
 type CouponFormValues = z.infer<typeof couponSchema>;
 
+const CouponForm = () => {
+    const { user } = useAuth();
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const form = useForm<CouponFormValues>({
+        resolver: zodResolver(couponSchema),
+        defaultValues: { code: '' },
+    });
+
+    const onSubmit: SubmitHandler<CouponFormValues> = async (data) => {
+        if (!user) {
+            toast({ variant: "destructive", title: "You must be logged in." });
+            return;
+        }
+        setIsLoading(true);
+        const result = await applyCouponAction(data.code, user.uid);
+        if (result.success) {
+            toast({ title: "Success!", description: result.message });
+            form.reset();
+        } else {
+            toast({ variant: "destructive", title: "Coupon Error", description: result.message });
+        }
+        setIsLoading(false);
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline text-lg flex items-center gap-2"><Ticket className="w-5 h-5 text-primary" /> Have a Coupon?</CardTitle>
+                <CardDescription>Enter your special coupon code below to redeem your offer.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-2">
+                    <div className="flex-1 space-y-1">
+                        <Input 
+                            {...form.register('code')}
+                            placeholder="e.g., FIRST25"
+                            className="uppercase"
+                        />
+                        {form.formState.errors.code && <p className="text-xs text-destructive">{form.formState.errors.code.message}</p>}
+                    </div>
+                    <Button type="submit" disabled={isLoading}>
+                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Redeem'}
+                    </Button>
+                </form>
+            </CardContent>
+        </Card>
+    )
+}
+
 
 const PricingContent = () => {
     const { user } = useAuth();
@@ -215,7 +266,7 @@ const PricingContent = () => {
                                 ) : (
                                     <Button
                                         size="lg"
-                                        className="w-full font-bold text-base"
+                                        className="w-full font-bold text-base bg-primary hover:bg-primary/90"
                                         onClick={handlePayment}
                                     >
                                         Sign up for Sage
@@ -224,6 +275,8 @@ const PricingContent = () => {
                             </div>
                         </div>
                     </div>
+
+                    {subscription?.status !== 'active' && <CouponForm />}
                 </div>
             </div>
         </AppLayout>
