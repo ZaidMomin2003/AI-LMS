@@ -80,6 +80,7 @@ export default function WisdomGptChat() {
   const [topicSearch, setTopicSearch] = useState('');
 
   const filteredTopics = useMemo(() => {
+    if (!topicSearch) return topics;
     return topics.filter((t) =>
       t.title.toLowerCase().includes(topicSearch.toLowerCase())
     );
@@ -158,10 +159,11 @@ export default function WisdomGptChat() {
   }, [input, imageData, imagePreview, settings, toast]);
 
   const handleTopicSelect = (topic: Topic) => {
-    const prompt = `Please tell me more about my notes on "${topic.title}". Summarize the key points.`;
+    const prompt = `Tell me about my notes on "${topic.title}"`;
     const notesContent = Object.values(topic.notes).join('\n\n');
     handleSendMessage(prompt, notesContent);
     setShowTopicSuggestions(false);
+    setInput('');
   };
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -175,6 +177,19 @@ export default function WisdomGptChat() {
       handleSendMessage();
     }
   };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const value = e.target.value;
+        setInput(value);
+
+        const mentionMatch = value.match(/@(\w*)$/);
+        if (mentionMatch) {
+            setShowTopicSuggestions(true);
+            setTopicSearch(mentionMatch[1]);
+        } else {
+            setShowTopicSuggestions(false);
+        }
+    };
 
   const handleActionClick = (actionId: string) => {
     const prompts: { [key: string]: string } = {
@@ -344,173 +359,157 @@ export default function WisdomGptChat() {
                 </div>
             )}
             
-            <form
-            className="overflow-visible rounded-xl border bg-card p-2 transition-colors duration-200 focus-within:border-ring"
-            onSubmit={handleSubmit}
-            >
-            {imagePreview && (
-                <div className="relative flex w-fit items-center gap-2 mb-2">
-                    <Badge
-                    variant="outline"
-                    className="group relative h-16 w-16 cursor-default overflow-hidden p-0"
-                    >
-                    <Image
-                        alt="Preview"
-                        className="absolute inset-0 h-full w-full rounded-sm object-cover"
-                        src={imagePreview}
-                        fill
-                    />
-                    <button
-                        className="absolute right-1 top-1 z-10 rounded-full p-0.5 bg-background/50 text-foreground opacity-0 focus-visible:opacity-100 group-hover:opacity-100"
-                        onClick={handleRemoveFile}
-                        type="button"
-                    >
-                        <IconX size={12} />
-                    </button>
-                    </Badge>
-                </div>
-            )}
-            <Textarea
-                className="h-10 max-h-50 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask anything, or type @ to reference your notes..."
-                value={input}
-            />
+            <Popover open={showTopicSuggestions} onOpenChange={setShowTopicSuggestions}>
+                <PopoverTrigger asChild>
+                    <div className="w-full" />
+                </PopoverTrigger>
+                <form
+                className="overflow-visible rounded-xl border bg-card p-2 transition-colors duration-200 focus-within:border-ring"
+                onSubmit={handleSubmit}
+                >
+                {imagePreview && (
+                    <div className="relative flex w-fit items-center gap-2 mb-2">
+                        <Badge
+                        variant="outline"
+                        className="group relative h-16 w-16 cursor-default overflow-hidden p-0"
+                        >
+                        <Image
+                            alt="Preview"
+                            className="absolute inset-0 h-full w-full rounded-sm object-cover"
+                            src={imagePreview}
+                            fill
+                        />
+                        <button
+                            className="absolute right-1 top-1 z-10 rounded-full p-0.5 bg-background/50 text-foreground opacity-0 focus-visible:opacity-100 group-hover:opacity-100"
+                            onClick={handleRemoveFile}
+                            type="button"
+                        >
+                            <IconX size={12} />
+                        </button>
+                        </Badge>
+                    </div>
+                )}
+                <Textarea
+                    className="h-10 max-h-50 resize-none rounded-none border-none bg-transparent p-0 text-sm shadow-none focus-visible:border-transparent focus-visible:ring-0"
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Ask anything, or type @ to reference your notes..."
+                    value={input}
+                />
 
-            <div className="flex items-center gap-1">
-                <div className="flex items-end gap-0.5 sm:gap-1">
-                    <input
-                        className="sr-only"
-                        onChange={handleFileChange}
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                    />
-                    <Button
-                        className="h-7 w-7 rounded-md"
-                        size="icon"
-                        type="button"
-                        variant="ghost"
-                        onClick={() => fileInputRef.current?.click()}
-                    >
-                        <IconPaperclip size={16} />
-                    </Button>
-                     <Popover open={showTopicSuggestions} onOpenChange={setShowTopicSuggestions}>
-                        <PopoverTrigger asChild>
-                            <Button
+                <div className="flex items-center gap-1">
+                    <div className="flex items-end gap-0.5 sm:gap-1">
+                        <input
+                            className="sr-only"
+                            onChange={handleFileChange}
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                        />
+                        <Button
                             className="h-7 w-7 rounded-md"
                             size="icon"
                             type="button"
                             variant="ghost"
-                            >
-                            <span className="font-semibold text-base text-muted-foreground">@</span>
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[300px] p-0 z-50" align="start" sideOffset={5}>
-                            <Command shouldFilter={false}>
-                            <CommandInput
-                                placeholder="Search your notes..."
-                                value={topicSearch}
-                                onValueChange={setTopicSearch}
-                            />
-                            <CommandList>
-                                <CommandEmpty>No notes found.</CommandEmpty>
-                                <CommandGroup heading="Your Notes">
-                                {filteredTopics.map((topic) => (
-                                    <CommandItem
-                                    key={topic.id}
-                                    value={topic.title}
-                                    onSelect={() => {
-                                        handleTopicSelect(topic);
-                                        setShowTopicSuggestions(false);
-                                    }}
-                                    className="cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground"
-                                    >
-                                    {topic.title}
-                                    </CommandItem>
-                                ))}
-                                </CommandGroup>
-                            </CommandList>
-                            </Command>
-                        </PopoverContent>
-                    </Popover>
-
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                        <Button
-                            className="size-7 rounded-md"
-                            size="icon"
-                            type="button"
-                            variant="ghost"
+                            onClick={() => fileInputRef.current?.click()}
                         >
-                            <IconAdjustmentsHorizontal size={16} />
+                            <IconPaperclip size={16} />
                         </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                        align="start"
-                        className="w-56 rounded-xl p-3"
-                        >
-                        <DropdownMenuGroup className="space-y-3">
-                            <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <IconSparkles className="text-muted-foreground" size={16} />
-                                <Label className="text-xs">Explain Like I'm 10</Label>
-                            </div>
-                            <Switch
-                                checked={settings.explainSimple}
-                                className="scale-75"
-                                onCheckedChange={(value) =>
-                                updateSetting("explainSimple", value)
-                                }
-                            />
-                            </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                            <Button
+                                className="size-7 rounded-md"
+                                size="icon"
+                                type="button"
+                                variant="ghost"
+                            >
+                                <IconAdjustmentsHorizontal size={16} />
+                            </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                            align="start"
+                            className="w-56 rounded-xl p-3"
+                            >
+                            <DropdownMenuGroup className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <IconSparkles className="text-muted-foreground" size={16} />
+                                    <Label className="text-xs">Explain Like I'm 10</Label>
+                                </div>
+                                <Switch
+                                    checked={settings.explainSimple}
+                                    className="scale-75"
+                                    onCheckedChange={(value) =>
+                                    updateSetting("explainSimple", value)
+                                    }
+                                />
+                                </div>
 
-                            <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <IconPlayerPlay className="text-muted-foreground" size={16} />
-                                <Label className="text-xs">Include Examples</Label>
-                            </div>
-                            <Switch
-                                checked={settings.includeExamples}
-                                className="scale-75"
-                                onCheckedChange={(value) =>
-                                updateSetting("includeExamples", value)
-                                }
-                            />
-                            </div>
+                                <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <IconPlayerPlay className="text-muted-foreground" size={16} />
+                                    <Label className="text-xs">Include Examples</Label>
+                                </div>
+                                <Switch
+                                    checked={settings.includeExamples}
+                                    className="scale-75"
+                                    onCheckedChange={(value) =>
+                                    updateSetting("includeExamples", value)
+                                    }
+                                />
+                                </div>
 
-                            <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <IconHistory className="text-muted-foreground" size={16} />
-                                <Label className="text-xs">Suggest Follow-up</Label>
-                            </div>
-                            <Switch
-                                checked={settings.suggestFollowUp}
-                                className="scale-75"
-                                onCheckedChange={(value) =>
-                                updateSetting("suggestFollowUp", value)
-                                }
-                            />
-                            </div>
-                        </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <IconHistory className="text-muted-foreground" size={16} />
+                                    <Label className="text-xs">Suggest Follow-up</Label>
+                                </div>
+                                <Switch
+                                    checked={settings.suggestFollowUp}
+                                    className="scale-75"
+                                    onCheckedChange={(value) =>
+                                    updateSetting("suggestFollowUp", value)
+                                    }
+                                />
+                                </div>
+                            </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+
+                    <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
+                    <Button
+                        className="h-7 w-7 rounded-md"
+                        disabled={(!input.trim() && !imageData) || isTyping}
+                        size="icon"
+                        type="submit"
+                        variant="default"
+                    >
+                        {isTyping ? <LoaderIcon className="h-4 w-4 animate-spin"/> : <IconArrowUp size={16} />}
+                    </Button>
+                    </div>
                 </div>
-
-                <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
-                <Button
-                    className="h-7 w-7 rounded-md"
-                    disabled={(!input.trim() && !imageData) || isTyping}
-                    size="icon"
-                    type="submit"
-                    variant="default"
-                >
-                    {isTyping ? <LoaderIcon className="h-4 w-4 animate-spin"/> : <IconArrowUp size={16} />}
-                </Button>
-                </div>
-            </div>
-            </form>
+                </form>
+                 <PopoverContent className="w-[300px] p-0 z-50 -translate-y-2" align="start" side="top" sideOffset={10}>
+                    <Command shouldFilter={false}>
+                        <CommandList>
+                            <CommandEmpty>No notes found.</CommandEmpty>
+                            <CommandGroup heading="Reference a Note">
+                            {filteredTopics.map((topic) => (
+                                <CommandItem
+                                key={topic.id}
+                                value={topic.title}
+                                onSelect={() => handleTopicSelect(topic)}
+                                className="cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground"
+                                >
+                                {topic.title}
+                                </CommandItem>
+                            ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
             <p className="text-xs text-center text-muted-foreground mt-2 px-2">
                 WisdomGPT may produce inaccurate information. Your chats are not stored.
             </p>
