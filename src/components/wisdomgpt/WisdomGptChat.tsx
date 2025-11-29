@@ -409,9 +409,9 @@ export default function WisdomGptChat() {
                                             key={topic.id}
                                             value={topic.title}
                                             onSelect={() => handleTopicSelect(topic)}
-                                            className="aria-selected:bg-primary aria-selected:text-primary-foreground"
+                                            className="aria-selected:bg-primary aria-selected:text-primary-foreground cursor-pointer"
                                         >
-                                           {topic.title}
+                                            {topic.title}
                                         </CommandItem>
                                     ))}
                                     </CommandGroup>
@@ -419,34 +419,16 @@ export default function WisdomGptChat() {
                             </Command>
                         </PopoverContent>
                     </Popover>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                        <Button
-                            className="h-7 w-7 rounded-md"
-                            size="icon"
-                            type="button"
-                            variant="ghost"
-                        >
-                            <IconPlus size={16} />
-                        </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                        align="start"
-                        className="max-w-xs rounded-xl p-1"
-                        >
-                        <DropdownMenuGroup className="space-y-1">
-                            <DropdownMenuItem
-                            className="rounded-md text-sm"
-                            onClick={() => fileInputRef.current?.click()}
-                            >
-                            <div className="flex items-center gap-2">
-                                <IconPaperclip className="text-muted-foreground" size={16} />
-                                <span>Attach Image</span>
-                            </div>
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Button
+                        className="h-7 w-7 rounded-md"
+                        size="icon"
+                        type="button"
+                        variant="ghost"
+                        onClick={() => fileInputRef.current?.click()}
+                    >
+                        <IconPaperclip size={16} />
+                    </Button>
+                    
 
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
