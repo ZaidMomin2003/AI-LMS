@@ -238,7 +238,7 @@ export default function WisdomGptChat() {
   return (
     <div className="flex h-full w-full flex-col">
       {/* Scrollable chat messages area */}
-      <div ref={chatContainerRef} className="flex-1 overflow-y-auto pb-52">
+      <div ref={chatContainerRef} className="flex-1 overflow-y-auto pb-4">
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-4 py-8">
             {messages.length === 0 && !isTyping ? (
                  <div className="flex flex-col items-center justify-center text-center h-full pt-16">
@@ -326,7 +326,7 @@ export default function WisdomGptChat() {
       </div>
 
       {/* Fixed input area */}
-      <div className="fixed bottom-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-md">
+      <div className="bg-background/80 backdrop-blur-md">
         <div className="relative z-10 w-full max-w-2xl mx-auto px-4 pb-4">
             {messages.length === 0 && !isTyping && (
                 <div className="max-w-xs sm:max-w-md mx-auto flex-wrap gap-2 flex min-h-0 shrink-0 items-center justify-center pb-4">
@@ -394,7 +394,7 @@ export default function WisdomGptChat() {
                                 <span className="font-semibold text-base text-muted-foreground">@</span>
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[300px] p-0 mb-2">
+                        <PopoverContent className="w-[300px] p-0 mb-2 z-50">
                             <Command>
                                 <CommandInput 
                                     placeholder="Search your notes..." 
@@ -408,11 +408,10 @@ export default function WisdomGptChat() {
                                         <CommandItem
                                             key={topic.id}
                                             value={topic.title}
+                                            onSelect={() => handleTopicSelect(topic)}
                                             className="aria-selected:bg-primary aria-selected:text-primary-foreground"
                                         >
-                                            <div onClick={() => handleTopicSelect(topic)} className="w-full">
-                                                {topic.title}
-                                            </div>
+                                           {topic.title}
                                         </CommandItem>
                                     ))}
                                     </CommandGroup>
@@ -532,5 +531,3 @@ export default function WisdomGptChat() {
     </div>
   );
 }
-
-    
