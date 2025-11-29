@@ -215,7 +215,7 @@ const PricingContent = () => {
                                 ) : (
                                     <Button
                                         size="lg"
-                                        className="w-full font-bold text-base bg-white text-zinc-900 hover:bg-zinc-200"
+                                        className="w-full font-bold text-base"
                                         onClick={handlePayment}
                                     >
                                         Sign up for Sage
