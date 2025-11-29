@@ -22,7 +22,6 @@ import {
   IconHistory,
   IconPaperclip,
   IconPlayerPlay,
-  IconPlus,
   IconSparkles,
   IconX,
 } from "@tabler/icons-react";
@@ -31,6 +30,8 @@ import { useCallback, useRef, useState, useEffect, useMemo } from "react";
 import { nanoid } from 'nanoid';
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from 'framer-motion';
+import * as PopoverPrimitive from "@radix-ui/react-popover";
+
 
 import { Bot, FileQuestion, LoaderIcon, User } from "lucide-react";
 import { MathRenderer } from "../MathRenderer";
@@ -56,6 +57,25 @@ const ACTIONS = [
   { id: "practice-questions", icon: FileQuestion, label: "Give me 5 practice questions for AP Biology" },
 ];
 
+const ChatPopover = React.forwardRef<
+  React.ElementRef<typeof PopoverPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
+>(({ className, align = "center", sideOffset = 4, ...props }, ref) => (
+  <PopoverPrimitive.Portal>
+    <PopoverPrimitive.Content
+      ref={ref}
+      align={align}
+      sideOffset={sideOffset}
+      className={cn(
+        "z-[9999] w-72 rounded-md border bg-popover p-0 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+        className
+      )}
+      {...props}
+    />
+  </PopoverPrimitive.Portal>
+));
+ChatPopover.displayName = "ChatPopover";
+
 
 export default function WisdomGptChat() {
   const { topics } = useTopic();
@@ -68,6 +88,7 @@ export default function WisdomGptChat() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const [settings, setSettings] = useState({
@@ -361,7 +382,7 @@ export default function WisdomGptChat() {
             
             <Popover open={showTopicSuggestions} onOpenChange={setShowTopicSuggestions}>
                 <PopoverTrigger asChild>
-                    <div className="w-full" />
+                    <div ref={triggerRef}/>
                 </PopoverTrigger>
                 <form
                 className="overflow-visible rounded-xl border bg-card p-2 transition-colors duration-200 focus-within:border-ring"
@@ -490,8 +511,19 @@ export default function WisdomGptChat() {
                     </div>
                 </div>
                 </form>
-                 <PopoverContent className="w-[300px] p-0 z-50 -translate-y-2" align="start" side="top" sideOffset={10}>
+                 <ChatPopover
+                    anchor={triggerRef.current}
+                    side="top"
+                    align="start"
+                    sideOffset={10}
+                    className="w-[300px] p-0"
+                  >
                     <Command shouldFilter={false}>
+                        <CommandInput
+                            placeholder="Search your notes..."
+                            value={topicSearch}
+                            onValueChange={setTopicSearch}
+                        />
                         <CommandList>
                             <CommandEmpty>No notes found.</CommandEmpty>
                             <CommandGroup heading="Reference a Note">
@@ -499,7 +531,9 @@ export default function WisdomGptChat() {
                                 <CommandItem
                                 key={topic.id}
                                 value={topic.title}
-                                onSelect={() => handleTopicSelect(topic)}
+                                onSelect={() => {
+                                    handleTopicSelect(topic);
+                                }}
                                 className="cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground"
                                 >
                                 {topic.title}
@@ -508,7 +542,7 @@ export default function WisdomGptChat() {
                             </CommandGroup>
                         </CommandList>
                     </Command>
-                </PopoverContent>
+                </ChatPopover>
             </Popover>
             <p className="text-xs text-center text-muted-foreground mt-2 px-2">
                 WisdomGPT may produce inaccurate information. Your chats are not stored.
