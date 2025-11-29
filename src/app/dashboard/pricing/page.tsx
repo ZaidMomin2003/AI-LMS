@@ -75,7 +75,7 @@ const CouponForm = () => {
                     <div className="flex-1 space-y-1">
                         <Input 
                             {...form.register('code')}
-                            placeholder="e.g., FIRST25"
+                            placeholder="PASTE COUPON"
                             className="uppercase"
                         />
                         {form.formState.errors.code && <p className="text-xs text-destructive">{form.formState.errors.code.message}</p>}
