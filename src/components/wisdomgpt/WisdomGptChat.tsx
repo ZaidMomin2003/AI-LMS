@@ -1,6 +1,7 @@
 
 'use client';
 
+import * as React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -516,7 +517,7 @@ export default function WisdomGptChat() {
                     side="top"
                     align="start"
                     sideOffset={10}
-                    className="w-[300px] p-0"
+                    className="w-[300px] p-0 z-50"
                   >
                     <Command shouldFilter={false}>
                         <CommandInput
@@ -525,20 +526,21 @@ export default function WisdomGptChat() {
                             onValueChange={setTopicSearch}
                         />
                         <CommandList>
-                            <CommandEmpty>No notes found.</CommandEmpty>
+                            <CommandEmpty>No results found.</CommandEmpty>
                             <CommandGroup heading="Reference a Note">
-                            {filteredTopics.map((topic) => (
-                                <CommandItem
-                                key={topic.id}
-                                value={topic.title}
-                                onSelect={() => {
-                                    handleTopicSelect(topic);
-                                }}
-                                className="cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground"
-                                >
-                                {topic.title}
-                                </CommandItem>
-                            ))}
+                                {filteredTopics.map((topic) => (
+                                    <CommandItem
+                                    key={topic.id}
+                                    value={topic.title}
+                                    onSelect={() => {
+                                        handleTopicSelect(topic);
+                                        setShowTopicSuggestions(false);
+                                    }}
+                                    className="cursor-pointer aria-selected:bg-primary aria-selected:text-primary-foreground"
+                                    >
+                                    {topic.title}
+                                    </CommandItem>
+                                ))}
                             </CommandGroup>
                         </CommandList>
                     </Command>
@@ -552,3 +554,5 @@ export default function WisdomGptChat() {
     </div>
   );
 }
+
+    
