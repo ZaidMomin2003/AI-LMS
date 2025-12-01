@@ -124,9 +124,9 @@ export default function BusinessPage() {
         </section>
 
         {/* --- Collaboration Section --- */}
-        <section className="py-20 sm:py-24 bg-primary text-primary-foreground">
+        <section className="bg-secondary/50 py-20 sm:py-24">
           <div className="container mx-auto px-4">
-              <div className="relative mx-auto w-full max-w-2xl rounded-2xl bg-primary-foreground p-8 text-left text-card-foreground shadow-2xl">
+              <div className="relative mx-auto w-full max-w-2xl rounded-2xl bg-card p-8 text-left text-card-foreground shadow-2xl">
                   <div className="absolute -top-8 -left-8 text-primary opacity-20">
                       <svg width="100" height="100" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M9.983 3v7.391c0 2.9-2.35 5.258-5.25 5.258h-1.733v4.25h1.733c5.19 0 9.417-4.223 9.417-9.417v-7.482h-4.167zm10.017 0v7.391c0 2.9-2.35 5.258-5.25 5.258h-1.733v4.25h1.733c5.19 0 9.417-4.223 9.417-9.417v-7.482h-4.167z"/>
