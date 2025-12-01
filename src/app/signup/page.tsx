@@ -2,7 +2,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { signInWithPopup, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 import { auth, googleProvider, isFirebaseEnabled } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
@@ -55,6 +55,7 @@ export default function SignUpPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [emailSent, setEmailSent] = useState(false);
     
     async function handleEmailSignUp(e: React.FormEvent) {
       e.preventDefault();
@@ -64,8 +65,13 @@ export default function SignUpPage() {
       }
       setIsLoading(true);
       try {
-        await createUserWithEmailAndPassword(auth, email, password);
-        router.push('/onboarding');
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await sendEmailVerification(userCredential.user);
+        setEmailSent(true);
+        toast({
+          title: 'Verification Email Sent',
+          description: 'Please check your inbox to verify your email address.',
+        });
       } catch (error: any) {
         toast({ variant: 'destructive', title: 'Sign-Up Failed', description: error.message });
       } finally {
@@ -106,67 +112,83 @@ export default function SignUpPage() {
                                <BookOpenCheck className="h-8 w-8" />
                             </Link>
                             <CardTitle className="text-3xl font-headline">Get Started</CardTitle>
-                            <CardDescription>Create your account and start your AI-powered learning journey.</CardDescription>
+                            <CardDescription>
+                                {emailSent 
+                                    ? 'Check your inbox to verify your email.' 
+                                    : 'Create your account and start your AI-powered learning journey.'
+                                }
+                            </CardDescription>
                         </CardHeader>
                         <CardContent>
-                          <form onSubmit={handleEmailSignUp} className="space-y-4">
-                            <div className="space-y-2">
-                              <Label htmlFor="email">Email</Label>
-                              <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
-                            </div>
-                            <div className="space-y-2">
-                              <Label htmlFor="password">Password</Label>
-                               <div className="relative">
-                                <Input 
-                                  id="password" 
-                                  type={showPassword ? "text" : "password"} 
-                                  placeholder="Password"
-                                  required 
-                                  value={password} 
-                                  onChange={(e) => setPassword(e.target.value)} 
-                                />
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="icon"
-                                  className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground"
-                                  onClick={() => setShowPassword(!showPassword)}
-                                >
-                                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          {emailSent ? (
+                            <div className="text-center text-muted-foreground">
+                                <p>A verification link has been sent to <strong>{email}</strong>. Once you've verified, you can sign in.</p>
+                                <Button asChild variant="link" className="mt-4">
+                                    <Link href="/login">Go to Sign In</Link>
                                 </Button>
-                              </div>
                             </div>
-                            <Button type="submit" className="w-full" disabled={isLoading}>
-                               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                              Create Account
-                            </Button>
-                          </form>
+                          ) : (
+                            <>
+                              <form onSubmit={handleEmailSignUp} className="space-y-4">
+                                <div className="space-y-2">
+                                  <Label htmlFor="email">Email</Label>
+                                  <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+                                </div>
+                                <div className="space-y-2">
+                                  <Label htmlFor="password">Password</Label>
+                                   <div className="relative">
+                                    <Input 
+                                      id="password" 
+                                      type={showPassword ? "text" : "password"} 
+                                      placeholder="Password"
+                                      required 
+                                      value={password} 
+                                      onChange={(e) => setPassword(e.target.value)} 
+                                    />
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground"
+                                      onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </Button>
+                                  </div>
+                                </div>
+                                <Button type="submit" className="w-full" disabled={isLoading}>
+                                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                  Create Account
+                                </Button>
+                              </form>
 
-                          <div className="relative my-4">
-                            <div className="absolute inset-0 flex items-center">
-                              <span className="w-full border-t" />
-                            </div>
-                            <div className="relative flex justify-center text-xs uppercase">
-                              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
-                            </div>
-                          </div>
-                          
-                          <Button 
-                              variant="outline"
-                              className="w-full h-11" 
-                              onClick={handleGoogleSignIn} 
-                              disabled={isGoogleLoading}
-                          >
-                            {isGoogleLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <GoogleIcon />}
-                            Sign Up with Google
-                          </Button>
-                          
-                          <div className="mt-4 text-center text-sm">
-                            Already have an account?{" "}
-                            <Link href="/login" className="font-semibold text-primary underline-offset-4 hover:underline">
-                              Sign in
-                            </Link>
-                          </div>
+                              <div className="relative my-4">
+                                <div className="absolute inset-0 flex items-center">
+                                  <span className="w-full border-t" />
+                                </div>
+                                <div className="relative flex justify-center text-xs uppercase">
+                                  <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+                                </div>
+                              </div>
+                              
+                              <Button 
+                                  variant="outline"
+                                  className="w-full h-11" 
+                                  onClick={handleGoogleSignIn} 
+                                  disabled={isGoogleLoading}
+                              >
+                                {isGoogleLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <GoogleIcon />}
+                                Sign Up with Google
+                              </Button>
+                              
+                              <div className="mt-4 text-center text-sm">
+                                Already have an account?{" "}
+                                <Link href="/login" className="font-semibold text-primary underline-offset-4 hover:underline">
+                                  Sign in
+                                </Link>
+                              </div>
+                            </>
+                          )}
                         </CardContent>
                     </Card>
                     <div className="mt-4 px-4 text-center text-xs text-muted-foreground">
@@ -185,5 +207,3 @@ export default function SignUpPage() {
         </div>
     );
 }
-
-    
