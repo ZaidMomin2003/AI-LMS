@@ -115,7 +115,7 @@ export default function RoadmapPage() {
         <CardContent>
             <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <fieldset disabled={!canCreateRoadmap} className="space-y-6">
+              <fieldset disabled={!canCreateRoadmap && !roadmap} className="space-y-6">
                 <FormField
                 control={form.control}
                 name="syllabus"
@@ -182,7 +182,7 @@ export default function RoadmapPage() {
                 />
                 </div>
               </fieldset>
-                <Button type="submit" disabled={isLoading || !canCreateRoadmap}>
+                <Button type="submit" disabled={isLoading || (!canCreateRoadmap && !!roadmap)}>
                 {isLoading ? (
                     <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -243,7 +243,9 @@ export default function RoadmapPage() {
           <div className="mt-8">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl font-headline font-bold tracking-tight">Your Study Roadmap</h3>
-              <Button variant="outline" onClick={() => setRoadmap(null)}>Create New Roadmap</Button>
+              {canCreateRoadmap && (
+                 <Button onClick={() => setRoadmap(null)}>Create New Roadmap</Button>
+              )}
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {roadmap.plan.map((day, index) => (
@@ -264,7 +266,7 @@ export default function RoadmapPage() {
                 </Card>
               ))}
             </div>
-            <Card className="mt-4 bg-secondary">
+             <Card className="mt-4 bg-secondary">
                 <CardContent className="p-4 flex items-center gap-3">
                     <CalendarCheck className="w-8 h-8 text-primary"/>
                     <div>
@@ -273,12 +275,12 @@ export default function RoadmapPage() {
                     </div>
                 </CardContent>
             </Card>
-             {!canCreateRoadmap && <UpgradePrompt />}
+            {!canCreateRoadmap && <UpgradePrompt />}
           </div>
         ) : (
              <div className="space-y-4">
               {!isLoading && renderForm()}
-              {!canCreateRoadmap && <UpgradePrompt />}
+              {!canCreateRoadmap && roadmap && <UpgradePrompt />}
             </div>
         )}
       </div>
