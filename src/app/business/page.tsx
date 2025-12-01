@@ -40,24 +40,6 @@ const faqs = [
   },
 ];
 
-const collaborationSteps = [
-    {
-        icon: <FileText className="h-6 w-6" />,
-        title: "Apply & Explore",
-        description: "Fill out a quick form, and we'll give you full Pro access to explore every feature. No strings attached, no meetings required."
-    },
-    {
-        icon: <UserPlus className="h-6 w-6" />,
-        title: "See the Fit",
-        description: "Use Wisdom with your students. See the impact on learning and engagement firsthand. We believe our tool speaks for itself."
-    },
-    {
-        icon: <Heart className="h-6 w-6" />,
-        title: "Grow Together",
-        description: "If you love it, let's partner up. Not only will your students get a discount, but you'll also earn a generous commission for every subscription."
-    }
-]
-
 export default function BusinessPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -146,27 +128,14 @@ export default function BusinessPage() {
 
         {/* --- Collaboration Section --- */}
         <section className="py-20 sm:py-24">
-            <div className="container mx-auto max-w-5xl px-4">
-                 <div className="text-center">
-                    <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-                        A Partnership Built on Trust, Not Meetings
-                    </h2>
-                    <p className="mt-4 text-lg leading-8 text-muted-foreground">
-                        We believe our tool speaks for itself. That's why we offer a simple, transparent path to collaboration.
-                    </p>
-                </div>
-                <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
-                    {collaborationSteps.map((step, index) => (
-                        <div key={index} className="flex flex-col items-center text-center p-6">
-                            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-                                {step.icon}
-                            </div>
-                            <h3 className="text-lg font-semibold font-headline">{step.title}</h3>
-                            <p className="mt-2 text-sm text-muted-foreground">{step.description}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
+          <div className="container mx-auto max-w-4xl px-4 text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+              A Partnership Built on Trust, Not Meetings
+            </h2>
+            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
+              We believe in doing great things for education, and that starts with a simple, transparent partnership. Forget endless meetings and sales pitches. Just fill out a quick form, and we'll give you full Pro access to explore every feature on your own terms. Use Wisdom with your students, see the impact on their learning and engagement firsthand, and decide if it's the right fit. If you love it, we can collaborate. Not only will your students get a discount, but you'll also earn a generous commission for every subscription. It's a partnership where everyone wins.
+            </p>
+          </div>
         </section>
         
         {/* --- Volume Discount Calculator --- */}
