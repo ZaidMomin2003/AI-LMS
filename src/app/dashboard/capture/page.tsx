@@ -5,7 +5,7 @@ import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Camera, Image as ImageIcon, Upload, Loader2, Sparkles, AlertTriangle, Gem, Lock } from 'lucide-react';
+import { Camera, Image as ImageIcon, Upload, Loader2, Sparkles, AlertTriangle, Gem, Lock, SwitchCamera } from 'lucide-react';
 import React, { useState, useRef, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
@@ -17,7 +17,7 @@ import { MathRenderer } from '@/components/MathRenderer';
 import { useProfile } from '@/context/ProfileContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import Link from 'next/link';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-is-mobile';
 import { cn } from '@/lib/utils';
 
 export default function CapturePage() {
@@ -26,6 +26,7 @@ export default function CapturePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<CaptureTheAnswerOutput | null>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -40,7 +41,7 @@ export default function CapturePage() {
     const getCameraPermission = async () => {
         if (mode === 'capture' && videoRef.current) {
             try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode } });
                 if (videoRef.current) {
                     videoRef.current.srcObject = stream;
                 }
@@ -58,7 +59,7 @@ export default function CapturePage() {
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, [mode]);
+  }, [mode, facingMode]);
 
   const startCamera = () => {
     if (!canUseCapture) {
@@ -66,6 +67,10 @@ export default function CapturePage() {
         return;
     }
     setMode('capture');
+  };
+
+  const toggleCamera = () => {
+    setFacingMode(prev => prev === 'user' ? 'environment' : 'user');
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -180,8 +185,11 @@ export default function CapturePage() {
         case 'capture':
             return (
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-full max-w-lg aspect-video bg-muted rounded-lg overflow-hidden border">
+                    <div className="w-full max-w-lg aspect-video bg-muted rounded-lg overflow-hidden border relative">
                          <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                         <Button onClick={toggleCamera} variant="outline" size="icon" className="absolute bottom-4 right-4 rounded-full bg-background/50 backdrop-blur-sm">
+                            <SwitchCamera />
+                        </Button>
                     </div>
                      {hasCameraPermission === false && (
                         <Alert variant="destructive" className="max-w-lg">
@@ -340,3 +348,5 @@ export default function CapturePage() {
     </AppLayout>
   );
 }
+
+    
