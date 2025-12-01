@@ -17,7 +17,7 @@ import { MathRenderer } from '@/components/MathRenderer';
 import { useProfile } from '@/context/ProfileContext';
 import { useSubscription } from '@/context/SubscriptionContext';
 import Link from 'next/link';
-import { useIsMobile } from '@/hooks/use-is-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
 
 export default function CapturePage() {
