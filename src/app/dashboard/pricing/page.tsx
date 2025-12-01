@@ -234,13 +234,13 @@ const PricingContent = () => {
                                 </div>
 
                                 {/* Right Side of the card */}
-                                <div className="bg-blue-500 text-black rounded-xl p-8 space-y-6">
+                                <div className="bg-blue-500 text-white rounded-xl p-8 space-y-6">
                                     <p className="font-semibold">Everything in Sage includes:</p>
                                     <ul className="space-y-3">
                                         {proFeatures.map(feature => (
                                             <li key={feature} className="flex items-center gap-3 text-sm">
-                                                <Check className="w-4 h-4 text-black/70" />
-                                                <span className="text-black">{feature}</span>
+                                                <Check className="w-4 h-4 text-white/70" />
+                                                <span className="text-white">{feature}</span>
                                             </li>
                                         ))}
                                     </ul>
