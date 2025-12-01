@@ -47,7 +47,6 @@ export default function BusinessPage() {
       <main className="flex-grow">
         {/* --- Hero Section --- */}
         <section className="relative overflow-hidden bg-secondary/30 py-20 lg:py-32">
-          <GradientBars />
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
               <div className="relative z-10 text-center lg:text-left">
