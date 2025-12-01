@@ -177,7 +177,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <BookOpenCheck className="w-5 h-5" />
               </div>
               <div className="flex flex-col">
-                  <span className="font-bold font-headline text-xl -mb-1">Wisdom</span>
+                  <span className="font-bold font-headline text-xl -mb-1">c</span>
                   <span className="text-xs text-muted-foreground">AI Studybuddy</span>
               </div>
             </div>
@@ -359,7 +359,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         <BookOpenCheck className="w-5 h-5" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="font-bold font-headline text-lg -mb-1">Wisdom</span>
+                      <span className="font-bold font-headline text-lg -mb-1">c</span>
                       <span className="text-xs text-muted-foreground">AI Studybuddy</span>
                     </div>
                 </div>
@@ -395,5 +395,3 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </SidebarProvider>
   );
 }
-
-    
