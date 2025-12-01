@@ -15,7 +15,6 @@ import { Features } from '@/components/landing/Features';
 import Image from 'next/image';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { VolumeCalculator } from '@/components/pricing/VolumeCalculator';
-import { GradientBars } from '@/components/ui/gradient-bars';
 
 const faqs = [
   {
@@ -210,3 +209,5 @@ export default function BusinessPage() {
     </div>
   );
 }
+
+    
