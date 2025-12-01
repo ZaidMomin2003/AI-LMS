@@ -148,7 +148,17 @@ export default function LoginPage() {
       }
       setIsLoading(true);
       try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        if (!userCredential.user.emailVerified) {
+          await auth.signOut();
+          toast({
+              variant: 'destructive',
+              title: 'Verification Required',
+              description: 'Please check your inbox and verify your email address before signing in.',
+          });
+          setIsLoading(false);
+          return;
+        }
         router.push('/dashboard');
       } catch (error: any) {
         let description = "An unexpected error occurred. Please try again.";
