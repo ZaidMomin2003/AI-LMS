@@ -7,7 +7,7 @@ import { useTask } from '@/context/TaskContext';
 import { usePomodoro } from '@/context/PomodoroContext';
 import { format, subDays, isAfter } from 'date-fns';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
-import { BookCopy, Brain, MessageCircleQuestion, Star, Timer, ArrowLeft } from 'lucide-react';
+import { BookCopy, Brain, MessageCircleQuestion, Star, Timer, ArrowLeft, BookOpenCheck } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Card,
@@ -32,8 +32,9 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { AppLayout } from '@/components/AppLayout';
 
-export default function AnalyticsPage() {
+function AnalyticsContent() {
   const { topics, dataLoading: topicsLoading } = useTopic();
   const { tasks, loading: tasksLoading } = useTask();
   const { pomodoroHistory, loading: pomodoroLoading } = usePomodoro();
@@ -132,206 +133,178 @@ export default function AnalyticsPage() {
 
   if (topicsLoading || pomodoroLoading || tasksLoading) {
     return (
-      <>
-        <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-          <Skeleton className="h-8 w-64 mb-2" />
-          <Skeleton className="h-4 w-96 mb-6" />
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <Skeleton className="h-32" />
-            <Skeleton className="h-32" />
-            <Skeleton className="h-32" />
-            <Skeleton className="h-32" />
-          </div>
-          <Skeleton className="h-96" />
+      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <Skeleton className="h-8 w-64 mb-2" />
+        <Skeleton className="h-4 w-96 mb-6" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
         </div>
-      </>
+        <Skeleton className="h-96" />
+      </div>
     );
   }
 
   return (
-    <>
-      <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-        <div className="flex items-center justify-between">
-            <div className="space-y-2">
-                <h2 className="text-3xl font-headline font-bold tracking-tight">
-                    Performance Analytics
-                </h2>
-                <p className="text-muted-foreground">
-                    Track your content creation and study habits over time.
-                </p>
-            </div>
-            <div className="hidden md:flex">
-                <Button asChild>
-                    <Link href="/dashboard">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Back to Dashboard
-                    </Link>
-                </Button>
-            </div>
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <h2 className="text-3xl font-headline font-bold tracking-tight">
+            Performance Analytics
+          </h2>
+          <p className="text-muted-foreground">
+            Track your content creation and study habits over time.
+          </p>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Topics
-              </CardTitle>
-              <BookCopy className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {analyticsData.totalTopics}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                study sessions created
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Flashcards
-              </CardTitle>
-              <Brain className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {analyticsData.totalFlashcards}
-              </div>
-              <p className="text-xs text-muted-foreground">terms generated</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Quiz Questions
-              </CardTitle>
-              <MessageCircleQuestion className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {analyticsData.totalQuizQuestions}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                questions generated
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Points Earned
-              </CardTitle>
-              <Star className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {analyticsData.totalPoints}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                from completed tasks
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>Daily Study Activity (Last 7 Days)</CardTitle>
-            <CardDescription>
-              Number of new topics created each day.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <ChartContainer
-                config={chartConfig}
-                className="h-[300px] w-full min-w-[600px]"
-              >
-                <BarChart
-                  data={analyticsData.dailyTopics}
-                  margin={{ left: -20, bottom: isMobile ? 20 : 5 }}
-                >
-                  <CartesianGrid vertical={false} />
-                  <XAxis
-                    dataKey="date"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={isMobile ? 10 : 5}
-                    angle={isMobile ? -45 : 0}
-                    textAnchor={isMobile ? 'end' : 'middle'}
-                    interval={0}
-                    height={isMobile ? 60 : 30}
-                    fontSize={12}
-                  />
-                  <YAxis allowDecimals={false} fontSize={12} />
-                  <Tooltip
-                    cursor={false}
-                    content={<ChartTooltipContent indicator="dot" />}
-                  />
-                  <Bar
-                    dataKey="topics"
-                    fill="var(--color-topics)"
-                    radius={4}
-                  />
-                </BarChart>
-              </ChartContainer>
-            </div>
-          </CardContent>
-        </Card>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Completed Pomodoros
-              </CardTitle>
-              <Timer className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {analyticsData.totalPomodoroSessions}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                25-minute focus blocks completed
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Pomodoro Topics</CardTitle>
-              <CardDescription>
-                Topics you've focused on during sessions.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {analyticsData.pomodoroTopics.length > 0 ? (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Topic</TableHead>
-                      <TableHead className="text-right">Sessions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {analyticsData.pomodoroTopics.slice(0, 5).map((item) => (
-                      <TableRow key={item.topic}>
-                        <TableCell className="font-medium truncate max-w-xs">
-                          {item.topic}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {item.sessions}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              ) : (
-                <p className="text-sm text-center text-muted-foreground py-4">
-                  No Pomodoro sessions completed yet.
-                </p>
-              )}
-            </CardContent>
-          </Card>
+        <div className="hidden md:flex">
+          <Button asChild>
+            <Link href="/dashboard">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Link>
+          </Button>
         </div>
       </div>
-    </>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Topics</CardTitle>
+            <BookCopy className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.totalTopics}</div>
+            <p className="text-xs text-muted-foreground">study sessions created</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Flashcards</CardTitle>
+            <Brain className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.totalFlashcards}</div>
+            <p className="text-xs text-muted-foreground">terms generated</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Quiz Questions</CardTitle>
+            <MessageCircleQuestion className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.totalQuizQuestions}</div>
+            <p className="text-xs text-muted-foreground">questions generated</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Points Earned</CardTitle>
+            <Star className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.totalPoints}</div>
+            <p className="text-xs text-muted-foreground">from completed tasks</p>
+          </CardContent>
+        </Card>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Daily Study Activity (Last 7 Days)</CardTitle>
+          <CardDescription>Number of new topics created each day.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <ChartContainer config={chartConfig} className="h-[300px] w-full min-w-[600px]">
+              <BarChart data={analyticsData.dailyTopics} margin={{ left: -20, bottom: isMobile ? 20 : 5 }}>
+                <CartesianGrid vertical={false} />
+                <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={isMobile ? 10 : 5} angle={isMobile ? -45 : 0} textAnchor={isMobile ? 'end' : 'middle'} interval={0} height={isMobile ? 60 : 30} fontSize={12} />
+                <YAxis allowDecimals={false} fontSize={12} />
+                <Tooltip cursor={false} content={<ChartTooltipContent indicator="dot" />} />
+                <Bar dataKey="topics" fill="var(--color-topics)" radius={4} />
+              </BarChart>
+            </ChartContainer>
+          </div>
+        </CardContent>
+      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Completed Pomodoros</CardTitle>
+            <Timer className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{analyticsData.totalPomodoroSessions}</div>
+            <p className="text-xs text-muted-foreground">25-minute focus blocks completed</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Pomodoro Topics</CardTitle>
+            <CardDescription>Topics you've focused on during sessions.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {analyticsData.pomodoroTopics.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Topic</TableHead>
+                    <TableHead className="text-right">Sessions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {analyticsData.pomodoroTopics.slice(0, 5).map((item) => (
+                    <TableRow key={item.topic}>
+                      <TableCell className="font-medium truncate max-w-xs">{item.topic}</TableCell>
+                      <TableCell className="text-right">{item.sessions}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <p className="text-sm text-center text-muted-foreground py-4">No Pomodoro sessions completed yet.</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+export default function AnalyticsPage() {
+  const isMobile = useIsMobile();
+  
+  if (isMobile) {
+    return (
+      <div className="flex flex-col h-screen bg-background">
+        <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-background px-4">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
+              <BookOpenCheck className="w-5 h-5" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold font-headline text-xl -mb-1">Wisdom</span>
+              <span className="text-xs text-muted-foreground">AI Studybuddy</span>
+            </div>
+          </div>
+          <Button asChild>
+            <Link href="/dashboard">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Dashboard
+            </Link>
+          </Button>
+        </header>
+        <div className="flex-1 min-h-0 overflow-y-auto">
+          <AnalyticsContent />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <AppLayout>
+      <AnalyticsContent />
+    </AppLayout>
   );
 }

@@ -5,11 +5,15 @@ import { getAdminDB } from '@/lib/firebase-admin';
 
 export async function applyCouponAction(code: string, uid: string): Promise<{ success: boolean, message: string, discountedPrice?: number }> {
   const db = getAdminDB();
-  if (!db) {
+  if (!db && code.toUpperCase() !== 'TEST1') {
     return { success: false, message: 'Server error: Cannot connect to the database.' };
   }
 
   try {
+    if (code.toUpperCase() === 'TEST1') {
+        return { success: true, message: 'TEST1 coupon applied! You can now purchase for a nominal amount.', discountedPrice: 0.02 };
+    }
+
     const userDocRef = db.collection('users').doc(uid);
     const userDoc = await userDocRef.get();
 
@@ -18,11 +22,6 @@ export async function applyCouponAction(code: string, uid: string): Promise<{ su
         return { success: false, message: 'Coupon cannot be applied to an already active subscription.' };
     }
     
-    // Handle TEST1 coupon for 1 Rupee (approx $0.02)
-    if (code.toUpperCase() === 'TEST1') {
-        return { success: true, message: 'TEST1 coupon applied! You can now purchase for a nominal amount.', discountedPrice: 0.02 };
-    }
-
     // Handle FIRST25 coupon for a free trial
     if (code.toUpperCase() === 'FIRST25') {
         const expiryDate = new Date();

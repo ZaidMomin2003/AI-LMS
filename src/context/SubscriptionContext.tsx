@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
@@ -69,7 +70,8 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
       case 'topic':
         return topics.length < 1;
       case 'roadmap':
-        return !roadmap;
+        // Allow if there is no roadmap data at all
+        return !roadmap || roadmap.plan.length === 0;
       case 'pomodoro':
         return pomodoroHistory.length < 1;
       case 'capture':
