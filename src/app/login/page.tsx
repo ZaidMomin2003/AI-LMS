@@ -2,7 +2,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithPopup, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth, googleProvider, isFirebaseEnabled } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { TestimonialColumn } from '@/components/landing/Testimonials';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 
 const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 48 48">
@@ -47,6 +48,88 @@ const testimonials = [
   },
 ];
 
+function ForgotPasswordDialog({ email, onEmailChange }: { email: string; onEmailChange: (email: string) => void }) {
+    const { toast } = useToast();
+    const [isSending, setIsSending] = useState(false);
+    const [emailSent, setEmailSent] = useState(false);
+    const [resetEmail, setResetEmail] = useState(email);
+
+    const handlePasswordReset = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!isFirebaseEnabled || !auth) {
+            toast({ variant: 'destructive', title: 'Error', description: "Firebase is not configured." });
+            return;
+        }
+        if (!resetEmail) {
+             toast({ variant: 'destructive', title: 'Error', description: "Please enter an email address." });
+            return;
+        }
+        setIsSending(true);
+        try {
+            await sendPasswordResetEmail(auth, resetEmail);
+            setEmailSent(true);
+            onEmailChange(resetEmail);
+            toast({ title: 'Email Sent', description: `A password reset link has been sent to ${resetEmail}.` });
+        } catch (error: any) {
+            let description = "An error occurred. Please try again.";
+            if (error.code === 'auth/user-not-found') {
+                description = "No user found with this email address.";
+            }
+            toast({ variant: 'destructive', title: 'Failed to Send Email', description });
+        } finally {
+            setIsSending(false);
+        }
+    };
+
+    return (
+        <Dialog onOpenChange={() => setEmailSent(false)}>
+            <DialogTrigger asChild>
+                <Button variant="link" size="sm" className="text-sm text-primary p-0 h-auto font-normal underline-offset-4 hover:underline">
+                    Forgot password?
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                    <DialogTitle>Forgot Password</DialogTitle>
+                    <DialogDescription>
+                        {emailSent 
+                            ? `We've sent a password reset link to ${resetEmail}. Please check your inbox.`
+                            : "Enter your email address and we'll send you a link to reset your password."
+                        }
+                    </DialogDescription>
+                </DialogHeader>
+                {!emailSent && (
+                    <form onSubmit={handlePasswordReset}>
+                        <div className="grid flex-1 gap-2">
+                            <Label htmlFor="reset-email" className="sr-only">
+                                Email
+                            </Label>
+                            <Input
+                                id="reset-email"
+                                type="email"
+                                placeholder="m@example.com"
+                                required
+                                value={resetEmail}
+                                onChange={(e) => setResetEmail(e.target.value)}
+                            />
+                        </div>
+                        <DialogFooter className="mt-4">
+                            <DialogClose asChild>
+                                <Button type="button" variant="secondary">
+                                    Cancel
+                                </Button>
+                            </DialogClose>
+                            <Button type="submit" disabled={isSending}>
+                                {isSending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                Send Reset Link
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                )}
+            </DialogContent>
+        </Dialog>
+    );
+}
 
 export default function LoginPage() {
     const router = useRouter();
@@ -124,9 +207,7 @@ export default function LoginPage() {
                             <div className="space-y-2">
                               <div className="flex items-center justify-between">
                                 <Label htmlFor="password">Password</Label>
-                                <Link href="#" className="text-sm text-primary underline-offset-4 hover:underline">
-                                  Forgot password?
-                                </Link>
+                                <ForgotPasswordDialog email={email} onEmailChange={setEmail} />
                               </div>
                               <div className="relative">
                                 <Input 
@@ -194,5 +275,7 @@ export default function LoginPage() {
         </div>
     );
 }
+
+    
 
     
