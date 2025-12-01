@@ -10,7 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { ArrowRight, FileText, Heart, UserPlus } from 'lucide-react';
+import { ArrowRight, FileText, Heart, MessageCircle, UserPlus, Zap } from 'lucide-react';
 import { Features } from '@/components/landing/Features';
 import Image from 'next/image';
 import placeholderImages from '@/lib/placeholder-images.json';
@@ -128,13 +128,21 @@ export default function BusinessPage() {
 
         {/* --- Collaboration Section --- */}
         <section className="py-20 sm:py-24">
-          <div className="container mx-auto max-w-4xl px-4 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-              A Partnership Built on Trust, Not Meetings
-            </h2>
-            <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
-              We believe in doing great things for education, and that starts with a simple, transparent partnership. Forget endless meetings and sales pitches. Just fill out a quick form, and we'll give you full Pro access to explore every feature on your own terms. Use Wisdom with your students, see the impact on their learning and engagement firsthand, and decide if it's the right fit. If you love it, we can collaborate. Not only will your students get a discount, but you'll also earn a generous commission for every subscription. It's a partnership where everyone wins.
-            </p>
+          <div className="container mx-auto px-4">
+            <div className="relative mx-auto w-full max-w-2xl rounded-2xl bg-zinc-900 p-8 text-center text-white shadow-2xl">
+              <Zap className="mx-auto mb-4 h-12 w-12 text-primary" />
+              <h2 className="font-headline text-3xl font-bold">
+                Let's Collaborate. No Meetings Required.
+              </h2>
+              <p className="mt-4 text-base text-zinc-400">
+                Forget endless forms and sales pitches. Contact us directly on WhatsApp for free Pro access. Try Wisdom with your students and see the impact. If you love it, we'll create a partnership where everyone wins.
+              </p>
+              <Button asChild size="lg" className="mt-8 bg-green-500 hover:bg-green-600 text-white shadow-lg">
+                <a href="https://wa.link/o0dcmr" target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="mr-2" /> Contact on WhatsApp
+                </a>
+              </Button>
+            </div>
           </div>
         </section>
         
