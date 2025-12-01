@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Header } from '@/components/landing/Header';
@@ -125,22 +124,31 @@ export default function BusinessPage() {
         </section>
 
         {/* --- Collaboration Section --- */}
-        <section className="py-20 sm:py-24">
+        <section className="py-20 sm:py-24 bg-primary text-primary-foreground">
           <div className="container mx-auto px-4">
-            <div className="relative mx-auto w-full max-w-2xl rounded-2xl bg-zinc-900 p-8 text-center text-white shadow-2xl">
-              <Zap className="mx-auto mb-4 h-12 w-12 text-primary" />
-              <h2 className="font-headline text-3xl font-bold">
-                Let's Collaborate. No Meetings Required.
-              </h2>
-              <p className="mt-4 text-base text-zinc-400">
-                Forget endless forms and sales pitches. Contact us directly on WhatsApp for free Pro access. Try Wisdom with your students and see the impact. If you love it, we'll create a partnership where everyone wins.
-              </p>
-              <Button asChild size="lg" className="mt-8 bg-green-500 hover:bg-green-600 text-white shadow-lg">
-                <a href="https://wa.link/o0dcmr" target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="mr-2" /> Contact on WhatsApp
-                </a>
-              </Button>
-            </div>
+              <div className="relative mx-auto w-full max-w-2xl rounded-2xl bg-primary-foreground p-8 text-left text-card-foreground shadow-2xl">
+                  <div className="absolute -top-8 -left-8 text-primary opacity-20">
+                      <svg width="100" height="100" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M9.983 3v7.391c0 2.9-2.35 5.258-5.25 5.258h-1.733v4.25h1.733c5.19 0 9.417-4.223 9.417-9.417v-7.482h-4.167zm10.017 0v7.391c0 2.9-2.35 5.258-5.25 5.258h-1.733v4.25h1.733c5.19 0 9.417-4.223 9.417-9.417v-7.482h-4.167z"/>
+                      </svg>
+                  </div>
+                  <h2 className="font-headline text-3xl font-bold">
+                      Let's Collaborate. No Meetings Required.
+                  </h2>
+                  <p className="mt-4 text-base text-muted-foreground">
+                      Forget endless forms and sales pitches. Contact us directly on WhatsApp for free Pro access. Try Wisdom with your students and see the impact. If you love it, we'll create a partnership where everyone wins.
+                  </p>
+                  <Button asChild size="lg" className="mt-8 bg-green-500 hover:bg-green-600 text-white shadow-lg">
+                      <a href="https://wa.link/o0dcmr" target="_blank" rel="noopener noreferrer">
+                          <MessageCircle className="mr-2" /> Contact on WhatsApp
+                      </a>
+                  </Button>
+                   <div className="absolute -bottom-8 -right-8 text-primary opacity-20">
+                      <svg width="100" height="100" viewBox="0 0 24 24" fill="currentColor" className="transform rotate-180">
+                          <path d="M9.983 3v7.391c0 2.9-2.35 5.258-5.25 5.258h-1.733v4.25h1.733c5.19 0 9.417-4.223 9.417-9.417v-7.482h-4.167zm10.017 0v7.391c0 2.9-2.35 5.258-5.25 5.258h-1.733v4.25h1.733c5.19 0 9.417-4.223 9.417-9.417v-7.482h-4.167z"/>
+                      </svg>
+                  </div>
+              </div>
           </div>
         </section>
         
@@ -209,5 +217,3 @@ export default function BusinessPage() {
     </div>
   );
 }
-
-    
