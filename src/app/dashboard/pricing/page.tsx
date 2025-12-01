@@ -38,7 +38,7 @@ const couponSchema = z.object({
 });
 type CouponFormValues = z.infer<typeof couponSchema>;
 
-const CouponForm = () => {
+const CouponForm = ({ onSuccessfulCoupon }: { onSuccessfulCoupon: (price: number) => void }) => {
     const { user } = useAuth();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
@@ -57,6 +57,9 @@ const CouponForm = () => {
         const result = await applyCouponAction(data.code, user.uid);
         if (result.success) {
             toast({ title: "Success!", description: result.message });
+            if (result.discountedPrice) {
+                onSuccessfulCoupon(result.discountedPrice);
+            }
             form.reset();
         } else {
             toast({ variant: "destructive", title: "Coupon Error", description: result.message });
@@ -113,7 +116,7 @@ const PricingContent = () => {
         }
     }, [searchParams, toast]);
 
-    const handlePayment = async () => {
+    const handlePayment = async (amount = sagePlan.price) => {
         if (!user) {
             toast({ variant: 'destructive', title: 'You must be logged in to subscribe.' });
             return;
@@ -125,7 +128,7 @@ const PricingContent = () => {
             const orderResponse = await fetch('/api/create-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: sagePlan.price, userId: user.uid }),
+                body: JSON.stringify({ amount: amount, userId: user.uid }),
             });
 
             const orderData = await orderResponse.json();
@@ -267,7 +270,7 @@ const PricingContent = () => {
                                     <Button
                                         size="lg"
                                         className="w-full font-bold text-base bg-primary hover:bg-primary/90"
-                                        onClick={handlePayment}
+                                        onClick={() => handlePayment()}
                                     >
                                         Sign up for Sage
                                     </Button>
@@ -276,7 +279,7 @@ const PricingContent = () => {
                         </div>
                     </div>
 
-                    {subscription?.status !== 'active' && <CouponForm />}
+                    {subscription?.status !== 'active' && <CouponForm onSuccessfulCoupon={handlePayment} />}
                 </div>
             </div>
         </AppLayout>
