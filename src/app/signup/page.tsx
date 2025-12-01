@@ -73,7 +73,13 @@ export default function SignUpPage() {
           description: 'Please check your inbox to verify your email address.',
         });
       } catch (error: any) {
-        toast({ variant: 'destructive', title: 'Sign-Up Failed', description: error.message });
+        let description = "An unexpected error occurred. Please try again.";
+        if (error.code === 'auth/email-already-in-use') {
+            description = "This email address is already in use. Please sign in or use a different email.";
+        } else if (error.code === 'auth/weak-password') {
+            description = "Your password is too weak. Please use at least 6 characters.";
+        }
+        toast({ variant: 'destructive', title: 'Sign-Up Failed', description });
       } finally {
         setIsLoading(false);
       }
