@@ -37,6 +37,26 @@ const formSchema = z.object({
   targetDate: z.date({ required_error: 'A target date is required.' }),
 });
 
+const UpgradePrompt = () => (
+    <Card className="max-w-md w-full text-center mx-auto border-primary/50 bg-primary/5 mt-6">
+        <CardHeader>
+            <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                <Lock className="w-6 h-6" />
+            </div>
+            <CardTitle className="font-headline">Limit Reached</CardTitle>
+            <CardDescription>You've used your free roadmap generation. Upgrade for unlimited plans.</CardDescription>
+        </CardHeader>
+        <CardContent>
+            <Button asChild>
+                <Link href="/dashboard/pricing">
+                    <Gem className="mr-2 h-4 w-4" />
+                    Upgrade to Pro
+                </Link>
+            </Button>
+        </CardContent>
+    </Card>
+);
+
 export default function RoadmapPage() {
   const [isLoading, setIsLoading] = useState(false);
   const { roadmap, setRoadmap } = useRoadmap();
@@ -193,31 +213,6 @@ export default function RoadmapPage() {
           </p>
         </div>
 
-        {!roadmap && (
-            <div className="space-y-4">
-              {renderForm()}
-              {!canCreateRoadmap && (
-                  <Card className="max-w-md w-full text-center mx-auto border-primary/50 bg-primary/5">
-                      <CardHeader>
-                          <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
-                              <Lock className="w-6 h-6" />
-                          </div>
-                          <CardTitle className="font-headline">Limit Reached</CardTitle>
-                          <CardDescription>You've used your free roadmap generation. Upgrade for unlimited plans.</CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                          <Button asChild>
-                              <Link href="/dashboard/pricing">
-                                  <Gem className="mr-2 h-4 w-4" />
-                                  Upgrade to Pro
-                              </Link>
-                          </Button>
-                      </CardContent>
-                  </Card>
-              )}
-            </div>
-        )}
-
         {isLoading && (
             <div className="space-y-4 mt-8">
                 <Card>
@@ -244,7 +239,7 @@ export default function RoadmapPage() {
             </div>
         )}
 
-        {roadmap && roadmap.plan.length > 0 && (
+        {roadmap && roadmap.plan.length > 0 ? (
           <div className="mt-8">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-2xl font-headline font-bold tracking-tight">Your Study Roadmap</h3>
@@ -278,7 +273,13 @@ export default function RoadmapPage() {
                     </div>
                 </CardContent>
             </Card>
+             {!canCreateRoadmap && <UpgradePrompt />}
           </div>
+        ) : (
+             <div className="space-y-4">
+              {!isLoading && renderForm()}
+              {!canCreateRoadmap && <UpgradePrompt />}
+            </div>
         )}
       </div>
     </AppLayout>
