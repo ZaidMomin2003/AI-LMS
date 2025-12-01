@@ -10,7 +10,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { ArrowRight, Gift } from 'lucide-react';
+import { ArrowRight, FileText, Heart, UserPlus } from 'lucide-react';
 import { Features } from '@/components/landing/Features';
 import Image from 'next/image';
 import placeholderImages from '@/lib/placeholder-images.json';
@@ -39,6 +39,24 @@ const faqs = [
       'Absolutely not! There is no cap on the amount of commission you can earn. The more customers you refer, the more you make. We succeed when you succeed.',
   },
 ];
+
+const collaborationSteps = [
+    {
+        icon: <FileText className="h-6 w-6" />,
+        title: "Apply & Explore",
+        description: "Fill out a quick form, and we'll give you full Pro access to explore every feature. No strings attached, no meetings required."
+    },
+    {
+        icon: <UserPlus className="h-6 w-6" />,
+        title: "See the Fit",
+        description: "Use Wisdom with your students. See the impact on learning and engagement firsthand. We believe our tool speaks for itself."
+    },
+    {
+        icon: <Heart className="h-6 w-6" />,
+        title: "Grow Together",
+        description: "If you love it, let's partner up. Not only will your students get a discount, but you'll also earn a generous commission for every subscription."
+    }
+]
 
 export default function BusinessPage() {
   return (
@@ -124,6 +142,31 @@ export default function BusinessPage() {
               </div>
             </div>
           </div>
+        </section>
+
+        {/* --- Collaboration Section --- */}
+        <section className="py-20 sm:py-24">
+            <div className="container mx-auto max-w-5xl px-4">
+                 <div className="text-center">
+                    <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+                        A Partnership Built on Trust, Not Meetings
+                    </h2>
+                    <p className="mt-4 text-lg leading-8 text-muted-foreground">
+                        We believe our tool speaks for itself. That's why we offer a simple, transparent path to collaboration.
+                    </p>
+                </div>
+                <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-3">
+                    {collaborationSteps.map((step, index) => (
+                        <div key={index} className="flex flex-col items-center text-center p-6">
+                            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                {step.icon}
+                            </div>
+                            <h3 className="text-lg font-semibold font-headline">{step.title}</h3>
+                            <p className="mt-2 text-sm text-muted-foreground">{step.description}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
         </section>
         
         {/* --- Volume Discount Calculator --- */}
