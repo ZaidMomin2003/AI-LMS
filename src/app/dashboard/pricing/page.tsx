@@ -234,13 +234,13 @@ const PricingContent = () => {
                                 </div>
 
                                 {/* Right Side of the card */}
-                                <div className="border border-zinc-800 bg-zinc-900/50 rounded-xl p-8 space-y-6">
-                                    <p className="font-semibold text-zinc-200">Everything in Sage includes:</p>
+                                <div className="bg-blue-500 text-black rounded-xl p-8 space-y-6">
+                                    <p className="font-semibold">Everything in Sage includes:</p>
                                     <ul className="space-y-3">
                                         {proFeatures.map(feature => (
                                             <li key={feature} className="flex items-center gap-3 text-sm">
-                                                <Check className="w-4 h-4 text-zinc-400" />
-                                                <span className="text-zinc-300">{feature}</span>
+                                                <Check className="w-4 h-4 text-black/70" />
+                                                <span className="text-black">{feature}</span>
                                             </li>
                                         ))}
                                     </ul>
