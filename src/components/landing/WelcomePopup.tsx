@@ -35,27 +35,24 @@ const CountdownTimer = () => {
     }, []);
 
     if (!timeLeft) {
-        return null; // Or a loading skeleton
+        return null;
     }
     
-    const formatTimeUnit = (unit: number) => String(unit).padStart(2, '0').split('');
-
-    const timeUnits = {
-        Days: formatTimeUnit(timeLeft.days),
-        Hours: formatTimeUnit(timeLeft.hours),
-        Minutes: formatTimeUnit(timeLeft.minutes),
-        Seconds: formatTimeUnit(timeLeft.seconds),
-    };
+    const timeUnits: {unit: 'days' | 'hours' | 'minutes' | 'seconds', label: string}[] = [
+        { unit: 'days', label: 'Days' },
+        { unit: 'hours', label: 'Hours' },
+        { unit: 'minutes', label: 'Mins' },
+        { unit: 'seconds', label: 'Secs' },
+    ];
 
     return (
         <div className="flex justify-center items-start gap-3">
-            {Object.entries(timeUnits).map(([label, digits]) => (
-                <div key={label} className="flex flex-col items-center gap-2">
-                    <div className="flex gap-1.5">
-                        <div className="w-8 h-10 rounded-md bg-zinc-800 text-white flex items-center justify-center text-lg font-bold">{digits[0]}</div>
-                        <div className="w-8 h-10 rounded-md bg-zinc-800 text-white flex items-center justify-center text-lg font-bold">{digits[1]}</div>
+            {timeUnits.map(({ unit, label }) => (
+                <div key={label} className="flex flex-col items-center">
+                    <div className="text-3xl font-bold font-mono text-foreground bg-white/50 dark:bg-black/20 border border-border/50 rounded-lg w-16 py-2">
+                        {String(timeLeft[unit] || 0).padStart(2, '0')}
                     </div>
-                    <span className="text-xs text-zinc-400">{label}</span>
+                    <span className="text-xs text-muted-foreground mt-1.5">{label}</span>
                 </div>
             ))}
         </div>
@@ -83,47 +80,51 @@ export function WelcomePopup() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md w-full p-8 text-center bg-black text-white rounded-2xl border-zinc-800">
-        <DialogClose className="absolute right-4 top-4 rounded-full bg-zinc-800/80 p-1.5 text-zinc-400 hover:text-white transition-colors">
+      <DialogContent className="max-w-md w-full p-0 text-center bg-card text-card-foreground rounded-2xl border-border/50 overflow-hidden">
+        <DialogClose className="absolute right-3 top-3 rounded-full bg-background/50 p-1.5 text-muted-foreground hover:text-foreground transition-colors z-20">
             <X className="h-4 w-4" />
         </DialogClose>
         
-        <DialogHeader className="space-y-4">
-            <div className="relative h-24 w-full mb-4">
-                {/* Graphic elements */}
-                <div className="absolute -top-5 left-1/4 w-24 h-10 bg-yellow-400 text-black font-bold flex items-center justify-center -rotate-12 rounded-md">
-                    LIFETIME
-                </div>
-                <div className="absolute top-0 right-1/4 w-20 h-9 bg-blue-500 text-white font-bold flex items-center justify-center rotate-6 rounded-md">
-                    DEAL
-                </div>
-                <div className="absolute top-8 left-1/2 w-16 h-8 bg-pink-500 text-white font-bold flex items-center justify-center -rotate-6 rounded-md">
-                    SALE
-                </div>
-                <Sparkles className="absolute top-[-10px] right-[30%] w-16 h-16 text-pink-400 -rotate-12" />
+        <div className="relative isolate p-8">
+             <div
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 -z-10 h-48 transform-gpu overflow-hidden blur-3xl"
+              >
+                <div
+                  className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
+                  style={{
+                    clipPath:
+                      'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
+                  }}
+                />
+            </div>
+            <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
+                <PartyPopper className="w-8 h-8" />
             </div>
 
-            <DialogTitle className="text-3xl font-headline font-bold text-white">
-                Lifetime Deal
-            </DialogTitle>
-            <DialogDescription className="text-zinc-400 text-base">
-                Unlock unlimited access forever.
-            </DialogDescription>
-        </DialogHeader>
+            <DialogHeader className="space-y-2">
+                <DialogTitle className="text-3xl font-headline font-bold">
+                    Limited Time: Lifetime Deal
+                </DialogTitle>
+                <DialogDescription className="text-base text-muted-foreground">
+                    Get unlimited access to everything, forever, for a single payment.
+                </DialogDescription>
+            </DialogHeader>
 
-        <div className="my-8">
-            <CountdownTimer />
+            <div className="my-8">
+                <CountdownTimer />
+            </div>
+            
+            <div className="flex flex-col gap-3">
+                <p className="text-5xl font-bold font-headline text-primary">$999</p>
+                <Button asChild size="lg" className="w-full mt-2" onClick={handleSignUpClick}>
+                    <Link href="/#pricing">
+                        <Gem className="mr-2 h-4 w-4" />
+                        Claim Lifetime Access
+                    </Link>
+                </Button>
+            </div>
         </div>
-        
-        <div className="flex flex-col gap-3">
-             <p className="text-3xl font-bold font-headline text-primary">$999</p>
-             <Button asChild size="lg" className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white" onClick={handleSignUpClick}>
-                <Link href="/#pricing">
-                    Get Lifetime Access
-                </Link>
-            </Button>
-        </div>
-
       </DialogContent>
     </Dialog>
   );
