@@ -176,6 +176,10 @@ export function Pricing() {
                 {/* Lifetime Deal Section */}
                  <div className="mt-16">
                     <Card className="relative w-full overflow-hidden bg-gradient-to-r from-primary to-blue-500 text-primary-foreground shadow-2xl shadow-primary/30">
+                        <div 
+                            className="absolute inset-0 bg-repeat bg-[url('https://res.cloudinary.com/dfhpkqrjw/image/upload/v1717676769/confetti_y39svn.gif')]"
+                            style={{ opacity: 0.1, backgroundSize: '300px' }} 
+                        />
                         <div className="absolute inset-0 bg-grid-pattern opacity-10" style={{backgroundSize: '30px 30px'}}/>
                         <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center relative z-10">
                             <div className="md:col-span-1 space-y-2">
