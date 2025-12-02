@@ -4,17 +4,8 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, PartyPopper, CheckCircle, X, Gem } from 'lucide-react';
+import { Gem, PartyPopper } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
-
-const includedFeatures = [
-  'AI-Generated Notes & Summaries',
-  'Interactive Flashcards',
-  'Personalized Quizzes',
-  'AI-Powered Study Roadmaps',
-  'Unlimited WisdomGPT Access'
-];
 
 export function WelcomePopup() {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,56 +28,25 @@ export function WelcomePopup() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl w-full p-0 overflow-hidden grid grid-cols-1 md:grid-cols-2 shadow-2xl rounded-2xl border-border/20">
-        {/* Left Side - Visual */}
-        <div className="relative hidden md:flex flex-col items-center justify-center p-8 text-primary-foreground overflow-hidden">
-             <Image
-                src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2070&auto=format&fit=crop"
-                alt="Library background"
-                layout="fill"
-                objectFit="cover"
-                className="z-0"
-                data-ai-hint="library books"
-             />
-             <div className="absolute inset-0 bg-primary/90 z-10"></div>
-             <div className="relative z-20 text-center space-y-4">
-                <div className="w-24 h-24 mx-auto rounded-full bg-primary-foreground/20 flex items-center justify-center backdrop-blur-sm border border-primary-foreground/20">
-                    <PartyPopper className="w-12 h-12 text-primary-foreground" />
-                </div>
-                <h2 className="text-3xl font-headline font-bold">A One-Time Offer</h2>
-                <p className="text-primary-foreground/80 max-w-xs mx-auto">
-                    Unlock lifetime access to every feature we have, and every feature we'll ever add.
-                </p>
-             </div>
-        </div>
-        
-        {/* Right Side - Content */}
-        <div className="relative p-8 flex flex-col justify-center">
-            
-            <div className="w-full max-w-sm mx-auto text-center md:text-left">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-headline font-bold text-foreground">Limited Time: Lifetime Deal</DialogTitle>
-                  <DialogDescription className="text-muted-foreground mt-2 mb-6">
-                      Get unlimited access forever for a single payment of <span className="font-bold text-foreground">$999</span>. This offer won't last.
-                  </DialogDescription>
-                </DialogHeader>
-                
-                <ul className="space-y-3 text-left mb-8">
-                    {includedFeatures.map((feature) => (
-                        <li key={feature} className="flex items-center gap-3 text-sm">
-                            <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
-                            <span className="text-foreground">{feature}</span>
-                        </li>
-                    ))}
-                </ul>
-                
-                <Button asChild size="lg" className="w-full" onClick={handleSignUpClick}>
-                    <Link href="/#pricing">
-                        Get Lifetime Access <Gem className="ml-2 w-4 h-4" />
-                    </Link>
-                </Button>
+      <DialogContent className="max-w-md w-full p-8 text-center bg-background/80 backdrop-blur-md">
+        <DialogHeader className="space-y-4">
+            <div className="w-20 h-20 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                <PartyPopper className="w-10 h-10 text-primary" />
             </div>
-        </div>
+            <DialogTitle className="text-3xl font-headline font-bold text-foreground">
+                Limited Time: Lifetime Deal
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground text-base">
+                Get unlimited access forever for a single payment of
+            </DialogDescription>
+            <p className="text-5xl font-bold font-headline text-primary">$999</p>
+        </DialogHeader>
+        
+        <Button asChild size="lg" className="w-full mt-6" onClick={handleSignUpClick}>
+            <Link href="/#pricing">
+                Get Lifetime Access <Gem className="ml-2 w-4 h-4" />
+            </Link>
+        </Button>
       </DialogContent>
     </Dialog>
   );
