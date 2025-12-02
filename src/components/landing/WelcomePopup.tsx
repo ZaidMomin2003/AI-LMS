@@ -85,7 +85,7 @@ export function WelcomePopup() {
         
         <div className="relative isolate text-white">
              <Image 
-                src="https://images.unsplash.com/photo-1503944583220-79d6f827a1f7?q=80&w=800&auto=format&fit=crop"
+                src="/popup.png"
                 alt="Smiling child"
                 layout="fill"
                 objectFit="cover"
