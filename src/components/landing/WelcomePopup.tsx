@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Gem, PartyPopper, X, Sparkles } from 'lucide-react';
+import { Gem, PartyPopper, X, Sparkles, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -109,19 +109,35 @@ export function WelcomePopup() {
             </div>
         </div>
         
-        <div className="p-8 pt-6 bg-card">
-            <div className="flex flex-col gap-3">
-                <div className="flex items-baseline justify-center gap-3">
-                    <span className="text-3xl font-semibold text-muted-foreground line-through decoration-2">$1990</span>
-                    <p className="text-5xl font-bold font-headline text-primary">$999</p>
-                </div>
-                <Button asChild size="lg" className="w-full mt-2" onClick={handleSignUpClick}>
-                    <Link href="/#pricing">
-                        <Gem className="mr-2 h-4 w-4" />
-                        Claim Lifetime Access
-                    </Link>
-                </Button>
+        <div className="p-8 pt-6 bg-card space-y-6">
+            <div className="text-center">
+                <h3 className="text-lg font-semibold">The Ultimate Investment in Your Future</h3>
+                <p className="text-sm text-muted-foreground">One-time payment, lifetime access.</p>
             </div>
+            
+            <div className="flex items-baseline justify-center gap-3">
+                <span className="text-3xl font-semibold text-muted-foreground line-through decoration-2">$1990</span>
+                <p className="text-5xl font-bold font-headline text-primary">$999</p>
+            </div>
+            
+            <div className="text-left text-sm text-muted-foreground space-y-2">
+                <p className="font-semibold text-foreground text-center">What you get:</p>
+                <ul className="grid grid-cols-2 gap-x-4 gap-y-1">
+                    <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Unlimited Notes</li>
+                    <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Unlimited Quizzes</li>
+                    <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Unlimited Roadmaps</li>
+                    <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> WisdomGPT AI</li>
+                    <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> All Future Updates</li>
+                    <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Priority Support</li>
+                </ul>
+            </div>
+
+            <Button asChild size="lg" className="w-full mt-2" onClick={handleSignUpClick}>
+                <Link href="/#pricing">
+                    <Gem className="mr-2 h-4 w-4" />
+                    Claim Lifetime Access
+                </Link>
+            </Button>
         </div>
 
         <DialogClose className="absolute right-3 top-3 rounded-full bg-black/50 p-1.5 text-white/80 hover:text-white transition-colors z-20">
