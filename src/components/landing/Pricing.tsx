@@ -42,15 +42,18 @@ const CountdownTimer = () => {
         return timeLeft as {days: number, hours: number, minutes: number, seconds: number};
     };
 
-    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+    const [timeLeft, setTimeLeft] = useState<{days: number, hours: number, minutes: number, seconds: number} | null>(null);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
+        // Set initial time on mount to avoid hydration mismatch
+        setTimeLeft(calculateTimeLeft());
+
+        const timer = setInterval(() => {
             setTimeLeft(calculateTimeLeft());
         }, 1000);
 
         return () => clearTimeout(timer);
-    });
+    }, []);
 
     const timerComponents: {unit: 'days' | 'hours' | 'minutes' | 'seconds', label: string}[] = [
         { unit: 'days', label: 'Days' },
@@ -59,6 +62,10 @@ const CountdownTimer = () => {
         { unit: 'seconds', label: 'Secs' },
     ];
     
+    if (!timeLeft) {
+        return null; // Don't render on the server or before the first client-side calculation
+    }
+
     return (
         <div className="flex items-center gap-2 sm:gap-4">
             {timerComponents.map(part => (
