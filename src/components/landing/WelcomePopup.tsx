@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from '@/components/ui/button';
 import { Gem, PartyPopper, X, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const CountdownTimer = () => {
     const calculateTimeLeft = () => {
@@ -49,10 +50,10 @@ const CountdownTimer = () => {
         <div className="flex justify-center items-start gap-3">
             {timeUnits.map(({ unit, label }) => (
                 <div key={label} className="flex flex-col items-center">
-                    <div className="text-3xl font-bold font-mono text-foreground bg-white/50 dark:bg-black/20 border border-border/50 rounded-lg w-16 py-2">
+                    <div className="text-3xl font-bold font-mono text-white bg-black/30 backdrop-blur-sm border border-white/20 rounded-lg w-16 py-2">
                         {String(timeLeft[unit] || 0).padStart(2, '0')}
                     </div>
-                    <span className="text-xs text-muted-foreground mt-1.5">{label}</span>
+                    <span className="text-xs text-white/80 mt-1.5">{label}</span>
                 </div>
             ))}
         </div>
@@ -82,36 +83,33 @@ export function WelcomePopup() {
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md w-full p-0 text-center bg-card text-card-foreground rounded-2xl border-border/50 overflow-hidden">
         
-        <div className="relative isolate p-8">
-             <div
-                aria-hidden="true"
-                className="absolute inset-x-0 top-0 -z-10 h-48 transform-gpu overflow-hidden blur-3xl"
-              >
-                <div
-                  className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-                  style={{
-                    clipPath:
-                      'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-                  }}
-                />
-            </div>
-            <div className="mx-auto bg-primary/10 text-primary p-3 rounded-full w-fit mb-4">
-                <PartyPopper className="w-8 h-8" />
-            </div>
+        <div className="relative isolate text-white">
+             <Image 
+                src="https://images.unsplash.com/photo-1503944583220-79d6f827a1f7?q=80&w=800&auto=format&fit=crop"
+                alt="Smiling child"
+                layout="fill"
+                objectFit="cover"
+                className="absolute inset-0 -z-10"
+                data-ai-hint="smiling child"
+             />
+             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent -z-10"></div>
+             <div className="p-8 pt-16">
+                <DialogHeader className="space-y-2">
+                    <DialogTitle className="text-3xl font-headline font-bold text-white">
+                        Limited Time: Lifetime Deal
+                    </DialogTitle>
+                    <DialogDescription className="text-base text-white/80">
+                        Get unlimited access forever for a single payment.
+                    </DialogDescription>
+                </DialogHeader>
 
-            <DialogHeader className="space-y-2">
-                <DialogTitle className="text-3xl font-headline font-bold">
-                    Limited Time: Lifetime Deal
-                </DialogTitle>
-                <DialogDescription className="text-base text-muted-foreground">
-                    Get unlimited access forever for a single payment.
-                </DialogDescription>
-            </DialogHeader>
-
-            <div className="my-8">
-                <CountdownTimer />
+                <div className="my-8">
+                    <CountdownTimer />
+                </div>
             </div>
-            
+        </div>
+        
+        <div className="p-8 pt-6 bg-card">
             <div className="flex flex-col gap-3">
                 <p className="text-5xl font-bold font-headline text-primary">$999</p>
                 <Button asChild size="lg" className="w-full mt-2" onClick={handleSignUpClick}>
@@ -122,6 +120,11 @@ export function WelcomePopup() {
                 </Button>
             </div>
         </div>
+
+        <DialogClose className="absolute right-3 top-3 rounded-full bg-black/50 p-1.5 text-white/80 hover:text-white transition-colors z-20">
+          <X className="w-4 h-4" />
+          <span className="sr-only">Close</span>
+        </DialogClose>
       </DialogContent>
     </Dialog>
   );
