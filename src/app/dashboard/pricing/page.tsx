@@ -33,6 +33,14 @@ const sagePlan: Plan = {
     durationMonths: 12, 
 };
 
+const lifetimePlan: Plan = {
+    name: 'Lifetime Sage',
+    price: 999,
+    priceDescription: 'One-time payment',
+    durationMonths: 120, // 10 years
+};
+
+
 const couponSchema = z.object({
   code: z.string().min(1, 'Please enter a code.'),
 });
@@ -172,7 +180,7 @@ const PricingContent = () => {
         }
     }, [searchParams, toast]);
 
-    const handlePayment = async (amount = sagePlan.price) => {
+    const handlePayment = async (plan: Plan) => {
         if (!user) {
             toast({ variant: 'destructive', title: 'You must be logged in to subscribe.' });
             return;
@@ -184,7 +192,7 @@ const PricingContent = () => {
             const orderResponse = await fetch('/api/create-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: amount, userId: user.uid }),
+                body: JSON.stringify({ amount: plan.price, userId: user.uid }),
             });
 
             const orderData = await orderResponse.json();
@@ -198,14 +206,14 @@ const PricingContent = () => {
                 amount: orderData.amount,
                 currency: orderData.currency,
                 name: 'Wisdom Pro',
-                description: `Subscription for ${sagePlan.name} plan`,
+                description: `Subscription for ${plan.name} plan`,
                 order_id: orderData.id,
                 handler: function (response: any) {
                     const data = new URLSearchParams();
                     data.append('razorpay_payment_id', response.razorpay_payment_id);
                     data.append('razorpay_order_id', response.razorpay_order_id);
                     data.append('razorpay_signature', response.razorpay_signature);
-                    data.append('plan_duration', sagePlan.durationMonths.toString());
+                    data.append('plan_duration', plan.durationMonths.toString());
                     
                     const form = document.createElement('form');
                     form.method = 'POST';
@@ -238,8 +246,7 @@ const PricingContent = () => {
             setIsLoading(false);
         }
     };
-
-    const currencySymbol = '$';
+    
     const monthlyPrice = (sagePlan.price / sagePlan.durationMonths).toFixed(2);
     
     const proFeatures = [
@@ -313,7 +320,7 @@ const PricingContent = () => {
                                     >
                                         <div className="relative z-10 flex items-center justify-center gap-2 px-3 py-2.5 font-mono text-sm font-medium uppercase text-center w-full">
                                             <Check className="h-4 w-4" />
-                                            <span>You are on the Sage Plan</span>
+                                            <span>You are on a Pro Plan</span>
                                         </div>
                                         <motion.span
                                             initial={{ y: "100%" }}
@@ -326,7 +333,7 @@ const PricingContent = () => {
                                     <Button
                                         size="lg"
                                         className="w-full font-bold text-base bg-primary hover:bg-primary/90"
-                                        onClick={() => handlePayment()}
+                                        onClick={() => handlePayment(sagePlan)}
                                     >
                                         Sign up for Sage
                                     </Button>
@@ -356,18 +363,20 @@ const PricingContent = () => {
                             </div>
 
                             <div className="md:col-span-1 flex flex-col items-center md:items-end text-center md:text-right">
-                                <p className="text-4xl font-bold">$999</p>
+                                <p className="text-4xl font-bold">${lifetimePlan.price}</p>
                                 <p className="text-sm text-primary-foreground/80">One-time payment</p>
-                                 <Button asChild className="mt-4 w-full md:w-auto bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-                                    <Link href="/signup">
-                                        Get Lifetime Access
-                                    </Link>
+                                 <Button 
+                                    className="mt-4 w-full md:w-auto bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+                                    onClick={() => handlePayment(lifetimePlan)}
+                                    disabled={isLoading || subLoading || subscription?.status === 'active'}
+                                >
+                                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : 'Get Lifetime Access'}
                                 </Button>
                             </div>
                         </div>
                     </Card>
 
-                    {subscription?.status !== 'active' && <CouponForm onSuccessfulCoupon={handlePayment} />}
+                    {subscription?.status !== 'active' && <CouponForm onSuccessfulCoupon={(amount) => handlePayment({ ...sagePlan, price: amount })} />}
                 </div>
             </div>
         </AppLayout>

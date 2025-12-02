@@ -1,3 +1,4 @@
+
 'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -64,8 +65,10 @@ export async function POST(req: NextRequest) {
         const expiryDate = new Date();
         expiryDate.setMonth(expiryDate.getMonth() + planDuration);
 
+        const planName = planDuration === 120 ? 'Lifetime Sage' : `${planDuration}-month`;
+
         await updateUserSubscription(userId, {
-            plan: `${planDuration}-month`,
+            plan: planName,
             status: 'active',
             expiryDate: expiryDate.toISOString(),
         });
