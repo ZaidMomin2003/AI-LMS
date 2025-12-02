@@ -63,14 +63,14 @@ const CountdownTimer = () => {
     ];
     
     if (!timeLeft) {
-        return null; // Don't render on the server or before the first client-side calculation
+        return null;
     }
 
     return (
         <div className="flex items-center gap-2 sm:gap-4">
             {timerComponents.map(part => (
                 <div key={part.unit} className="flex flex-col items-center">
-                    <div className="text-xl sm:text-2xl font-bold font-mono text-primary-foreground bg-primary/80 rounded-md w-12 sm:w-16 py-1.5">
+                    <div className="text-xl sm:text-2xl font-bold font-mono text-primary-foreground bg-black rounded-md w-12 sm:w-16 h-12 sm:h-16 flex items-center justify-center">
                         {String(timeLeft[part.unit] || 0).padStart(2, '0')}
                     </div>
                     <div className="text-xs uppercase tracking-wider mt-1 text-primary-foreground/70">{part.label}</div>
@@ -140,7 +140,7 @@ export function Pricing() {
                                 <div className="flex justify-between items-center">
                                     <CardTitle className="font-headline text-2xl">Sage</CardTitle>
                                     <div className="flex items-center gap-1 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-lg">
-                                        <Sparkles className="h-4 w-4" />
+                                        <Sparkles className="h-4 h-4" />
                                         Best Value
                                     </div>
                                 </div>
