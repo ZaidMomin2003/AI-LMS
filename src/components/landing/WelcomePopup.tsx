@@ -111,7 +111,10 @@ export function WelcomePopup() {
         
         <div className="p-8 pt-6 bg-card">
             <div className="flex flex-col gap-3">
-                <p className="text-5xl font-bold font-headline text-primary">$999</p>
+                <div className="flex items-baseline justify-center gap-3">
+                    <span className="text-3xl font-semibold text-muted-foreground line-through decoration-2">$1990</span>
+                    <p className="text-5xl font-bold font-headline text-primary">$999</p>
+                </div>
                 <Button asChild size="lg" className="w-full mt-2" onClick={handleSignUpClick}>
                     <Link href="/#pricing">
                         <Gem className="mr-2 h-4 w-4" />
