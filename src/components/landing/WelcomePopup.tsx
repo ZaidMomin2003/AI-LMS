@@ -29,9 +29,11 @@ const CountdownTimer = () => {
 
     useEffect(() => {
         setTimeLeft(calculateTimeLeft());
+
         const timer = setInterval(() => {
             setTimeLeft(calculateTimeLeft());
         }, 1000);
+
         return () => clearTimeout(timer);
     }, []);
 
