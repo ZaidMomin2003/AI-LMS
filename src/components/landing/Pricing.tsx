@@ -1,11 +1,12 @@
 
 'use client';
 
-import { Check, Gem, Sparkles } from 'lucide-react';
+import { Check, Gem, Sparkles, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
 
 const freeFeatures = [
     { text: '1 Topic Generation', included: true },
@@ -22,6 +23,55 @@ const proFeatures = [
     { text: 'Unlimited WisdomGPT AI', included: true },
     { text: 'Priority Email Support', included: true },
 ];
+
+const CountdownTimer = () => {
+    const calculateTimeLeft = () => {
+        const year = new Date().getFullYear();
+        const difference = +new Date(`12/10/${year}`) - +new Date();
+        let timeLeft = {};
+
+        if (difference > 0) {
+            timeLeft = {
+                days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+                minutes: Math.floor((difference / 1000 / 60) % 60),
+                seconds: Math.floor((difference / 1000) % 60)
+            };
+        }
+
+        return timeLeft as {days: number, hours: number, minutes: number, seconds: number};
+    };
+
+    const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setTimeLeft(calculateTimeLeft());
+        }, 1000);
+
+        return () => clearTimeout(timer);
+    });
+
+    const timerComponents: {unit: 'days' | 'hours' | 'minutes' | 'seconds', label: string}[] = [
+        { unit: 'days', label: 'Days' },
+        { unit: 'hours', label: 'Hrs' },
+        { unit: 'minutes', label: 'Mins' },
+        { unit: 'seconds', label: 'Secs' },
+    ];
+    
+    return (
+        <div className="flex items-center gap-2 sm:gap-4">
+            {timerComponents.map(part => (
+                <div key={part.unit} className="flex flex-col items-center">
+                    <div className="text-xl sm:text-2xl font-bold font-mono text-primary-foreground bg-primary/80 rounded-md w-12 sm:w-16 py-1.5">
+                        {String(timeLeft[part.unit] || 0).padStart(2, '0')}
+                    </div>
+                    <div className="text-xs uppercase tracking-wider mt-1 text-primary-foreground/70">{part.label}</div>
+                </div>
+            ))}
+        </div>
+    );
+};
 
 
 export function Pricing() {
@@ -115,6 +165,38 @@ export function Pricing() {
                         </Card>
                     </div>
                 </div>
+
+                {/* Lifetime Deal Section */}
+                 <div className="mt-16">
+                    <Card className="relative w-full overflow-hidden bg-gradient-to-r from-primary to-blue-500 text-primary-foreground shadow-2xl shadow-primary/30">
+                        <div className="absolute inset-0 bg-grid-pattern opacity-10" style={{backgroundSize: '30px 30px'}}/>
+                        <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center relative z-10">
+                            <div className="md:col-span-1 space-y-2">
+                                 <div className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-3 py-1 text-xs font-medium mb-2">
+                                    <Clock className="w-4 h-4" />
+                                    <span>Limited Time Offer</span>
+                                </div>
+                                <h3 className="text-2xl font-headline font-bold">Lifetime Sage</h3>
+                                <p className="text-primary-foreground/80">Unlimited access, forever. One payment, endless learning.</p>
+                            </div>
+
+                            <div className="md:col-span-1 flex items-center justify-center">
+                                <CountdownTimer />
+                            </div>
+
+                            <div className="md:col-span-1 flex flex-col items-center md:items-end text-center md:text-right">
+                                <p className="text-4xl font-bold">$999</p>
+                                <p className="text-sm text-primary-foreground/80">One-time payment</p>
+                                 <Button asChild className="mt-4 w-full md:w-auto bg-primary-foreground text-primary hover:bg-primary-foreground/90">
+                                    <Link href="/signup">
+                                        Get Lifetime Access
+                                    </Link>
+                                </Button>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+
             </div>
         </section>
     )
