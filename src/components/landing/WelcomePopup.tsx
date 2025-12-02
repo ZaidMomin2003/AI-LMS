@@ -81,9 +81,10 @@ export function WelcomePopup() {
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md w-full p-0 text-center bg-card text-card-foreground rounded-2xl border-border/50 overflow-hidden">
+      <DialogContent className="max-w-4xl w-full p-0 overflow-hidden grid grid-cols-1 md:grid-cols-2 shadow-2xl rounded-2xl border-border/20">
         
-        <div className="relative isolate text-white">
+        {/* Left Side: Image and Countdown */}
+        <div className="relative isolate text-white flex flex-col justify-end">
              <Image 
                 src="https://images.unsplash.com/photo-1607453998774-d533f65dac99?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWlsaW5nJTIwa2lkc3xlbnwwfHx8fDE3NjQ2NjE2OTN8MA&ixlib=rb-4.1.0&q=80&w=1080"
                 alt="Smiling child"
@@ -93,7 +94,7 @@ export function WelcomePopup() {
                 data-ai-hint="smiling child"
              />
              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent -z-10"></div>
-             <div className="p-8 pt-16">
+             <div className="p-8 text-center space-y-4">
                 <DialogHeader className="space-y-2">
                     <DialogTitle className="text-3xl font-headline font-bold text-white">
                         Limited Time: Lifetime Deal
@@ -102,25 +103,25 @@ export function WelcomePopup() {
                         Get unlimited access forever for a single payment.
                     </DialogDescription>
                 </DialogHeader>
-
-                <div className="my-8">
+                <div className="my-4">
                     <CountdownTimer />
                 </div>
             </div>
         </div>
         
-        <div className="p-8 pt-6 bg-card space-y-6">
-            <div className="text-center">
-                <h3 className="text-lg font-semibold">The Ultimate Investment in Your Future</h3>
+        {/* Right Side: Offer Details */}
+        <div className="p-8 bg-card flex flex-col justify-center text-center">
+            <div className="space-y-4">
+                 <h3 className="text-xl font-semibold">The Ultimate Investment in Your Future</h3>
                 <p className="text-sm text-muted-foreground">One-time payment, lifetime access.</p>
             </div>
             
-            <div className="flex items-baseline justify-center gap-3">
+            <div className="flex items-baseline justify-center gap-3 my-6">
                 <span className="text-3xl font-semibold text-muted-foreground line-through decoration-2">$1990</span>
                 <p className="text-5xl font-bold font-headline text-primary">$999</p>
             </div>
             
-            <div className="text-left text-sm text-muted-foreground space-y-2">
+            <div className="hidden md:block text-left text-sm text-muted-foreground space-y-2">
                 <p className="font-semibold text-foreground text-center">What you get:</p>
                 <ul className="grid grid-cols-2 gap-x-4 gap-y-1">
                     <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Unlimited Notes</li>
@@ -132,7 +133,7 @@ export function WelcomePopup() {
                 </ul>
             </div>
 
-            <Button asChild size="lg" className="w-full mt-2" onClick={handleSignUpClick}>
+            <Button asChild size="lg" className="w-full mt-8" onClick={handleSignUpClick}>
                 <Link href="/#pricing">
                     <Gem className="mr-2 h-4 w-4" />
                     Claim Lifetime Access
@@ -140,7 +141,7 @@ export function WelcomePopup() {
             </Button>
         </div>
 
-        <DialogClose className="absolute right-3 top-3 rounded-full bg-black/50 p-1.5 text-white/80 hover:text-white transition-colors z-20">
+        <DialogClose className="absolute right-4 top-4 rounded-full bg-black/50 p-1.5 text-white/80 hover:text-white transition-colors z-20">
           <X className="w-4 h-4" />
           <span className="sr-only">Close</span>
         </DialogClose>
