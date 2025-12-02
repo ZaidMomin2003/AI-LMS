@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, PartyPopper, CheckCircle, X, Sparkles, BookOpenCheck } from 'lucide-react';
+import { ArrowRight, PartyPopper, CheckCircle, X, Gem } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -13,6 +13,7 @@ const includedFeatures = [
   'Interactive Flashcards',
   'Personalized Quizzes',
   'AI-Powered Study Roadmaps',
+  'Unlimited WisdomGPT Access'
 ];
 
 export function WelcomePopup() {
@@ -54,11 +55,11 @@ export function WelcomePopup() {
              <div className="absolute inset-0 bg-primary/90 z-10"></div>
              <div className="relative z-20 text-center space-y-4">
                 <div className="w-24 h-24 mx-auto rounded-full bg-primary-foreground/20 flex items-center justify-center backdrop-blur-sm border border-primary-foreground/20">
-                    <Sparkles className="w-12 h-12 text-primary-foreground" />
+                    <PartyPopper className="w-12 h-12 text-primary-foreground" />
                 </div>
-                <h2 className="text-3xl font-headline font-bold">Your Study Superpower</h2>
+                <h2 className="text-3xl font-headline font-bold">A One-Time Offer</h2>
                 <p className="text-primary-foreground/80 max-w-xs mx-auto">
-                    Unlock a smarter way to learn and conquer your exams with the power of AI.
+                    Unlock lifetime access to every feature we have, and every feature we'll ever add.
                 </p>
              </div>
         </div>
@@ -68,9 +69,9 @@ export function WelcomePopup() {
             
             <div className="w-full max-w-sm mx-auto text-center md:text-left">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl font-headline font-bold text-foreground">Start Your Free Trial</DialogTitle>
+                  <DialogTitle className="text-2xl font-headline font-bold text-foreground">Limited Time: Lifetime Deal</DialogTitle>
                   <DialogDescription className="text-muted-foreground mt-2 mb-6">
-                      Join thousands of students learning faster. Your first topic generation is on us.
+                      Get unlimited access forever for a single payment of <span className="font-bold text-foreground">$999</span>. This offer won't last.
                   </DialogDescription>
                 </DialogHeader>
                 
@@ -84,8 +85,8 @@ export function WelcomePopup() {
                 </ul>
                 
                 <Button asChild size="lg" className="w-full" onClick={handleSignUpClick}>
-                    <Link href="/signup">
-                        Start Learning Now <ArrowRight className="ml-2 w-4 h-4" />
+                    <Link href="/#pricing">
+                        Get Lifetime Access <Gem className="ml-2 w-4 h-4" />
                     </Link>
                 </Button>
             </div>
