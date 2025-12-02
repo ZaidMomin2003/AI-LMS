@@ -81,9 +81,6 @@ export function WelcomePopup() {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md w-full p-0 text-center bg-card text-card-foreground rounded-2xl border-border/50 overflow-hidden">
-        <DialogClose className="absolute right-3 top-3 rounded-full bg-background/50 p-1.5 text-muted-foreground hover:text-foreground transition-colors z-20">
-            <X className="h-4 w-4" />
-        </DialogClose>
         
         <div className="relative isolate p-8">
              <div
@@ -107,7 +104,7 @@ export function WelcomePopup() {
                     Limited Time: Lifetime Deal
                 </DialogTitle>
                 <DialogDescription className="text-base text-muted-foreground">
-                    Get unlimited access to everything, forever, for a single payment.
+                    Get unlimited access forever for a single payment.
                 </DialogDescription>
             </DialogHeader>
 
