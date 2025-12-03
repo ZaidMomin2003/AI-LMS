@@ -68,14 +68,14 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
     // Free plan logic
     switch (feature) {
       case 'topic':
-        return topics.length < 1;
+        return topics.length < 3;
       case 'roadmap':
         // Allow if there is no roadmap data at all
         return !roadmap || roadmap.plan.length === 0;
       case 'pomodoro':
-        return pomodoroHistory.length < 1;
+        return pomodoroHistory.length < 3;
       case 'capture':
-        return (profile?.captureCount || 0) < 1;
+        return (profile?.captureCount || 0) < 3;
       case 'wisdomGpt':
         return false; // Only available on Pro plan
       default:
