@@ -76,29 +76,24 @@ export function Footer() {
             <div className="flex items-center gap-2">
               <ThemeToggle />
             </div>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="w-full max-w-md space-y-3"
-            >
-              <label htmlFor="email" className="block text-sm font-medium">
-                Subscribe to our newsletter
-              </label>
-              <div className="relative w-full">
-                <Input
-                  type="email"
-                  id="email"
-                  placeholder="Enter your email"
-                  className="h-12 w-full"
-                  required
-                />
-                <Button
-                  type="submit"
-                  className="absolute top-1.5 right-1.5"
-                >
-                  Subscribe
+             <div className="w-full max-w-md space-y-3">
+              <h4 className="text-sm font-medium">Have an idea?</h4>
+              <p className="text-sm text-muted-foreground">
+                Help us shape the future of learning. Share your feature requests or see what's coming next.
+              </p>
+              <div className="flex gap-2 pt-2">
+                 <Button asChild variant="outline" size="sm">
+                    <Link href="/roadmap">
+                        View Roadmap
+                    </Link>
+                </Button>
+                 <Button asChild variant="default" size="sm">
+                    <a href="https://wa.link/o0dcmr" target="_blank" rel="noopener noreferrer">
+                        Request a Feature
+                    </a>
                 </Button>
               </div>
-            </form>
+            </div>
           </div>
 
           {/* Navigation Links */}
