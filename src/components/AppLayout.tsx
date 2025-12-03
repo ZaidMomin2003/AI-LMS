@@ -58,6 +58,7 @@ import {
   Minimize,
   FileClock,
   ArrowLeft,
+  Crown,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -93,20 +94,42 @@ function AppLoadingScreen() {
 function SidebarSubscriptionButton() {
     const { subscription } = useSubscription();
 
+    const isLifetime = subscription?.plan === 'Lifetime Sage';
+
+    const planName = isLifetime ? 'Lifetime Sage' : (subscription?.status === 'active' ? 'Pro Plan' : 'Upgrade to Pro');
+    const planDescription = isLifetime ? 'Full access, forever.' : (subscription?.status === 'active' ? 'Unlimited access' : 'Unlock all features');
+
+    const buttonClasses = cn(
+        "group relative rounded-lg p-4 overflow-hidden text-primary-foreground",
+        isLifetime 
+            ? "bg-gradient-to-br from-yellow-400 to-amber-500 text-black" 
+            : "bg-gradient-to-br from-primary/80 to-primary"
+    );
+    
+    const iconContainerClasses = cn(
+        "absolute top-1 right-1 rounded-full p-1.5",
+        isLifetime 
+            ? "bg-black/10 text-black"
+            : "bg-primary-foreground/20 text-primary-foreground"
+    );
+
     return (
         <Link href="/dashboard/pricing" className="block p-2">
-            <div className="group relative rounded-lg p-4 bg-gradient-to-br from-primary/80 to-primary text-primary-foreground overflow-hidden">
+            <div className={buttonClasses}>
                 <h4 className="font-bold text-base font-headline flex items-center gap-2">
-                    <Gem className="w-5 h-5" />
-                    {subscription?.status === 'active' ? 'Pro Plan' : 'Upgrade to Pro'}
+                    {isLifetime ? <Crown className="w-5 h-5" /> : <Gem className="w-5 h-5" />}
+                    {planName}
                 </h4>
-                <p className="text-xs text-primary-foreground/80">
-                     {subscription?.status === 'active' ? 'Unlimited access' : 'Unlock all features'}
+                <p className={cn("text-xs", isLifetime ? "text-black/70" : "text-primary-foreground/80")}>
+                     {planDescription}
                 </p>
-                 <div className="absolute top-1 right-1 bg-primary-foreground/20 text-primary-foreground rounded-full p-1.5">
+                 <div className={iconContainerClasses}>
                     {subscription?.status === 'active' ? <CheckCircle className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
                 </div>
-                <Sparkles className="absolute -bottom-4 -right-2 w-16 h-16 text-primary-foreground/10" />
+                <Sparkles className={cn(
+                    "absolute -bottom-4 -right-2 w-16 h-16",
+                    isLifetime ? "text-black/10" : "text-primary-foreground/10"
+                )} />
             </div>
         </Link>
     );
@@ -175,7 +198,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <SidebarHeader>
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
-                <BookOpenCheck className="w-5 h-5" />
+                <BookOpenCheck className="h-5 w-5" />
               </div>
               <div className="flex flex-col">
                   <span className="font-bold font-headline text-xl -mb-1">Wisdom</span>
