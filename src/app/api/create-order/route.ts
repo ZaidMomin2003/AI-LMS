@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import { getAdminDB } from '@/lib/firebase-admin';
 
-const USD_TO_INR_RATE = 87; // A fixed conversion rate
+const USD_TO_INR_RATE = 90.14; // A fixed conversion rate
 
 export async function POST(req: NextRequest) {
     // 1. Explicitly check for environment variables
