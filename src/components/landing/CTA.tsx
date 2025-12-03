@@ -23,7 +23,7 @@ export function CTA() {
                     Start your free trial today
                 </h1>
                 <p className="mb-8 max-w-xl mx-auto text-base text-white/70 sm:text-lg">
-                    Your free trial awaits. Lock in our introductory price forever before it increases soon. Don't miss out on the smartest way to study.
+                    Generate up to 3 topics for free. Lock in our introductory price forever before it increases soon. Don't miss out on the smartest way to study.
                 </p>
                 
                 <Button asChild size="lg">

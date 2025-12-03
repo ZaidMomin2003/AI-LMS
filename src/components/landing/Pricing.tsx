@@ -9,10 +9,10 @@ import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 
 const freeFeatures = [
-    { text: '1 Topic Generation', included: true },
+    { text: '3 Topic Generations', included: true },
     { text: '1 Study Roadmap Generation', included: true },
-    { text: '1 Pomodoro Session', included: true },
-    { text: '1 Use of the Capture Tool', included: true },
+    { text: '3 Pomodoro Sessions', included: true },
+    { text: '3 Uses of the Capture Tool', included: true },
 ];
 
 const proFeatures = [
@@ -111,7 +111,7 @@ export function Pricing() {
                         <Card className="flex flex-col h-full border-border/60 shadow-lg hover:shadow-xl transition-shadow">
                             <CardHeader>
                                 <CardTitle className="font-headline text-2xl">Scholar</CardTitle>
-                                <CardDescription>For casual learners and to try us out.</CardDescription>
+                                <CardDescription>For trying out the core features.</CardDescription>
                                 <div className="pt-4">
                                     <span className="text-4xl font-bold text-foreground">$0</span>
                                 </div>
