@@ -1,8 +1,11 @@
+
 'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import { getAdminDB } from '@/lib/firebase-admin';
+
+const USD_TO_INR_RATE = 84; // A fixed conversion rate
 
 export async function POST(req: NextRequest) {
     // 1. Explicitly check for environment variables
@@ -17,6 +20,9 @@ export async function POST(req: NextRequest) {
         if (!amount || !userId) {
             return NextResponse.json({ error: 'Amount and userId are required.' }, { status: 400 });
         }
+        
+        // Convert amount to INR
+        const amountInINR = Math.round(amount * USD_TO_INR_RATE);
 
         const razorpay = new Razorpay({
             key_id: process.env.RAZORPAY_KEY_ID,
@@ -27,8 +33,8 @@ export async function POST(req: NextRequest) {
         const receiptId = `rcpt_${Date.now()}_${userId.slice(0, 8)}`;
 
         const options = {
-            amount: amount * 100, // Amount in the smallest currency unit
-            currency: 'USD',
+            amount: amountInINR * 100, // Amount in the smallest currency unit (paise)
+            currency: 'INR',
             receipt: receiptId,
         };
 
@@ -42,6 +48,7 @@ export async function POST(req: NextRequest) {
                 amount: order.amount,
                 currency: order.currency,
                 receipt: order.receipt,
+                originalAmountUSD: amount, // Store original amount for reference
                 createdAt: new Date().toISOString()
             });
         }
