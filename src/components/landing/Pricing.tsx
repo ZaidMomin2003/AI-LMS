@@ -196,7 +196,10 @@ export function Pricing() {
                             </div>
 
                             <div className="md:col-span-1 flex flex-col items-center md:items-end text-center md:text-right">
-                                <p className="text-4xl font-bold">$999</p>
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-2xl font-semibold line-through text-primary-foreground/70">$999</span>
+                                    <p className="text-4xl font-bold">$799</p>
+                                </div>
                                 <p className="text-sm text-primary-foreground/80">One-time payment</p>
                                  <Button asChild className="mt-4 w-full md:w-auto bg-primary-foreground text-primary hover:bg-primary-foreground/90">
                                     <Link href="/signup">

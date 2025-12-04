@@ -35,7 +35,7 @@ const sagePlan: Plan = {
 
 const lifetimePlan: Plan = {
     name: 'Lifetime Sage',
-    price: 999,
+    price: 799,
     priceDescription: 'One-time payment',
     durationMonths: 120, // 10 years
 };
@@ -363,7 +363,10 @@ const PricingContent = () => {
                             </div>
 
                             <div className="md:col-span-1 flex flex-col items-center md:items-end text-center md:text-right">
-                                <p className="text-4xl font-bold">${lifetimePlan.price}</p>
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-2xl font-semibold line-through text-primary-foreground/70">$999</span>
+                                    <p className="text-4xl font-bold">${lifetimePlan.price}</p>
+                                </div>
                                 <p className="text-sm text-primary-foreground/80">One-time payment</p>
                                  <Button 
                                     className="mt-4 w-full md:w-auto bg-primary-foreground text-primary hover:bg-primary-foreground/90"

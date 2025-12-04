@@ -119,8 +119,8 @@ export function WelcomePopup() {
             </div>
             
             <div className="flex items-baseline justify-center gap-3 my-6">
-                <span className="text-3xl font-semibold text-muted-foreground line-through decoration-2">$1990</span>
-                <p className="text-5xl font-bold font-headline text-primary">$999</p>
+                <span className="text-3xl font-semibold text-muted-foreground line-through decoration-2">$999</span>
+                <p className="text-5xl font-bold font-headline text-primary">$799</p>
             </div>
             
             <div className="hidden md:block text-left text-sm text-muted-foreground space-y-2">
