@@ -97,7 +97,7 @@ export function WelcomePopup() {
                 data-ai-hint="smiling child"
              />
              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent -z-10"></div>
-             <div className="p-6 text-center space-y-3">
+             <div className="p-4 md:p-6 text-center space-y-3">
                 <DialogHeader className="space-y-1">
                     <DialogTitle className="text-2xl font-headline font-bold text-white">
                         Limited Time: Lifetime Deal
@@ -113,18 +113,18 @@ export function WelcomePopup() {
         </div>
         
         {/* Right Side: Offer Details */}
-        <div className="p-6 bg-card flex flex-col justify-center text-center">
+        <div className="p-4 md:p-6 bg-card flex flex-col justify-center text-center">
             <div className="space-y-2">
                  <h3 className="text-xl font-semibold hidden md:block">The Ultimate Investment in Your Future</h3>
                 <p className="text-sm text-muted-foreground">One-time payment, lifetime access.</p>
             </div>
             
-            <div className="flex items-baseline justify-center gap-3 my-4">
+            <div className="flex items-baseline justify-center gap-3 my-3">
                 <span className="text-3xl font-semibold text-muted-foreground line-through decoration-2">$999</span>
                 <p className="text-5xl font-bold font-headline text-primary">$799</p>
             </div>
             
-            <div className="text-left text-sm text-muted-foreground space-y-1">
+            <div className="text-left text-sm text-muted-foreground space-y-1 hidden md:block">
                 <p className="font-semibold text-foreground text-center text-xs mb-2">Everything in Pro, plus:</p>
                 <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
                     <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Unlimited Notes</li>
@@ -136,7 +136,7 @@ export function WelcomePopup() {
                 </ul>
             </div>
 
-            <Button asChild size="lg" className="w-full mt-6" onClick={handleSignUpClick}>
+            <Button asChild size="lg" className="w-full mt-4" onClick={handleSignUpClick}>
                 <Link href="/#pricing">
                     <Gem className="mr-2 h-4 w-4" />
                     Claim Lifetime Access
