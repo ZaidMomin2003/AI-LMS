@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Gem, PartyPopper, X, Sparkles, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { cn } from '@/lib/utils';
 
 const CountdownTimer = () => {
     const calculateTimeLeft = () => {
@@ -49,10 +50,10 @@ const CountdownTimer = () => {
     ];
 
     return (
-        <div className="flex justify-center items-start gap-3">
+        <div className="flex justify-center items-start gap-2 md:gap-3">
             {timeUnits.map(({ unit, label }) => (
                 <div key={label} className="flex flex-col items-center">
-                    <div className="text-3xl font-bold font-mono text-white bg-black/30 backdrop-blur-sm border border-white/20 rounded-lg w-16 py-2">
+                    <div className="text-2xl md:text-3xl font-bold font-mono text-white bg-black/30 backdrop-blur-sm border border-white/20 rounded-lg w-14 md:w-16 py-2">
                         {String(timeLeft[unit] || 0).padStart(2, '0')}
                     </div>
                     <span className="text-xs text-white/80 mt-1.5">{label}</span>
@@ -86,7 +87,7 @@ export function WelcomePopup() {
       <DialogContent className="max-w-4xl w-full p-0 overflow-hidden grid grid-cols-1 md:grid-cols-2 shadow-2xl rounded-2xl border-border/20">
         
         {/* Left Side: Image and Countdown */}
-        <div className="relative isolate text-white flex flex-col justify-end">
+        <div className="relative isolate text-white flex flex-col justify-end h-96 md:h-auto">
              <Image 
                 src="https://images.unsplash.com/photo-1607453998774-d533f65dac99?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWlsaW5nJTIwa2lkc3xlbnwwfHx8fDE3NjQ2NjE2OTN8MA&ixlib=rb-4.1.0&q=80&w=1080"
                 alt="Smiling child"
@@ -96,9 +97,9 @@ export function WelcomePopup() {
                 data-ai-hint="smiling child"
              />
              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent -z-10"></div>
-             <div className="p-8 text-center space-y-4">
+             <div className="p-6 md:p-8 text-center space-y-4">
                 <DialogHeader className="space-y-2">
-                    <DialogTitle className="text-3xl font-headline font-bold text-white">
+                    <DialogTitle className="text-2xl md:text-3xl font-headline font-bold text-white">
                         Limited Time: Lifetime Deal
                     </DialogTitle>
                     <DialogDescription className="text-base text-white/80">
@@ -112,9 +113,9 @@ export function WelcomePopup() {
         </div>
         
         {/* Right Side: Offer Details */}
-        <div className="p-8 bg-card flex flex-col justify-center text-center">
+        <div className="p-6 md:p-8 bg-card flex flex-col justify-center text-center">
             <div className="space-y-4">
-                 <h3 className="text-xl font-semibold">The Ultimate Investment in Your Future</h3>
+                 <h3 className="text-xl font-semibold hidden md:block">The Ultimate Investment in Your Future</h3>
                 <p className="text-sm text-muted-foreground">One-time payment, lifetime access.</p>
             </div>
             
@@ -123,7 +124,7 @@ export function WelcomePopup() {
                 <p className="text-5xl font-bold font-headline text-primary">$799</p>
             </div>
             
-            <div className="hidden md:block text-left text-sm text-muted-foreground space-y-2">
+            <div className="text-left text-sm text-muted-foreground space-y-2">
                 <p className="font-semibold text-foreground text-center">What you get:</p>
                 <ul className="grid grid-cols-2 gap-x-4 gap-y-1">
                     <li className="flex items-center gap-2"><CheckCircle className="w-4 h-4 text-green-500" /> Unlimited Notes</li>
