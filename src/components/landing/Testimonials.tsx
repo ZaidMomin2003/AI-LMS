@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect } from 'react';
@@ -34,7 +35,7 @@ const originalTestimonials = [
     handle: 'History Buff',
   },
   {
-    quote: "SageMaker is like having a super smart friend you can text at 2 AM when you're stuck on a math problem. It just explains things in a way that makes sense.",
+    quote: "WisdomGPT is like having a super smart friend you can text at 2 AM when you're stuck on a math problem. It just explains things in a way that makes sense.",
     name: 'Ben A.',
     handle: 'Mathlete',
   },

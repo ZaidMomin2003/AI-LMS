@@ -140,13 +140,13 @@ export const storiesData: Story[] = [
     authorImage: 'https://picsum.photos/seed/oliver/100/100',
     location: 'London, UK',
     image: placeholderImages.stories.story7,
-    excerpt: 'Shakespearean language was like a different dialect. Explaining complex themes from "Macbeth" with the SageMaker AI tutor felt like having a personal professor available 24/7...',
+    excerpt: 'Shakespearean language was like a different dialect. Explaining complex themes from "Macbeth" with the WisdomGPT AI tutor felt like having a personal professor available 24/7...',
     fullStory: `
 <p>I love literature, but I've always struggled with Shakespeare. The language felt like a barrier I couldn't break through. Reading "Macbeth" for my A-Levels felt more like a chore than an exploration of a masterpiece. I could read the plot summaries, but I was missing the genius of the text itself.</p>
-<p>My professor recommended using digital tools to supplement our reading. I stumbled upon ScholarAI and its AI chat feature, SageMaker. The description said it was like having a personal tutor, so I decided to ask it a question I was too embarrassed to ask in class.</p>
+<p>My professor recommended using digital tools to supplement our reading. I stumbled upon ScholarAI and its AI chat feature, WisdomGPT. The description said it was like having a personal tutor, so I decided to ask it a question I was too embarrassed to ask in class.</p>
 <h3>A 24/7 Tutor</h3>
-<p>I typed, "Can you explain the 'dagger of the mind' soliloquy in simple terms?" The response I got was amazing. SageMaker broke down the speech line by line, explaining the archaic words and unpacking the complex psychological themes of guilt and ambition. It was clear, concise, and didn't make me feel stupid.</p>
-<p>I started using SageMaker as my reading companion. Whenever I hit a confusing passage, I'd ask the AI to explain it. I asked it about themes, character motivations, and historical context. It was like having a personal Shakespeare scholar available 24/7, ready to answer any question without judgment.</p>
+<p>I typed, "Can you explain the 'dagger of the mind' soliloquy in simple terms?" The response I got was amazing. WisdomGPT broke down the speech line by line, explaining the archaic words and unpacking the complex psychological themes of guilt and ambition. It was clear, concise, and didn't make me feel stupid.</p>
+<p>I started using WisdomGPT as my reading companion. Whenever I hit a confusing passage, I'd ask the AI to explain it. I asked it about themes, character motivations, and historical context. It was like having a personal Shakespeare scholar available 24/7, ready to answer any question without judgment.</p>
 <h3>Deeper Understanding</h3>
 <p>My essays became richer and more insightful because I was finally engaging with the text on a deeper level. I wasn't just regurgitating SparkNotes; I was forming my own interpretations, backed by a solid understanding of the language. I ended up getting an A on my "Macbeth" paper, and for the first time, I actually enjoyed reading Shakespeare.</p>
 `,

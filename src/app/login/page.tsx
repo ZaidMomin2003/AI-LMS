@@ -35,7 +35,7 @@ const testimonials = [
     img: `https://picsum.photos/seed/Leo/100/100`
   },
   {
-    text: "SageMaker is like having a super smart friend you can text at 2 AM when you're stuck on a math problem. It just explains things in a way that makes sense.",
+    text: "WisdomGPT is like having a super smart friend you can text at 2 AM when you're stuck on a math problem. It just explains things in a way that makes sense.",
     name: 'Ben A.',
     role: 'Mathlete',
     img: `https://picsum.photos/seed/Ben/100/100`

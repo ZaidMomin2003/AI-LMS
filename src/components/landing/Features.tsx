@@ -46,25 +46,23 @@ const KeyTerm = ({ term, definition }: { term: string; definition: string }) => 
     </Popover>
 );
 
-const NotesDemo = () => (
-    <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full">
-        <CardHeader className="p-2 border-b">
-            <p className="font-mono text-sm"># The Renaissance</p>
-        </CardHeader>
-        <CardContent className="p-2 space-y-2 text-sm text-muted-foreground">
-            <p className="font-mono">* Rebirth of art & science</p>
-            <p className="font-mono">* Focus on <KeyTerm term="Humanism" definition="An intellectual movement that emphasized human potential and achievements." /></p>
-        </CardContent>
-    </Card>
-);
-
-const ExplainDemo = () => (
-    <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full flex flex-col justify-center items-center">
-        <p className="text-sm text-muted-foreground text-center">
-            The process, known as <span className="bg-primary/20 text-primary rounded px-1">photosynthesis</span>, is crucial for life.
-        </p>
-        <div className="mt-4 w-full max-w-xs">
-            <Card className="p-3 bg-secondary text-xs">
+const NotesAndExplainDemo = () => (
+    <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full flex flex-col md:flex-row gap-4">
+        <div className="flex-1">
+            <CardHeader className="p-2 border-b">
+                <p className="font-mono text-sm"># The Renaissance</p>
+            </CardHeader>
+            <CardContent className="p-2 space-y-2 text-sm text-muted-foreground">
+                <p className="font-mono">* Rebirth of art & science</p>
+                <p className="font-mono">* Focus on <KeyTerm term="Humanism" definition="An intellectual movement that emphasized human potential and achievements." /></p>
+                <p className="font-mono">* Started in Italy, spread through Europe.</p>
+            </CardContent>
+        </div>
+        <div className="flex-1 flex flex-col justify-center items-center p-4 bg-secondary/50 rounded-lg">
+            <p className="text-sm text-muted-foreground text-center mb-4">
+                The process, known as <span className="bg-primary/20 text-primary rounded px-1">photosynthesis</span>, is crucial.
+            </p>
+            <Card className="p-3 bg-background text-xs w-full">
                 <p className="font-bold flex items-center gap-1.5"><Lightbulb className="w-3 h-3 text-amber-400" />Explanation:</p>
                 <p className="text-muted-foreground">The way plants use sunlight to create their own food from water and CO2.</p>
             </Card>
@@ -111,7 +109,7 @@ const QuizDemo = () => (
     </Card>
 );
 
-const SageMakerDemo = () => (
+const WisdomGptDemo = () => (
     <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full">
       <CardContent className="p-2 space-y-3">
         <div className="flex items-start gap-3">
@@ -211,26 +209,18 @@ interface BentoItem {
 
 const bentoItems: BentoItem[] = [
   {
-    title: 'AI-Generated Notes',
-    description: 'From dense text to structured, scannable notes.',
-    icon: <FileText className="text-primary h-4 w-4" />,
-    demo: <NotesDemo />,
-    colSpan: 1,
-    rowSpan: 1,
-  },
-  {
-    title: 'Instant Explanations',
-    description: "Highlight any term to get a simple, contextual explanation.",
+    title: 'Instant Explanations & Notes',
+    description: "From dense text to structured, scannable notes with on-demand explanations for any term.",
     icon: <Sparkles className="text-primary h-4 w-4" />,
-    demo: <ExplainDemo />,
-    colSpan: 1,
+    demo: <NotesAndExplainDemo />,
+    colSpan: 2,
     rowSpan: 1,
   },
   {
-    title: 'SageMaker AI Assistant',
+    title: 'WisdomGPT AI Assistant',
     description: 'Your personal AI tutor, ready to answer any question.',
     icon: <Bot className="text-primary h-4 w-4" />,
-    demo: <SageMakerDemo />,
+    demo: <WisdomGptDemo />,
     colSpan: 1,
     rowSpan: 1,
   },
