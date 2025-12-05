@@ -152,13 +152,18 @@ const RoadmapDemo = () => (
 
 const IntegratedToolsDemo = () => (
     <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full flex flex-col md:flex-row gap-4">
-        <div className="flex-1">
-            <p className="text-sm font-bold text-center mb-2">In Progress</p>
-            <div className="p-2 mb-2 bg-secondary rounded-md shadow-sm">
-                <p className="text-xs">Practice problems</p>
+        <div className="grid grid-cols-2 gap-2 flex-1">
+            <div>
+                <p className="text-xs font-bold text-center mb-2">In Progress</p>
+                <div className="p-2 bg-secondary rounded-md shadow-sm">
+                    <p className="text-xs">Practice problems</p>
+                </div>
             </div>
-             <div className="p-2 mb-2 bg-secondary rounded-md shadow-sm opacity-60">
-                <p className="text-xs">Final review</p>
+            <div>
+                <p className="text-xs font-bold text-center mb-2">Completed</p>
+                <div className="p-2 bg-green-500/20 text-green-300 rounded-md shadow-sm opacity-70">
+                    <p className="text-xs line-through">Review Chapter 1</p>
+                </div>
             </div>
         </div>
          <div className="w-px bg-border/50 hidden md:block" />
@@ -243,14 +248,6 @@ const bentoItems: BentoItem[] = [
     description: 'Snap a picture of a problem to get an instant solution.',
     icon: <Camera className="text-primary h-4 w-4" />,
     demo: <CaptureDemo />,
-    colSpan: 1,
-    rowSpan: 1,
-  },
-  {
-    title: 'Challenging Quizzes',
-    description: 'Test your understanding with custom quizzes.',
-    icon: <MessageCircleQuestion className="text-primary h-4 w-4" />,
-    demo: <QuizDemo />,
     colSpan: 1,
     rowSpan: 1,
   },
