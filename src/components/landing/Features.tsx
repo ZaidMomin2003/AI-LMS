@@ -235,6 +235,14 @@ const bentoItems: BentoItem[] = [
     rowSpan: 1,
     className: "min-h-[15rem] md:min-h-0", // Set a min-height for mobile
   },
+   {
+    title: 'Challenging Quizzes',
+    description: 'Test your understanding with custom quizzes.',
+    icon: <MessageCircleQuestion className="text-primary h-4 w-4" />,
+    demo: <QuizDemo />,
+    colSpan: 1,
+    rowSpan: 1,
+  },
   {
     title: 'Personalized Roadmap',
     description: 'Turn any syllabus into a day-by-day study plan.',
@@ -244,19 +252,19 @@ const bentoItems: BentoItem[] = [
     rowSpan: 1,
   },
   {
-    title: 'Capture the Answer',
-    description: 'Snap a picture of a problem to get an instant solution.',
-    icon: <Camera className="text-primary h-4 w-4" />,
-    demo: <CaptureDemo />,
-    colSpan: 1,
-    rowSpan: 1,
-  },
-  {
     title: 'Integrated Study Tools',
     description: 'Use Pomodoro timers and Kanban boards to stay on track.',
     icon: <Timer className="text-primary h-4 w-4" />,
     demo: <IntegratedToolsDemo />,
     colSpan: 2,
+    rowSpan: 1,
+  },
+  {
+    title: 'Capture the Answer',
+    description: 'Snap a picture of a problem to get an instant solution.',
+    icon: <Camera className="text-primary h-4 w-4" />,
+    demo: <CaptureDemo />,
+    colSpan: 1,
     rowSpan: 1,
   },
 ];
