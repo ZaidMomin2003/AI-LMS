@@ -150,32 +150,29 @@ const RoadmapDemo = () => (
     </Card>
 );
 
-const StudyPlanDemo = () => (
-    <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full">
-        <div className="flex gap-2 h-full">
-            <div className="flex-1 bg-background/50 rounded-lg p-2">
-                <p className="text-sm font-bold text-center mb-2">To Do</p>
-                <div className="p-2 mb-2 bg-secondary rounded-md shadow-sm"><p className="text-xs">Read Ch. 5</p></div>
+const IntegratedToolsDemo = () => (
+    <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full flex flex-col md:flex-row gap-4">
+        <div className="flex-1">
+            <p className="text-sm font-bold text-center mb-2">In Progress</p>
+            <div className="p-2 mb-2 bg-secondary rounded-md shadow-sm">
+                <p className="text-xs">Practice problems</p>
             </div>
-            <div className="flex-1 bg-background/50 rounded-lg p-2">
-                <p className="text-sm font-bold text-center mb-2">In Progress</p>
-                <div className="p-2 mb-2 bg-secondary rounded-md shadow-sm"><p className="text-xs">Practice problems</p></div>
+             <div className="p-2 mb-2 bg-secondary rounded-md shadow-sm opacity-60">
+                <p className="text-xs">Final review</p>
             </div>
+        </div>
+         <div className="w-px bg-border/50 hidden md:block" />
+         <div className="h-px bg-border/50 md:hidden" />
+        <div className="flex-1 flex flex-col items-center justify-center text-center">
+            <div className="relative">
+                <p className="text-4xl font-bold font-mono text-primary">24:17</p>
+                <div className="absolute -top-2 -right-4 bg-primary/20 text-primary text-xs font-bold px-1.5 py-0.5 rounded-full">WORK</div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Pomodoro Session</p>
         </div>
     </Card>
 );
 
-const TimerDemo = () => (
-     <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full flex flex-col">
-        <CardHeader className="p-2 text-center">
-            <p className="font-bold font-headline">Exam Countdown</p>
-        </CardHeader>
-        <CardContent className="p-2 flex-1 flex items-center justify-center">
-            <div className="text-5xl font-bold font-mono text-primary">12</div>
-            <div className="text-xl font-semibold ml-2">Days</div>
-        </CardContent>
-    </Card>
-);
 
 const CaptureDemo = () => (
     <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full">
@@ -234,14 +231,6 @@ const bentoItems: BentoItem[] = [
     className: "min-h-[15rem] md:min-h-0", // Set a min-height for mobile
   },
   {
-    title: 'Challenging Quizzes',
-    description: 'Test your understanding with custom quizzes.',
-    icon: <MessageCircleQuestion className="text-primary h-4 w-4" />,
-    demo: <QuizDemo />,
-    colSpan: 1,
-    rowSpan: 1,
-  },
-  {
     title: 'Personalized Roadmap',
     description: 'Turn any syllabus into a day-by-day study plan.',
     icon: <Map className="text-primary h-4 w-4" />,
@@ -258,19 +247,19 @@ const bentoItems: BentoItem[] = [
     rowSpan: 1,
   },
   {
-    title: 'Focus Timers',
-    description: 'Use Pomodoro and Exam Countdowns to stay on track.',
-    icon: <Timer className="text-primary h-4 w-4" />,
-    demo: <TimerDemo />,
+    title: 'Challenging Quizzes',
+    description: 'Test your understanding with custom quizzes.',
+    icon: <MessageCircleQuestion className="text-primary h-4 w-4" />,
+    demo: <QuizDemo />,
     colSpan: 1,
     rowSpan: 1,
   },
   {
-    title: 'Visual Study Board',
-    description: 'Organize your tasks on a Kanban-style board.',
-    icon: <ClipboardCheck className="text-primary h-4 w-4" />,
-    demo: <StudyPlanDemo />,
-    colSpan: 1,
+    title: 'Integrated Study Tools',
+    description: 'Use Pomodoro timers and Kanban boards to stay on track.',
+    icon: <Timer className="text-primary h-4 w-4" />,
+    demo: <IntegratedToolsDemo />,
+    colSpan: 2,
     rowSpan: 1,
   },
 ];
