@@ -323,7 +323,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
              </Suspense>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="w-full justify-start items-center gap-2 p-2 h-auto text-left">
+                    <Button variant="ghost" className="w-full justify-start items-center gap-2 p-2 h-auto text-left bg-muted/50 data-[state=open]:bg-muted">
                         <div className="flex items-center gap-3 w-full">
                             <Avatar className="h-9 w-9">
                                 <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? ''} />
