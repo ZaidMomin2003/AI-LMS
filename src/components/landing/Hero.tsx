@@ -69,15 +69,17 @@ export function Hero() {
             transition={{ duration: 0.5 }}
             className="mx-auto mb-6 flex justify-center"
           >
-            <div className="border-border bg-background/80 inline-flex items-center rounded-full border px-3 py-1 text-sm backdrop-blur-sm">
-              <span className="bg-primary mr-2 rounded-full px-2 py-0.5 text-xs font-semibold text-primary-foreground">
-                New
-              </span>
-              <span className="text-muted-foreground">
-                Announcing Wisdomis Fun 2.0
-              </span>
-              <ChevronRight className="text-muted-foreground ml-1 h-4 w-4" />
-            </div>
+            <Link href="/#pricing" className="group">
+              <div className="border-border bg-background/80 relative inline-flex items-center rounded-full border px-1 py-1 text-sm backdrop-blur-sm overflow-hidden">
+                <span className="bg-primary text-primary-foreground mr-2 rounded-full px-2 py-0.5 text-xs font-semibold">
+                  New
+                </span>
+                <span className="text-muted-foreground pr-2 group-hover:text-foreground transition-colors">
+                  Lifetime Deal now available
+                </span>
+                <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </Link>
           </motion.div>
 
           {/* Heading */}
@@ -299,8 +301,3 @@ export function Hero() {
     </div>
   );
 }
-
-    
-    
-
-    

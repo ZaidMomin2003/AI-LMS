@@ -9,7 +9,6 @@ import { FAQ } from '@/components/landing/FAQ';
 import { Contact } from '@/components/landing/Contact';
 import { Footer } from '@/components/landing/Footer';
 import { CTA } from '@/components/landing/CTA';
-import { WelcomePopup } from '@/components/landing/WelcomePopup';
 import { Workflow } from '@/components/landing/Workflow';
 import { Testimonials } from '@/components/landing/Testimonials';
 import { Pricing } from '@/components/landing/Pricing';
@@ -19,7 +18,6 @@ export default function LandingPage() {
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-grow">
-        <WelcomePopup />
         <Hero />
         <Workflow />
         <Testimonials />
