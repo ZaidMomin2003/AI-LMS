@@ -162,33 +162,6 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
   const handleExplain = () => {
     triggerExplanation(selectedText);
   };
-
-  const handleHighlight = () => {
-    const selection = window.getSelection();
-    if (!selection || selection.rangeCount === 0) return;
-
-    try {
-        const range = selection.getRangeAt(0);
-        const mark = document.createElement('mark');
-        mark.className = "bg-yellow-300/70 dark:bg-yellow-400/50 text-foreground px-1 rounded";
-        
-        // This is a simplified way to handle highlighting. For complex nested nodes, a library might be better.
-        mark.appendChild(range.extractContents());
-        range.insertNode(mark);
-        
-    } catch (e) {
-        console.error("Highlighting failed:", e);
-        toast({
-            variant: "destructive",
-            title: "Highlight Failed",
-            description: "An unexpected error occurred while highlighting."
-        });
-    } finally {
-        // Deselect text after highlighting
-        window.getSelection()?.removeAllRanges();
-        setPopoverOpen(false);
-    }
-  };
   
    useEffect(() => {
     if (isMobile) return; // Only apply this logic for desktop
@@ -288,12 +261,7 @@ export function NotesView({ notes, explainTextAction }: NotesViewProps) {
         <PopoverContent className="w-auto shadow-2xl p-0" sideOffset={8}>
             {popoverContent === 'options' ? (
                 <div className="flex rounded-md border bg-background">
-                    <Button variant="ghost" onClick={handleHighlight} className="p-3 h-auto rounded-r-none">
-                        <Highlighter className="w-5 h-5"/>
-                        <span className="ml-2 font-semibold">Highlight</span>
-                    </Button>
-                    <Separator orientation="vertical" className="h-auto"/>
-                    <Button variant="ghost" onClick={handleExplain} className="p-3 h-auto rounded-l-none">
+                    <Button variant="ghost" onClick={handleExplain} className="p-3 h-auto rounded-md">
                         <Sparkles className="w-5 h-5 text-primary"/>
                         <span className="ml-2 font-semibold">Explain</span>
                     </Button>
