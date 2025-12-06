@@ -5,36 +5,29 @@ import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import { getAdminDB } from '@/lib/firebase-admin';
 
-const USD_TO_INR_RATE = 90.14; // A fixed conversion rate
-
 export async function POST(req: NextRequest) {
-    // 1. Explicitly check for environment variables
     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
         console.error('Razorpay credentials are not configured in environment variables.');
         return NextResponse.json({ error: 'Payment gateway is not configured on the server.' }, { status: 500 });
     }
 
     try {
-        const { amount, userId } = await req.json();
+        const { amount, userId, currency } = await req.json();
 
-        if (!amount || !userId) {
-            return NextResponse.json({ error: 'Amount and userId are required.' }, { status: 400 });
+        if (!amount || !userId || !currency) {
+            return NextResponse.json({ error: 'Amount, userId, and currency are required.' }, { status: 400 });
         }
         
-        // Convert amount to INR
-        const amountInINR = Math.round(amount * USD_TO_INR_RATE);
-
         const razorpay = new Razorpay({
             key_id: process.env.RAZORPAY_KEY_ID,
             key_secret: process.env.RAZORPAY_KEY_SECRET,
         });
 
-        // Generate a shorter, unique receipt ID
         const receiptId = `rcpt_${Date.now()}_${userId.slice(0, 8)}`;
 
         const options = {
-            amount: amountInINR * 100, // Amount in the smallest currency unit (paise)
-            currency: 'INR',
+            amount: amount * 100, // Amount in the smallest currency unit (e.g., cents for USD)
+            currency: currency.toUpperCase(),
             receipt: receiptId,
         };
 
@@ -48,7 +41,7 @@ export async function POST(req: NextRequest) {
                 amount: order.amount,
                 currency: order.currency,
                 receipt: order.receipt,
-                originalAmountUSD: amount, // Store original amount for reference
+                originalAmount: amount,
                 createdAt: new Date().toISOString()
             });
         }

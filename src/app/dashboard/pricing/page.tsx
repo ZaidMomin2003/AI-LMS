@@ -192,7 +192,7 @@ const PricingContent = () => {
             const orderResponse = await fetch('/api/create-order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: plan.price, userId: user.uid }),
+                body: JSON.stringify({ amount: plan.price, userId: user.uid, currency: 'USD' }),
             });
 
             const orderData = await orderResponse.json();
@@ -202,7 +202,7 @@ const PricingContent = () => {
             }
             
             const options = {
-                key: process.env.RAZORPAY_KEY_ID,
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
                 amount: orderData.amount,
                 currency: orderData.currency,
                 name: 'Wisdom Pro',
@@ -214,6 +214,8 @@ const PricingContent = () => {
                     data.append('razorpay_order_id', response.razorpay_order_id);
                     data.append('razorpay_signature', response.razorpay_signature);
                     data.append('plan_duration', plan.durationMonths.toString());
+                    data.append('amount', (plan.price * 100).toString());
+                    data.append('currency', 'USD');
                     
                     const form = document.createElement('form');
                     form.method = 'POST';
@@ -247,7 +249,7 @@ const PricingContent = () => {
         }
     };
     
-    const monthlyPrice = (sagePlan.price / sagePlan.durationMonths).toFixed(2);
+    const monthlyPrice = (sagePlan.price / 12).toFixed(2);
     
     const proFeatures = [
         'Unlimited Topic Generations',

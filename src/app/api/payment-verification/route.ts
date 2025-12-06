@@ -71,6 +71,8 @@ export async function POST(req: NextRequest) {
             plan: planName,
             status: 'active',
             expiryDate: expiryDate.toISOString(),
+            paymentId: razorpay_payment_id,
+            orderId: razorpay_order_id,
         });
 
         // Redirect to a success page

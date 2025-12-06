@@ -5,7 +5,7 @@ import path from 'path';
 const nextConfig: NextConfig = {
   /* config options here */
   env: {
-    RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
+    NEXT_PUBLIC_RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
   },
   experimental: {
     allowedDevOrigins: [
