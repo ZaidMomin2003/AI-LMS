@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, ChevronRight, History, Sparkles, Send, Folder, LayoutDashboard, Bookmark, ClipboardCheck, Map, Timer, Camera, BarChart, Gem, LogOut, Check, BookOpenCheck, Search, MoreHorizontal, CalendarPlus, LifeBuoy, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -48,6 +48,57 @@ const TimeCardProto = ({ value, unit }: { value: string, unit: string }) => (
     </div>
 )
 
+const CountdownTimer = () => {
+    const calculateTimeLeft = () => {
+        const year = new Date().getFullYear();
+        const difference = +new Date(`12/10/${year}`) - +new Date();
+        let timeLeft = {};
+
+        if (difference > 0) {
+            timeLeft = {
+                days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+                minutes: Math.floor((difference / 1000 / 60) % 60),
+                seconds: Math.floor((difference / 1000) % 60)
+            };
+        }
+
+        return timeLeft as {days: number, hours: number, minutes: number, seconds: number};
+    };
+
+    const [timeLeft, setTimeLeft] = useState<{days: number, hours: number, minutes: number, seconds: number} | null>(null);
+
+    useEffect(() => {
+        setTimeLeft(calculateTimeLeft());
+        const timer = setInterval(() => {
+            setTimeLeft(calculateTimeLeft());
+        }, 1000);
+        return () => clearTimeout(timer);
+    }, []);
+    
+    if (!timeLeft) return null;
+
+    const timerComponents: {unit: 'days' | 'hours' | 'minutes' | 'seconds', label: string}[] = [
+        { unit: 'days', label: 'Days' },
+        { unit: 'hours', label: 'Hrs' },
+        { unit: 'minutes', label: 'Mins' },
+        { unit: 'seconds', label: 'Secs' },
+    ];
+
+    return (
+        <div className="flex items-center gap-2 sm:gap-3">
+            {timerComponents.map(part => (
+                <div key={part.unit} className="flex flex-col items-center">
+                    <div className="text-lg sm:text-xl font-bold font-mono text-background bg-foreground/90 rounded-md w-10 sm:w-12 h-10 sm:h-12 flex items-center justify-center">
+                        {String(timeLeft[part.unit] || 0).padStart(2, '0')}
+                    </div>
+                    <div className="text-xs uppercase tracking-wider mt-1 text-muted-foreground">{part.label}</div>
+                </div>
+            ))}
+        </div>
+    );
+};
+
 
 export function Hero() {
   return (
@@ -69,15 +120,12 @@ export function Hero() {
             transition={{ duration: 0.5 }}
             className="mx-auto mb-6 flex justify-center"
           >
-            <Link href="/#pricing" className="group">
-              <div className="border-border bg-background/80 relative inline-flex items-center rounded-full border px-1 py-1 text-sm backdrop-blur-sm overflow-hidden">
-                <span className="bg-primary text-primary-foreground mr-2 rounded-full px-2 py-0.5 text-xs font-semibold">
-                  New
-                </span>
-                <span className="text-muted-foreground pr-2 group-hover:text-foreground transition-colors">
-                  Lifetime Deal now available
-                </span>
-                <div className="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <Link href="/#pricing" className="group block">
+              <div className="border-border bg-background/80 relative flex flex-col items-center gap-4 rounded-2xl border p-4 text-sm backdrop-blur-sm overflow-hidden">
+                 <p className="text-muted-foreground px-2 text-center">
+                    <span className="font-semibold text-primary">Limited Time:</span> One-Time Payment for Lifetime Access
+                </p>
+                <CountdownTimer />
               </div>
             </Link>
           </motion.div>
