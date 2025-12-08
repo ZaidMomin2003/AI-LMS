@@ -7,8 +7,46 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 
 export const metadata: Metadata = {
-  title: "Wisdom",
-  description: "Your personal AI-powered study assistant.",
+  title: "Wisdom is Fun - Your Personal AI Study Buddy",
+  description: "Master any subject instantly with Wisdom is Fun, the AI-powered learning platform. Generate detailed notes, interactive flashcards, and quizzes to accelerate your learning and ace your exams.",
+  keywords: "AI learning, study tools, education, students, flashcards, quizzes, notes, exam prep, learning platform, wisdom is fun",
+  authors: [{ name: "Wisdom is Fun" }],
+  creator: "Wisdom is Fun",
+  publisher: "Wisdom is Fun",
+  metadataBase: new URL('https://wisdomis.fun'),
+  openGraph: {
+    title: "Wisdom is Fun - Your Personal AI Study Buddy",
+    description: "Master any subject instantly with AI-powered notes, flashcards, and quizzes.",
+    url: "https://wisdomis.fun",
+    siteName: "Wisdom is Fun",
+    images: [
+      {
+        url: "/og-image.png", // Must be an absolute URL
+        width: 1200,
+        height: 630,
+        alt: "Wisdom is Fun - AI Learning Platform",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Wisdom is Fun - Your Personal AI Study Buddy",
+    description: "Master any subject instantly with AI-powered notes, flashcards, and quizzes.",
+    images: ["/og-image.png"], // Must be an absolute URL
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   icons: {
     icon: "/favicon.svg",
   },

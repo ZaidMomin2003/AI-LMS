@@ -4,9 +4,6 @@ import path from 'path';
 
 const nextConfig: NextConfig = {
   /* config options here */
-  env: {
-    NEXT_PUBLIC_RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
-  },
   experimental: {
     allowedDevOrigins: [
       "https://*.cloudworkstations.dev",
@@ -53,7 +50,15 @@ const nextConfig: NextConfig = {
     config.externals.push('child_process');
     
     return config;
-  }
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/sitemap.xml',
+        destination: '/sitemap',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
