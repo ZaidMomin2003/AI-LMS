@@ -395,7 +395,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     </Link>
                   </Button>
                     <Button asChild variant="ghost" size="icon">
-                      <Link href={canUseWisdomGpt ? '/dashboard/wisdomgpt' : '/dashboard/pricing'}>
+                      <Link href="/dashboard/wisdomgpt">
                         <Sparkles className="h-5 w-5" />
                         <span className="sr-only">Open WisdomGPT</span>
                       </Link>
