@@ -18,6 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ArrowRight, Check, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { OnboardingPaywall } from './OnboardingPaywall';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 
 const onboardingSchema = z.object({
@@ -42,6 +43,7 @@ const steps = [
     id: 'goal', 
     title: "What's your biggest academic goal right now?", 
     fields: ['goal'] as const,
+    type: 'select',
     options: [
         { value: 'ace-exams', label: 'Ace my exams' },
         { value: 'improve-grades', label: 'Improve my grades' },
@@ -214,7 +216,32 @@ export function OnboardingForm() {
           {currentStep > 0 && currentStep < steps.length - 1 && 'title' in currentStepConfig && (
               <div>
                   <h2 className="text-2xl font-headline font-semibold block text-center mb-8">{currentStepConfig.title}</h2>
-                  {'options' in currentStepConfig ? (
+                  {'type' in currentStepConfig && currentStepConfig.type === 'select' ? (
+                     <Controller
+                        name={currentStepConfig.fields[0] as keyof OnboardingData}
+                        control={control}
+                        render={({ field }) => (
+                           <Select
+                             value={field.value}
+                             onValueChange={(value) => {
+                                 setValue(field.name, value);
+                                 setTimeout(nextStep, 200);
+                             }}
+                           >
+                            <SelectTrigger className="w-full max-w-sm mx-auto text-lg h-12">
+                                <SelectValue placeholder="Select an option..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {currentStepConfig.options?.map(option => (
+                                    <SelectItem key={option.value} value={option.value}>
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                           </Select>
+                        )}
+                      />
+                  ) : 'options' in currentStepConfig ? (
                        <Controller
                           name={currentStepConfig.fields[0] as keyof OnboardingData}
                           control={control}
@@ -267,7 +294,7 @@ export function OnboardingForm() {
             <div className="flex items-center gap-4">
                 <Button onClick={prevStep} variant="outline">Back</Button>
                 <Progress value={progressValue} className="h-2 flex-1" />
-                <Button onClick={nextStep} disabled={'options' in currentStepConfig}>
+                <Button onClick={nextStep} disabled={('options' in currentStepConfig) || ('type' in currentStepConfig && currentStepConfig.type === 'select')}>
                     Next <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
             </div>
