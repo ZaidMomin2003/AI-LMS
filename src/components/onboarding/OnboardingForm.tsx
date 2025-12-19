@@ -22,7 +22,7 @@ import { OnboardingPaywall } from './OnboardingPaywall';
 
 const onboardingSchema = z.object({
   name: z.string().min(2, "Please enter your name."),
-  goal: z.string().min(3, "Please share your goal."),
+  goal: z.string({ required_error: "Please select an option." }),
   challenge: z.string().min(3, "Tell us about your challenge."),
   firstMove: z.string({ required_error: "Please select an option." }),
   examEve: z.string({ required_error: "Please select an option." }),
@@ -38,7 +38,21 @@ type OnboardingData = z.infer<typeof onboardingSchema>;
 const steps = [
   { id: 'welcome', fields: [] as const },
   { id: 'name', title: "First, what should we call you?", fields: ['name'] as const },
-  { id: 'goal', title: "What's your biggest academic goal right now?", fields: ['goal'] as const },
+  { 
+    id: 'goal', 
+    title: "What's your biggest academic goal right now?", 
+    fields: ['goal'] as const,
+    options: [
+        { value: 'ace-exams', label: 'Ace my exams' },
+        { value: 'improve-grades', label: 'Improve my grades' },
+        { value: 'university-prep', label: 'Prepare for university entrance exams' },
+        { value: 'learn-new-skill', label: 'Learn a new skill for my career' },
+        { value: 'homework-help', label: 'Get help with daily homework' },
+        { value: 'understand-subject', label: 'Master a complex subject' },
+        { value: 'get-organized', label: 'Stay organized and on top of my studies' },
+        { value: 'curiosity', label: 'Explore new topics out of curiosity' },
+    ],
+  },
   { id: 'challenge', title: "What subject feels like your 'final boss' battle?", fields: ['challenge'] as const },
   { 
     id: 'firstMove', 
@@ -132,7 +146,6 @@ export function OnboardingForm() {
     resolver: zodResolver(onboardingSchema),
     defaultValues: {
       name: '',
-      goal: '',
       challenge: '',
     },
   });
