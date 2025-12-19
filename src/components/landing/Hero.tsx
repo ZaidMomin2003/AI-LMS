@@ -50,8 +50,10 @@ const TimeCardProto = ({ value, unit }: { value: string, unit: string }) => (
 
 const CountdownTimer = () => {
     const calculateTimeLeft = () => {
-        const year = new Date().getFullYear();
-        const difference = +new Date(`12/10/${year}`) - +new Date();
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + 10);
+        const difference = +targetDate - +new Date();
+        
         let timeLeft = {};
 
         if (difference > 0) {
