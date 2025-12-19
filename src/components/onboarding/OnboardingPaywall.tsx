@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -157,7 +158,7 @@ export function OnboardingPaywall({ onContinueFree }: { onContinueFree: () => vo
                             </div>
                         )}
                         <div className="flex items-center gap-4">
-                            <div className="w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0",
+                             <div
                                 className={cn(
                                     'w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0',
                                     selectedPlan.id === plan.id ? 'border-primary bg-primary' : 'border-muted-foreground/50'
