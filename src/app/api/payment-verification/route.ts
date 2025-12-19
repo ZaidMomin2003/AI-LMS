@@ -33,15 +33,23 @@ async function updateUserSubscription(uid: string, data: object): Promise<boolea
     }
 };
 
+function getPlanNameFromDuration(durationDays: number): string {
+    if (durationDays === 7) return 'Weekly Pass';
+    if (durationDays === 365) return 'Sage Mode';
+    if (durationDays >= 3650) return 'Lifetime Sage'; // For 10 years or more
+    return `${durationDays}-day Pass`;
+}
+
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const razorpay_order_id = formData.get('razorpay_order_id') as string;
     const razorpay_payment_id = formData.get('razorpay_payment_id') as string;
     const razorpay_signature = formData.get('razorpay_signature') as string;
-    const planDuration = parseInt(formData.get('plan_duration') as string || '0', 10);
+    const planDurationDays = parseInt(formData.get('plan_duration_days') as string || '0', 10);
     
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !planDuration) {
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !planDurationDays) {
       return NextResponse.json({ error: 'Missing payment details' }, { status: 400 });
     }
 
@@ -63,9 +71,9 @@ export async function POST(req: NextRequest) {
         }
         
         const expiryDate = new Date();
-        expiryDate.setMonth(expiryDate.getMonth() + planDuration);
+        expiryDate.setDate(expiryDate.getDate() + planDurationDays);
 
-        const planName = planDuration === 120 ? 'Lifetime Sage' : `${planDuration}-month`;
+        const planName = getPlanNameFromDuration(planDurationDays);
 
         await updateUserSubscription(userId, {
             plan: planName,
