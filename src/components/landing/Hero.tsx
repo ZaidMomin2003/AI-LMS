@@ -63,6 +63,8 @@ const CountdownTimer = () => {
                 minutes: Math.floor((difference / 1000 / 60) % 60),
                 seconds: Math.floor((difference / 1000) % 60)
             };
+        } else {
+             timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
         }
 
         return timeLeft as {days: number, hours: number, minutes: number, seconds: number};
@@ -71,10 +73,13 @@ const CountdownTimer = () => {
     const [timeLeft, setTimeLeft] = useState<{days: number, hours: number, minutes: number, seconds: number} | null>(null);
 
     useEffect(() => {
+        // Set initial time on mount to avoid hydration mismatch
         setTimeLeft(calculateTimeLeft());
+
         const timer = setInterval(() => {
             setTimeLeft(calculateTimeLeft());
         }, 1000);
+
         return () => clearTimeout(timer);
     }, []);
     
