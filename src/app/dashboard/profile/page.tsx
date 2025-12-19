@@ -15,12 +15,13 @@ import { useExam } from '@/context/ExamContext';
 import { useProfile } from '@/context/ProfileContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, CalendarIcon } from 'lucide-react';
+import { Loader2, CalendarIcon, RefreshCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import type { ExamDetails } from '@/types';
+import { useRouter } from 'next/navigation';
 
 const profileSchema = z.object({
   phoneNumber: z.string().optional(),
@@ -37,6 +38,7 @@ export default function ProfilePage() {
     const { exam, addExam, loading: examLoading } = useExam();
     const { profile, updateProfile, loading: profileLoading } = useProfile();
     const { toast } = useToast();
+    const router = useRouter();
 
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profileSchema),
@@ -78,6 +80,24 @@ export default function ProfilePage() {
                 variant: 'destructive',
                 title: 'Update Failed',
                 description: 'Could not save your changes. Please try again.',
+            });
+        }
+    };
+    
+    const handleRestartOnboarding = async () => {
+        try {
+            // Clear a field that indicates onboarding is complete
+            await updateProfile({ referralSource: '' });
+            toast({
+                title: "Let's start over!",
+                description: "Redirecting you to the onboarding process."
+            });
+            router.push('/onboarding');
+        } catch (error) {
+             toast({
+                variant: 'destructive',
+                title: 'Failed to restart',
+                description: 'Could not restart the onboarding process. Please try again.',
             });
         }
     };
@@ -147,6 +167,13 @@ export default function ProfilePage() {
                                               </Popover>
                                             )}
                                         />
+                                    </div>
+                                    <div>
+                                        <Label>Restart Onboarding</Label>
+                                        <Button onClick={handleRestartOnboarding} variant="outline" className="w-full mt-2">
+                                            <RefreshCcw className="mr-2 h-4 w-4"/>
+                                            Restart Onboarding
+                                        </Button>
                                     </div>
                                 </div>
                             )}

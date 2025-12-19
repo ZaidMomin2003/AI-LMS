@@ -20,9 +20,8 @@ export default function OnboardingPage() {
             return;
         }
         
-        // If profile data exists, user has already onboarded.
-        // Check specifically for a property that should be set during onboarding, like 'country'.
-        if (!profileLoading && profile && profile.country) {
+        // If profile data includes a referralSource, user has already onboarded.
+        if (!profileLoading && profile && profile.referralSource) {
             router.replace('/dashboard');
         }
     }, [user, authLoading, profile, profileLoading, router]);
@@ -36,7 +35,7 @@ export default function OnboardingPage() {
     }
     
     // Only show the form if the user is authenticated but hasn't onboarded yet
-    if (user && (!profile || !profile.country)) {
+    if (user && (!profile || !profile.referralSource)) {
         return (
             <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4">
                 <div className="absolute top-8 left-8">
