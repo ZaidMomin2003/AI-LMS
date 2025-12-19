@@ -1,19 +1,18 @@
 
 'use client';
 
-import { notFound, useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { Header } from '@/components/landing/Header';
 import { Footer } from '@/components/landing/Footer';
-import { getStoryBySlug, type Story } from '@/lib/stories-data';
+import { getStoryBySlug } from '@/lib/stories-data';
 import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin } from 'lucide-react';
 import { MarkdownRenderer } from '@/components/MarkdownRenderer';
 
-export default function StoryPage() {
-    const params = useParams();
-    const slug = typeof params.slug === 'string' ? params.slug : '';
+export default function StoryPage({ params }: { params: { slug: string } }) {
+    const slug = params.slug || '';
     const story = getStoryBySlug(slug);
 
     if (!story) {

@@ -9,15 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTopic } from '@/context/TopicContext';
 import { FileText, BrainCircuit, MessageCircleQuestion, ArrowLeft, Bookmark } from 'lucide-react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { Topic } from '@/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { explainTextAction } from './actions';
 
-export default function TopicPage() {
-  const params = useParams();
+export default function TopicPage({ params }: { params: { id: string } }) {
   const { getTopicById, toggleBookmark } = useTopic();
   const [topic, setTopic] = useState<Topic | null>(null);
   const { toast } = useToast();
