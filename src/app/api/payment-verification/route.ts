@@ -67,7 +67,9 @@ export async function POST(req: NextRequest) {
         const userId = await getUserIdFromOrderId(razorpay_order_id);
         if (!userId) {
             console.error(`Could not find userId for orderId: ${razorpay_order_id}`);
-            return NextResponse.json({ error: 'User not found for this order' }, { status: 404 });
+            // Redirect to a failure page but don't expose user not found
+            const failureUrl = new URL('/dashboard/pricing?success=false&error=order_validation_failed', req.nextUrl.origin);
+            return NextResponse.redirect(failureUrl.toString());
         }
         
         const expiryDate = new Date();
@@ -84,12 +86,12 @@ export async function POST(req: NextRequest) {
         });
 
         // Redirect to a success page
-        const successUrl = new URL('/dashboard/pricing?success=true', req.nextUrl.origin);
+        const successUrl = new URL('/dashboard?payment=success', req.nextUrl.origin);
         return NextResponse.redirect(successUrl.toString());
 
     } else {
       // Redirect to a failure page
-      const failureUrl = new URL('/dashboard/pricing?success=false', req.nextUrl.origin);
+      const failureUrl = new URL('/dashboard/pricing?success=false&error=signature_mismatch', req.nextUrl.origin);
       return NextResponse.redirect(failureUrl.toString());
     }
   } catch (error: any) {

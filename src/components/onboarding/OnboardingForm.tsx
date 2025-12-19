@@ -17,8 +17,7 @@ import { useProfile } from '@/context/ProfileContext';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowRight, Check, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { ExamDetails } from '@/types';
-import { useExam } from '@/context/ExamContext';
+import { OnboardingPaywall } from './OnboardingPaywall';
 
 
 const onboardingSchema = z.object({
@@ -119,7 +118,7 @@ const steps = [
           { value: 'other', label: 'Other' },
       ]
   },
-  { id: 'finish', fields: [] as const },
+  { id: 'paywall', fields: [] as const },
 ];
 
 export function OnboardingForm() {
@@ -146,12 +145,7 @@ export function OnboardingForm() {
         const output = await trigger(currentStepConfig.fields, { shouldFocus: true });
         if (!output) return;
     }
-
-    if (currentStep === steps.length - 1) {
-        await handleSubmit();
-    } else {
-       setCurrentStep(step => step + 1);
-    }
+    setCurrentStep(step => step + 1);
   };
   
   const prevStep = () => {
@@ -161,6 +155,7 @@ export function OnboardingForm() {
   }
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
     const values = getValues();
     try {
@@ -181,7 +176,7 @@ export function OnboardingForm() {
     }
   };
   
-  const progressValue = (currentStep / (steps.length - 2)) * 100;
+  const progressValue = (currentStep / (steps.length - 1)) * 100;
   const currentStepConfig = steps[currentStep];
 
   return (
@@ -248,21 +243,8 @@ export function OnboardingForm() {
               </div>
           )}
           
-          {currentStep === steps.length -1 && (
-            <div className="text-center">
-              <h1 className="text-4xl font-headline font-bold mb-4">You're all set!</h1>
-              <p className="text-lg text-muted-foreground mb-8">Ready to start your smarter learning journey?</p>
-              <Button onClick={handleSubmit} size="lg" disabled={isSubmitting}>
-                  {isSubmitting ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
-                  ) : (
-                    <>
-                      Go to Dashboard
-                      <ArrowRight className="ml-2" />
-                    </>
-                  )}
-              </Button>
-            </div>
+          {currentStep === steps.length - 1 && (
+             <OnboardingPaywall onContinueFree={handleSubmit} />
           )}
         </motion.div>
       </AnimatePresence>

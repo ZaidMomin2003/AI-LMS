@@ -26,6 +26,13 @@ interface Plan {
     durationDays: number;
 }
 
+const weeklyPlan: Plan = {
+    name: 'Weekly Pass',
+    price: 4.99,
+    priceDescription: '7-day access',
+    durationDays: 7,
+};
+
 const sagePlan: Plan = {
     name: 'Sage Mode', 
     price: 199, 
