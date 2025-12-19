@@ -182,6 +182,12 @@ export function OnboardingPaywall({ onContinueFree }: { onContinueFree: () => vo
             <Button onClick={handlePayment} size="lg" className="w-full h-12 text-base" disabled={isLoading}>
                 {isLoading ? <Loader2 className="animate-spin" /> : `Purchase for $${selectedPlan.price.toFixed(2)}`}
             </Button>
+             <p className="text-xs text-muted-foreground mt-2">
+                Guaranteed safe checkout with{' '}
+                <a href="https://razorpay.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
+                    Razorpay
+                </a>
+            </p>
             <Button onClick={onContinueFree} variant="link" className="mt-4 text-muted-foreground">
                 Continue with Free Trial
             </Button>
