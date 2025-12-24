@@ -81,6 +81,7 @@ import { Badge } from './ui/badge';
 import { ThemeToggle } from './ThemeToggle';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import Snowfall from '../components/Snowfall';
 
 function AppLoadingScreen() {
   return (
@@ -169,6 +170,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
       <SidebarProvider>
+        <Snowfall />
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-3">

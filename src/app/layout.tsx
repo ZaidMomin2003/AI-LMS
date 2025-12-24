@@ -5,6 +5,7 @@ import 'katex/dist/katex.min.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
+import Snowfall from "@/components/Snowfall";
 
 export const metadata: Metadata = {
   title: "Wisdom is Fun - Your Personal AI Study Buddy",
