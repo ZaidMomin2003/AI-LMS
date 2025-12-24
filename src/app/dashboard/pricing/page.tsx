@@ -121,7 +121,7 @@ const CountdownTimer = () => {
                 seconds: Math.floor((difference / 1000) % 60)
             };
         } else {
-             timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+            timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
         }
 
         return timeLeft as {days: number, hours: number, minutes: number, seconds: number};
@@ -365,6 +365,7 @@ const PricingContent = () => {
 
                             <div className="md:col-span-1 flex flex-col items-center md:items-end text-center md:text-right">
                                 <div className="flex items-baseline gap-2">
+                                    <span className="text-2xl font-semibold line-through text-primary-foreground/70">$1499</span>
                                     <p className="text-4xl font-bold">${lifetimePlan.price}</p>
                                 </div>
                                 <p className="text-sm text-primary-foreground/80">One-time payment</p>
