@@ -1,12 +1,14 @@
 
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const Snowfall: React.FC = () => {
-    const snowflakes = useMemo(() => {
-        return Array.from({ length: 150 }).map((_, i) => {
+    const [snowflakes, setSnowflakes] = useState<React.ReactNode[]>([]);
+
+    useEffect(() => {
+        const generatedSnowflakes = Array.from({ length: 150 }).map((_, i) => {
             const xStart = Math.random() * 100;
             const yStart = -10 - Math.random() * 20;
             const xEnd = xStart + (Math.random() - 0.5) * 40;
@@ -42,6 +44,7 @@ const Snowfall: React.FC = () => {
                 />
             );
         });
+        setSnowflakes(generatedSnowflakes);
     }, []);
 
     return (
