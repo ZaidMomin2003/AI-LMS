@@ -143,7 +143,7 @@ export function Header() {
   return (
     <Dialog>
         <div className="fixed top-0 left-0 right-0 z-50">
-            <div className="bg-blue-600 text-white text-center text-sm py-1">
+            <div className="bg-red-600 text-white text-center text-sm py-1">
                 We're thrilled to be backed by{' '}
                 <DialogTrigger asChild>
                     <span className="font-semibold underline cursor-pointer hover:opacity-80 transition-opacity">AWS Startups</span>
