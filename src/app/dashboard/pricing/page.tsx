@@ -110,7 +110,7 @@ const CouponForm = ({ onSuccessfulCoupon }: { onSuccessfulCoupon: (price: number
 const CountdownTimer = () => {
     const calculateTimeLeft = () => {
         const year = new Date().getFullYear();
-        const difference = +new Date(`12/25/${year}`) - +new Date();
+        const difference = +new Date(`12/31/${year}`) - +new Date();
         let timeLeft: {days: number, hours: number, minutes: number, seconds: number} | {} = {};
 
         if (difference > 0) {
