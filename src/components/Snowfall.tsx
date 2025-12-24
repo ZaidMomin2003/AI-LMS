@@ -8,7 +8,7 @@ const Snowfall: React.FC = () => {
     const [snowflakes, setSnowflakes] = useState<React.ReactNode[]>([]);
 
     useEffect(() => {
-        const generatedSnowflakes = Array.from({ length: 250 }).map((_, i) => {
+        const generatedSnowflakes = Array.from({ length: 500 }).map((_, i) => {
             const xStart = Math.random() * 100;
             const yStart = -10 - Math.random() * 20;
             const xEnd = xStart + (Math.random() - 0.5) * 40;
@@ -19,7 +19,7 @@ const Snowfall: React.FC = () => {
             return (
                 <motion.div
                     key={i}
-                    className="absolute rounded-full bg-white/70"
+                    className="absolute rounded-full bg-white"
                     style={{
                         left: `${xStart}%`,
                         top: `${yStart}%`,
