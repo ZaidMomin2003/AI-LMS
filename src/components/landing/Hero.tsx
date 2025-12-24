@@ -129,7 +129,7 @@ export function Hero() {
             <Link href="/#pricing" className="group block">
               <div className="border-border bg-background/80 relative flex flex-col items-center gap-4 rounded-2xl border p-4 text-sm backdrop-blur-sm overflow-hidden">
                  <p className="text-muted-foreground px-2 text-center">
-                    <span className="font-semibold text-primary">Limited Time:</span> One-Time Payment for Lifetime Access
+                    <span className="font-semibold text-primary">Christmas Special:</span> One-Time Payment for a Lifetime of Learning!
                 </p>
                 <CountdownTimer />
               </div>
