@@ -28,7 +28,7 @@ const CountdownTimer = () => {
     const calculateTimeLeft = () => {
         const year = new Date().getFullYear();
         const difference = +new Date(`12/25/${year}`) - +new Date();
-        let timeLeft = {};
+        let timeLeft: {days: number, hours: number, minutes: number, seconds: number} | {} = {};
 
         if (difference > 0) {
             timeLeft = {
@@ -37,6 +37,8 @@ const CountdownTimer = () => {
                 minutes: Math.floor((difference / 1000 / 60) % 60),
                 seconds: Math.floor((difference / 1000) % 60)
             };
+        } else {
+             timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
         }
 
         return timeLeft as {days: number, hours: number, minutes: number, seconds: number};
