@@ -42,7 +42,7 @@ const plans: Plan[] = [
     {
         id: 'lifetime',
         name: 'Lifetime Sage',
-        price: 799,
+        price: 999,
         priceDescription: 'One-time payment',
         durationDays: 3650, // 10 years
         features: ['Pay once, own forever', 'All future updates'],
