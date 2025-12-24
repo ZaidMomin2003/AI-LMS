@@ -110,7 +110,7 @@ const CouponForm = ({ onSuccessfulCoupon }: { onSuccessfulCoupon: (price: number
 const CountdownTimer = () => {
     const calculateTimeLeft = () => {
         const year = new Date().getFullYear();
-        const difference = +new Date(`12/10/${year}`) - +new Date();
+        const difference = +new Date(`12/25/${year}`) - +new Date();
         let timeLeft = {};
 
         if (difference > 0) {
@@ -351,7 +351,7 @@ const PricingContent = () => {
                             <div className="md:col-span-1 space-y-2">
                                  <div className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/30 bg-primary-foreground/10 px-3 py-1 text-xs font-medium mb-2">
                                     <Clock className="w-4 h-4" />
-                                    <span>Limited Time Offer</span>
+                                    <span>Christmas Special</span>
                                 </div>
                                 <h3 className="text-2xl font-headline font-bold">Lifetime Sage</h3>
                                 <p className="text-primary-foreground/80">Unlimited access, forever. One payment, endless learning.</p>
