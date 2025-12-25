@@ -249,34 +249,49 @@ const PersonalizationForm = () => {
             {questionGroups.map((group) => (
               <div key={group.id} className="space-y-4">
                 <h3 className="text-lg font-semibold">{group.title}</h3>
-                <Controller
-                  name={group.fields[0]}
-                  control={form.control}
-                  render={({ field }) => (
-                    <RadioGroup
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      className="grid grid-cols-1 md:grid-cols-2 gap-4"
-                    >
-                      {group.options.map(option => (
-                        <Card
-                          key={option.value}
-                          className={cn(
-                            'cursor-pointer transition-all hover:border-primary/50',
-                            field.value === option.value && 'border-primary ring-2 ring-primary ring-offset-2 ring-offset-background'
-                          )}
-                        >
-                          <CardContent className="p-4">
-                              <Label htmlFor={option.value} className="flex items-center gap-4 cursor-pointer">
-                                <RadioGroupItem value={option.value} id={option.value}/>
-                                <span className="font-medium">{option.label}</span>
-                              </Label>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </RadioGroup>
-                  )}
-                />
+                {group.options ? (
+                  <Controller
+                    name={group.fields[0]}
+                    control={form.control}
+                    render={({ field }) => (
+                      <RadioGroup
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                      >
+                        {group.options.map(option => (
+                          <Card
+                            key={option.value}
+                            className={cn(
+                              'cursor-pointer transition-all hover:border-primary/50',
+                              field.value === option.value && 'border-primary ring-2 ring-primary ring-offset-2 ring-offset-background'
+                            )}
+                          >
+                            <CardContent className="p-4">
+                                <Label htmlFor={option.value} className="flex items-center gap-4 cursor-pointer">
+                                  <RadioGroupItem value={option.value} id={option.value}/>
+                                  <span className="font-medium">{option.label}</span>
+                                </Label>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </RadioGroup>
+                    )}
+                  />
+                ) : (
+                   <FormField
+                    control={form.control}
+                    name={group.fields[0]}
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                                <Input placeholder="Type your answer..." {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                  />
+                )}
                 <FormMessage />
               </div>
             ))}
