@@ -16,8 +16,16 @@ import type { Topic } from '@/types';
 // Helper to decode base64 URL
 const decodeFromBase64 = (encoded: string): string => {
   try {
-    return atob(encoded);
+    // Replace URL-safe characters with standard Base64 characters
+    const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
+    // atob is a browser function. For server environments or robustness, a Buffer-based approach is safer.
+    if (typeof window !== 'undefined' && typeof window.atob === 'function') {
+        return window.atob(base64);
+    }
+    // Fallback for non-browser environments
+    return Buffer.from(base64, 'base64').toString('binary');
   } catch (e) {
+    console.error("Base64 decoding failed:", e);
     return '';
   }
 };

@@ -35,7 +35,12 @@ export default function TopicPage() {
 
   const handleShare = () => {
     if (topic && user) {
-        const encodedId = btoa(`${topic.id}:${user.uid}`);
+        // URL-safe Base64 encoding
+        const encodedId = btoa(`${topic.id}:${user.uid}`)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+            
         const shareUrl = `${window.location.origin}/share/${encodedId}`;
         navigator.clipboard.writeText(shareUrl).then(() => {
             toast({
