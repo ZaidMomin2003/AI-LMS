@@ -15,22 +15,26 @@ import type { Topic } from '@/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { explainTextAction } from './actions';
+import { useAuth } from '@/context/AuthContext';
 
 export default function TopicPage({ params }: { params: { id: string } }) {
   const { getTopicById, toggleBookmark } = useTopic();
+  const { user } = useAuth();
   const [topic, setTopic] = useState<Topic | null>(null);
   const { toast } = useToast();
+  const id = params.id;
 
   useEffect(() => {
-    if (typeof params.id === 'string') {
-      const foundTopic = getTopicById(params.id);
+    if (typeof id === 'string') {
+      const foundTopic = getTopicById(id);
       setTopic(foundTopic ?? null);
     }
-  }, [params.id, getTopicById]);
+  }, [id, getTopicById]);
 
   const handleShare = () => {
-    if (topic) {
-        const shareUrl = `${window.location.origin}/share/${topic.id}`;
+    if (topic && user) {
+        const encodedId = btoa(`${topic.id}:${user.uid}`);
+        const shareUrl = `${window.location.origin}/share/${encodedId}`;
         navigator.clipboard.writeText(shareUrl).then(() => {
             toast({
                 title: "Share Link Copied!",
