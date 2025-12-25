@@ -30,6 +30,12 @@ type FormValues = z.infer<typeof personalizationSchema>;
 const PersonalizationForm = () => {
   const form = useForm<FormValues>({
     resolver: zodResolver(personalizationSchema),
+    defaultValues: {
+      studying: '',
+      aiName: '',
+      educationLevel: '',
+      contentStyle: '',
+    },
   });
 
   const onSubmit = (values: FormValues) => {
