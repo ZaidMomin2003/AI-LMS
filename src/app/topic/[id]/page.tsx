@@ -14,13 +14,13 @@ import { useEffect, useState } from 'react';
 import type { Topic } from '@/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { explainTextAction } from './actions';
+import { explainTextAction, createShareableTopicAction } from './actions';
 import { useAuth } from '@/context/AuthContext';
 import { useParams } from 'next/navigation';
 
 export default function TopicPage() {
   const params = useParams();
-  const { getTopicById, toggleBookmark, createShareableTopic } = useTopic();
+  const { getTopicById, toggleBookmark } = useTopic();
   const { user } = useAuth();
   const [topic, setTopic] = useState<Topic | null>(null);
   const { toast } = useToast();
@@ -36,7 +36,12 @@ export default function TopicPage() {
   const handleShare = async () => {
     if (topic && user) {
         try {
-            const shareableId = await createShareableTopic(topic);
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { id, createdAt, ...topicData } = topic;
+            const shareableData = { ...topicData, ownerId: user.uid };
+            
+            const shareableId = await createShareableTopicAction(shareableData);
+
             const shareUrl = `${window.location.origin}/share/${shareableId}`;
             navigator.clipboard.writeText(shareUrl).then(() => {
                 toast({

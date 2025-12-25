@@ -31,28 +31,16 @@ export const updateUserDoc = async (uid: string, data: object) => {
 };
 
 /**
- * Creates a shareable topic document in a public collection.
- * @param topicData The topic data to share.
- * @returns The ID of the newly created shareable document.
- */
-export const createShareableTopic = async (topicData: Omit<Topic, 'id'>) => {
-    if (!db) throw new Error("Firestore is not initialized.");
-    const shareableCollectionRef = collection(db, 'sharedTopics');
-    const docRef = await addDoc(shareableCollectionRef, topicData);
-    return docRef.id;
-};
-
-/**
  * Fetches a shareable topic from the public collection.
  * @param shareId The ID of the shareable document.
  * @returns The topic data or null if not found.
  */
-export const getShareableTopic = async (shareId: string): Promise<(Omit<Topic, 'id'> & { ownerId: string }) | null> => {
+export const getShareableTopic = async (shareId: string): Promise<(Omit<Topic, 'id' | 'createdAt'> & { ownerId: string }) | null> => {
     if (!db) return null;
     const shareDocRef = doc(db, 'sharedTopics', shareId);
     const docSnap = await getDoc(shareDocRef);
     if (docSnap.exists()) {
-        return docSnap.data() as (Omit<Topic, 'id'> & { ownerId: string });
+        return docSnap.data() as (Omit<Topic, 'id' | 'createdAt'> & { ownerId: string });
     }
     return null;
 }

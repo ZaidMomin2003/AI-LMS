@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { Topic } from '@/types';
 import { useAuth } from './AuthContext';
 import { isFirebaseEnabled } from '@/lib/firebase';
-import { getUserDoc, updateUserDoc, createShareableTopic as createShareableTopicInDB } from '@/services/firestore';
+import { getUserDoc, updateUserDoc, getShareableTopic as getShareableTopicFromDB } from '@/services/firestore';
 import type { Timestamp } from 'firebase/firestore';
 
 interface TopicContextType {
@@ -13,7 +13,6 @@ interface TopicContextType {
   addTopic: (topic: Topic) => Promise<void>;
   receiveSharedTopic: (topic: Omit<Topic, 'id'>) => Promise<Topic | null>;
   getTopicById: (id: string) => Topic | undefined;
-  createShareableTopic: (topic: Topic) => Promise<string>;
   toggleBookmark: (topicId: string) => Promise<void>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -67,15 +66,6 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
   const getTopicById = (id: string) => {
     return topics.find((topic) => topic.id === id);
   };
-  
-  const createShareableTopic = async (topic: Topic) => {
-    if (!user) throw new Error("User not authenticated");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, ...topicData } = topic;
-    const shareableData = { ...topicData, ownerId: user.uid };
-    const shareableId = await createShareableTopicInDB(shareableData);
-    return shareableId;
-  };
 
   const receiveSharedTopic = async (topicData: Omit<Topic, 'id'>) => {
     if (!user || !isFirebaseEnabled) return null;
@@ -103,7 +93,7 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <TopicContext.Provider value={{ topics, addTopic, getTopicById, createShareableTopic, receiveSharedTopic, toggleBookmark, loading, setLoading, dataLoading }}>
+    <TopicContext.Provider value={{ topics, addTopic, getTopicById, receiveSharedTopic, toggleBookmark, loading, setLoading, dataLoading }}>
       {children}
     </TopicContext.Provider>
   );
