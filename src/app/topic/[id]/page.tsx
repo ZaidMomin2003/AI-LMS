@@ -20,7 +20,7 @@ import { useParams } from 'next/navigation';
 
 export default function TopicPage() {
   const params = useParams();
-  const { getTopicById, toggleBookmark } = useTopic();
+  const { getTopicById, toggleBookmark, createShareableTopic } = useTopic();
   const { user } = useAuth();
   const [topic, setTopic] = useState<Topic | null>(null);
   const { toast } = useToast();
@@ -33,27 +33,30 @@ export default function TopicPage() {
     }
   }, [id, getTopicById]);
 
-  const handleShare = () => {
+  const handleShare = async () => {
     if (topic && user) {
-        // URL-safe Base64 encoding
-        const encodedId = btoa(`${topic.id}:${user.uid}`)
-            .replace(/\+/g, '-')
-            .replace(/\//g, '_')
-            .replace(/=+$/, '');
-            
-        const shareUrl = `${window.location.origin}/share/${encodedId}`;
-        navigator.clipboard.writeText(shareUrl).then(() => {
-            toast({
-                title: "Share Link Copied!",
-                description: "The link to this topic has been copied to your clipboard.",
+        try {
+            const shareableId = await createShareableTopic(topic);
+            const shareUrl = `${window.location.origin}/share/${shareableId}`;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                toast({
+                    title: "Share Link Copied!",
+                    description: "A public link to this topic has been copied to your clipboard.",
+                });
+            }).catch(err => {
+                toast({
+                    variant: "destructive",
+                    title: "Failed to Copy",
+                    description: "Could not copy the link. Please try again.",
+                });
             });
-        }).catch(err => {
-            toast({
+        } catch (error) {
+             toast({
                 variant: "destructive",
-                title: "Failed to Copy",
-                description: "Could not copy the link. Please try again.",
+                title: "Sharing Failed",
+                description: "Could not create a shareable link for this topic.",
             });
-        });
+        }
     }
   };
   

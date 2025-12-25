@@ -17,5 +17,13 @@ service cloud.firestore {
     match /supportRequests/{supportRequestId} {
       allow create: if request.auth != null;
     }
+
+    // Allow anyone to read from sharedTopics, but only logged-in users can create.
+    // No one can update or delete.
+    match /sharedTopics/{shareId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
   }
 }

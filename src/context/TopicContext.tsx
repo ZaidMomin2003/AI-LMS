@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { Topic } from '@/types';
 import { useAuth } from './AuthContext';
 import { isFirebaseEnabled } from '@/lib/firebase';
-import { getUserDoc, updateUserDoc } from '@/services/firestore';
+import { getUserDoc, updateUserDoc, createShareableTopic as createShareableTopicInDB } from '@/services/firestore';
 import type { Timestamp } from 'firebase/firestore';
 
 interface TopicContextType {
@@ -13,7 +13,7 @@ interface TopicContextType {
   addTopic: (topic: Topic) => Promise<void>;
   receiveSharedTopic: (topic: Omit<Topic, 'id'>) => Promise<Topic | null>;
   getTopicById: (id: string) => Topic | undefined;
-  getTopicForOwner: (topicId: string, ownerId: string) => Promise<Omit<Topic, 'id'> | null>;
+  createShareableTopic: (topic: Topic) => Promise<string>;
   toggleBookmark: (topicId: string) => Promise<void>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -60,7 +60,6 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
   const addTopic = async (topic: Topic) => {
     if (!user || !isFirebaseEnabled) return;
     const newTopics = [topic, ...topics];
-    // Don't optimistically update here to avoid flashing, wait for db write
     await updateUserDoc(user.uid, { topics: newTopics });
     setTopics(newTopics.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
   };
@@ -69,15 +68,13 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
     return topics.find((topic) => topic.id === id);
   };
   
-  const getTopicForOwner = async (topicId: string, ownerId: string) => {
-    if (!isFirebaseEnabled) return null;
-    const ownerData = await getUserDoc(ownerId);
-    if (!ownerData || !ownerData.topics) return null;
-    const foundTopic = ownerData.topics.find((t: Topic) => t.id === topicId);
-    if (!foundTopic) return null;
+  const createShareableTopic = async (topic: Topic) => {
+    if (!user) throw new Error("User not authenticated");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { id, ...topicData } = foundTopic;
-    return topicData;
+    const { id, ...topicData } = topic;
+    const shareableData = { ...topicData, ownerId: user.uid };
+    const shareableId = await createShareableTopicInDB(shareableData);
+    return shareableId;
   };
 
   const receiveSharedTopic = async (topicData: Omit<Topic, 'id'>) => {
@@ -106,7 +103,7 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <TopicContext.Provider value={{ topics, addTopic, getTopicById, getTopicForOwner, receiveSharedTopic, toggleBookmark, loading, setLoading, dataLoading }}>
+    <TopicContext.Provider value={{ topics, addTopic, getTopicById, createShareableTopic, receiveSharedTopic, toggleBookmark, loading, setLoading, dataLoading }}>
       {children}
     </TopicContext.Provider>
   );

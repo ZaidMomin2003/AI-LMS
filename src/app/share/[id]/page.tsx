@@ -12,47 +12,30 @@ import { Loader2, Lock, Gem, CheckCircle, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import type { Topic } from '@/types';
-
-// Helper to decode base64 URL
-const decodeFromBase64 = (encoded: string): string => {
-  try {
-    // Replace URL-safe characters with standard Base64 characters
-    const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
-    // atob is a browser function. For server environments or robustness, a Buffer-based approach is safer.
-    if (typeof window !== 'undefined' && typeof window.atob === 'function') {
-        return window.atob(base64);
-    }
-    // Fallback for non-browser environments
-    return Buffer.from(base64, 'base64').toString('binary');
-  } catch (e) {
-    console.error("Base64 decoding failed:", e);
-    return '';
-  }
-};
+import { getShareableTopic } from '@/services/firestore';
 
 export default function SharedTopicPage() {
     const params = useParams();
     const router = useRouter();
     const { user, loading: authLoading } = useAuth();
-    const { getTopicForOwner, receiveSharedTopic } = useTopic();
+    const { receiveSharedTopic } = useTopic();
     const { canUseFeature, incrementReceivedTopics, loading: subLoading } = useSubscription();
     const { toast } = useToast();
 
     const [status, setStatus] = useState<'loading' | 'prompt-login' | 'unauthorized' | 'limit-reached' | 'ready' | 'error' | 'already-owned'>('loading');
-    const [topicData, setTopicData] = useState<Omit<Topic, 'id'> | null>(null);
+    const [topicData, setTopicData] = useState<Omit<Topic, 'id' | 'ownerId'> | null>(null);
 
-    const encodedId = params.id as string;
-    const [topicId, ownerId] = decodeFromBase64(encodedId).split(':');
-
+    const shareId = params.id as string;
+    
     useEffect(() => {
         const processShare = async () => {
             if (authLoading || subLoading) return;
-            if (!topicId || !ownerId) {
+            if (!shareId) {
                 setStatus('error');
                 return;
             }
 
-            const fetchedTopicData = await getTopicForOwner(topicId, ownerId);
+            const fetchedTopicData = await getShareableTopic(shareId);
             if (!fetchedTopicData) {
                 setStatus('error');
                 return;
@@ -64,10 +47,11 @@ export default function SharedTopicPage() {
                 return;
             }
 
-            if (user.uid === ownerId) {
+            if (user.uid === fetchedTopicData.ownerId) {
                 setStatus('already-owned');
-                // Redirect owner to their original topic
-                router.replace(`/topic/${topicId}`);
+                // The original topic ID is not available here, so we just send them to dashboard.
+                // A better approach might be to store original topic ID in the shared doc.
+                router.replace(`/dashboard`);
                 return;
             }
 
@@ -81,7 +65,8 @@ export default function SharedTopicPage() {
 
         processShare();
 
-    }, [authLoading, subLoading, user, topicId, ownerId, router, getTopicForOwner, canUseFeature]);
+    }, [authLoading, subLoading, user, shareId, router, canUseFeature]);
+
 
     const handleAcceptTopic = async () => {
         if (!topicData) return;
@@ -184,11 +169,4 @@ export default function SharedTopicPage() {
       {renderContent()}
     </div>
   );
-}
-
-// Ensure atob and btoa are available in the scope
-if (typeof window !== 'undefined') {
-  if (!window.atob) {
-    window.atob = (str: string) => Buffer.from(str, 'base64').toString('binary');
-  }
 }
