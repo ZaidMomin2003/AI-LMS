@@ -58,7 +58,7 @@ const PersonalizationForm = () => {
                     render={({ field }) => (
                         <FormItem className="inline-flex">
                             <FormControl>
-                                <Input placeholder="e.g., AP Biology" {...field} className="h-9 text-lg min-w-[150px] w-auto inline-block" />
+                                <Input placeholder="e.g., Middle School" {...field} className="h-9 text-lg min-w-[150px] w-auto inline-block" />
                             </FormControl>
                              <FormMessage className="text-xs ml-2" />
                         </FormItem>
