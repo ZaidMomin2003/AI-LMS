@@ -103,9 +103,13 @@ const PersonalizationForm = () => {
                                 </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
-                                <SelectItem value="humorous">Humorous</SelectItem>
-                                <SelectItem value="straight-forward">Straight-forward</SelectItem>
-                                <SelectItem value="easy-to-apply">Easy to apply</SelectItem>
+                                    <SelectItem value="humorous">Humorous</SelectItem>
+                                    <SelectItem value="straight-forward">Straight-forward</SelectItem>
+                                    <SelectItem value="easy-to-apply">Easy to apply</SelectItem>
+                                    <SelectItem value="detailed">Detailed & Technical</SelectItem>
+                                    <SelectItem value="concise">Concise & To-the-Point</SelectItem>
+                                    <SelectItem value="creative">Creative & Analogical</SelectItem>
+                                    <SelectItem value="formal">Formal & Academic</SelectItem>
                                 </SelectContent>
                             </Select>
                             <FormMessage className="text-xs ml-2" />
