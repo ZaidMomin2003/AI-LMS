@@ -16,13 +16,15 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { explainTextAction } from './actions';
 import { useAuth } from '@/context/AuthContext';
+import { useParams } from 'next/navigation';
 
-export default function TopicPage({ params }: { params: { id: string } }) {
+export default function TopicPage() {
+  const params = useParams();
   const { getTopicById, toggleBookmark } = useTopic();
   const { user } = useAuth();
   const [topic, setTopic] = useState<Topic | null>(null);
   const { toast } = useToast();
-  const id = params.id;
+  const id = params.id as string;
 
   useEffect(() => {
     if (typeof id === 'string') {
