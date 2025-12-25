@@ -13,6 +13,7 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -41,61 +42,100 @@ const personalizationSchema = z.object({
 type FormValues = z.infer<typeof personalizationSchema>;
 
 const questionGroups = [
-  {
-    id: 'firstMove',
-    title: "When a new topic is introduced, what’s your first move?",
-    fields: ['firstMove'] as const,
-    options: [
-        { value: 'practice', label: 'Jump straight into practice problems.' },
-        { value: 'read', label: 'Read the textbook chapter from start to finish.' },
-        { value: 'watch', label: 'Find a video or lecture that explains it.' },
-        { value: 'connect', label: 'Try to connect it to what I already know.' },
-    ],
-  },
-  {
-    id: 'examEve',
-    title: "It's the night before a big exam. What's your status?",
-    fields: ['examEve'] as const,
-    options: [
-        { value: 'confident', label: 'Confident and doing a final, light review.' },
-        { value: 'anxious', label: 'Calm on the outside, panicking on the inside.' },
-        { value: 'cramming', label: 'Fueled by caffeine and cramming furiously.' },
-        { value: 'winging-it', label: "I'll just wing it tomorrow." },
-    ]
-  },
-  {
-      id: 'studySession',
-      title: "Which of these sounds like the most epic study session?",
-      fields: ['studySession'] as const,
+    {
+      id: 'goal',
+      title: "What's your biggest academic goal right now?",
+      fields: ['goal'] as const,
       options: [
-          { value: 'solo', label: 'A quiet library, completely alone with my books.' },
-          { value: 'group', label: 'A collaborative session, bouncing ideas off friends.' },
-          { value: 'cafe', label: 'A cozy cafe with background music and a good latte.' },
-          { value: 'virtual', label: 'A virtual session with online tools and resources.' },
-      ]
-  },
-  {
-      id: 'superpower',
-      title: "If you could have one study superpower, what would it be?",
-      fields: ['superpower'] as const,
+        { value: 'ace-exams', label: 'Ace my exams' },
+        { value: 'improve-grades', label: 'Improve my grades' },
+        { value: 'university-prep', label: 'Prepare for university entrance exams' },
+        { value: 'learn-new-skill', label: 'Learn a new skill for my career' },
+      ],
+    },
+    {
+      id: 'challenge',
+      title: "What subject feels like your 'final boss' battle?",
+      fields: ['challenge'] as const,
+    },
+    {
+      id: 'firstMove',
+      title: "When a new topic is introduced, what’s your first move?",
+      fields: ['firstMove'] as const,
       options: [
-          { value: 'photographic-memory', label: 'Photographic memory.' },
-          { value: 'instant-understanding', label: 'The ability to instantly understand complex concepts.' },
-          { value: 'laser-focus', label: 'Laser focus that blocks all distractions.' },
-          { value: 'predict-questions', label: 'The ability to predict exam questions.' },
-      ]
-  },
-   {
-      id: 'achillesHeel',
-      title: "What's your learning Achilles' heel?",
-      fields: ['achillesHeel'] as const,
+          { value: 'practice', label: 'Jump straight into practice problems.' },
+          { value: 'read', label: 'Read the textbook chapter from start to finish.' },
+          { value: 'watch', label: 'Find a video or lecture that explains it.' },
+          { value: 'connect', label: 'Try to connect it to what I already know.' },
+      ],
+    },
+    {
+      id: 'examEve',
+      title: "It's the night before a big exam. What's your status?",
+      fields: ['examEve'] as const,
       options: [
-          { value: 'distraction', label: "Getting easily distracted by my phone or other tabs." },
-          { value: 'procrastination', label: 'Procrastinating until the very last minute.' },
-          { value: 'forgetting', label: 'Forgetting information shortly after learning it.' },
-          { value: 'overthinking', label: 'Getting stuck on small details and losing the big picture.' },
+          { value: 'confident', label: 'Confident and doing a final, light review.' },
+          { value: 'anxious', label: 'Calm on the outside, panicking on the inside.' },
+          { value: 'cramming', label: 'Fueled by caffeine and cramming furiously.' },
+          { value: 'winging-it', label: "I'll just wing it tomorrow." },
       ]
-  },
+    },
+    {
+        id: 'studySession',
+        title: "Which of these sounds like the most epic study session?",
+        fields: ['studySession'] as const,
+        options: [
+            { value: 'solo', label: 'A quiet library, completely alone with my books.' },
+            { value: 'group', label: 'A collaborative session, bouncing ideas off friends.' },
+            { value: 'cafe', label: 'A cozy cafe with background music and a good latte.' },
+            { value: 'virtual', label: 'A virtual session with online tools and resources.' },
+        ]
+    },
+    {
+        id: 'superpower',
+        title: "If you could have one study superpower, what would it be?",
+        fields: ['superpower'] as const,
+        options: [
+            { value: 'photographic-memory', label: 'Photographic memory.' },
+            { value: 'instant-understanding', label: 'The ability to instantly understand complex concepts.' },
+            { value: 'laser-focus', label: 'Laser focus that blocks all distractions.' },
+            { value: 'predict-questions', label: 'The ability to predict exam questions.' },
+        ]
+    },
+    {
+        id: 'achillesHeel',
+        title: "What's your learning Achilles' heel?",
+        fields: ['achillesHeel'] as const,
+        options: [
+            { value: 'distraction', label: "Getting easily distracted by my phone or other tabs." },
+            { value: 'procrastination', label: 'Procrastinating until the very last minute.' },
+            { value: 'forgetting', label: 'Forgetting information shortly after learning it.' },
+            { value: 'overthinking', label: 'Getting stuck on small details and losing the big picture.' },
+        ]
+    },
+    {
+        id: 'materialPref',
+        title: "How do you prefer your study materials?",
+        fields: ['materialPref'] as const,
+        options: [
+            { value: 'visual', label: 'Visual and colorful, with diagrams and charts.' },
+            { value: 'concise', label: 'Straight to the point: bullet lists and concise summaries.' },
+            { value: 'interactive', label: 'Interactive, with quizzes and things I can click on.' },
+            { value: 'mixed', label: 'A mix of everything, please!' },
+        ]
+    },
+    {
+        id: 'referral',
+        title: "Finally, where did you hear about us?",
+        fields: ['referralSource'] as const,
+        options: [
+            { value: 'youtube', label: 'YouTube' },
+            { value: 'instagram', label: 'Instagram / Facebook' },
+            { value: 'friend', label: 'A friend or teacher' },
+            { value: 'search', label: 'App Store / Google Search' },
+            { value: 'other', label: 'Other' },
+        ]
+    },
 ];
 
 
@@ -269,5 +309,3 @@ export default function PersonalizationPage() {
         </AppLayout>
     );
 }
-
-    
