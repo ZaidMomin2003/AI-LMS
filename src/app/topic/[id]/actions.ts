@@ -1,3 +1,4 @@
+
 'use server';
 
 import { getAdminDB } from '@/lib/firebase-admin';
@@ -15,7 +16,7 @@ export async function explainTextAction(input: ExplainTextInput): Promise<Explai
 }
 
 
-export async function createShareableTopicAction(topicData: Omit<Topic, 'id' | 'createdAt'> & { ownerId: string }): Promise<string> {
+export async function createShareableTopicAction(topicDataString: string): Promise<string> {
   const db = getAdminDB();
   if (!db) {
     console.error("Firebase Admin DB not configured. Sharing is disabled.");
@@ -23,6 +24,9 @@ export async function createShareableTopicAction(topicData: Omit<Topic, 'id' | '
   }
 
   try {
+    // Parse the JSON string back into an object
+    const topicData = JSON.parse(topicDataString);
+    
     const shareableCollectionRef = db.collection('sharedTopics');
     const docRef = await shareableCollectionRef.add(topicData);
     return docRef.id;

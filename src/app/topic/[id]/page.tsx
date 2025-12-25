@@ -41,11 +41,11 @@ export default function TopicPage() {
             const shareableData = { 
                 ...topicData, 
                 ownerId: user.uid,
-                // Convert Date object to a serializable format (ISO string)
-                createdAt: createdAt.toISOString(),
+                createdAt: topic.createdAt.toISOString(),
             };
             
-            const shareableId = await createShareableTopicAction(shareableData);
+            // Serialize the entire object to a JSON string
+            const shareableId = await createShareableTopicAction(JSON.stringify(shareableData));
 
             const shareUrl = `${window.location.origin}/share/${shareableId}`;
             navigator.clipboard.writeText(shareUrl).then(() => {
