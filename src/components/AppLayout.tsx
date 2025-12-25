@@ -59,6 +59,7 @@ import {
   FileClock,
   ArrowLeft,
   Crown,
+  PenSquare,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -349,6 +350,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                     </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => router.push('/dashboard/personalization')} className="cursor-pointer">
+                        <PenSquare className="mr-2 h-4 w-4" />
+                        <span>Personalization</span>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onSelect={() => router.push('/dashboard/support')} className="cursor-pointer">
                         <LifeBuoy className="mr-2 h-4 w-4" />
                         <span>Support</span>
@@ -421,3 +426,5 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 }
 
   
+
+    
