@@ -38,7 +38,12 @@ export default function TopicPage() {
         try {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { id, createdAt, ...topicData } = topic;
-            const shareableData = { ...topicData, ownerId: user.uid };
+            const shareableData = { 
+                ...topicData, 
+                ownerId: user.uid,
+                // Convert Date object to a serializable format (ISO string)
+                createdAt: createdAt.toISOString(),
+            };
             
             const shareableId = await createShareableTopicAction(shareableData);
 
