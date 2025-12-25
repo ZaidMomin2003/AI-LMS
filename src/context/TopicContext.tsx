@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
@@ -10,7 +11,9 @@ import type { Timestamp } from 'firebase/firestore';
 interface TopicContextType {
   topics: Topic[];
   addTopic: (topic: Topic) => Promise<void>;
+  receiveSharedTopic: (topic: Omit<Topic, 'id'>) => Promise<Topic | null>;
   getTopicById: (id: string) => Topic | undefined;
+  getTopicForOwner: (topicId: string, ownerId: string) => Promise<Omit<Topic, 'id'> | null>;
   toggleBookmark: (topicId: string) => Promise<void>;
   loading: boolean;
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -66,6 +69,31 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
     return topics.find((topic) => topic.id === id);
   };
   
+  const getTopicForOwner = async (topicId: string, ownerId: string) => {
+    if (!isFirebaseEnabled) return null;
+    const ownerData = await getUserDoc(ownerId);
+    if (!ownerData || !ownerData.topics) return null;
+    const foundTopic = ownerData.topics.find((t: Topic) => t.id === topicId);
+    if (!foundTopic) return null;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id, ...topicData } = foundTopic;
+    return topicData;
+  };
+
+  const receiveSharedTopic = async (topicData: Omit<Topic, 'id'>) => {
+    if (!user || !isFirebaseEnabled) return null;
+    const newTopic: Topic = {
+        ...topicData,
+        id: crypto.randomUUID(),
+        createdAt: new Date(),
+        isBookmarked: false, // Default for a received topic
+    };
+    const newTopics = [newTopic, ...topics];
+    setTopics(newTopics.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+    await updateUserDoc(user.uid, { topics: newTopics });
+    return newTopic;
+  };
+
   const toggleBookmark = async (topicId: string) => {
     if (!user || !isFirebaseEnabled) return;
     const newTopics = topics.map(topic => 
@@ -78,7 +106,7 @@ export const TopicProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <TopicContext.Provider value={{ topics, addTopic, getTopicById, toggleBookmark, loading, setLoading, dataLoading }}>
+    <TopicContext.Provider value={{ topics, addTopic, getTopicById, getTopicForOwner, receiveSharedTopic, toggleBookmark, loading, setLoading, dataLoading }}>
       {children}
     </TopicContext.Provider>
   );

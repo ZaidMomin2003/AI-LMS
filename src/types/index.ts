@@ -35,6 +35,7 @@ export interface Topic {
   flashcards: Flashcard[];
   quiz: QuizQuestion[];
   isBookmarked?: boolean;
+  ownerId?: string;
 }
 
 export type TaskPriority = 'Easy' | 'Moderate' | 'Hard';

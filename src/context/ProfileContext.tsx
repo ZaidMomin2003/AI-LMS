@@ -25,6 +25,7 @@ export interface ProfileData extends OnboardingProfileData {
   grade?: string;
   referralSource?: string;
   captureCount?: number;
+  receivedTopicsCount?: number;
 }
 
 interface ProfileContextType {
@@ -47,6 +48,9 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
           const profileData = data?.profile || {};
           if (typeof profileData.captureCount !== 'number') {
               profileData.captureCount = 0;
+          }
+          if (typeof profileData.receivedTopicsCount !== 'number') {
+              profileData.receivedTopicsCount = 0;
           }
           setProfile(profileData);
           setLoading(false);

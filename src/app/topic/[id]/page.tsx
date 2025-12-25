@@ -1,3 +1,4 @@
+
 'use client';
 
 import { AppLayout } from '@/components/AppLayout';
@@ -7,7 +8,7 @@ import { QuizView } from '@/components/topic/QuizView';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTopic } from '@/context/TopicContext';
-import { FileText, BrainCircuit, MessageCircleQuestion, ArrowLeft, Bookmark } from 'lucide-react';
+import { FileText, BrainCircuit, MessageCircleQuestion, ArrowLeft, Bookmark, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import type { Topic } from '@/types';
@@ -26,6 +27,24 @@ export default function TopicPage({ params }: { params: { id: string } }) {
       setTopic(foundTopic ?? null);
     }
   }, [params.id, getTopicById]);
+
+  const handleShare = () => {
+    if (topic) {
+        const shareUrl = `${window.location.origin}/share/${topic.id}`;
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            toast({
+                title: "Share Link Copied!",
+                description: "The link to this topic has been copied to your clipboard.",
+            });
+        }).catch(err => {
+            toast({
+                variant: "destructive",
+                title: "Failed to Copy",
+                description: "Could not copy the link. Please try again.",
+            });
+        });
+    }
+  };
   
   const handleBookmark = () => {
     if (topic) {
@@ -65,9 +84,14 @@ export default function TopicPage({ params }: { params: { id: string } }) {
                     {topic.title}
                 </h2>
             </div>
-            <Button variant="ghost" size="icon" onClick={handleBookmark} aria-label="Bookmark topic">
-                <Bookmark className={cn("w-6 h-6 text-muted-foreground transition-colors", topic.isBookmarked && "fill-primary text-primary")} />
-            </Button>
+            <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" onClick={handleShare} aria-label="Share topic">
+                    <Share2 className="w-6 h-6 text-muted-foreground transition-colors hover:text-primary" />
+                </Button>
+                <Button variant="ghost" size="icon" onClick={handleBookmark} aria-label="Bookmark topic">
+                    <Bookmark className={cn("w-6 h-6 text-muted-foreground transition-colors", topic.isBookmarked && "fill-primary text-primary")} />
+                </Button>
+            </div>
         </div>
         <Tabs defaultValue="notes" className="space-y-4">
           <TabsList>
