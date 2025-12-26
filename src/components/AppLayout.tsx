@@ -373,7 +373,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         </div>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
+                    <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer text-destructive focus:bg-destructive focus:text-destructive-foreground">
                         <LogOut className="mr-2 h-4 w-4" />
                         <span>Log out</span>
                     </DropdownMenuItem>
