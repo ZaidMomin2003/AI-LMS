@@ -138,6 +138,11 @@
   .prose-tight strong {
     margin: 0 !important;
   }
+
+  ::selection {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
 }
 
 @layer components {
