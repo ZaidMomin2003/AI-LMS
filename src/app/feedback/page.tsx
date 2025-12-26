@@ -3,17 +3,16 @@
 
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Header } from '@/components/landing/Header';
-import { Footer } from '@/components/landing/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, ArrowRight, CheckCircle, Lightbulb, Loader2, Send } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Lightbulb, Loader2, Send, BookOpenCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
 const questions = [
   {
@@ -172,30 +171,35 @@ export default function FeedbackPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <Header />
-      <main className="flex-grow flex items-center justify-center p-4">
-        <div className="w-full max-w-3xl space-y-8">
-            <Progress value={progress} className="h-2" />
-            <div className="min-h-[300px] flex items-center justify-center">
-                {renderContent()}
+        <header className="absolute top-0 left-0 right-0 p-4">
+            <Link href="/" className="inline-flex items-center gap-3">
+                <div className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground rounded-md">
+                    <BookOpenCheck className="h-5 w-5" />
+                </div>
+            </Link>
+        </header>
+        <main className="flex-grow flex items-center justify-center p-4">
+            <div className="w-full max-w-3xl space-y-12">
+                <Progress value={progress} className="h-2" />
+                <div className="min-h-[350px] flex items-center justify-center">
+                    {renderContent()}
+                </div>
+                {!isFinished && !isLoading && (
+                <div className="flex items-center justify-center gap-4">
+                    <Button variant="ghost" onClick={handleBack} disabled={currentStep === 0}>
+                        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+                    </Button>
+                    <Button onClick={handleNext} disabled={!currentAnswer}>
+                    {currentStep === questions.length - 1 ? (
+                        <><Send className="mr-2 h-4 w-4"/> Submit</>
+                    ) : (
+                        <><ArrowRight className="mr-2 h-4 w-4"/> Next</>
+                    )}
+                    </Button>
+                </div>
+                )}
             </div>
-             {!isFinished && !isLoading && (
-              <div className="flex items-center justify-center gap-4">
-                <Button variant="ghost" onClick={handleBack} disabled={currentStep === 0}>
-                    <ArrowLeft className="mr-2 h-4 w-4" /> Back
-                </Button>
-                <Button onClick={handleNext} disabled={!currentAnswer}>
-                   {currentStep === questions.length - 1 ? (
-                       <><Send className="mr-2 h-4 w-4"/> Submit</>
-                   ) : (
-                       <><ArrowRight className="mr-2 h-4 w-4"/> Next</>
-                   )}
-                </Button>
-              </div>
-            )}
-        </div>
-      </main>
-      <Footer />
+        </main>
     </div>
   );
 }
