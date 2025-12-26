@@ -13,6 +13,7 @@ import { ArrowLeft, ArrowRight, CheckCircle, Lightbulb, Loader2, Send, BookOpenC
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { saveFeedbackSubmission } from './actions';
 
 const questions = [
   {
@@ -79,16 +80,22 @@ export default function FeedbackPage() {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    // In a real app, you'd send this data to your backend
-    console.log('Feedback submitted:', answers);
-    setTimeout(() => {
-      setIsLoading(false);
-      setIsFinished(true);
-      toast({
-        title: 'Feedback Received!',
-        description: "Thank you for helping us make Wisdom better.",
-      });
-    }, 1500);
+    try {
+        await saveFeedbackSubmission(answers);
+        setIsFinished(true);
+        toast({
+            title: 'Feedback Received!',
+            description: "Thank you for helping us make Wisdom better.",
+        });
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: 'Submission Failed',
+            description: 'Could not save your feedback. Please try again later.',
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
   
   const currentAnswer = answers[currentQuestion?.id] || '';
