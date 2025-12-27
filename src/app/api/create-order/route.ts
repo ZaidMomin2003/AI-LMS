@@ -1,9 +1,6 @@
 
 'use server';
 
-import { config } from 'dotenv';
-config();
-
 import { NextRequest, NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 import { getAdminDB } from '@/lib/firebase-admin';
