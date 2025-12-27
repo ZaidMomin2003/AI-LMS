@@ -1,6 +1,9 @@
 
 'use server';
 
+import { config } from 'dotenv';
+config();
+
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { getAdminDB } from '@/lib/firebase-admin';
