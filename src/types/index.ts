@@ -58,3 +58,30 @@ export interface PomodoroSession {
   sessions: number;
   completedAt: string;
 }
+
+export interface OnboardingProfileData {
+  name?: string;
+  goal?: string;
+  challenge?: string;
+  firstMove?: string;
+  examEve?: string;
+  studySession?: string;
+  superpower?: string;
+  achillesHeel?: string;
+  materialPref?: string;
+}
+
+export interface ProfileData extends OnboardingProfileData {
+  // Fields from the main personalization form
+  studying?: string;
+  aiName?: string; // This is the name the user wants to be called by the AI
+  educationLevel?: string;
+  contentStyle?: string;
+  
+  phoneNumber?: string;
+  country?: string;
+  grade?: string;
+  referralSource?: string;
+  captureCount?: number;
+  receivedTopicsCount?: number;
+}

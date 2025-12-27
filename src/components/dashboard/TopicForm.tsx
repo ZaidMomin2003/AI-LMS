@@ -34,6 +34,7 @@ import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '../ui/separator';
 import { useSubscription } from '@/context/SubscriptionContext';
+import { useProfile } from '@/context/ProfileContext';
 
 const formSchema = z.object({
   title: z.string().min(3, { message: 'Topic must be at least 3 characters.' }).max(100),
@@ -59,9 +60,10 @@ const UpgradePrompt = () => (
 
 
 export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
-  const { topics, addTopic, loading, setLoading } = useTopic();
+  const { addTopic, loading, setLoading } = useTopic();
   const { subjects: subjectList } = useSubject();
   const { canUseFeature } = useSubscription();
+  const { profile } = useProfile();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -86,7 +88,7 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
     
     setLoading(true);
     try {
-      const newTopicData = await createTopicAction(values.title, values.subject);
+      const newTopicData = await createTopicAction(values.title, values.subject, profile);
       const newTopic = {
         ...newTopicData,
         id: crypto.randomUUID(),
