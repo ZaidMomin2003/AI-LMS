@@ -17,6 +17,9 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Loader2 } from 'lucide-react';
+import { useProfile } from '@/context/ProfileContext';
+import { useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 const personalizationSchema = z.object({
   studying: z.string().min(2, 'Please specify what you are studying.'),
@@ -31,6 +34,9 @@ const personalizationSchema = z.object({
 type FormValues = z.infer<typeof personalizationSchema>;
 
 const PersonalizationForm = () => {
+  const { profile, updateProfile, loading: profileLoading } = useProfile();
+  const { toast } = useToast();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(personalizationSchema),
     defaultValues: {
@@ -44,12 +50,37 @@ const PersonalizationForm = () => {
     },
   });
 
-  const onSubmit = (values: FormValues) => {
-    console.log(values);
-    // Logic to save personalization settings will be added later
+  useEffect(() => {
+    if (profile) {
+      form.reset({
+        studying: profile.studying || '',
+        aiName: profile.aiName || '',
+        educationLevel: profile.educationLevel || '',
+        contentStyle: profile.contentStyle || '',
+        goal: profile.goal || '',
+        superpower: profile.superpower || '',
+        achillesHeel: profile.achillesHeel || '',
+      });
+    }
+  }, [profile, form]);
+
+  const onSubmit = async (values: FormValues) => {
+    try {
+      await updateProfile(values);
+      toast({
+        title: 'Preferences Saved!',
+        description: 'Your learning experience has been updated.',
+      });
+    } catch (error) {
+       toast({
+        variant: 'destructive',
+        title: 'Update Failed',
+        description: 'Could not save your preferences. Please try again.',
+      });
+    }
   };
   
-  const isLoading = form.formState.isSubmitting;
+  const isLoading = form.formState.isSubmitting || profileLoading;
 
   return (
     <Card>
@@ -108,7 +139,7 @@ const PersonalizationForm = () => {
                     name="contentStyle"
                     render={({ field }) => (
                         <FormItem className="inline-flex">
-                           <Select onValueChange={field.onChange} defaultValue={field.value}>
+                           <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                 <FormControl>
                                 <SelectTrigger className="h-9 text-lg min-w-[150px] w-auto inline-flex">
                                     <SelectValue placeholder="Select style..." />
@@ -134,7 +165,7 @@ const PersonalizationForm = () => {
                     name="goal"
                     render={({ field }) => (
                         <FormItem className="inline-flex">
-                           <Select onValueChange={field.onChange} defaultValue={field.value}>
+                           <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                 <FormControl>
                                 <SelectTrigger className="h-9 text-lg min-w-[150px] w-auto inline-flex">
                                     <SelectValue placeholder="Select goal..." />
@@ -157,7 +188,7 @@ const PersonalizationForm = () => {
                     name="superpower"
                     render={({ field }) => (
                         <FormItem className="inline-flex">
-                           <Select onValueChange={field.onChange} defaultValue={field.value}>
+                           <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                 <FormControl>
                                 <SelectTrigger className="h-9 text-lg min-w-[150px] w-auto inline-flex">
                                     <SelectValue placeholder="Select superpower..." />
@@ -180,7 +211,7 @@ const PersonalizationForm = () => {
                     name="achillesHeel"
                     render={({ field }) => (
                         <FormItem className="inline-flex">
-                           <Select onValueChange={field.onChange} defaultValue={field.value}>
+                           <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                 <FormControl>
                                 <SelectTrigger className="h-9 text-lg min-w-[150px] w-auto inline-flex">
                                     <SelectValue placeholder="Select weakness..." />
