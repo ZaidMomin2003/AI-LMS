@@ -71,24 +71,26 @@ export const ProfileProvider = ({ children }: { children: React.ReactNode }) => 
   const updateProfile = useCallback(async (data: Partial<ProfileData>) => {
     if (!user || !isFirebaseEnabled) return;
 
-    const currentProfile = profile || {};
-    let newProfileData: ProfileData = { ...currentProfile, ...data };
+    // Use a function with the previous state to avoid race conditions
+    setProfile(prevProfile => {
+        const currentProfile = prevProfile || {};
+        let newProfileData: ProfileData = { ...currentProfile, ...data };
 
-    if (data.captureCount === -1) {
-        newProfileData.captureCount = (currentProfile?.captureCount || 0) + 1;
-    }
-    
-    // Clear the field to allow re-onboarding
-    if (data.referralSource === '') {
-        newProfileData.referralSource = '';
-    }
+        if (data.captureCount === -1) {
+            newProfileData.captureCount = (currentProfile?.captureCount || 0) + 1;
+        }
+        
+        // Clear the field to allow re-onboarding
+        if (data.referralSource === '') {
+            newProfileData.referralSource = undefined;
+        }
 
-    // Perform the database update
-    await updateUserDoc(user.uid, { profile: newProfileData });
+        // Perform the database update asynchronously
+        updateUserDoc(user.uid, { profile: newProfileData });
 
-    // Then, update the local state
-    setProfile(newProfileData);
-}, [user, profile]);
+        return newProfileData;
+    });
+}, [user]);
 
 
   return (

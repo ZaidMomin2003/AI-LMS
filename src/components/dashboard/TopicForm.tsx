@@ -19,7 +19,7 @@ import { useTopic } from '@/context/TopicContext';
 import { useRouter } from 'next/navigation';
 import { createTopicAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, PlusCircle, Send, Folder, Gem, Lock } from 'lucide-react';
+import { Loader2, PlusCircle, Send, Folder, Gem, Lock, PenSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useSubject } from '@/context/SubjectContext';
 import {
@@ -63,7 +63,7 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
   const { addTopic, loading, setLoading } = useTopic();
   const { subjects: subjectList } = useSubject();
   const { canUseFeature } = useSubscription();
-  const { profile } = useProfile();
+  const { profile, loading: profileLoading } = useProfile();
   const router = useRouter();
   const { toast } = useToast();
 
@@ -77,6 +77,14 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!profile) {
+       toast({
+        variant: "destructive",
+        title: "Profile Not Loaded",
+        description: "Please wait for your profile to load before generating a topic.",
+      });
+      return;
+    }
     if (!canGenerateTopic) {
         toast({
             variant: "destructive",
@@ -111,6 +119,8 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
       form.reset();
     }
   }
+  
+  const isPersonalizationComplete = profile && profile.aiName && profile.educationLevel && profile.contentStyle && profile.goal;
 
   if (subjectList.length === 0) {
     return (
@@ -121,6 +131,21 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
                 You need to add at least one subject before you can create a topic.
                 <Button asChild variant="link" className="p-0 h-auto ml-1">
                     <Link href="/dashboard/subjects">Go to Subjects</Link>
+                </Button>
+            </AlertDescription>
+        </Alert>
+    )
+  }
+  
+  if (!profileLoading && !isPersonalizationComplete) {
+       return (
+        <Alert>
+            <PenSquare className="h-4 w-4"/>
+            <AlertTitle>Personalize Your AI!</AlertTitle>
+            <AlertDescription>
+                Please complete your personalization settings to get AI-generated notes tailored to your learning style.
+                <Button asChild variant="link" className="p-0 h-auto ml-1">
+                    <Link href="/dashboard/personalization">Go to Personalization</Link>
                 </Button>
             </AlertDescription>
         </Alert>
@@ -186,8 +211,8 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
                         )}
                     />
                 </div>
-                <Button type="submit" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-primary" disabled={loading}>
-                    {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                <Button type="submit" size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full h-10 w-10 bg-primary" disabled={loading || profileLoading}>
+                    {loading || profileLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
                 </Button>
             </form>
         </Form>
@@ -233,8 +258,8 @@ export function TopicForm({ variant = 'dashboard' }: TopicFormProps) {
         <FormDescription>
             What do you want to learn about today? Assign it to a subject.
         </FormDescription>
-        <Button type="submit" className="w-full sm:w-auto" disabled={loading}>
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <Button type="submit" className="w-full sm:w-auto" disabled={loading || profileLoading}>
+          {(loading || profileLoading) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Generate Materials
         </Button>
       </form>
