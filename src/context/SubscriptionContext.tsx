@@ -86,7 +86,7 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
       case 'wisdomGpt':
         return false; // Only available on Pro plan
       case 'receiveTopic':
-        return (profile?.receivedTopicsCount || 0) < 5;
+        return (profile?.receivedTopicsCount || 0) < 3;
       default:
         return false;
     }

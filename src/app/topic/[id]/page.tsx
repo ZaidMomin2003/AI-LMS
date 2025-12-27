@@ -14,9 +14,11 @@ import { useEffect, useState } from 'react';
 import type { Topic } from '@/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { explainTextAction, createShareableTopicAction } from './actions';
+import { explainTextAction } from './actions';
 import { useAuth } from '@/context/AuthContext';
 import { useParams } from 'next/navigation';
+import { createShareableTopic } from '@/services/firestore';
+
 
 export default function TopicPage() {
   const params = useParams();
@@ -36,17 +38,7 @@ export default function TopicPage() {
   const handleShare = async () => {
     if (topic && user) {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { id, createdAt, ...topicData } = topic;
-            const shareableData = { 
-                ...topicData, 
-                ownerId: user.uid,
-                createdAt: topic.createdAt.toISOString(),
-            };
-            
-            // Serialize the entire object to a JSON string
-            const shareableId = await createShareableTopicAction(JSON.stringify(shareableData));
-
+            const shareableId = await createShareableTopic(topic, user.uid);
             const shareUrl = `${window.location.origin}/share/${shareableId}`;
             navigator.clipboard.writeText(shareUrl).then(() => {
                 toast({
@@ -64,7 +56,7 @@ export default function TopicPage() {
              toast({
                 variant: "destructive",
                 title: "Sharing Failed",
-                description: "Could not create a shareable link for this topic.",
+                description: (error as Error).message || "Could not create a shareable link for this topic.",
             });
         }
     }

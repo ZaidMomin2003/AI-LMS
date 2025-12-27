@@ -31,16 +31,42 @@ export const updateUserDoc = async (uid: string, data: object) => {
 };
 
 /**
+ * Creates a new shareable topic in the public collection.
+ * @param topic The topic data to share.
+ * @param ownerId The UID of the user sharing the topic.
+ * @returns The ID of the newly created shareable document.
+ */
+export const createShareableTopic = async (topic: Topic, ownerId: string): Promise<string> => {
+    if (!db) {
+        throw new Error("The sharing service is temporarily unavailable.");
+    }
+    try {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, ...topicData } = topic;
+        const shareableData = {
+            ...topicData,
+            ownerId,
+            createdAt: topic.createdAt.toISOString(), // Ensure createdAt is a string
+        };
+        const docRef = await addDoc(collection(db, 'sharedTopics'), shareableData);
+        return docRef.id;
+    } catch (error) {
+        console.error("Error creating shareable topic:", error);
+        throw new Error("Could not create a shareable link. Please check your Firestore rules.");
+    }
+}
+
+/**
  * Fetches a shareable topic from the public collection.
  * @param shareId The ID of the shareable document.
  * @returns The topic data or null if not found.
  */
-export const getShareableTopic = async (shareId: string): Promise<(Omit<Topic, 'id' | 'createdAt'> & { ownerId: string }) | null> => {
+export const getShareableTopic = async (shareId: string): Promise<(Omit<Topic, 'id' | 'createdAt'> & { ownerId: string; createdAt: string; }) | null> => {
     if (!db) return null;
     const shareDocRef = doc(db, 'sharedTopics', shareId);
     const docSnap = await getDoc(shareDocRef);
     if (docSnap.exists()) {
-        return docSnap.data() as (Omit<Topic, 'id' | 'createdAt'> & { ownerId: string });
+        return docSnap.data() as (Omit<Topic, 'id' | 'createdAt'> & { ownerId: string; createdAt: string; });
     }
     return null;
 }

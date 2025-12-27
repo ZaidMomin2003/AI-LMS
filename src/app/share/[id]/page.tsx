@@ -23,7 +23,7 @@ export default function SharedTopicPage() {
     const { toast } = useToast();
 
     const [status, setStatus] = useState<'loading' | 'prompt-login' | 'unauthorized' | 'limit-reached' | 'ready' | 'error' | 'already-owned'>('loading');
-    const [topicData, setTopicData] = useState<Omit<Topic, 'id' | 'ownerId'> | null>(null);
+    const [topicData, setTopicData] = useState<Omit<Topic, 'id' | 'createdAt'> & { ownerId: string; createdAt: string } | null>(null);
 
     const shareId = params.id as string;
     
@@ -72,7 +72,11 @@ export default function SharedTopicPage() {
         if (!topicData) return;
         setStatus('loading');
         try {
-            const newTopic = await receiveSharedTopic(topicData);
+            const topicToSave = {
+                ...topicData,
+                createdAt: new Date(topicData.createdAt), // Convert string back to Date
+            }
+            const newTopic = await receiveSharedTopic(topicToSave);
             await incrementReceivedTopics();
             toast({
                 title: 'Topic Added!',
@@ -114,7 +118,7 @@ export default function SharedTopicPage() {
                                 <Lock className="w-6 h-6" />
                             </div>
                             <CardTitle>Free Limit Reached</CardTitle>
-                            <CardDescription>You've received your maximum of 5 shared topics on the free plan.</CardDescription>
+                            <CardDescription>You've received your maximum of 3 shared topics on the free plan.</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <Button asChild>

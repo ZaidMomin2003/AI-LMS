@@ -14,24 +14,3 @@ export async function explainTextAction(input: ExplainTextInput): Promise<Explai
     throw new Error('Failed to get an explanation from the AI. Please try again.');
   }
 }
-
-
-export async function createShareableTopicAction(topicDataString: string): Promise<string> {
-  const db = getAdminDB();
-  if (!db) {
-    console.error("Firebase Admin DB not configured. Sharing is disabled.");
-    throw new Error("The sharing service is temporarily unavailable.");
-  }
-
-  try {
-    // Parse the JSON string back into an object
-    const topicData = JSON.parse(topicDataString);
-    
-    const shareableCollectionRef = db.collection('sharedTopics');
-    const docRef = await shareableCollectionRef.add(topicData);
-    return docRef.id;
-  } catch (error) {
-    console.error("Error creating shareable topic in Firestore:", error);
-    throw new Error("Could not create a shareable link for this topic.");
-  }
-}
