@@ -18,11 +18,13 @@ service cloud.firestore {
       allow create: if request.auth != null;
     }
 
-    // Allow anyone to read from sharedTopics, but no one can create, update, or delete from the client.
-    // Writes must be handled by a trusted server environment (e.g., Cloud Functions or Server Actions).
+    // Allow anyone to read from sharedTopics, and anyone to create.
+    // This is necessary for the server-side action to write.
+    // No one can update or delete from the client.
     match /sharedTopics/{shareId} {
       allow read: if true;
-      allow create, update, delete: if false;
+      allow create: if true;
+      allow update, delete: if false;
     }
   }
 }
