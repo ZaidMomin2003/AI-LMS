@@ -9,9 +9,6 @@ const nextConfig: NextConfig = {
       "https://*.cloudworkstations.dev",
       "https://*.firebase.studio",
     ],
-    hmr: {
-      path: "/_next/webpack-hmr"
-    }
   },
   typescript: {
     ignoreBuildErrors: true,
@@ -53,7 +50,15 @@ const nextConfig: NextConfig = {
     config.externals.push('child_process');
     
     return config;
-  }
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/sitemap.xml',
+        destination: '/sitemap',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
