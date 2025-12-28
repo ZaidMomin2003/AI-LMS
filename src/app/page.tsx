@@ -12,12 +12,10 @@ import { CTA } from '@/components/landing/CTA';
 import { Workflow } from '@/components/landing/Workflow';
 import { Testimonials } from '@/components/landing/Testimonials';
 import { Pricing } from '@/components/landing/Pricing';
-import Snowfall from '@/components/Snowfall';
 
 export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <Snowfall />
       <Header />
       <main className="flex-grow">
         <Hero />
