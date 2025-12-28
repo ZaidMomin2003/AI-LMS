@@ -4,12 +4,6 @@ import path from 'path';
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
-    allowedDevOrigins: [
-      "https://*.cloudworkstations.dev",
-      "https://*.firebase.studio",
-    ],
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
