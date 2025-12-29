@@ -15,12 +15,18 @@ import {
   Sparkles,
   User,
   Lightbulb,
+  PenSquare,
+  ChevronRight,
+  Loader2,
 } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Progress } from '../ui/progress';
 
 // --- Reusable Demo Components ---
 
@@ -178,7 +184,6 @@ const IntegratedToolsDemo = () => (
     </Card>
 );
 
-
 const CaptureDemo = () => (
     <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full">
         <CardContent className="p-2 flex items-center justify-center gap-4 h-full">
@@ -195,6 +200,67 @@ const CaptureDemo = () => (
             </div>
         </CardContent>
     </Card>
+);
+
+const PersonalizedNotesDemo = () => (
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+    {/* Step 1 */}
+    <div className="flex flex-col items-center text-center">
+      <div className="relative w-full">
+        <div className="p-4 rounded-lg bg-card/60 border">
+          <p className="text-xs font-bold mb-2">1. Personalize</p>
+          <div className="space-y-3 text-left">
+            <div>
+              <Label className="text-xs text-muted-foreground">Style:</Label>
+              <Select defaultValue="humorous">
+                <SelectTrigger className="h-7 text-xs pointer-events-none">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="humorous">Humorous</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+               <Label className="text-xs text-muted-foreground">Superpower:</Label>
+                <Select defaultValue="laser-focus">
+                <SelectTrigger className="h-7 text-xs pointer-events-none">
+                  <SelectValue />
+                </SelectTrigger>
+                 <SelectContent>
+                  <SelectItem value="laser-focus">Laser Focus</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ChevronRight className="w-6 h-6 text-muted-foreground my-4 hidden md:block mx-auto transform -rotate-90 md:rotate-0" />
+      <ChevronRight className="w-6 h-6 text-muted-foreground my-4 md:hidden mx-auto transform rotate-90" />
+    </div>
+    {/* Step 2 */}
+    <div className="flex flex-col items-center text-center">
+      <div className="p-4 rounded-lg bg-card/60 border w-full">
+        <p className="text-xs font-bold mb-2">2. Generate</p>
+        <div className="flex flex-col items-center justify-center h-full min-h-[100px] text-muted-foreground">
+          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <p className="text-xs mt-2">Generating notes...</p>
+        </div>
+      </div>
+       <ChevronRight className="w-6 h-6 text-muted-foreground my-4 hidden md:block mx-auto transform -rotate-90 md:rotate-0" />
+      <ChevronRight className="w-6 h-6 text-muted-foreground my-4 md:hidden mx-auto transform rotate-90" />
+    </div>
+    {/* Step 3 */}
+     <div className="flex flex-col items-center text-center">
+      <div className="p-4 rounded-lg bg-card/60 border w-full h-full">
+        <p className="text-xs font-bold mb-2">3. Master</p>
+        <div className="text-left text-xs p-2 rounded-md bg-secondary/50">
+            <h4 className="font-semibold text-sm">Intro for Captain!</h4>
+            <p className="text-muted-foreground">Alright Captain, let's use that laser focus of yours to conquer Photosynthesis!</p>
+        </div>
+      </div>
+    </div>
+  </div>
 );
 
 // --- Main Bento Grid Component ---
@@ -267,6 +333,14 @@ const bentoItems: BentoItem[] = [
     colSpan: 1,
     rowSpan: 1,
   },
+   {
+    title: 'Your Notes, Your Way',
+    description: 'Tell the AI your learning style. Get notes that are funny, formal, or anything in between.',
+    icon: <PenSquare className="text-primary h-4 w-4" />,
+    demo: <PersonalizedNotesDemo />,
+    colSpan: 3,
+    rowSpan: 1,
+  },
 ];
 
 export function Features() {
@@ -295,6 +369,7 @@ export function Features() {
                 className={cn(
                     'col-span-1',
                     item.colSpan === 2 && 'md:col-span-2',
+                    item.colSpan === 3 && 'md:col-span-3',
                     item.rowSpan === 2 && 'md:row-span-2',
                 )}
                 initial={{ opacity: 0, y: 20 }}
