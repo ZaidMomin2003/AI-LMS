@@ -3,7 +3,7 @@
 
 import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Lock, Youtube, FileText, List, CheckCircle } from 'lucide-react';
+import { Lock, FileText, List, CheckCircle } from 'lucide-react';
 
 const ComingSoonFeature = ({ icon, text }: { icon: React.ReactNode, text: string }) => (
     <li className="flex items-start gap-3">
@@ -32,7 +32,6 @@ export default function CustomQuizPage() {
             <div>
                 <h3 className="font-semibold text-center mb-4">You'll soon be able to:</h3>
                 <ul className="space-y-4 max-w-md mx-auto">
-                    <ComingSoonFeature icon={<Youtube size={20} />} text="Generate quizzes from YouTube video links." />
                     <ComingSoonFeature icon={<FileText size={20} />} text="Upload your own PDF & PPT documents." />
                     <ComingSoonFeature icon={<List size={20} />} text="Paste a syllabus or just type in topic names." />
                 </ul>
