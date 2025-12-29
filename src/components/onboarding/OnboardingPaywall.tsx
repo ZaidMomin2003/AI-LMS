@@ -50,88 +50,19 @@ const plans: Plan[] = [
 ];
 
 export function OnboardingPaywall({ onContinueFree }: { onContinueFree: () => void }) {
-    const [selectedPlan, setSelectedPlan] = useState<Plan>(plans.find(p => p.isPopular)!);
+    const [selectedPlanId, setSelectedPlanId] = useState<Plan['id']>('weekly');
     const [isLoading, setIsLoading] = useState(false);
     const { user } = useAuth();
     const { toast } = useToast();
     const router = useRouter();
 
-    const handlePayment = async () => {
-        if (!user) {
-            toast({ variant: 'destructive', title: 'You must be logged in to subscribe.' });
-            return;
-        }
+    const selectedPlan = plans.find(p => p.id === selectedPlanId)!;
 
-        setIsLoading(true);
-
-        try {
-            const orderResponse = await fetch('/api/create-order', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ amount: selectedPlan.price, userId: user.uid, currency: 'USD' }),
-            });
-
-            const orderData = await orderResponse.json();
-
-            if (!orderResponse.ok) {
-                throw new Error(orderData.error || 'Could not create a payment order.');
-            }
-            
-            const options = {
-                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                amount: orderData.amount,
-                currency: orderData.currency,
-                name: 'Wisdom Pro',
-                description: `Subscription for ${selectedPlan.name} plan`,
-                order_id: orderData.id,
-                handler: function (response: any) {
-                    const form = document.createElement('form');
-                    form.method = 'POST';
-                    form.action = '/api/payment-verification';
-                    
-                    const data = {
-                        razorpay_payment_id: response.razorpay_payment_id,
-                        razorpay_order_id: response.razorpay_order_id,
-                        razorpay_signature: response.razorpay_signature,
-                        plan_duration_days: selectedPlan.durationDays.toString(),
-                    };
-
-                    for (const key in data) {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = (data as any)[key];
-                        form.appendChild(input);
-                    }
-                    document.body.appendChild(form);
-                    form.submit();
-                },
-                prefill: {
-                    name: user.displayName || 'New User',
-                    email: user.email || '',
-                },
-                theme: {
-                    color: '#BF00FF', 
-                },
-            };
-
-            const rzp = new (window as any).Razorpay(options);
-            rzp.on('payment.failed', function (response: any) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Payment Failed',
-                    description: response.error.description || 'Something went wrong.',
-                });
-                setIsLoading(false);
-            });
-            rzp.open();
-
-        } catch (error: any) {
-            toast({ variant: 'destructive', title: 'Error', description: error.message });
-            setIsLoading(false);
-        }
+    const handlePurchase = () => {
+        // Instead of processing payment here, redirect to the full pricing page
+        // where the payment logic is already handled.
+        router.push(`/dashboard/pricing?plan=${selectedPlanId}`);
     };
-
 
     return (
         <div className="w-full max-w-md mx-auto text-center">
@@ -146,10 +77,10 @@ export function OnboardingPaywall({ onContinueFree }: { onContinueFree: () => vo
                 {plans.map((plan) => (
                     <Card 
                         key={plan.id}
-                        onClick={() => setSelectedPlan(plan)}
+                        onClick={() => setSelectedPlanId(plan.id)}
                         className={cn(
                             'text-left p-4 cursor-pointer transition-all relative overflow-hidden',
-                             selectedPlan.id === plan.id ? 'border-primary ring-2 ring-primary ring-offset-2 ring-offset-background' : 'hover:border-primary/50'
+                             selectedPlanId === plan.id ? 'border-primary ring-2 ring-primary ring-offset-2 ring-offset-background' : 'hover:border-primary/50'
                         )}
                     >
                         {plan.isPopular && (
@@ -161,10 +92,10 @@ export function OnboardingPaywall({ onContinueFree }: { onContinueFree: () => vo
                              <div
                                 className={cn(
                                     'w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0',
-                                    selectedPlan.id === plan.id ? 'border-primary bg-primary' : 'border-muted-foreground/50'
+                                    selectedPlanId === plan.id ? 'border-primary bg-primary' : 'border-muted-foreground/50'
                                 )}
                             >
-                               {selectedPlan.id === plan.id && <Check className="w-4 h-4 text-primary-foreground" />}
+                               {selectedPlanId === plan.id && <Check className="w-4 h-4 text-primary-foreground" />}
                             </div>
                             <div className="flex-1">
                                 <h3 className="font-semibold">{plan.name}</h3>
@@ -179,14 +110,11 @@ export function OnboardingPaywall({ onContinueFree }: { onContinueFree: () => vo
                 ))}
             </div>
 
-            <Button onClick={handlePayment} size="lg" className="w-full h-12 text-base" disabled={isLoading}>
-                {isLoading ? <Loader2 className="animate-spin" /> : `Purchase for $${selectedPlan.price.toFixed(2)}`}
+            <Button onClick={handlePurchase} size="lg" className="w-full h-12 text-base" disabled={isLoading}>
+                {isLoading ? <Loader2 className="animate-spin" /> : `Upgrade to ${selectedPlan.name}`}
             </Button>
              <p className="text-xs text-muted-foreground mt-2">
-                Guaranteed safe checkout with{' '}
-                <a href="https://razorpay.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
-                    Razorpay
-                </a>
+                You will be redirected to complete your purchase.
             </p>
             <Button onClick={onContinueFree} variant="link" className="mt-4 text-muted-foreground">
                 Continue with Free Trial
