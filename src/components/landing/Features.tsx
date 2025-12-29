@@ -255,8 +255,8 @@ const PersonalizedNotesDemo = () => (
       <div className="p-4 rounded-lg bg-card/60 border w-full h-full">
         <p className="text-xs font-bold mb-2">3. Master</p>
         <div className="text-left text-xs p-2 rounded-md bg-secondary/50">
-            <h4 className="font-semibold text-sm">Intro for Captain!</h4>
-            <p className="text-muted-foreground">Alright Captain, let's use that laser focus of yours to conquer Photosynthesis!</p>
+            <h4 className="font-semibold text-sm">Alex the Great, minus the boring bits!</h4>
+            <p className="text-muted-foreground">Alright Captain, picture this: a guy who named, like, 70 cities after himself (and one after his horse). Total boss move, right? Let's dive into how he basically speed-ran conquering the ancient world.</p>
         </div>
       </div>
     </div>
