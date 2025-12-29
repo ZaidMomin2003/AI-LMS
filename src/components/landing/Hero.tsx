@@ -50,8 +50,7 @@ const TimeCardProto = ({ value, unit }: { value: string, unit: string }) => (
 
 const CountdownTimer = () => {
     const calculateTimeLeft = () => {
-        const year = new Date().getFullYear();
-        const difference = +new Date(`12/31/${year}`) - +new Date();
+        const difference = +new Date('2026-01-10T00:00:00') - +new Date();
         
         let timeLeft = {};
 
@@ -129,7 +128,7 @@ export function Hero() {
             <Link href="/#pricing" className="group block">
               <div className="border-border bg-background/80 relative flex flex-col items-center gap-4 rounded-2xl border p-4 text-sm backdrop-blur-sm overflow-hidden">
                  <p className="text-muted-foreground px-2 text-center">
-                    <span className="font-semibold text-primary">Christmas Special:</span> One-Time Payment for a Lifetime of Learning!
+                    <span className="font-semibold text-primary">New Year Offer:</span> One-Time Payment for a Lifetime of Learning!
                 </p>
                 <CountdownTimer />
               </div>
@@ -355,3 +354,5 @@ export function Hero() {
     </div>
   );
 }
+
+    
