@@ -277,6 +277,14 @@ interface BentoItem {
 
 const bentoItems: BentoItem[] = [
   {
+    title: 'Your Notes, Your Way',
+    description: 'Tell the AI your learning style. Get notes that are funny, formal, or anything in between.',
+    icon: <PenSquare className="text-primary h-4 w-4" />,
+    demo: <PersonalizedNotesDemo />,
+    colSpan: 3,
+    rowSpan: 1,
+  },
+  {
     title: 'Instant Explanations & Notes',
     description: "From dense text to structured, scannable notes with on-demand explanations for any term.",
     icon: <Sparkles className="text-primary h-4 w-4" />,
@@ -285,23 +293,6 @@ const bentoItems: BentoItem[] = [
     rowSpan: 1,
   },
   {
-    title: 'WisdomGPT AI Assistant',
-    description: 'Your personal AI tutor, ready to answer any question.',
-    icon: <Bot className="text-primary h-4 w-4" />,
-    demo: <WisdomGptDemo />,
-    colSpan: 1,
-    rowSpan: 1,
-  },
-  {
-    title: 'Interactive Flashcards',
-    description: 'Master key terms with active recall.',
-    icon: <BrainCircuit className="text-primary h-4 w-4" />,
-    demo: <FlashcardDemo />,
-    colSpan: 1,
-    rowSpan: 1,
-    className: "min-h-[15rem] md:min-h-0", // Set a min-height for mobile
-  },
-   {
     title: 'Challenging Quizzes',
     description: 'Test your understanding with custom quizzes.',
     icon: <MessageCircleQuestion className="text-primary h-4 w-4" />,
@@ -333,13 +324,22 @@ const bentoItems: BentoItem[] = [
     colSpan: 1,
     rowSpan: 1,
   },
-   {
-    title: 'Your Notes, Your Way',
-    description: 'Tell the AI your learning style. Get notes that are funny, formal, or anything in between.',
-    icon: <PenSquare className="text-primary h-4 w-4" />,
-    demo: <PersonalizedNotesDemo />,
-    colSpan: 3,
+  {
+    title: 'WisdomGPT AI Assistant',
+    description: 'Your personal AI tutor, ready to answer any question.',
+    icon: <Bot className="text-primary h-4 w-4" />,
+    demo: <WisdomGptDemo />,
+    colSpan: 1,
     rowSpan: 1,
+  },
+  {
+    title: 'Interactive Flashcards',
+    description: 'Master key terms with active recall.',
+    icon: <BrainCircuit className="text-primary h-4 w-4" />,
+    demo: <FlashcardDemo />,
+    colSpan: 1,
+    rowSpan: 1,
+    className: "min-h-[15rem] md:min-h-0",
   },
 ];
 
