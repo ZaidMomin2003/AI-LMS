@@ -5,23 +5,27 @@ import { getAdminDB } from '@/lib/firebase-admin';
 
 export async function applyCouponAction(code: string, uid: string): Promise<{ success: boolean, message: string, discountedPrice?: { yearly?: number, lifetime?: number } }> {
   const db = getAdminDB();
-  if (!db && code.toUpperCase() !== 'TEST1' && code.toUpperCase() !== 'LEARN2026') {
-    return { success: false, message: 'Server error: Cannot connect to the database.' };
+  const upperCaseCode = code.toUpperCase();
+
+  // Handle special, hardcoded coupons first, which don't need a DB connection.
+  if (upperCaseCode === 'TEST1') {
+      return { success: true, message: 'TEST1 coupon applied! You can now purchase for a nominal amount.', discountedPrice: { yearly: 0.02, lifetime: 0.02 } };
+  }
+  
+  if (upperCaseCode === 'LEARN2026') {
+    return { 
+      success: true, 
+      message: 'LEARN2026 coupon applied! Special pricing is now available.', 
+      discountedPrice: { yearly: 149, lifetime: 499 } 
+    };
+  }
+
+  // For all other coupons, require a database connection.
+  if (!db) {
+    return { success: false, message: 'Server error: Cannot connect to the database to validate coupon.' };
   }
 
   try {
-    if (code.toUpperCase() === 'TEST1') {
-        return { success: true, message: 'TEST1 coupon applied! You can now purchase for a nominal amount.', discountedPrice: { yearly: 0.02, lifetime: 0.02 } };
-    }
-    
-    if (code.toUpperCase() === 'LEARN2026') {
-      return { 
-        success: true, 
-        message: 'LEARN2026 coupon applied! Special pricing is now available.', 
-        discountedPrice: { yearly: 149, lifetime: 499 } 
-      };
-    }
-
     const userDocRef = db.collection('users').doc(uid);
     const userDoc = await userDocRef.get();
 
@@ -31,7 +35,7 @@ export async function applyCouponAction(code: string, uid: string): Promise<{ su
     }
     
     // Handle FIRST25 coupon for a free trial
-    if (code.toUpperCase() === 'FIRST25') {
+    if (upperCaseCode === 'FIRST25') {
         const expiryDate = new Date();
         expiryDate.setMonth(expiryDate.getMonth() + 2);
 
