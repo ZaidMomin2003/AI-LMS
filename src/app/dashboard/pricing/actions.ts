@@ -2,6 +2,7 @@
 'use server';
 
 import { getAdminDB } from '@/lib/firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export async function applyCouponAction(code: string, uid: string): Promise<{ success: boolean, message: string, discountedPrice?: { yearly?: number, lifetime?: number } }> {
   const upperCaseCode = code.toUpperCase();
@@ -19,10 +20,12 @@ export async function applyCouponAction(code: string, uid: string): Promise<{ su
     };
   }
 
-  // For all other coupons that require database interaction, check for DB connection now.
+  // --- All other coupons below this line require a database connection. ---
+
   const db = getAdminDB();
   if (!db) {
-    return { success: false, message: 'Server error: Cannot connect to the database to validate coupon.' };
+    // This message will now only show for coupons that are NOT the special ones above.
+    return { success: false, message: 'Server error: Cannot connect to the database to validate this coupon.' };
   }
 
   try {
@@ -43,10 +46,12 @@ export async function applyCouponAction(code: string, uid: string): Promise<{ su
           plan: 'FIRST25 Trial',
           status: 'active',
           expiryDate: expiryDate.toISOString(),
+          createdAt: FieldValue.serverTimestamp(),
         };
 
         await userDocRef.set({ subscription: subscriptionData }, { merge: true });
         
+        // Return a success message but no price, as it's a free trial activation.
         return { success: true, message: 'Success! Your 2-month trial has been activated.' };
     }
     
