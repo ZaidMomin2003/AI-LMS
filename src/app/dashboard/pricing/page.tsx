@@ -20,40 +20,20 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 interface Plan {
+    id: 'yearly' | 'lifetime';
     name: string;
+    originalPrice: number;
     price: number;
     priceDescription: string;
     durationDays: number;
 }
-
-const weeklyPlan: Plan = {
-    name: 'Weekly Pass',
-    price: 4.99,
-    priceDescription: '7-day access',
-    durationDays: 7,
-};
-
-const sagePlan: Plan = {
-    name: 'Sage Mode', 
-    price: 199, 
-    priceDescription: 'for 12 months of access',
-    durationDays: 365, 
-};
-
-const lifetimePlan: Plan = {
-    name: 'Lifetime Sage',
-    price: 999,
-    priceDescription: 'One-time payment',
-    durationDays: 3650, // 10 years
-};
-
 
 const couponSchema = z.object({
   code: z.string().min(1, 'Please enter a code.'),
 });
 type CouponFormValues = z.infer<typeof couponSchema>;
 
-const CouponForm = ({ onSuccessfulCoupon }: { onSuccessfulCoupon: (price: number) => void }) => {
+const CouponForm = ({ onSuccessfulCoupon }: { onSuccessfulCoupon: (discount: { yearly?: number, lifetime?: number }) => void }) => {
     const { user } = useAuth();
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
@@ -172,6 +152,26 @@ const PricingContent = () => {
     const { toast } = useToast();
     const searchParams = useSearchParams();
 
+    const [plans, setPlans] = useState<Plan[]>([
+        {
+            id: 'yearly',
+            name: 'Sage Mode', 
+            originalPrice: 199,
+            price: 199, 
+            priceDescription: 'for 12 months of access',
+            durationDays: 365, 
+        },
+        {
+            id: 'lifetime',
+            name: 'Lifetime Sage',
+            originalPrice: 999,
+            price: 999,
+            priceDescription: 'One-time payment',
+            durationDays: 3650, // 10 years
+        },
+    ]);
+
+
     useEffect(() => {
         if (searchParams.get('success') === 'true') {
             toast({
@@ -187,6 +187,18 @@ const PricingContent = () => {
             });
         }
     }, [searchParams, toast]);
+    
+     const handleSuccessfulCoupon = (discounts: { yearly?: number, lifetime?: number }) => {
+        setPlans(prevPlans => prevPlans.map(plan => {
+            if (plan.id === 'yearly' && discounts.yearly !== undefined) {
+                return { ...plan, price: discounts.yearly };
+            }
+            if (plan.id === 'lifetime' && discounts.lifetime !== undefined) {
+                return { ...plan, price: discounts.lifetime };
+            }
+            return plan;
+        }));
+    };
 
     const handlePayment = async (plan: Plan) => {
         if (!user) {
@@ -255,6 +267,9 @@ const PricingContent = () => {
         }
     };
     
+    const sagePlan = plans.find(p => p.id === 'yearly')!;
+    const lifetimePlan = plans.find(p => p.id === 'lifetime')!;
+    
     const monthlyPrice = (sagePlan.price / 12).toFixed(2);
     
     const proFeatures = [
@@ -290,6 +305,9 @@ const PricingContent = () => {
                                             <span className="text-zinc-400">/mo</span>
                                         </div>
                                         <div className="border-l border-zinc-600 pl-4">
+                                            {sagePlan.price < sagePlan.originalPrice && (
+                                                <span className="text-xl font-bold line-through text-zinc-500 mr-2">${sagePlan.originalPrice}</span>
+                                            )}
                                             <span className="text-xl font-bold">${sagePlan.price}</span>
                                             <span className="text-zinc-400">/year</span>
                                         </div>
@@ -364,7 +382,9 @@ const PricingContent = () => {
 
                             <div className="md:col-span-1 flex flex-col items-center md:items-end text-center md:text-right">
                                 <div className="flex items-baseline gap-2">
-                                    <span className="text-2xl font-semibold line-through text-primary-foreground/70">$1499</span>
+                                    {lifetimePlan.price < lifetimePlan.originalPrice && (
+                                      <span className="text-2xl font-semibold line-through text-primary-foreground/70">${lifetimePlan.originalPrice}</span>
+                                    )}
                                     <p className="text-4xl font-bold">${lifetimePlan.price}</p>
                                 </div>
                                 <p className="text-sm text-primary-foreground/80">One-time payment</p>
@@ -379,7 +399,7 @@ const PricingContent = () => {
                         </div>
                     </Card>
 
-                    {subscription?.status !== 'active' && <CouponForm onSuccessfulCoupon={(amount) => handlePayment({ ...sagePlan, price: amount })} />}
+                    {subscription?.status !== 'active' && <CouponForm onSuccessfulCoupon={handleSuccessfulCoupon} />}
                 </div>
             </div>
         </AppLayout>
