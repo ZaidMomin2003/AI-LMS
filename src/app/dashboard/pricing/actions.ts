@@ -7,7 +7,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 export async function applyCouponAction(code: string, uid: string): Promise<{ success: boolean, message: string, discountedPrice?: { yearly?: number, lifetime?: number } }> {
   const upperCaseCode = code.toUpperCase();
 
-  // Handle special, hardcoded coupons first. These do not need a DB connection.
+  // Handle special, hardcoded coupons that DO NOT require a database connection.
   if (upperCaseCode === 'TEST1') {
       return { success: true, message: 'TEST1 coupon applied! You can now purchase for a nominal amount.', discountedPrice: { yearly: 0.02, lifetime: 0.02 } };
   }
@@ -20,11 +20,12 @@ export async function applyCouponAction(code: string, uid: string): Promise<{ su
     };
   }
 
-  // --- All other coupons below this line require a database connection. ---
+  // --- All other coupons below this line are database-dependent. ---
+  // The code will only reach this point if the coupon is not one of the special ones above.
 
   const db = getAdminDB();
   if (!db) {
-    // This message will now only show for coupons that are NOT the special ones above.
+    // This message is now correctly scoped to only non-hardcoded coupons.
     return { success: false, message: 'Server error: Cannot connect to the database to validate this coupon.' };
   }
 
@@ -37,7 +38,7 @@ export async function applyCouponAction(code: string, uid: string): Promise<{ su
         return { success: false, message: 'Coupon cannot be applied to an already active subscription.' };
     }
     
-    // Handle FIRST25 coupon for a free trial
+    // Handle FIRST25 coupon for a free trial (database-dependent)
     if (upperCaseCode === 'FIRST25') {
         const expiryDate = new Date();
         expiryDate.setMonth(expiryDate.getMonth() + 2);
@@ -51,11 +52,10 @@ export async function applyCouponAction(code: string, uid: string): Promise<{ su
 
         await userDocRef.set({ subscription: subscriptionData }, { merge: true });
         
-        // Return a success message but no price, as it's a free trial activation.
         return { success: true, message: 'Success! Your 2-month trial has been activated.' };
     }
     
-    // If no coupon matches
+    // If no other coupon code matches, it's invalid.
     return { success: false, message: 'This coupon code is not valid.' };
 
   } catch (error) {
