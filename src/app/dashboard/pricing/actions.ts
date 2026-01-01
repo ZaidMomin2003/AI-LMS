@@ -4,10 +4,9 @@
 import { getAdminDB } from '@/lib/firebase-admin';
 
 export async function applyCouponAction(code: string, uid: string): Promise<{ success: boolean, message: string, discountedPrice?: { yearly?: number, lifetime?: number } }> {
-  const db = getAdminDB();
   const upperCaseCode = code.toUpperCase();
 
-  // Handle special, hardcoded coupons first, which don't need a DB connection.
+  // Handle special, hardcoded coupons first. These do not need a DB connection.
   if (upperCaseCode === 'TEST1') {
       return { success: true, message: 'TEST1 coupon applied! You can now purchase for a nominal amount.', discountedPrice: { yearly: 0.02, lifetime: 0.02 } };
   }
@@ -20,7 +19,8 @@ export async function applyCouponAction(code: string, uid: string): Promise<{ su
     };
   }
 
-  // For all other coupons, require a database connection.
+  // For all other coupons that require database interaction, check for DB connection now.
+  const db = getAdminDB();
   if (!db) {
     return { success: false, message: 'Server error: Cannot connect to the database to validate coupon.' };
   }
