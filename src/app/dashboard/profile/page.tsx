@@ -24,7 +24,6 @@ import type { ExamDetails } from '@/types';
 import { useRouter } from 'next/navigation';
 import { ChangePasswordCard } from '@/components/profile/ChangePasswordCard';
 import { DeleteAccountCard } from '@/components/profile/DeleteAccountCard';
-import { PaymentHistoryCard } from '@/components/profile/PaymentHistoryCard';
 
 const profileSchema = z.object({
   phoneNumber: z.string().optional(),
@@ -192,11 +191,9 @@ export default function ProfilePage() {
                     </form>
 
                     <ChangePasswordCard />
-                    <PaymentHistoryCard />
                     <DeleteAccountCard />
                 </div>
             </div>
         </AppLayout>
     );
 }
-
