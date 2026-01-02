@@ -22,6 +22,9 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import type { ExamDetails } from '@/types';
 import { useRouter } from 'next/navigation';
+import { ChangePasswordCard } from '@/components/profile/ChangePasswordCard';
+import { DeleteAccountCard } from '@/components/profile/DeleteAccountCard';
+import { PaymentHistoryCard } from '@/components/profile/PaymentHistoryCard';
 
 const profileSchema = z.object({
   phoneNumber: z.string().optional(),
@@ -111,82 +114,89 @@ export default function ProfilePage() {
                     <h2 className="text-3xl font-headline font-bold tracking-tight">My Profile</h2>
                     <p className="text-muted-foreground">View and manage your account details.</p>
                 </div>
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Personal Information</CardTitle>
-                            <CardDescription>Your name and email are managed by your Google account.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            {isLoading ? (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+                <div className="space-y-6">
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Personal Information</CardTitle>
+                                <CardDescription>Your name and email are managed by your Google account.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                {isLoading ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {[...Array(6)].map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}
+                                    </div>
+                                ) : (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <Label htmlFor="name">Full Name</Label>
+                                            <Input id="name" value={user?.displayName || 'Test User'} readOnly className="mt-2" />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="email">Email Address</Label>
+                                            <Input id="email" type="email" value={user?.email || 'test@example.com'} readOnly className="mt-2" />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="phone">Phone Number</Label>
+                                            <Input id="phone" type="tel" {...register('phoneNumber')} className="mt-2" />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="country">Country</Label>
+                                            <Input id="country" {...register('country')} className="mt-2" />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="class">Class/Grade</Label>
+                                            <Input id="class" {...register('grade')} className="mt-2" />
+                                        </div>
+                                        <div>
+                                            <Label htmlFor="examName">Target Exam Name</Label>
+                                            <Input id="examName" {...register('examName')} className="mt-2" />
+                                        </div>
+                                        <div className="flex flex-col space-y-2">
+                                            <Label>Target Exam Date</Label>
+                                            <Controller
+                                                name="examDate"
+                                                control={control}
+                                                render={({ field }) => (
+                                                  <Popover>
+                                                    <PopoverTrigger asChild>
+                                                      <Button variant="outline" className={cn('justify-start text-left font-normal', !field.value && 'text-muted-foreground')}>
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                                                      </Button>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-auto p-0">
+                                                      <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus />
+                                                    </PopoverContent>
+                                                  </Popover>
+                                                )}
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label>Restart Onboarding</Label>
+                                            <Button onClick={handleRestartOnboarding} variant="outline" className="w-full mt-2">
+                                                <RefreshCcw className="mr-2 h-4 w-4"/>
+                                                Restart Onboarding
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+                                <div className="flex justify-end pt-4">
+                                    <Button type="submit" disabled={isSubmitting || !isDirty || isLoading}>
+                                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Save Changes
+                                    </Button>
                                 </div>
-                            ) : (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <Label htmlFor="name">Full Name</Label>
-                                        <Input id="name" value={user?.displayName || 'Test User'} readOnly className="mt-2" />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="email">Email Address</Label>
-                                        <Input id="email" type="email" value={user?.email || 'test@example.com'} readOnly className="mt-2" />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="phone">Phone Number</Label>
-                                        <Input id="phone" type="tel" {...register('phoneNumber')} className="mt-2" />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="country">Country</Label>
-                                        <Input id="country" {...register('country')} className="mt-2" />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="class">Class/Grade</Label>
-                                        <Input id="class" {...register('grade')} className="mt-2" />
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="examName">Target Exam Name</Label>
-                                        <Input id="examName" {...register('examName')} className="mt-2" />
-                                    </div>
-                                    <div className="flex flex-col space-y-2">
-                                        <Label>Target Exam Date</Label>
-                                        <Controller
-                                            name="examDate"
-                                            control={control}
-                                            render={({ field }) => (
-                                              <Popover>
-                                                <PopoverTrigger asChild>
-                                                  <Button variant="outline" className={cn('justify-start text-left font-normal', !field.value && 'text-muted-foreground')}>
-                                                    <CalendarIcon className="mr-2 h-4 w-4" />
-                                                    {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
-                                                  </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-auto p-0">
-                                                  <Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} initialFocus />
-                                                </PopoverContent>
-                                              </Popover>
-                                            )}
-                                        />
-                                    </div>
-                                    <div>
-                                        <Label>Restart Onboarding</Label>
-                                        <Button onClick={handleRestartOnboarding} variant="outline" className="w-full mt-2">
-                                            <RefreshCcw className="mr-2 h-4 w-4"/>
-                                            Restart Onboarding
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-                            <div className="flex justify-end pt-4">
-                                <Button type="submit" disabled={isSubmitting || !isDirty || isLoading}>
-                                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Save Changes
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </form>
+                            </CardContent>
+                        </Card>
+                    </form>
+
+                    <ChangePasswordCard />
+                    <PaymentHistoryCard />
+                    <DeleteAccountCard />
+                </div>
             </div>
         </AppLayout>
     );
 }
+
