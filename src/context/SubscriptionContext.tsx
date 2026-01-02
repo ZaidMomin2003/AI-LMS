@@ -9,11 +9,13 @@ import { useRoadmap } from './RoadmapContext';
 import { usePomodoro } from './PomodoroContext';
 import { useProfile } from './ProfileContext';
 import { listenToUserDoc, updateUserDoc } from '@/services/firestore';
+import { addDays } from 'date-fns';
 
-interface Subscription {
+export interface Subscription {
   plan: string;
   status: 'active' | 'inactive';
   expiryDate: string;
+  gracePeriodEnds?: string;
 }
 
 type Feature = 'topic' | 'roadmap' | 'pomodoro' | 'capture' | 'wisdomGpt' | 'receiveTopic';
@@ -23,6 +25,7 @@ interface SubscriptionContextType {
   loading: boolean;
   canUseFeature: (feature: Feature) => boolean;
   incrementReceivedTopics: () => Promise<void>;
+  isInGracePeriod: boolean;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -31,6 +34,7 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
   const { user } = useAuth();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isInGracePeriod, setIsInGracePeriod] = useState(false);
 
   // Hooks for usage counts
   const { topics, dataLoading: topicsLoading } = useTopic();
@@ -43,16 +47,34 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
       setLoading(true);
       const unsubscribe = listenToUserDoc(user, (data) => {
           let sub = data?.subscription || null;
-          // Check for expiry
-          if (sub && new Date(sub.expiryDate) < new Date()) {
-            sub.status = 'inactive';
+
+          if (sub?.status === 'active' && new Date(sub.expiryDate) < new Date()) {
+              // The subscription has just expired.
+              sub.status = 'inactive';
+              sub.gracePeriodEnds = addDays(new Date(sub.expiryDate), 14).toISOString();
+              // Asynchronously update Firestore, but proceed with the new state
+              updateUserDoc(user.uid, { subscription: sub });
           }
+          
+          if (sub?.status === 'inactive' && sub.gracePeriodEnds) {
+              const now = new Date();
+              const gracePeriodEndDate = new Date(sub.gracePeriodEnds);
+              if (now < gracePeriodEndDate) {
+                  setIsInGracePeriod(true);
+              } else {
+                  setIsInGracePeriod(false);
+              }
+          } else {
+              setIsInGracePeriod(false);
+          }
+
           setSubscription(sub);
           setLoading(false);
       });
       return () => unsubscribe();
     } else {
       setSubscription(null);
+      setIsInGracePeriod(false);
       setLoading(false);
     }
   }, [user]);
@@ -68,8 +90,8 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
       return false; // Don't allow usage while loading to prevent race conditions
     }
 
-    if (subscription?.status === 'active') {
-      return true; // Pro users have unlimited access
+    if (subscription?.status === 'active' || isInGracePeriod) {
+      return true; // Pro users and users in grace period have unlimited access
     }
 
     // Free plan logic
@@ -93,7 +115,7 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
   };
 
   return (
-    <SubscriptionContext.Provider value={{ subscription, loading, canUseFeature, incrementReceivedTopics }}>
+    <SubscriptionContext.Provider value={{ subscription, loading, canUseFeature, incrementReceivedTopics, isInGracePeriod }}>
       {children}
     </SubscriptionContext.Provider>
   );

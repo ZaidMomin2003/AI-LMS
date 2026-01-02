@@ -85,3 +85,11 @@ export interface ProfileData extends OnboardingProfileData {
   captureCount?: number;
   receivedTopicsCount?: number;
 }
+
+
+export interface Subscription {
+  plan: string;
+  status: 'active' | 'inactive';
+  expiryDate: string;
+  gracePeriodEnds?: string;
+}

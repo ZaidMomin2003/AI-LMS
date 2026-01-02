@@ -89,19 +89,9 @@ export const listenToUserDoc = (user: User, callback: (data: DocumentData | null
         if (docSnap.exists()) {
             callback(docSnap.data());
         } else {
-            // Document does not exist, create it with a default structure
-            const initialData = {
-                exam: null,
-                pomodoroHistory: [],
-                profile: null,
-                roadmap: null,
-                subjects: [],
-                tasks: [],
-                topics: [],
-                subscription: null,
-            };
-            setDoc(userDocRef, initialData);
-            callback(initialData);
+            // Document does not exist. DO NOT create it here.
+            // Let the onboarding or first-write process handle document creation.
+            callback(null);
         }
     }, (error) => {
         console.error("Error listening to user document:", error);

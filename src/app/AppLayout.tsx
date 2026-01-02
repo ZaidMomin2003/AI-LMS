@@ -58,6 +58,9 @@ import {
   Minimize,
   FileClock,
   ArrowLeft,
+  Crown,
+  PenSquare,
+  AlertTriangle,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import Link from 'next/link';
@@ -81,7 +84,7 @@ import { Badge } from './ui/badge';
 import { ThemeToggle } from './ThemeToggle';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import Snowfall from '../components/Snowfall';
+import { format } from 'date-fns';
 
 function AppLoadingScreen() {
   return (
@@ -91,23 +94,69 @@ function AppLoadingScreen() {
   );
 }
 
+function GracePeriodWarning() {
+    const { subscription } = useSubscription();
+
+    if (!subscription?.gracePeriodEnds) return null;
+
+    const endDate = format(new Date(subscription.gracePeriodEnds), 'MMMM d, yyyy');
+
+    return (
+        <div className="bg-amber-500/10 border-l-4 border-amber-500 text-amber-700 dark:text-amber-300 p-4 rounded-md mb-4" role="alert">
+            <div className="flex">
+                <div className="py-1">
+                    <AlertTriangle className="h-5 w-5 mr-3" />
+                </div>
+                <div>
+                    <p className="font-bold">Subscription Expired</p>
+                    <p className="text-sm">
+                        Your Pro access will end on {endDate}. Please <Link href="/dashboard/pricing" className="underline font-semibold">renew your subscription</Link> to continue using all features without interruption.
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 function SidebarSubscriptionButton() {
     const { subscription } = useSubscription();
 
+    const isLifetime = subscription?.plan === 'Lifetime Sage';
+
+    const planName = isLifetime ? 'Lifetime Sage' : (subscription?.status === 'active' ? 'Pro Plan' : 'Upgrade to Pro');
+    const planDescription = isLifetime ? 'Full access, forever.' : (subscription?.status === 'active' ? 'Unlimited access' : 'Unlock all features');
+
+    const buttonClasses = cn(
+        "group relative rounded-lg p-4 overflow-hidden text-primary-foreground",
+        isLifetime 
+            ? "bg-gradient-to-br from-yellow-400 to-amber-500 text-black" 
+            : "bg-gradient-to-br from-primary/80 to-primary"
+    );
+    
+    const iconContainerClasses = cn(
+        "absolute top-1 right-1 rounded-full p-1.5",
+        isLifetime 
+            ? "bg-black/10 text-black"
+            : "bg-primary-foreground/20 text-primary-foreground"
+    );
+
     return (
         <Link href="/dashboard/pricing" className="block p-2">
-            <div className="group relative rounded-lg p-4 bg-gradient-to-br from-primary/80 to-primary text-primary-foreground overflow-hidden">
+            <div className={buttonClasses}>
                 <h4 className="font-bold text-base font-headline flex items-center gap-2">
-                    <Gem className="w-5 h-5" />
-                    {subscription?.status === 'active' ? 'Pro Plan' : 'Upgrade to Pro'}
+                    {isLifetime ? <Crown className="w-5 h-5" /> : <Gem className="w-5 h-5" />}
+                    {planName}
                 </h4>
-                <p className="text-xs text-primary-foreground/80">
-                     {subscription?.status === 'active' ? 'Unlimited access' : 'Unlock all features'}
+                <p className={cn("text-xs", isLifetime ? "text-black/70" : "text-primary-foreground/80")}>
+                     {planDescription}
                 </p>
-                 <div className="absolute top-1 right-1 bg-primary-foreground/20 text-primary-foreground rounded-full p-1.5">
+                 <div className={iconContainerClasses}>
                     {subscription?.status === 'active' ? <CheckCircle className="w-3 h-3" /> : <ArrowRight className="w-3 h-3" />}
                 </div>
-                <Sparkles className="absolute -bottom-4 -right-2 w-16 h-16 text-primary-foreground/10" />
+                <Sparkles className={cn(
+                    "absolute -bottom-4 -right-2 w-16 h-16",
+                    isLifetime ? "text-black/10" : "text-primary-foreground/10"
+                )} />
             </div>
         </Link>
     );
@@ -115,7 +164,7 @@ function SidebarSubscriptionButton() {
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
-  const { loading: subLoading } = useSubscription();
+  const { subscription, loading: subLoading, canUseFeature, isInGracePeriod } = useSubscription();
   const [isFullscreen, setIsFullscreen] = useState(false);
   
   const router = useRouter();
@@ -152,6 +201,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     return <AppLoadingScreen />;
   }
   
+  const canUseWisdomGpt = canUseFeature('wisdomGpt');
+  
   // The special case for wisdomgpt has been moved to its own page component
   // for better separation of concerns.
 
@@ -170,7 +221,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
       <SidebarProvider>
-        <Snowfall />
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-3">
@@ -264,18 +314,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/wisdomgpt')} tooltip={{ children: 'WisdomGPT AI' }}>
-                            <Link href="/dashboard/wisdomgpt" className="flex items-center gap-2 w-full">
+                        <SidebarMenuButton asChild isActive={pathname.startsWith('/dashboard/wisdomgpt')} tooltip={{ children: canUseWisdomGpt ? 'WisdomGPT AI' : 'Upgrade to Pro' }}>
+                            <Link href={canUseWisdomGpt ? '/dashboard/wisdomgpt' : '/dashboard/pricing'}>
                                 <Sparkles />
-                                <span className="flex-1">WisdomGPT</span>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Zap className="w-4 h-4 text-amber-500 animate-pulse" />
-                                    </TooltipTrigger>
-                                    <TooltipContent side="right">
-                                        <p>crazy stuff under development</p>
-                                    </TooltipContent>
-                                </Tooltip>
+                                <span>WisdomGPT</span>
+                                {!canUseWisdomGpt && <Lock className="ml-auto w-4 h-4 text-muted-foreground" />}
                             </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -333,6 +376,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         <User className="mr-2 h-4 w-4" />
                         <span>Profile</span>
                     </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={() => router.push('/dashboard/personalization')} className="cursor-pointer">
+                        <PenSquare className="mr-2 h-4 w-4" />
+                        <span>Personalization</span>
+                    </DropdownMenuItem>
                     <DropdownMenuItem onSelect={() => router.push('/dashboard/support')} className="cursor-pointer">
                         <LifeBuoy className="mr-2 h-4 w-4" />
                         <span>Support</span>
@@ -352,7 +399,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                         </div>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer">
+                    <DropdownMenuItem onSelect={handleLogout} className="cursor-pointer text-destructive focus:bg-destructive focus:text-destructive-foreground">
                         <LogOut className="mr-2 h-4 w-4" />
                         <span>Log out</span>
                     </DropdownMenuItem>
@@ -395,7 +442,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
             </header>
             <DndContext onDragEnd={() => {}}>
-              <div className="flex-1 flex flex-col min-w-0">
+              <div className="flex-1 flex flex-col min-w-0 p-4">
+                  {isInGracePeriod && <GracePeriodWarning />}
                   <Suspense>{children}</Suspense>
               </div>
             </DndContext>
@@ -403,5 +451,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </SidebarProvider>
   );
 }
+
+  
 
     
