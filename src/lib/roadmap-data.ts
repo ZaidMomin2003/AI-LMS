@@ -14,6 +14,8 @@ import {
   BookOpen,
   Highlighter,
   type LucideIcon,
+  ShieldCheck,
+  UserCog,
 } from 'lucide-react';
 
 export interface Feature {
@@ -93,6 +95,20 @@ export const featuresData: Feature[] = [
     title: 'Wisdom 2.0 Launch',
     description: 'We are consolidating all our features into a refined, powerful, and cohesive platform, marking the official launch of Wisdom 2.0.',
     icon: BrainCircuit,
+    status: 'Launched',
+  },
+  {
+    date: 'December 05, 2025',
+    title: 'Data Safety & Subscription Grace Period',
+    description: 'Implemented a critical data safety fix to prevent any possibility of accidental data loss. Subscriptions now enter a 14-day grace period, ensuring users have time to renew without losing access to their valuable notes and materials.',
+    icon: ShieldCheck,
+    status: 'Launched',
+  },
+  {
+    date: 'December 12, 2025',
+    title: 'Advanced Profile Management',
+    description: 'Enhanced the user profile page with new security and management features, including the ability for users to change their password and securely delete their account and all associated data.',
+    icon: UserCog,
     status: 'Launched',
   },
 ];
