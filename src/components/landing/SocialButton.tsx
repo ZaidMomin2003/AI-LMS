@@ -1,3 +1,4 @@
+
 'use client';
 
 /**
@@ -34,6 +35,8 @@ export default function SocialButton({
     setActiveIndex(index);
     setTimeout(() => setActiveIndex(null), 300);
   };
+
+  const MotionLink = motion(NextLink);
 
   return (
     <div
@@ -80,14 +83,18 @@ export default function SocialButton({
         }}
       >
         {socialLinks.map((button, i) => (
-          <NextLink href={button.href} passHref key={`share-${button.label}`} target="_blank" rel="noopener noreferrer">
-            <motion.a
-              animate={{
+          <MotionLink
+            href={button.href}
+            passHref
+            key={`share-${button.label}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            animate={{
                 opacity: isVisible ? 1 : 0,
                 x: isVisible ? 0 : -20,
-              }}
-              aria-label={button.label}
-              className={cn(
+            }}
+            aria-label={button.label}
+            className={cn(
                 'h-10 w-10',
                 'flex items-center justify-center',
                 'bg-foreground',
@@ -97,39 +104,38 @@ export default function SocialButton({
                 'border-background/10 border-r last:border-r-0',
                 'hover:bg-primary',
                 'outline-none relative overflow-hidden transition-colors duration-200',
-              )}
-              onClick={() => handleButtonClick(i)}
-              transition={{
+            )}
+            onClick={() => handleButtonClick(i)}
+            transition={{
                 duration: 0.3,
                 ease: [0.23, 1, 0.32, 1],
                 delay: isVisible ? i * 0.05 : 0,
+            }}
+          >
+            <motion.div
+              animate={{
+                scale: activeIndex === i ? 0.85 : 1,
+              }}
+              className="relative z-10"
+              transition={{
+                duration: 0.2,
+                ease: 'easeInOut',
               }}
             >
-              <motion.div
-                animate={{
-                  scale: activeIndex === i ? 0.85 : 1,
-                }}
-                className="relative z-10"
-                transition={{
-                  duration: 0.2,
-                  ease: 'easeInOut',
-                }}
-              >
-                <button.icon className="h-4 w-4" />
-              </motion.div>
-              <motion.div
-                animate={{
-                  opacity: activeIndex === i ? 0.2 : 0,
-                }}
-                className="absolute inset-0 bg-background"
-                initial={{ opacity: 0 }}
-                transition={{
-                  duration: 0.2,
-                  ease: 'easeInOut',
-                }}
-              />
-            </motion.a>
-          </NextLink>
+              <button.icon className="h-4 w-4" />
+            </motion.div>
+            <motion.div
+              animate={{
+                opacity: activeIndex === i ? 0.2 : 0,
+              }}
+              className="absolute inset-0 bg-background"
+              initial={{ opacity: 0 }}
+              transition={{
+                duration: 0.2,
+                ease: 'easeInOut',
+              }}
+            />
+          </MotionLink>
         ))}
       </motion.div>
     </div>
