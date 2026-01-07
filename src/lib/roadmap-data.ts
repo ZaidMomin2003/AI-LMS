@@ -16,6 +16,7 @@ import {
   type LucideIcon,
   ShieldCheck,
   UserCog,
+  Share2,
 } from 'lucide-react';
 
 export interface Feature {
@@ -109,6 +110,13 @@ export const featuresData: Feature[] = [
     title: 'Advanced Profile Management',
     description: 'Enhanced the user profile page with new security and management features, including the ability for users to change their password and securely delete their account and all associated data.',
     icon: UserCog,
+    status: 'Launched',
+  },
+  {
+    date: 'December 20, 2025',
+    title: 'Shareable Study Notes',
+    description: 'Enabled users to share their generated study materials with anyone via a unique, public link, making collaboration and knowledge sharing easier than ever.',
+    icon: Share2,
     status: 'Launched',
   },
 ];
