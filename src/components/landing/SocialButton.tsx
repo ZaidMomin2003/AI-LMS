@@ -66,8 +66,7 @@ export default function SocialButton({
           {...props}
         >
           <span className="flex items-center gap-2">
-            <Share className="h-4 w-4" />
-            Connect with me
+            Made with 💓 by Arshad (Zaid)
           </span>
         </Button>
       </motion.div>
