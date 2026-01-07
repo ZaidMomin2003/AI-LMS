@@ -14,6 +14,7 @@ import {
   BookOpenCheck
 } from 'lucide-react';
 import { ThemeToggle } from '../ThemeToggle';
+import SocialButton from './SocialButton';
 
 
 const footerNav = {
@@ -128,7 +129,7 @@ export function Footer() {
             &copy; {currentYear} Wisdomis.fun | All rights reserved
           </p>
           <div className="flex items-center gap-4 text-muted-foreground">
-             <span>Made with ❤️ by Arshad</span>
+             <SocialButton />
           </div>
         </div>
     </footer>
