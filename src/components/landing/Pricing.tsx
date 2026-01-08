@@ -26,7 +26,7 @@ const proFeatures = [
 
 const CountdownTimer = () => {
     const calculateTimeLeft = () => {
-        const difference = +new Date('2026-01-10T00:00:00') - +new Date();
+        const difference = +new Date('2026-01-15T00:00:00') - +new Date();
         let timeLeft: {days: number, hours: number, minutes: number, seconds: number} | {} = {};
 
         if (difference > 0) {
