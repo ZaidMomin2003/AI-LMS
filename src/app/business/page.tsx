@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Header } from '@/components/landing/Header';
@@ -15,6 +16,7 @@ import Image from 'next/image';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { VolumeCalculator } from '@/components/pricing/VolumeCalculator';
 import { CalEmbed } from '@/components/business/CalEmbed';
+import Link from 'next/link';
 
 const faqs = [
   {
@@ -92,7 +94,7 @@ export default function BusinessPage() {
         </section>
 
         {/* --- Collaboration Section --- */}
-        <section className="bg-secondary/50 py-20 sm:py-24">
+        <section id="schedule-call" className="bg-secondary/50 py-20 sm:py-24">
           <div className="container mx-auto px-4">
               <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
@@ -152,15 +154,15 @@ export default function BusinessPage() {
               </div>
               <div className="relative z-10">
                 <h2 className="text-3xl font-bold tracking-tight text-primary-foreground sm:text-4xl font-headline">
-                  Ready to Start Earning?
+                  Ready to Discuss a Partnership?
                 </h2>
                 <p className="mb-6 max-w-md text-base text-primary-foreground/90 sm:text-lg md:mb-8">
-                  Applying is quick and easy. Send us an email with a link to your blog, website, or social media profile, and we'll get back to you within 48 hours.
+                  Let's connect. Schedule a 15-minute call to discuss how we can work together and grow.
                 </p>
                 <Button asChild size="lg" className="bg-card text-card-foreground hover:bg-card/90 shadow-lg">
-                  <a href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
-                    Apply Now <ArrowRight className="ml-2 h-5 w-5" />
-                  </a>
+                  <Link href="#schedule-call">
+                    Schedule a Call <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
                 </Button>
               </div>
             </div>
