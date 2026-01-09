@@ -14,6 +14,7 @@ import { Features } from '@/components/landing/Features';
 import Image from 'next/image';
 import placeholderImages from '@/lib/placeholder-images.json';
 import { VolumeCalculator } from '@/components/pricing/VolumeCalculator';
+import { CalEmbed } from '@/components/business/CalEmbed';
 
 const faqs = [
   {
@@ -45,80 +46,47 @@ export default function BusinessPage() {
       <main className="flex-grow">
         {/* --- Hero Section --- */}
         <section className="relative overflow-hidden bg-secondary/30 py-20 lg:py-32">
+          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-transparent to-background" />
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
-              <div className="relative z-10 text-center lg:text-left">
-                <p className="text-base font-semibold uppercase tracking-wider text-primary">
-                  Become a Wisdom Partner
-                </p>
-                <h1 className="font-headline mt-4 text-4xl font-bold text-foreground lg:mt-8 sm:text-6xl xl:text-7xl">
-                  Connect & Grow With Us
-                </h1>
-                <p className="mt-4 text-base text-muted-foreground lg:mt-8 sm:text-xl">
-                  Share the future of learning and earn commissions.
-                </p>
-                <Button asChild size="lg" className="mt-10">
-                  <a href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
-                    Become a Partner <ArrowRight className="ml-2" />
-                  </a>
-                </Button>
-              </div>
-
-              <div className="relative h-96 lg:h-[500px]">
-                {/* Person 1 */}
-                <div className="absolute top-0 left-1/4 z-10 h-32 w-32 animate-float rounded-full bg-yellow-400 p-2 shadow-lg lg:h-40 lg:w-40">
-                  <Image
-                    data-ai-hint={placeholderImages.businessHero.person1.hint}
-                    src={placeholderImages.businessHero.person1.src}
-                    alt="Happy professional"
-                    width={160}
-                    height={160}
-                    className="h-full w-full rounded-full object-cover"
-                  />
-                </div>
-
-                {/* Person 2 */}
-                <div className="absolute top-10 right-0 z-20 h-28 w-28 animate-float rounded-2xl bg-purple-500 p-2 shadow-lg [animation-delay:-1s] lg:h-36 lg:w-36">
-                  <Image
-                    data-ai-hint={placeholderImages.businessHero.person2.hint}
-                    src={placeholderImages.businessHero.person2.src}
-                    alt="Smiling expert"
-                    width={144}
-                    height={144}
-                    className="h-full w-full rounded-xl object-cover"
-                  />
-                </div>
-
-                {/* Person 3 */}
-                <div className="absolute bottom-0 left-0 z-20 h-36 w-36 animate-float rounded-2xl bg-blue-500 p-2 shadow-lg [animation-delay:-2s] lg:h-48 lg:w-48">
-                  <Image
-                    data-ai-hint={placeholderImages.businessHero.person3.hint}
-                    src={placeholderImages.businessHero.person3.src}
-                    alt="Confident learner"
-                    width={192}
-                    height={192}
-                    className="h-full w-full rounded-xl object-cover"
-                  />
-                </div>
-
-                {/* Stat Card */}
-                <div className="absolute top-1/3 left-1/2 z-20 -translate-x-1/2 -translate-y-1/2 transform animate-float rounded-2xl bg-foreground p-4 text-background shadow-2xl [animation-delay:-0.5s] lg:p-6">
-                  <p className="text-xs lg:text-sm">Partner Commission</p>
-                  <p className="text-2xl font-bold lg:text-4xl">$39</p>
-                </div>
-                
-                {/* Abstract Shapes */}
-                <div className="absolute top-1/2 right-1/4 h-20 w-20 animate-float rounded-2xl bg-yellow-300 [animation-delay:-2.5s] lg:h-24 lg:w-24"></div>
-                <div className="absolute bottom-10 right-1/2 h-10 w-10 animate-float rounded-full bg-red-500 [animation-delay:-1.5s]"></div>
-                <div className="absolute top-5 left-5 h-5 w-5 animate-float rounded-full border-2 border-foreground [animation-delay:-3s]"></div>
-                
-                {/* Star SVG */}
-                <div className="absolute bottom-1/4 right-1/4 z-10 w-16 h-16 animate-float text-foreground [animation-delay:-0.8s]">
-                    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M50 0L61.2257 38.7743L100 50L61.2257 61.2257L50 100L38.7743 61.2257L0 50L38.7743 38.7743L50 0Z" stroke="currentColor" strokeWidth="3"/>
-                    </svg>
-                </div>
-              </div>
+            <div className="relative z-10 mx-auto max-w-3xl text-center">
+              <p className="text-base font-semibold uppercase tracking-wider text-primary">
+                Become a Wisdom Partner
+              </p>
+              <h1 className="font-headline mt-4 text-4xl font-bold text-foreground sm:text-6xl xl:text-7xl">
+                Connect & Grow With Us
+              </h1>
+              <p className="mt-4 text-base text-muted-foreground sm:text-xl">
+                Share the future of learning and earn commissions for every student you bring to Wisdom.
+              </p>
+              <Button asChild size="lg" className="mt-10">
+                <a href="https://forms.gle/4rANNRPbBCv15DFFA" target="_blank" rel="noopener noreferrer">
+                  Become a Partner <ArrowRight className="ml-2" />
+                </a>
+              </Button>
+            </div>
+            
+            {/* Floating Metric Cards */}
+            <div className="absolute top-1/4 left-10 hidden h-28 w-48 animate-float rounded-2xl border bg-card/50 p-4 shadow-lg backdrop-blur-sm [animation-delay:-1s] lg:block">
+              <p className="text-sm font-semibold text-foreground">Commission</p>
+              <p className="text-3xl font-bold text-primary">$39</p>
+              <p className="text-xs text-muted-foreground">per sale</p>
+            </div>
+             <div className="absolute bottom-1/4 right-10 hidden h-28 w-48 animate-float rounded-2xl border bg-card/50 p-4 shadow-lg backdrop-blur-sm [animation-delay:-2.5s] lg:block">
+              <p className="text-sm font-semibold text-foreground">Cookie Duration</p>
+              <p className="text-3xl font-bold text-primary">30</p>
+              <p className="text-xs text-muted-foreground">days</p>
+            </div>
+             <div className="absolute bottom-1/2 left-20 hidden h-20 w-36 animate-float rounded-2xl border bg-card/50 p-3 shadow-lg backdrop-blur-sm [animation-delay:-2s] lg:block">
+              <p className="text-xs font-semibold text-foreground">Payouts</p>
+              <p className="text-2xl font-bold text-primary">Monthly</p>
+            </div>
+            
+            {/* SVG Icons */}
+            <div className="absolute top-20 right-20 hidden h-16 w-16 animate-float text-primary/70 [animation-delay:-0.5s] lg:block">
+              <UserPlus />
+            </div>
+             <div className="absolute bottom-20 left-1/4 hidden h-12 w-12 animate-float text-primary/50 [animation-delay:-3s] lg:block">
+              <Heart />
             </div>
           </div>
         </section>
@@ -126,29 +94,15 @@ export default function BusinessPage() {
         {/* --- Collaboration Section --- */}
         <section className="bg-secondary/50 py-20 sm:py-24">
           <div className="container mx-auto px-4">
-              <div className="relative mx-auto w-full max-w-2xl rounded-2xl bg-card p-8 text-left text-card-foreground shadow-2xl">
-                  <div className="absolute -top-8 -left-8 text-primary opacity-20">
-                      <svg width="100" height="100" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M9.983 3v7.391c0 2.9-2.35 5.258-5.25 5.258h-1.733v4.25h1.733c5.19 0 9.417-4.223 9.417-9.417v-7.482h-4.167zm10.017 0v7.391c0 2.9-2.35 5.258-5.25 5.258h-1.733v4.25h1.733c5.19 0 9.417-4.223 9.417-9.417v-7.482h-4.167z"/>
-                      </svg>
-                  </div>
-                  <h2 className="font-headline text-3xl font-bold">
-                      Let's Collaborate. No Meetings Required.
-                  </h2>
-                  <p className="mt-4 text-base text-muted-foreground">
-                      Forget endless forms and sales pitches. Contact us directly on WhatsApp for free Pro access. Try Wisdom with your students and see the impact. If you love it, we'll create a partnership where everyone wins.
-                  </p>
-                  <Button asChild size="lg" className="mt-8 bg-green-500 hover:bg-green-600 text-white shadow-lg">
-                      <a href="https://wa.link/o0dcmr" target="_blank" rel="noopener noreferrer">
-                          <MessageCircle className="mr-2" /> Contact on WhatsApp
-                      </a>
-                  </Button>
-                   <div className="absolute -bottom-8 -right-8 text-primary opacity-20">
-                      <svg width="100" height="100" viewBox="0 0 24 24" fill="currentColor" className="transform rotate-180">
-                          <path d="M9.983 3v7.391c0 2.9-2.35 5.258-5.25 5.258h-1.733v4.25h1.733c5.19 0 9.417-4.223 9.417-9.417v-7.482h-4.167zm10.017 0v7.391c0 2.9-2.35 5.258-5.25 5.258h-1.733v4.25h1.733c5.19 0 9.417-4.223 9.417-9.417v-7.482h-4.167z"/>
-                      </svg>
-                  </div>
+              <div className="text-center mb-12">
+                <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
+                    Schedule a Partnership Call
+                </h2>
+                <p className="mt-4 text-lg leading-8 text-muted-foreground">
+                    Interested in a deeper collaboration? Book a 15-minute introductory call with our founder.
+                </p>
               </div>
+              <CalEmbed />
           </div>
         </section>
         
