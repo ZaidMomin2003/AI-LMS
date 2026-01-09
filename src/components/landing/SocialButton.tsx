@@ -11,7 +11,7 @@
  * @github: https://github.com/kokonut-labs/kokonutui
  */
 
-import { Instagram, Linkedin, Share } from 'lucide-react';
+import { Instagram, Linkedin, Share, User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import NextLink from 'next/link';
@@ -22,6 +22,7 @@ import { useToast } from '@/hooks/use-toast';
 const socialLinks = [
   { icon: Instagram, label: 'Instagram', href: 'https://www.instagram.com/fallen_zaid/' },
   { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/arshad-momin-a3139b21b/' },
+  { icon: User, label: 'About', href: '/developer' },
 ];
 
 export default function SocialButton({
@@ -86,7 +87,7 @@ export default function SocialButton({
             href={button.href}
             passHref
             key={`share-${button.label}`}
-            target="_blank"
+            target={button.href.startsWith('http') ? '_blank' : '_self'}
             rel="noopener noreferrer"
             animate={{
                 opacity: isVisible ? 1 : 0,
