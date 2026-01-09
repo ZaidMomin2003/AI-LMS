@@ -17,6 +17,7 @@ import placeholderImages from '@/lib/placeholder-images.json';
 import { VolumeCalculator } from '@/components/pricing/VolumeCalculator';
 import { CalEmbed } from '@/components/business/CalEmbed';
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 const faqs = [
   {
@@ -41,17 +42,41 @@ const faqs = [
   },
 ];
 
+const images = [
+  placeholderImages.businessHero.person1,
+  placeholderImages.businessHero.person2,
+  placeholderImages.businessHero.person3,
+  {
+    "src": "https://picsum.photos/seed/person-male-2/192/192",
+    "hint": "smiling man"
+  },
+  {
+    "src": "https://picsum.photos/seed/person-female-3/192/192",
+    "hint": "professional woman"
+  },
+  {
+    "src": "https://picsum.photos/seed/person-male-3/192/192",
+    "hint": "professional man"
+  }
+];
+
+
 export default function BusinessPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-grow">
         {/* --- Hero Section --- */}
-        <section className="relative overflow-hidden bg-secondary/30 py-20 lg:py-32">
-          <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-transparent to-background" />
-          <div className="container mx-auto px-4">
-            <div className="relative z-10 mx-auto max-w-3xl text-center">
-              <p className="text-base font-semibold uppercase tracking-wider text-primary">
+        <section className="relative w-full overflow-hidden bg-secondary/20 py-20 lg:py-28">
+          <div className="container relative z-10 grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            {/* Text Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, ease: 'easeOut' }}
+              className="text-center lg:text-left"
+            >
+              <p className="font-semibold uppercase tracking-wider text-primary">
                 Become a Wisdom Partner
               </p>
               <h1 className="font-headline mt-4 text-4xl font-bold text-foreground sm:text-6xl xl:text-7xl">
@@ -65,31 +90,39 @@ export default function BusinessPage() {
                   Become a Partner <ArrowRight className="ml-2" />
                 </a>
               </Button>
-            </div>
-            
-            {/* Floating Metric Cards */}
-            <div className="absolute top-1/4 left-10 hidden h-28 w-48 animate-float rounded-2xl border bg-card/50 p-4 shadow-lg backdrop-blur-sm [animation-delay:-1s] lg:block">
-              <p className="text-sm font-semibold text-foreground">Commission</p>
-              <p className="text-3xl font-bold text-primary">$39</p>
-              <p className="text-xs text-muted-foreground">per sale</p>
-            </div>
-             <div className="absolute bottom-1/4 right-10 hidden h-28 w-48 animate-float rounded-2xl border bg-card/50 p-4 shadow-lg backdrop-blur-sm [animation-delay:-2.5s] lg:block">
-              <p className="text-sm font-semibold text-foreground">Cookie Duration</p>
-              <p className="text-3xl font-bold text-primary">30</p>
-              <p className="text-xs text-muted-foreground">days</p>
-            </div>
-             <div className="absolute bottom-1/2 left-20 hidden h-20 w-36 animate-float rounded-2xl border bg-card/50 p-3 shadow-lg backdrop-blur-sm [animation-delay:-2s] lg:block">
-              <p className="text-xs font-semibold text-foreground">Payouts</p>
-              <p className="text-2xl font-bold text-primary">Monthly</p>
-            </div>
-            
-            {/* SVG Icons */}
-            <div className="absolute top-20 right-20 hidden h-16 w-16 animate-float text-primary/70 [animation-delay:-0.5s] lg:block">
-              <UserPlus />
-            </div>
-             <div className="absolute bottom-20 left-1/4 hidden h-12 w-12 animate-float text-primary/50 [animation-delay:-3s] lg:block">
-              <Heart />
-            </div>
+            </motion.div>
+
+            {/* Image Grid */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
+              className="relative grid h-[450px] grid-cols-3 grid-rows-3 gap-4"
+            >
+              {images.map((image, i) => (
+                <motion.div
+                  key={i}
+                  whileHover={{ scale: 1.1, zIndex: 10, rotate: i % 2 === 0 ? -5 : 5, boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.2)" }}
+                  className="relative overflow-hidden rounded-2xl border-2 border-background/50 shadow-lg"
+                  style={{
+                    gridRow: i < 3 ? 'span 1' : 'span 2',
+                    gridColumn: i % 3 === 0 ? 'span 1' : (i % 3 === 1 ? 'span 1' : 'span 1'),
+                    ...(i === 1 && { gridRow: 'span 2' }),
+                    ...(i === 3 && { gridColumn: 'span 2', gridRow: 'span 1' }),
+                  }}
+                >
+                  <Image
+                    src={image.src}
+                    alt="Happy partner"
+                    layout="fill"
+                    objectFit="cover"
+                    className="transition-transform duration-300"
+                    data-ai-hint={image.hint}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent" />
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </section>
 
