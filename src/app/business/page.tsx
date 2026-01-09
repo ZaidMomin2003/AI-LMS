@@ -103,7 +103,7 @@ export default function BusinessPage() {
                 <motion.div
                   key={i}
                   whileHover={{ scale: 1.1, zIndex: 10, rotate: i % 2 === 0 ? -5 : 5, boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.2)" }}
-                  className="relative overflow-hidden rounded-2xl border-2 border-background/50 shadow-lg"
+                  className="relative overflow-hidden rounded-full border-2 border-background/50 shadow-lg"
                   style={{
                     gridRow: i < 3 ? 'span 1' : 'span 2',
                     gridColumn: i % 3 === 0 ? 'span 1' : (i % 3 === 1 ? 'span 1' : 'span 1'),
