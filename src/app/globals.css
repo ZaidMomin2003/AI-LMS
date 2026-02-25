@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 0 72.2% 50.6%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --accent: 45 85% 95%;
+    --accent-foreground: 45 90% 25%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 0 72.2% 50.6%;
+    --sidebar-background: 240 4.8% 95.9%;
+    --sidebar-foreground: 240 10% 3.9%;
+    --sidebar-border: 240 5.9% 90%;
+    --sidebar-accent: 0 72.2% 95%;
+    --sidebar-accent-foreground: 0 80% 30%;
+    --sidebar-primary: 0 72.2% 50.6%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-ring: 0 72.2% 50.6%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 62.8% 40%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --accent: 45 80% 10%;
+    --accent-foreground: 45 90% 80%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 0 62.8% 40%;
+    --sidebar-background: 240 10% 3.9%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-accent: 0 72.2% 15%;
+    --sidebar-accent-foreground: 0 80% 80%;
+    --sidebar-primary: 0 62.8% 40%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-ring: 0 62.8% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  .react-pdf__Page__canvas {
+      margin: 0 auto;
+  }
+  .prose {
+    h2 {
+        @apply text-3xl font-bold font-headline mb-4;
+    }
+    h3 {
+        @apply text-2xl font-bold font-headline mb-3;
+    }
+    h4 {
+        @apply text-xl font-bold font-headline mb-2;
+    }
+    p, ul, h4 {
+        @apply mb-0 mt-0;
+    }
+    li {
+        @apply my-1;
+    }
+    strong {
+        @apply text-foreground;
+    }
+  }
+  input, textarea {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+  .selectable-text {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
+  .katex-display {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  .katex {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .prose-tight p {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .prose-tight h1,
+  .prose-tight h2,
+  .prose-tight h3,
+  .prose-tight h4,
+  .prose-tight ul,
+  .prose-tight ol,
+  .prose-tight pre,
+  .prose-tight blockquote {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .prose-tight strong {
+    margin: 0 !important;
+  }
+
+  ::selection {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+}
+
+@layer components {
+    .example-box {
+        @apply border-l-4 border-primary bg-secondary/50 p-4 my-4 rounded-r-lg;
+    }
+    .follow-up-btn {
+        @apply bg-background border border-border text-foreground hover:bg-secondary text-sm rounded-lg px-3 py-1.5 transition-colors cursor-pointer mr-2 mt-2;
+    }
+}

@@ -1,0 +1,109 @@
+
+'use client';
+
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useAuth } from './AuthContext';
+import { isFirebaseEnabled } from '@/lib/firebase';
+import { listenToUserDoc, updateUserDoc } from '@/services/firestore';
+
+export interface OnboardingProfileData {
+  name?: string;
+  goal?: string;
+  challenge?: string;
+  firstMove?: string;
+  examEve?: string;
+  studySession?: string;
+  superpower?: string;
+  achillesHeel?: string;
+  materialPref?: string;
+}
+
+
+export interface ProfileData extends OnboardingProfileData {
+  // Fields from the main personalization form
+  studying?: string;
+  aiName?: string; // This is the name the user wants to be called by the AI
+  educationLevel?: string;
+  contentStyle?: string;
+  
+  phoneNumber?: string;
+  country?: string;
+  grade?: string;
+  referralSource?: string;
+  captureCount?: number;
+  receivedTopicsCount?: number;
+}
+
+interface ProfileContextType {
+  profile: ProfileData | null;
+  updateProfile: (data: Partial<ProfileData>) => Promise<void>;
+  loading: boolean;
+}
+
+const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
+
+export const ProfileProvider = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user && isFirebaseEnabled) {
+      setLoading(true);
+      const unsubscribe = listenToUserDoc(user, (data) => {
+          const profileData = data?.profile || {};
+          if (typeof profileData.captureCount !== 'number') {
+              profileData.captureCount = 0;
+          }
+          if (typeof profileData.receivedTopicsCount !== 'number') {
+              profileData.receivedTopicsCount = 0;
+          }
+          setProfile(profileData);
+          setLoading(false);
+      });
+      return () => unsubscribe();
+    } else {
+      setProfile(null);
+      setLoading(false);
+    }
+  }, [user]);
+
+  const updateProfile = useCallback(async (data: Partial<ProfileData>) => {
+    if (!user || !isFirebaseEnabled) return;
+
+    // Use a function with the previous state to avoid race conditions
+    setProfile(prevProfile => {
+        const currentProfile = prevProfile || {};
+        let newProfileData: ProfileData = { ...currentProfile, ...data };
+
+        if (data.captureCount === -1) {
+            newProfileData.captureCount = (currentProfile?.captureCount || 0) + 1;
+        }
+        
+        // Clear the field to allow re-onboarding
+        if (data.referralSource === '') {
+            newProfileData.referralSource = undefined;
+        }
+
+        // Perform the database update asynchronously
+        updateUserDoc(user.uid, { profile: newProfileData });
+
+        return newProfileData;
+    });
+}, [user]);
+
+
+  return (
+    <ProfileContext.Provider value={{ profile, updateProfile, loading }}>
+      {children}
+    </ProfileContext.Provider>
+  );
+};
+
+export const useProfile = () => {
+  const context = useContext(ProfileContext);
+  if (context === undefined) {
+    throw new Error('useProfile must be used within a ProfileProvider');
+  }
+  return context;
+};

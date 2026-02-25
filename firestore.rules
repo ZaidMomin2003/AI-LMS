@@ -1,0 +1,30 @@
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow users to read and write only their own documents in the 'users' collection.
+    // The {userId} wildcard captures the user's UID from the document path.
+    // The rule checks if the requesting user's UID matches the document's UID.
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Allow logged-in users to submit contact and support requests.
+    match /submissions/{submissionId} {
+      allow create: if request.auth != null;
+    }
+    match /supportRequests/{supportRequestId} {
+      allow create: if request.auth != null;
+    }
+
+    // Allow anyone to read from sharedTopics, and anyone to create.
+    // This is necessary for the server-side action to write.
+    // No one can update or delete from the client.
+    match /sharedTopics/{shareId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if false;
+    }
+  }
+}
