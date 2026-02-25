@@ -69,38 +69,51 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   .react-pdf__Page__canvas {
-      margin: 0 auto;
+    margin: 0 auto;
   }
+
   .prose {
     h2 {
-        @apply text-3xl font-bold font-headline mb-4;
+      @apply text-3xl font-bold font-headline mb-4;
     }
+
     h3 {
-        @apply text-2xl font-bold font-headline mb-3;
+      @apply text-2xl font-bold font-headline mb-3;
     }
+
     h4 {
-        @apply text-xl font-bold font-headline mb-2;
+      @apply text-xl font-bold font-headline mb-2;
     }
-    p, ul, h4 {
-        @apply mb-0 mt-0;
+
+    p,
+    ul,
+    h4 {
+      @apply mb-0 mt-0;
     }
+
     li {
-        @apply my-1;
+      @apply my-1;
     }
+
     strong {
-        @apply text-foreground;
+      @apply text-foreground;
     }
   }
-  input, textarea {
+
+  input,
+  textarea {
     -webkit-user-select: text;
     -moz-user-select: text;
     -ms-user-select: text;
     user-select: text;
   }
+
   .selectable-text {
     -webkit-user-select: text;
     -moz-user-select: text;
@@ -112,7 +125,7 @@
     margin: 0 !important;
     padding: 0 !important;
   }
-  
+
   .katex {
     margin: 0 !important;
     padding: 0 !important;
@@ -146,10 +159,11 @@
 }
 
 @layer components {
-    .example-box {
-        @apply border-l-4 border-primary bg-secondary/50 p-4 my-4 rounded-r-lg;
-    }
-    .follow-up-btn {
-        @apply bg-background border border-border text-foreground hover:bg-secondary text-sm rounded-lg px-3 py-1.5 transition-colors cursor-pointer mr-2 mt-2;
-    }
+  .example-box {
+    @apply border-l-4 border-primary bg-secondary/50 p-4 my-4 rounded-r-lg;
+  }
+
+  .follow-up-btn {
+    @apply bg-background border border-border text-foreground hover:bg-secondary text-sm rounded-lg px-3 py-1.5 transition-colors cursor-pointer mr-2 mt-2;
+  }
 }

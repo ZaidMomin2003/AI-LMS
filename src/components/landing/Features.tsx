@@ -1,401 +1,555 @@
-
 'use client';
 
-import type React from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles, Brain, Zap, Layers, Target, Rocket, BookOpen, CheckCircle2, ChevronRight, Play, Clock, BarChart3, Workflow, Camera, MessageSquare, ChevronDown, ListTodo, Search, MousePointer2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  FileText,
-  BrainCircuit,
-  MessageCircleQuestion,
-  Bot,
-  Map,
-  ClipboardCheck,
-  Timer,
-  Camera,
-  Sparkles,
-  User,
-  Lightbulb,
-  PenSquare,
-  ChevronRight,
-  Loader2,
-} from 'lucide-react';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { motion } from 'framer-motion';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Progress } from '../ui/progress';
+import { Button } from '@/components/ui/button';
 
-// --- Reusable Demo Components ---
+// --- Helper Components ---
 
-const KeyTerm = ({ term, definition }: { term: string; definition: string }) => (
-    <Popover>
-      <PopoverTrigger asChild>
-        <span className="text-primary font-semibold cursor-pointer hover:underline">
-          {term}
-        </span>
-      </PopoverTrigger>
-      <PopoverContent className="w-64 z-20">
-        <div className="grid gap-4">
-          <div className="space-y-2">
-            <h4 className="font-medium leading-none font-headline">
-              {term}
-            </h4>
-            <p className="text-sm text-muted-foreground">
-              {definition}
+const UserIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <circle cx="12" cy="8" r="4" strokeWidth="2" />
+    <path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2" strokeWidth="2" />
+  </svg>
+);
+
+const XIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
+// --- Demo Components ---
+
+const YourNotesDemo = () => {
+  const [phase, setPhase] = useState(0); // 0: Personalize, 1: Generate, 2: Master
+
+  useEffect(() => {
+    if (phase === 1) {
+      const timer = setTimeout(() => setPhase(2), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [phase]);
+
+  return (
+    <div className="w-full h-full p-6 flex flex-col gap-4 overflow-hidden bg-black/5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+        {/* 1. Personalize */}
+        <motion.div
+          animate={{ opacity: phase >= 0 ? 1 : 0.5 }}
+          className={cn("bg-zinc-900/50 border rounded-2xl p-6 flex flex-col gap-6 transition-all", phase === 0 ? "border-primary/30" : "border-white/5")}
+        >
+          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">01. Setup</span>
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <label className="text-[10px] font-medium text-zinc-500 uppercase">Style</label>
+              <div className="bg-black/40 border border-white/5 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:border-white/20">
+                <span className="text-xs text-white">Humorous</span>
+                <ChevronDown className="w-3 h-3 text-zinc-600" />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-medium text-zinc-500 uppercase">Focus</label>
+              <div className="bg-black/40 border border-white/5 rounded-xl p-3 flex items-center justify-between cursor-pointer hover:border-white/20">
+                <span className="text-xs text-white">Advanced</span>
+                <ChevronDown className="w-3 h-3 text-zinc-600" />
+              </div>
+            </div>
+          </div>
+          <Button
+            onClick={() => phase === 0 && setPhase(1)}
+            className={cn("h-10 mt-auto rounded-xl text-[10px] font-bold uppercase tracking-wider", phase === 0 ? "bg-primary text-white" : "bg-zinc-800 text-zinc-500")}
+          >
+            {phase === 0 ? "Generate" : "Ready"}
+          </Button>
+        </motion.div>
+
+        {/* 2. Process */}
+        <motion.div
+          animate={{ opacity: phase >= 1 ? 1 : 0.5 }}
+          className={cn("bg-zinc-900/50 border rounded-2xl p-6 flex flex-col items-center justify-center gap-4 transition-all", phase === 1 ? "border-primary/30" : "border-white/5")}
+        >
+          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">02. Logic</span>
+          <div className="flex-1 flex flex-col items-center justify-center gap-4">
+            {phase === 1 ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                className="w-10 h-10 rounded-full border-2 border-primary border-t-transparent"
+              />
+            ) : phase > 1 ? (
+              <CheckCircle2 className="w-10 h-10 text-green-500" />
+            ) : (
+              <div className="w-10 h-10 rounded-full border-2 border-zinc-800" />
+            )}
+            <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">
+              {phase === 1 ? "Analyzing..." : phase > 1 ? "Complete" : "Standby"}
             </p>
           </div>
-        </div>
-      </PopoverContent>
-    </Popover>
-);
+        </motion.div>
 
-const NotesAndExplainDemo = () => (
-    <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full flex flex-col md:flex-row gap-4">
-        <div className="flex-1">
-            <CardHeader className="p-2 border-b">
-                <p className="font-mono text-sm"># The Renaissance</p>
-            </CardHeader>
-            <CardContent className="p-2 space-y-2 text-sm text-muted-foreground">
-                <p className="font-mono">* Rebirth of art & science</p>
-                <p className="font-mono">* Focus on <KeyTerm term="Humanism" definition="An intellectual movement that emphasized human potential and achievements." /></p>
-                <p className="font-mono">* Started in Italy, spread through Europe.</p>
-            </CardContent>
-        </div>
-        <div className="flex-1 flex flex-col justify-center items-center p-4 bg-secondary/50 rounded-lg">
-            <p className="text-sm text-muted-foreground text-center mb-4">
-                The process, known as <span className="bg-primary/20 text-primary rounded px-1">photosynthesis</span>, is crucial.
-            </p>
-            <Card className="p-3 bg-background text-xs w-full">
-                <p className="font-bold flex items-center gap-1.5"><Lightbulb className="w-3 h-3 text-amber-400" />Explanation:</p>
-                <p className="text-muted-foreground">The way plants use sunlight to create their own food from water and CO2.</p>
-            </Card>
-        </div>
-    </Card>
-);
-
-const FlashcardDemo = () => {
-    return (
-        <div className="w-full h-full perspective-1000 group">
-             <div className="relative w-full h-full transition-transform duration-700 transform-style-preserve-3d group-hover:rotate-y-180">
-                <div className="absolute w-full h-full backface-hidden">
-                    <Card className="h-full flex flex-col justify-between p-6 bg-card/80 shadow-xl border-2 border-accent/20 backdrop-blur-sm">
-                        <h4 className="font-headline text-2xl">Humanism</h4>
-                        <p className="text-right text-primary font-semibold">Term</p>
-                    </Card>
-                </div>
-                <div className="absolute w-full h-full backface-hidden rotate-y-180">
-                    <Card className="h-full flex flex-col justify-between p-6 bg-card/80 shadow-xl border-2 border-accent/20 backdrop-blur-sm">
-                        <p className="text-sm">An outlook attaching prime importance to human rather than divine or supernatural matters.</p>
-                        <p className="text-right text-primary font-semibold">Definition</p>
-                    </Card>
-                </div>
-            </div>
-        </div>
-    );
+        {/* 3. Output */}
+        <motion.div
+          animate={{ opacity: phase >= 2 ? 1 : 0.5 }}
+          className={cn("bg-zinc-900/50 border rounded-2xl p-6 flex flex-col gap-4 transition-all", phase === 2 ? "border-primary/30" : "border-white/5")}
+        >
+          <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">03. Result</span>
+          <AnimatePresence mode="wait">
+            {phase === 2 ? (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-3"
+              >
+                <p className="text-sm font-bold text-white leading-relaxed">The Alexander Strategy</p>
+                <p className="text-[11px] text-zinc-400 leading-relaxed font-medium">
+                  He named 70 cities after himself. That's branding. Let's deconstruct his legacy...
+                </p>
+                <Button onClick={() => setPhase(0)} variant="link" className="text-[10px] text-zinc-500 h-auto p-0 hover:text-primary">Reset Demo</Button>
+              </motion.div>
+            ) : (
+              <div className="flex-1 flex flex-col items-center justify-center opacity-20">
+                <Rocket className="w-8 h-8 text-zinc-500" />
+              </div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+    </div>
+  );
 };
 
-const QuizDemo = () => (
-     <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full">
-        <CardContent className="p-2 space-y-3">
-            <p className="font-semibold text-sm">Who wrote "The Prince"?</p>
-            <div className="flex items-center space-x-3 rounded-md border p-3 bg-background/50 text-xs">
-                <div className="h-3 w-3 rounded-full border-2 border-muted-foreground"/>
-                <p>Leonardo da Vinci</p>
-            </div>
-            <div className="flex items-center space-x-3 rounded-md border p-3 bg-background/50 text-xs border-primary bg-primary/10">
-                <div className="h-3 w-3 rounded-full border-2 border-primary flex items-center justify-center">
-                    <div className="h-1.5 w-1.5 rounded-full bg-primary"/>
-                </div>
-                <p className="font-semibold">Niccolò Machiavelli</p>
-            </div>
-        </CardContent>
-    </Card>
-);
+const QuizDemoMatch = () => {
+  const [selected, setSelected] = useState<number | null>(null);
+  const options = ["Leonardo da Vinci", "Niccolò Machiavelli", "Thomas Hobbes"];
 
-const WisdomGptDemo = () => (
-    <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full">
-      <CardContent className="p-2 space-y-3">
-        <div className="flex items-start gap-3">
-            <div className="bg-primary text-primary-foreground rounded-full p-2">
-                <Bot size={20}/>
+  return (
+    <div className="w-full h-full p-8 flex flex-col gap-8 justify-center h-full">
+      <p className="text-lg font-bold text-white tracking-tight leading-snug">Who wrote "The Prince"?</p>
+      <div className="space-y-3">
+        {options.map((opt, i) => (
+          <motion.div
+            key={i}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            onClick={() => setSelected(i)}
+            className={cn(
+              "group border rounded-2xl p-4 flex items-center justify-between cursor-pointer transition-all duration-200",
+              selected === i
+                ? (i === 1 ? "bg-green-500/10 border-green-500/50" : "bg-red-500/10 border-red-500/50")
+                : "bg-zinc-900 border-white/5 hover:border-white/10"
+            )}
+          >
+            <div className="flex items-center gap-3">
+              <div className={cn("w-5 h-5 rounded-full border flex items-center justify-center transition-all",
+                selected === i
+                  ? (i === 1 ? "border-green-500" : "border-red-500")
+                  : "border-zinc-800"
+              )}>
+                {selected === i && (
+                  <div className={cn("w-2 h-2 rounded-full", i === 1 ? "bg-green-500" : "bg-red-500")} />
+                )}
+              </div>
+              <span className={cn("text-xs font-medium transition-colors", selected === i ? "text-white" : "text-zinc-500 group-hover:text-zinc-300")}>{opt}</span>
             </div>
-            <div className="rounded-2xl p-3 bg-secondary rounded-bl-none max-w-[80%]">
-                <p className="text-sm">What's the main cause of the French Revolution?</p>
-            </div>
+            {selected === i && i === 1 && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+          </motion.div>
+        ))}
+      </div>
+      {selected !== null && (
+        <p className={cn("text-[10px] font-bold uppercase tracking-widest", selected === 1 ? "text-green-500" : "text-red-500")}>
+          {selected === 1 ? "Correct Answer" : "Try Again"}
+        </p>
+      )}
+    </div>
+  );
+};
+
+const IntegratedToolsDemo = () => {
+  const [seconds, setSeconds] = useState(1500); // 25:00
+  const [isActive, setIsActive] = useState(false);
+  const [kanbanItems, setKanbanItems] = useState([
+    { id: 1, text: "Practice problems", status: "progress" },
+    { id: 2, text: "Review Chapter 1", status: "completed" }
+  ]);
+
+  useEffect(() => {
+    let interval: any = null;
+    if (isActive && seconds > 0) {
+      interval = setInterval(() => {
+        setSeconds((s) => s - 1);
+      }, 1000);
+    } else if (seconds === 0) {
+      setIsActive(false);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, seconds]);
+
+  const formatTime = (s: number) => {
+    const mins = Math.floor(s / 60);
+    const secs = s % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const toggleItem = (id: number) => {
+    setKanbanItems(items => items.map(item =>
+      item.id === id
+        ? { ...item, status: item.status === "progress" ? "completed" : "progress" }
+        : item
+    ));
+  };
+
+  return (
+    <div className="w-full h-full p-8 flex gap-8 select-none items-center overflow-hidden h-full">
+      {/* Kanban */}
+      <div className="flex-1 flex flex-col gap-4">
+        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">Study List</p>
+        <div className="space-y-3">
+          {kanbanItems.map(item => (
+            <motion.div
+              key={item.id}
+              layout
+              onClick={() => toggleItem(item.id)}
+              className={cn(
+                "cursor-pointer rounded-xl p-4 text-xs font-bold transition-all border",
+                item.status === "completed"
+                  ? "bg-green-500/5 border-green-500/10 text-green-500/30 line-through"
+                  : "bg-zinc-950 border-white/5 text-white hover:border-white/20"
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <span>{item.text}</span>
+                {item.status === "completed" && <CheckCircle2 className="w-3 h-3 text-green-500" />}
+              </div>
+            </motion.div>
+          ))}
         </div>
-        <div className="flex items-start gap-3 justify-end">
-             <div className="rounded-2xl p-3 bg-primary text-primary-foreground rounded-br-none max-w-[80%]">
-                <p className="text-sm">Social inequality & economic crisis!</p>
-            </div>
-             <div className="bg-muted text-muted-foreground rounded-full p-2">
-                <User size={20}/>
-            </div>
+      </div>
+      <div className="w-px h-1/2 bg-white/5" />
+      {/* Pomodoro */}
+      <div
+        className="w-2/5 flex flex-col items-center justify-center gap-4 cursor-pointer"
+        onClick={() => setIsActive(!isActive)}
+      >
+        <span className="text-4xl font-headline font-black text-white tracking-tighter transition-all group-hover/pomo:text-primary">
+          {formatTime(seconds)}
+        </span>
+        <div className={cn("px-4 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest border transition-all",
+          isActive ? "bg-primary/10 text-primary border-primary/20" : "bg-zinc-900 border-white/5 text-zinc-600")}
+        >
+          {isActive ? "Active" : "Paused"}
         </div>
-      </CardContent>
-    </Card>
-);
+      </div>
+    </div>
+  );
+};
 
-const RoadmapDemo = () => (
-    <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full">
-        <CardHeader className="p-2 border-b">
-            <p className="font-bold font-headline">AI Study Roadmap</p>
-        </CardHeader>
-        <CardContent className="p-2 space-y-2">
-            <Card className="bg-background/80 p-3">
-                <p className="text-sm font-bold">Day 1: Nov 4, 2024</p>
-                <p className="text-xs text-muted-foreground">Intro to Quantum Mechanics</p>
-            </Card>
-            <Card className="bg-background/80 p-3 opacity-60">
-                <p className="text-sm font-bold">Day 2: Nov 5, 2024</p>
-                <p className="text-xs text-muted-foreground">Wave-Particle Duality</p>
-            </Card>
-        </CardContent>
-    </Card>
-);
+const WisdomGPTDemo = () => {
+  const [messages, setMessages] = useState([
+    { id: 1, role: 'user', text: "What's the main cause of the French Revolution?", visible: true },
+    { id: 2, role: 'ai', text: "Sovereign debt and bread shortages!", visible: false }
+  ]);
 
-const IntegratedToolsDemo = () => (
-    <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full flex flex-col md:flex-row gap-4">
-        <div className="grid grid-cols-2 gap-2 flex-1">
-            <div>
-                <p className="text-xs font-bold text-center mb-2">In Progress</p>
-                <div className="p-2 bg-secondary rounded-md shadow-sm">
-                    <p className="text-xs">Practice problems</p>
-                </div>
-            </div>
-            <div>
-                <p className="text-xs font-bold text-center mb-2">Completed</p>
-                <div className="p-2 bg-green-500/20 text-green-300 rounded-md shadow-sm opacity-70">
-                    <p className="text-xs line-through">Review Chapter 1</p>
-                </div>
-            </div>
-        </div>
-         <div className="w-px bg-border/50 hidden md:block" />
-         <div className="h-px bg-border/50 md:hidden" />
-        <div className="flex-1 flex flex-col items-center justify-center text-center">
-            <div className="relative">
-                <p className="text-4xl font-bold font-mono text-primary">24:17</p>
-                <div className="absolute -top-2 -right-4 bg-primary/20 text-primary text-xs font-bold px-1.5 py-0.5 rounded-full">WORK</div>
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">Pomodoro Session</p>
-        </div>
-    </Card>
-);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMessages(prev => prev.map(m => m.id === 2 ? { ...m, visible: true } : m));
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
-const CaptureDemo = () => (
-    <Card className="w-full bg-card/50 p-4 shadow-lg border-2 border-primary/10 h-full">
-        <CardContent className="p-2 flex items-center justify-center gap-4 h-full">
-            <div className="text-center">
-                <Camera className="w-12 h-12 text-primary mx-auto"/>
-                <p className="text-xs text-muted-foreground mt-2">Snap a photo of a problem</p>
+  return (
+    <div className="w-full h-full p-8 flex flex-col justify-center gap-4 relative overflow-hidden bg-black/5">
+      <AnimatePresence mode="popLayout">
+        {messages.map((msg) => msg.visible && (
+          <motion.div
+            key={msg.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={cn("flex w-full", msg.role === 'user' ? "justify-end" : "justify-start")}
+          >
+            <div className={cn("p-4 rounded-2xl max-w-[85%] border text-xs leading-relaxed",
+              msg.role === 'user'
+                ? "bg-zinc-900 border-white/5 text-zinc-300"
+                : "bg-primary/10 border-primary/20 text-white")}
+            >
+              <p>{msg.text}</p>
             </div>
-            <div className="text-primary animate-pulse">
-                <Sparkles className="w-8 h-8"/>
-            </div>
-            <div className="bg-secondary p-3 rounded-lg flex-1">
-                <p className="text-sm font-bold">Answer:</p>
-                <p className="text-lg font-mono text-primary">x = 5</p>
-            </div>
-        </CardContent>
-    </Card>
-);
-
-const PersonalizedNotesDemo = () => (
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
-    {/* Step 1 */}
-    <div className="flex flex-col items-center text-center">
-      <div className="relative w-full">
-        <div className="p-4 rounded-lg bg-card/60 border">
-          <p className="text-xs font-bold mb-2">1. Personalize</p>
-          <div className="space-y-3 text-left">
-            <div>
-              <Label className="text-xs text-muted-foreground">Style:</Label>
-              <Select defaultValue="humorous">
-                <SelectTrigger className="h-7 text-xs pointer-events-none">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="humorous">Humorous</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-               <Label className="text-xs text-muted-foreground">Superpower:</Label>
-                <Select defaultValue="laser-focus">
-                <SelectTrigger className="h-7 text-xs pointer-events-none">
-                  <SelectValue />
-                </SelectTrigger>
-                 <SelectContent>
-                  <SelectItem value="laser-focus">Laser Focus</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
+      <div className="mt-4 pt-4 border-t border-white/5 flex gap-2">
+        {["Causes", "Outcomes", "Impact"].map(tag => (
+          <div key={tag} className="px-3 py-1 bg-zinc-900 border border-white/5 rounded-lg text-[9px] font-bold text-zinc-500 uppercase tracking-widest hover:border-primary/30 transition-all cursor-pointer">
+            {tag}
           </div>
-        </div>
-      </div>
-      <ChevronRight className="w-6 h-6 text-muted-foreground my-4 hidden md:block mx-auto transform -rotate-90 md:rotate-0" />
-      <ChevronRight className="w-6 h-6 text-muted-foreground my-4 md:hidden mx-auto transform rotate-90" />
-    </div>
-    {/* Step 2 */}
-    <div className="flex flex-col items-center text-center">
-      <div className="p-4 rounded-lg bg-card/60 border w-full">
-        <p className="text-xs font-bold mb-2">2. Generate</p>
-        <div className="flex flex-col items-center justify-center h-full min-h-[100px] text-muted-foreground">
-          <Loader2 className="w-6 h-6 animate-spin text-primary" />
-          <p className="text-xs mt-2">Generating notes...</p>
-        </div>
-      </div>
-       <ChevronRight className="w-6 h-6 text-muted-foreground my-4 hidden md:block mx-auto transform -rotate-90 md:rotate-0" />
-      <ChevronRight className="w-6 h-6 text-muted-foreground my-4 md:hidden mx-auto transform rotate-90" />
-    </div>
-    {/* Step 3 */}
-     <div className="flex flex-col items-center text-center">
-      <div className="p-4 rounded-lg bg-card/60 border w-full h-full">
-        <p className="text-xs font-bold mb-2">3. Master</p>
-        <div className="text-left text-xs p-2 rounded-md bg-secondary/50">
-            <h4 className="font-semibold text-sm">Alex the Great, minus the boring bits!</h4>
-            <p className="text-muted-foreground">Alright Captain, picture this: a guy who named, like, 70 cities after himself (and one after his horse). Total boss move, right? Let's dive into how he basically speed-ran conquering the ancient world.</p>
-        </div>
+        ))}
       </div>
     </div>
-  </div>
-);
+  );
+};
 
-// --- Main Bento Grid Component ---
+const InstantExplanationsDemo = () => {
+  const [activeExplainer, setActiveExplainer] = useState<string | null>(null);
 
-interface BentoItem {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  demo: React.ReactNode;
-  colSpan?: number;
-  rowSpan?: number;
-  className?: string;
-}
+  return (
+    <div className="w-full h-full p-8 flex gap-6 select-none items-stretch">
+      <div className="flex-1 bg-zinc-900/50 border border-white/5 rounded-2xl p-6 flex flex-col gap-4 relative">
+        <p className="text-xs font-bold text-white uppercase tracking-widest flex items-center gap-2">
+          <span className="text-primary">#</span> The Renaissance
+        </p>
+        <div className="space-y-4 flex-1 flex flex-col justify-center">
+          {[
+            "Rebirth of classical art",
+            "Focus on Humanism",
+            "Cultural trade nodes expansion"
+          ].map((text, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <div className="w-1 h-1 rounded-full bg-primary" />
+              <p className="text-[11px] text-zinc-400 font-medium">{text}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="w-1/3 flex flex-col justify-center gap-4">
+        <div className="bg-zinc-900 border border-white/5 rounded-2xl p-4 space-y-2">
+          <div className="flex items-center gap-2">
+            <Brain className="w-3 h-3 text-primary" />
+            <span className="text-[9px] font-bold text-zinc-500 uppercase">Context</span>
+          </div>
+          <p className="text-[10px] text-zinc-500 leading-relaxed italic">The biological pipeline converting photons into ATP.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-const bentoItems: BentoItem[] = [
+const CaptureDemo = () => {
+  const [scanned, setScanned] = useState(false);
+
+  return (
+    <div
+      className="w-full h-full p-8 flex flex-col items-center justify-center gap-6 cursor-pointer select-none"
+      onClick={() => setScanned(!scanned)}
+    >
+      <div className="relative">
+        <div className={cn("w-24 h-24 rounded-2xl bg-zinc-900 border flex items-center justify-center transition-all",
+          scanned ? "border-primary shadow-[0_0_30px_rgba(220,38,38,0.2)]" : "border-white/5")}>
+          <Camera className={cn("w-8 h-8", scanned ? "text-primary" : "text-zinc-700")} />
+        </div>
+        {scanned && (
+          <motion.div
+            animate={{ y: [0, 96, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="absolute top-0 left-[-10px] right-[-10px] h-0.5 bg-primary shadow-[0_0_10px_#dc2626]"
+          />
+        )}
+      </div>
+      <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+        {scanned ? "Solving..." : "Click to Scan"}
+      </p>
+      <AnimatePresence>
+        {scanned && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-zinc-900 border border-primary/30 rounded-xl p-4 text-center mt-2"
+          >
+            <p className="text-xl font-black text-white tracking-tighter">X = 29.5</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const FlashcardDemo = () => {
+  const [isFlipped, setIsFlipped] = useState(false);
+
+  return (
+    <div
+      className="w-full h-full p-8 flex flex-col items-center justify-center relative cursor-pointer"
+      onClick={() => setIsFlipped(!isFlipped)}
+    >
+      <div className="relative w-full h-[200px] preserve-3d">
+        <motion.div
+          animate={{ rotateY: isFlipped ? 180 : 0 }}
+          transition={{ type: "spring", stiffness: 100, damping: 20 }}
+          className="w-full h-full relative preserve-3d"
+        >
+          {/* Front */}
+          <div className="absolute inset-0 backface-hidden bg-zinc-900 border border-white/5 rounded-2xl flex flex-col items-center justify-center p-6 text-center">
+            <p className="text-xl font-bold text-white tracking-tight">Humanism</p>
+            <p className="mt-4 text-[9px] text-zinc-500 uppercase tracking-widest">Click to flip</p>
+          </div>
+          {/* Back */}
+          <div className="absolute inset-0 backface-hidden bg-primary rounded-2xl flex flex-col items-center justify-center p-6 text-center rotate-y-180">
+            <p className="text-[11px] font-bold text-white leading-relaxed">The celebration of individual human agency during the Renaissance.</p>
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+};
+
+const RoadmapDemo = () => {
+  const [progress, setProgress] = useState(3);
+
+  return (
+    <div className="w-full h-full p-8 flex flex-col gap-4 select-none justify-center">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-[10px] font-bold text-white uppercase tracking-widest">Neural Roadmap</p>
+        <div className="h-1 w-1 rounded-full bg-primary animate-pulse" />
+      </div>
+      <div className="space-y-3">
+        {[
+          { day: "01", topic: "Field Theory" },
+          { day: "02", topic: "Pattern Matching" }
+        ].map((item, i) => (
+          <motion.div
+            key={i}
+            onClick={() => setProgress(i + 1)}
+            className={cn("border rounded-xl p-4 flex items-center justify-between cursor-pointer transition-all",
+              progress >= (i + 1) ? "bg-primary/5 border-primary/20" : "bg-black/40 border-white/5 opacity-50")}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold text-primary">{item.day}</span>
+              <p className="text-[11px] text-zinc-400 font-medium">{item.topic}</p>
+            </div>
+            {progress >= (i + 1) ? <CheckCircle2 className="w-3 h-3 text-primary" /> : <Play className="w-3 h-3 text-zinc-800" />}
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const featureItems = [
   {
-    title: 'Your Notes, Your Way',
-    description: 'Tell the AI your learning style. Get notes that are funny, formal, or anything in between.',
-    icon: <PenSquare className="text-primary h-4 w-4" />,
-    demo: <PersonalizedNotesDemo />,
-    colSpan: 3,
-    rowSpan: 1,
+    title: "Your Notes, Your Way",
+    description: "Tell the AI your learning style. Get notes that are funny, formal, or anything in between.",
+    className: "col-span-1 md:col-span-3 row-span-1",
+    demo: <YourNotesDemo />,
+    icon: <Brain className="w-5 h-5 text-primary" />
   },
   {
-    title: 'Instant Explanations & Notes',
+    title: "Instant Explanations & Notes",
     description: "From dense text to structured, scannable notes with on-demand explanations for any term.",
-    icon: <Sparkles className="text-primary h-4 w-4" />,
-    demo: <NotesAndExplainDemo />,
-    colSpan: 2,
-    rowSpan: 1,
+    className: "col-span-1 md:col-span-2 row-span-1",
+    demo: <InstantExplanationsDemo />,
+    icon: <Sparkles className="w-5 h-5 text-primary" />
   },
   {
-    title: 'Challenging Quizzes',
-    description: 'Test your understanding with custom quizzes.',
-    icon: <MessageCircleQuestion className="text-primary h-4 w-4" />,
-    demo: <QuizDemo />,
-    colSpan: 1,
-    rowSpan: 1,
+    title: "Challenging Quizzes",
+    description: "Test your understanding with custom quizzes.",
+    className: "col-span-1 md:col-span-1 row-span-1",
+    demo: <QuizDemoMatch />,
+    icon: <Target className="w-5 h-5 text-primary" />
   },
   {
-    title: 'Personalized Roadmap',
-    description: 'Turn any syllabus into a day-by-day study plan.',
-    icon: <Map className="text-primary h-4 w-4" />,
+    title: "Personalized Roadmap",
+    description: "Turn any syllabus into a day-by-day study plan.",
+    className: "col-span-1 md:col-span-1 row-span-1",
     demo: <RoadmapDemo />,
-    colSpan: 1,
-    rowSpan: 1,
+    icon: <BookOpen className="w-5 h-5 text-primary" />
   },
   {
-    title: 'Integrated Study Tools',
-    description: 'Use Pomodoro timers and Kanban boards to stay on track.',
-    icon: <Timer className="text-primary h-4 w-4" />,
+    title: "Integrated Study Tools",
+    description: "Use Pomodoro timers and Kanban boards to stay on track.",
+    className: "col-span-1 md:col-span-2 row-span-1",
     demo: <IntegratedToolsDemo />,
-    colSpan: 2,
-    rowSpan: 1,
+    icon: <Clock className="w-5 h-5 text-primary" />
   },
   {
-    title: 'Capture the Answer',
-    description: 'Snap a picture of a problem to get an instant solution.',
-    icon: <Camera className="text-primary h-4 w-4" />,
+    title: "Capture the Answer",
+    description: "Snap a picture of a problem to get an instant solution.",
+    className: "col-span-1 md:col-span-1 row-span-1",
     demo: <CaptureDemo />,
-    colSpan: 1,
-    rowSpan: 1,
+    icon: <Camera className="w-5 h-5 text-primary" />
   },
   {
-    title: 'WisdomGPT AI Assistant',
-    description: 'Your personal AI tutor, ready to answer any question.',
-    icon: <Bot className="text-primary h-4 w-4" />,
-    demo: <WisdomGptDemo />,
-    colSpan: 1,
-    rowSpan: 1,
+    title: "WisdomGPT AI Assistant",
+    description: "Your personal AI tutor, ready to answer any question.",
+    className: "col-span-1 md:col-span-1 row-span-1",
+    demo: <WisdomGPTDemo />,
+    icon: <Sparkles className="w-5 h-5 text-primary" />
   },
   {
-    title: 'Interactive Flashcards',
-    description: 'Master key terms with active recall.',
-    icon: <BrainCircuit className="text-primary h-4 w-4" />,
+    title: "Interactive Flashcards",
+    description: "Master key terms with active recall.",
+    className: "col-span-1 md:col-span-1 row-span-1",
     demo: <FlashcardDemo />,
-    colSpan: 1,
-    rowSpan: 1,
-    className: "min-h-[15rem] md:min-h-0",
-  },
+    icon: <Layers className="w-5 h-5 text-primary" />
+  }
 ];
 
 export function Features() {
   return (
-    <section id="features" className="relative overflow-hidden py-20 sm:py-32">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--primary)/0.1),transparent_70%)]" />
-      </div>
+    <section id="features" className="py-32 relative bg-[#0A0A0B] overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full" />
 
-       <div className="container mx-auto px-4">
-        <div className="mx-auto max-w-2xl lg:text-center">
-          <h2 className="text-base font-semibold leading-7 text-primary">Learn Faster</h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-            A Toolkit for Total Understanding
-          </p>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground">
-            wisdom deconstructs any topic into the core components you need to truly learn it, not just memorize it.
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="max-w-2xl mb-20">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex items-center gap-2 mb-6"
+          >
+            <div className="h-px w-8 bg-primary" />
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Capabilities</span>
+          </motion.div>
+          <h2 className="text-4xl md:text-6xl font-headline font-black tracking-tight text-white mb-6 leading-none">
+            High-Performance <br />
+            <span className="text-zinc-600">Learning Infrastructure.</span>
+          </h2>
+          <p className="text-zinc-500 text-lg font-medium leading-relaxed">
+            We've deconstructed the learning process and rebuilt it with AI at the core. No fluff, just pure cognitive efficiency.
           </p>
         </div>
 
-        <div className="relative mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-4 md:grid-cols-3">
-            {bentoItems.map((item, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[500px]">
+          {featureItems.map((item, i) => (
             <motion.div
-                key={`${item.title}-${index}`}
-                className={cn(
-                    'col-span-1',
-                    item.colSpan === 2 && 'md:col-span-2',
-                    item.colSpan === 3 && 'md:col-span-3',
-                    item.rowSpan === 2 && 'md:row-span-2',
-                )}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.05, duration: 0.5 }}
+              className={cn(
+                "group relative bg-[#0D0D0E] border border-white/10 rounded-3xl p-8 flex flex-col overflow-hidden hover:border-primary/50 transition-all duration-300",
+                item.className
+              )}
             >
-                <Card className={cn("group bg-card/40 relative h-full transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border-border/60 overflow-hidden p-4 flex flex-col", item.className)}>
-                     <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                             <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
-                                {item.icon}
-                            </div>
-                            <h3 className="text-foreground text-[15px] font-medium tracking-tight">
-                            {item.title}
-                            </h3>
-                        </div>
-                    </div>
-                     <p className="text-muted-foreground text-sm leading-relaxed mt-2 flex-shrink-0">{item.description}</p>
-                     <div className="relative flex-1 mt-4">
-                        {item.demo}
-                     </div>
-                </Card>
+              <div className="flex-1 flex flex-col h-full min-h-0 relative z-10">
+                <div className="flex items-start gap-4 mb-6 shrink-0">
+                  <div className="p-3 rounded-2xl bg-zinc-900 border border-white/5 group-hover:bg-primary/10 group-hover:border-primary/20 transition-all duration-300">
+                    {React.cloneElement(item.icon as React.ReactElement, { className: "w-5 h-5 text-primary" })}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-headline font-bold text-white mb-1 group-hover:text-primary transition-all duration-300 tracking-tight">{item.title}</h3>
+                    <p className="text-zinc-500 text-[11px] font-medium leading-relaxed max-w-2xl">{item.description}</p>
+                  </div>
+                </div>
+                <div className="flex-1 bg-black/20 rounded-2xl border border-white/5 overflow-hidden flex flex-col group-hover:border-white/10 transition-all duration-300">
+                  {item.demo}
+                </div>
+              </div>
             </motion.div>
-            ))}
+          ))}
         </div>
       </div>
+
+      <style jsx global>{`
+                .preserve-3d { transform-style: preserve-3d; }
+                .backface-hidden { backface-visibility: hidden; }
+                .rotate-y-180 { transform: rotateY(180deg); }
+                .bg-grid-pattern {
+                    background-image: radial-gradient(circle, #ffffff 1px, transparent 1px);
+                }
+            `}</style>
     </section>
   );
 }
